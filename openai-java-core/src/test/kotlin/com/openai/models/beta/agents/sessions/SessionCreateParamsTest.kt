@@ -20,6 +20,10 @@ internal class SessionCreateParamsTest {
             .environmentNone()
             .agent(
                 SessionCreateParams.Agent.builder()
+                    .compaction(SessionCreateParams.Agent.Compaction.builder().async(true).build())
+                    .experimental(
+                        SessionCreateParams.Agent.Experimental.builder().timeAwareness(true).build()
+                    )
                     .instructions("instructions")
                     .model("model")
                     .multiAgent(
@@ -62,6 +66,7 @@ internal class SessionCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+            .review(SessionCreateParams.Review.NONE)
             .spendControl(SessionCreateParams.SpendControl.builder().limit(1L).build())
             .addVaultId("string")
             .build()
@@ -74,6 +79,14 @@ internal class SessionCreateParamsTest {
                 .environmentNone()
                 .agent(
                     SessionCreateParams.Agent.builder()
+                        .compaction(
+                            SessionCreateParams.Agent.Compaction.builder().async(true).build()
+                        )
+                        .experimental(
+                            SessionCreateParams.Agent.Experimental.builder()
+                                .timeAwareness(true)
+                                .build()
+                        )
                         .instructions("instructions")
                         .model("model")
                         .multiAgent(
@@ -116,6 +129,7 @@ internal class SessionCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .review(SessionCreateParams.Review.NONE)
                 .spendControl(SessionCreateParams.SpendControl.builder().limit(1L).build())
                 .addVaultId("string")
                 .build()
@@ -126,6 +140,10 @@ internal class SessionCreateParamsTest {
         assertThat(body.agent())
             .contains(
                 SessionCreateParams.Agent.builder()
+                    .compaction(SessionCreateParams.Agent.Compaction.builder().async(true).build())
+                    .experimental(
+                        SessionCreateParams.Agent.Experimental.builder().timeAwareness(true).build()
+                    )
                     .instructions("instructions")
                     .model("model")
                     .multiAgent(
@@ -169,6 +187,7 @@ internal class SessionCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+        assertThat(body.review()).contains(SessionCreateParams.Review.NONE)
         assertThat(body.spendControl())
             .contains(SessionCreateParams.SpendControl.builder().limit(1L).build())
         assertThat(body.vaultIds().getOrNull()).containsExactly("string")

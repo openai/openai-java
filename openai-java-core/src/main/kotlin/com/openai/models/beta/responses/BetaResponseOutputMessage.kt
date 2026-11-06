@@ -600,10 +600,15 @@ private constructor(
                 return true
             }
 
-            return other is Content && outputText == other.outputText && refusal == other.refusal
+            return other is Content &&
+                outputText == other.outputText &&
+                refusal == other.refusal &&
+                (outputText != null || refusal != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(outputText, refusal)
+        override fun hashCode(): Int =
+            if (outputText == null && refusal == null) Objects.hash(_json)
+            else Objects.hash(outputText, refusal)
 
         override fun toString(): String =
             when {

@@ -34,6 +34,7 @@ class TranslationServiceImpl internal constructor(private val clientOptions: Cli
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranslationService =
         TranslationServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    @Deprecated("deprecated")
     override fun create(
         params: TranslationCreateParams,
         requestOptions: RequestOptions,
@@ -56,6 +57,7 @@ class TranslationServiceImpl internal constructor(private val clientOptions: Cli
 
         private val createHandler = TranslationResponseHandler(clientOptions.jsonMapper)
 
+        @Deprecated("deprecated")
         override fun create(
             params: TranslationCreateParams,
             requestOptions: RequestOptions,

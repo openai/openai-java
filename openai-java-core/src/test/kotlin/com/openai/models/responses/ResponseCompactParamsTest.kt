@@ -11,6 +11,11 @@ internal class ResponseCompactParamsTest {
     fun create() {
         ResponseCompactParams.builder()
             .model(ResponseCompactParams.Model.GPT_6_ASTRA)
+            .image(
+                ResponseCompactParams.Image.builder()
+                    .contextCompression(ResponseCompactParams.Image.ContextCompression.AUTO)
+                    .build()
+            )
             .input("string")
             .instructions("instructions")
             .previousResponseId("resp_123")
@@ -31,6 +36,11 @@ internal class ResponseCompactParamsTest {
         val params =
             ResponseCompactParams.builder()
                 .model(ResponseCompactParams.Model.GPT_6_ASTRA)
+                .image(
+                    ResponseCompactParams.Image.builder()
+                        .contextCompression(ResponseCompactParams.Image.ContextCompression.AUTO)
+                        .build()
+                )
                 .input("string")
                 .instructions("instructions")
                 .previousResponseId("resp_123")
@@ -48,6 +58,12 @@ internal class ResponseCompactParamsTest {
         val body = params._body()
 
         assertThat(body.model()).contains(ResponseCompactParams.Model.GPT_6_ASTRA)
+        assertThat(body.image())
+            .contains(
+                ResponseCompactParams.Image.builder()
+                    .contextCompression(ResponseCompactParams.Image.ContextCompression.AUTO)
+                    .build()
+            )
         assertThat(body.input()).contains(ResponseCompactParams.Input.ofString("string"))
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.previousResponseId()).contains("resp_123")

@@ -215,15 +215,23 @@ private constructor(
         if (result.isCancelled) return result
         val effectiveOptions = options.applyDefaults(RequestOptions.from(this))
         val timed = TimedAuthentication.start(httpRequestAuthenticator, effectiveOptions)
+        val workloadAuth =
+            if (
+                httpRequestAuthenticator == null &&
+                    credential is WorkloadIdentityCredential &&
+                    !isSecurityHeaderRemoved("Authorization") &&
+                    request.headers.values("Authorization").isEmpty()
+            ) {
+                credential.getAuth()
+            } else null
         val authenticated =
             try {
                 when {
                     timed != null -> timed.authenticateAsync(request)
                     httpRequestAuthenticator != null ->
                         httpRequestAuthenticator.authenticateAsync(request)
-                    credential is WorkloadIdentityCredential &&
-                        !isSecurityHeaderRemoved("Authorization") ->
-                        credential.getAuth().getTokenAsync().thenApply {
+                    workloadAuth != null ->
+                        workloadAuth.getTokenAsync().thenApply {
                             request
                                 .toBuilder()
                                 .replaceHeaders("Authorization", "Bearer $it")
@@ -263,17 +271,13 @@ private constructor(
                     pending.whenComplete { connection, error ->
                         if (error != null) {
                             if (
-                                httpRequestAuthenticator == null &&
-                                    credential is WorkloadIdentityCredential &&
-                                    !isSecurityHeaderRemoved("Authorization") &&
+                                workloadAuth != null &&
                                     error is com.openai.core.http.WebSocketHandshakeException &&
                                     error.statusCode == 401
                             ) {
-                                credential
-                                    .getAuth()
-                                    .invalidateToken(
-                                        prepared.headers.values("Authorization").singleOrNull()
-                                    )
+                                workloadAuth.invalidateToken(
+                                    prepared.headers.values("Authorization").singleOrNull()
+                                )
                             }
                             result.completeExceptionally(error)
                         } else if (!result.complete(connection)) connection.close()
@@ -479,11 +483,15 @@ private constructor(
         fun baseUrl(baseUrl: Optional<String>) = baseUrl(baseUrl.getOrNull())
 
         /**
-         * Selects an OpenAI endpoint for request-scoped data and compute residency.
+         * Selects an OpenAI API endpoint by region.
          *
          * Cannot be combined with [baseUrl] on the same builder or with third-party provider
          * configuration. An inherited or environment-derived URL may be replaced. A null value
-         * leaves the endpoint unchanged. Availability is determined by the API.
+         * leaves the endpoint unchanged.
+         *
+         * Regional storage and processing depend on project configuration and support for the
+         * selected region, model, and API feature. See the
+         * [data residency guide](https://developers.openai.com/api/docs/guides/your-data#data-residency).
          */
         fun dataResidency(dataResidency: DataResidency?) = apply {
             if (dataResidency != null) {

@@ -29,6 +29,7 @@ internal class RealtimeTranslationClientEventTest {
                                                 .NoiseReduction
                                                 .builder()
                                                 .type(NoiseReductionType.NEAR_FIELD)
+                                                .strength(0.0)
                                                 .build()
                                         )
                                         .transcription(
@@ -78,6 +79,7 @@ internal class RealtimeTranslationClientEventTest {
                                                     .NoiseReduction
                                                     .builder()
                                                     .type(NoiseReductionType.NEAR_FIELD)
+                                                    .strength(0.0)
                                                     .build()
                                             )
                                             .transcription(

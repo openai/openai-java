@@ -15,7 +15,11 @@ internal class ImageEditParamsTest {
             .image("Example data".byteInputStream())
             .prompt("A cute baby sea otter wearing a beret")
             .background(ImageEditParams.Background.TRANSPARENT)
+            .complexity(ImageEditParams.Complexity.LOW)
+            .frameCount(2L)
+            .frameDurationMs(20L)
             .inputFidelity(ImageEditParams.InputFidelity.HIGH)
+            .markup("Example data".byteInputStream())
             .mask("Example data".byteInputStream())
             .model(ImageModel.GPT_IMAGE_1_5)
             .n(1L)
@@ -37,7 +41,11 @@ internal class ImageEditParamsTest {
                 .image("Example data".byteInputStream())
                 .prompt("A cute baby sea otter wearing a beret")
                 .background(ImageEditParams.Background.TRANSPARENT)
+                .complexity(ImageEditParams.Complexity.LOW)
+                .frameCount(2L)
+                .frameDurationMs(20L)
                 .inputFidelity(ImageEditParams.InputFidelity.HIGH)
+                .markup("Example data".byteInputStream())
                 .mask("Example data".byteInputStream())
                 .model(ImageModel.GPT_IMAGE_1_5)
                 .n(1L)
@@ -74,7 +82,11 @@ internal class ImageEditParamsTest {
                                 .build(),
                         "prompt" to MultipartField.of("A cute baby sea otter wearing a beret"),
                         "background" to MultipartField.of(ImageEditParams.Background.TRANSPARENT),
+                        "complexity" to MultipartField.of(ImageEditParams.Complexity.LOW),
+                        "frame_count" to MultipartField.of(2L),
+                        "frame_duration_ms" to MultipartField.of(20L),
                         "input_fidelity" to MultipartField.of(ImageEditParams.InputFidelity.HIGH),
+                        "markup" to MultipartField.of("Example data".byteInputStream()),
                         "mask" to MultipartField.of("Example data".byteInputStream()),
                         "model" to MultipartField.of(ImageModel.GPT_IMAGE_1_5),
                         "n" to MultipartField.of(1L),

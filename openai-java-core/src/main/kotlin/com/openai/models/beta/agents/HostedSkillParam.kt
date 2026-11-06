@@ -154,10 +154,13 @@ private constructor(
 
         return other is HostedSkillParam &&
             skillReference == other.skillReference &&
-            inline == other.inline
+            inline == other.inline &&
+            (skillReference != null || inline != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(skillReference, inline)
+    override fun hashCode(): Int =
+        if (skillReference == null && inline == null) Objects.hash(_json)
+        else Objects.hash(skillReference, inline)
 
     override fun toString(): String =
         when {

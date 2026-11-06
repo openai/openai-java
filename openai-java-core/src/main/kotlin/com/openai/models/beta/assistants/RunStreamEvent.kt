@@ -364,22 +364,47 @@ private constructor(
             threadRunFailed == other.threadRunFailed &&
             threadRunCancelling == other.threadRunCancelling &&
             threadRunCancelled == other.threadRunCancelled &&
-            threadRunExpired == other.threadRunExpired
+            threadRunExpired == other.threadRunExpired &&
+            (threadRunCreated != null ||
+                threadRunQueued != null ||
+                threadRunInProgress != null ||
+                threadRunRequiresAction != null ||
+                threadRunCompleted != null ||
+                threadRunIncomplete != null ||
+                threadRunFailed != null ||
+                threadRunCancelling != null ||
+                threadRunCancelled != null ||
+                threadRunExpired != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            threadRunCreated,
-            threadRunQueued,
-            threadRunInProgress,
-            threadRunRequiresAction,
-            threadRunCompleted,
-            threadRunIncomplete,
-            threadRunFailed,
-            threadRunCancelling,
-            threadRunCancelled,
-            threadRunExpired,
+        if (
+            threadRunCreated == null &&
+                threadRunQueued == null &&
+                threadRunInProgress == null &&
+                threadRunRequiresAction == null &&
+                threadRunCompleted == null &&
+                threadRunIncomplete == null &&
+                threadRunFailed == null &&
+                threadRunCancelling == null &&
+                threadRunCancelled == null &&
+                threadRunExpired == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                threadRunCreated,
+                threadRunQueued,
+                threadRunInProgress,
+                threadRunRequiresAction,
+                threadRunCompleted,
+                threadRunIncomplete,
+                threadRunFailed,
+                threadRunCancelling,
+                threadRunCancelled,
+                threadRunExpired,
+            )
 
     override fun toString(): String =
         when {

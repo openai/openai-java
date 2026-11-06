@@ -319,19 +319,38 @@ private constructor(
             sessionClosed == other.sessionClosed &&
             sessionInputTranscriptDelta == other.sessionInputTranscriptDelta &&
             sessionOutputTranscriptDelta == other.sessionOutputTranscriptDelta &&
-            sessionOutputAudioDelta == other.sessionOutputAudioDelta
+            sessionOutputAudioDelta == other.sessionOutputAudioDelta &&
+            (error != null ||
+                sessionCreated != null ||
+                sessionUpdated != null ||
+                sessionClosed != null ||
+                sessionInputTranscriptDelta != null ||
+                sessionOutputTranscriptDelta != null ||
+                sessionOutputAudioDelta != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            error,
-            sessionCreated,
-            sessionUpdated,
-            sessionClosed,
-            sessionInputTranscriptDelta,
-            sessionOutputTranscriptDelta,
-            sessionOutputAudioDelta,
+        if (
+            error == null &&
+                sessionCreated == null &&
+                sessionUpdated == null &&
+                sessionClosed == null &&
+                sessionInputTranscriptDelta == null &&
+                sessionOutputTranscriptDelta == null &&
+                sessionOutputAudioDelta == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                error,
+                sessionCreated,
+                sessionUpdated,
+                sessionClosed,
+                sessionInputTranscriptDelta,
+                sessionOutputTranscriptDelta,
+                sessionOutputAudioDelta,
+            )
 
     override fun toString(): String =
         when {

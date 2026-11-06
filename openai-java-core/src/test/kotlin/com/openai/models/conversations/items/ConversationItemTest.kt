@@ -8,6 +8,7 @@ import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.ReasoningEffort
+import com.openai.models.ResponseFormatText
 import com.openai.models.conversations.Message
 import com.openai.models.responses.ComputerAction
 import com.openai.models.responses.FunctionTool
@@ -478,6 +479,15 @@ internal class ConversationItemTest {
                 .quality(ConversationItem.ImageGenerationCall.Quality.LOW)
                 .revisedPrompt("revised_prompt")
                 .size(ConversationItem.ImageGenerationCall.Size._1024X1024)
+                .svgUsage(
+                    ConversationItem.ImageGenerationCall.SvgUsage.builder()
+                        .inputTokens(0L)
+                        .model("model")
+                        .outputTokens(0L)
+                        .reasoningTokens(0L)
+                        .totalTokens(0L)
+                        .build()
+                )
                 .build()
 
         val conversationItem = ConversationItem.ofImageGenerationCall(imageGenerationCall)
@@ -547,6 +557,15 @@ internal class ConversationItemTest {
                     .quality(ConversationItem.ImageGenerationCall.Quality.LOW)
                     .revisedPrompt("revised_prompt")
                     .size(ConversationItem.ImageGenerationCall.Size._1024X1024)
+                    .svgUsage(
+                        ConversationItem.ImageGenerationCall.SvgUsage.builder()
+                            .inputTokens(0L)
+                            .model("model")
+                            .outputTokens(0L)
+                            .reasoningTokens(0L)
+                            .totalTokens(0L)
+                            .build()
+                    )
                     .build()
             )
 
@@ -1048,6 +1067,11 @@ internal class ConversationItemTest {
                         .effort(ReasoningEffort.NONE)
                         .build()
                 )
+                .text(
+                    ResponseConfigurationUpdateItem.Text.builder()
+                        .format(ResponseFormatText.builder().build())
+                        .build()
+                )
                 .build()
 
         val conversationItem = ConversationItem.ofConfigurationUpdate(configurationUpdate)
@@ -1093,6 +1117,11 @@ internal class ConversationItemTest {
                     .reasoning(
                         ResponseConfigurationUpdateItem.Reasoning.builder()
                             .effort(ReasoningEffort.NONE)
+                            .build()
+                    )
+                    .text(
+                        ResponseConfigurationUpdateItem.Text.builder()
+                            .format(ResponseFormatText.builder().build())
                             .build()
                     )
                     .build()

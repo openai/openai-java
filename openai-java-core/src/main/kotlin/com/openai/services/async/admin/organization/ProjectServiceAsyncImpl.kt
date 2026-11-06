@@ -43,6 +43,8 @@ import com.openai.services.async.admin.organization.projects.RoleServiceAsync
 import com.openai.services.async.admin.organization.projects.RoleServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.ServiceAccountServiceAsync
 import com.openai.services.async.admin.organization.projects.ServiceAccountServiceAsyncImpl
+import com.openai.services.async.admin.organization.projects.ServiceTierSettingServiceAsync
+import com.openai.services.async.admin.organization.projects.ServiceTierSettingServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.SpendAlertServiceAsync
 import com.openai.services.async.admin.organization.projects.SpendAlertServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.SpendLimitServiceAsync
@@ -74,6 +76,10 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
     private val modelPermissions: ModelPermissionServiceAsync by lazy {
         ModelPermissionServiceAsyncImpl(clientOptions)
+    }
+
+    private val serviceTierSettings: ServiceTierSettingServiceAsync by lazy {
+        ServiceTierSettingServiceAsyncImpl(clientOptions)
     }
 
     private val hostedToolPermissions: HostedToolPermissionServiceAsync by lazy {
@@ -114,6 +120,8 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun rateLimits(): RateLimitServiceAsync = rateLimits
 
     override fun modelPermissions(): ModelPermissionServiceAsync = modelPermissions
+
+    override fun serviceTierSettings(): ServiceTierSettingServiceAsync = serviceTierSettings
 
     override fun hostedToolPermissions(): HostedToolPermissionServiceAsync = hostedToolPermissions
 
@@ -190,6 +198,10 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
             ModelPermissionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val serviceTierSettings: ServiceTierSettingServiceAsync.WithRawResponse by lazy {
+            ServiceTierSettingServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val hostedToolPermissions:
             HostedToolPermissionServiceAsync.WithRawResponse by lazy {
             HostedToolPermissionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -236,6 +248,9 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
         override fun modelPermissions(): ModelPermissionServiceAsync.WithRawResponse =
             modelPermissions
+
+        override fun serviceTierSettings(): ServiceTierSettingServiceAsync.WithRawResponse =
+            serviceTierSettings
 
         override fun hostedToolPermissions(): HostedToolPermissionServiceAsync.WithRawResponse =
             hostedToolPermissions

@@ -690,10 +690,13 @@ private constructor(
 
             return other is NetworkPolicy &&
                 disabled == other.disabled &&
-                allowlist == other.allowlist
+                allowlist == other.allowlist &&
+                (disabled != null || allowlist != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(disabled, allowlist)
+        override fun hashCode(): Int =
+            if (disabled == null && allowlist == null) Objects.hash(_json)
+            else Objects.hash(disabled, allowlist)
 
         override fun toString(): String =
             when {
@@ -906,10 +909,15 @@ private constructor(
                 return true
             }
 
-            return other is Skill && reference == other.reference && inline == other.inline
+            return other is Skill &&
+                reference == other.reference &&
+                inline == other.inline &&
+                (reference != null || inline != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(reference, inline)
+        override fun hashCode(): Int =
+            if (reference == null && inline == null) Objects.hash(_json)
+            else Objects.hash(reference, inline)
 
         override fun toString(): String =
             when {

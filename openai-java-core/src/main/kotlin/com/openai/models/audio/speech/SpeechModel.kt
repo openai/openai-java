@@ -20,22 +20,50 @@ class SpeechModel @JsonCreator private constructor(private val value: JsonField<
 
     companion object {
 
-        @JvmField val TTS_1 = of("tts-1")
+        @Deprecated(
+            "Announced shutdown date: 2027-01-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
+        @JvmField
+        val TTS_1 = of("tts-1")
 
-        @JvmField val TTS_1_HD = of("tts-1-hd")
+        @Deprecated(
+            "Announced shutdown date: 2027-01-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
+        @JvmField
+        val TTS_1_HD = of("tts-1-hd")
 
-        @JvmField val GPT_4O_MINI_TTS = of("gpt-4o-mini-tts")
+        @Deprecated(
+            "Announced shutdown date: 2027-01-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
+        @JvmField
+        val GPT_4O_MINI_TTS = of("gpt-4o-mini-tts")
 
-        @JvmField val GPT_4O_MINI_TTS_2025_12_15 = of("gpt-4o-mini-tts-2025-12-15")
+        @Deprecated(
+            "Announced shutdown date: 2027-01-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
+        @JvmField
+        val GPT_4O_MINI_TTS_2025_12_15 = of("gpt-4o-mini-tts-2025-12-15")
 
         @JvmStatic fun of(value: String) = SpeechModel(JsonField.of(value))
     }
 
     /** An enum containing [SpeechModel]'s known values. */
     enum class Known {
+        @Deprecated(
+            "Announced shutdown date: 2027-01-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         TTS_1,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         TTS_1_HD,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4O_MINI_TTS,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4O_MINI_TTS_2025_12_15,
     }
 
@@ -49,9 +77,21 @@ class SpeechModel @JsonCreator private constructor(private val value: JsonField<
      * - It was constructed with an arbitrary value using the [of] method.
      */
     enum class Value {
+        @Deprecated(
+            "Announced shutdown date: 2027-01-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         TTS_1,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         TTS_1_HD,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4O_MINI_TTS,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4O_MINI_TTS_2025_12_15,
         /** An enum member indicating that [SpeechModel] was instantiated with an unknown value. */
         _UNKNOWN,

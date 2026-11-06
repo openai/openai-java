@@ -14,6 +14,9 @@ internal class SessionListParamsTest {
             .after("after")
             .agentId("agent_id")
             .limit(1L)
+            .metadata(
+                SessionListParams.Metadata.builder().putAdditionalProperty("foo", "string").build()
+            )
             .order(SessionListParams.Order.ASC)
             .build()
     }
@@ -25,6 +28,11 @@ internal class SessionListParamsTest {
                 .after("after")
                 .agentId("agent_id")
                 .limit(1L)
+                .metadata(
+                    SessionListParams.Metadata.builder()
+                        .putAdditionalProperty("foo", "string")
+                        .build()
+                )
                 .order(SessionListParams.Order.ASC)
                 .build()
 
@@ -36,6 +44,7 @@ internal class SessionListParamsTest {
                     .put("after", "after")
                     .put("agent_id", "agent_id")
                     .put("limit", "1")
+                    .put("metadata[foo]", "string")
                     .put("order", "asc")
                     .build()
             )

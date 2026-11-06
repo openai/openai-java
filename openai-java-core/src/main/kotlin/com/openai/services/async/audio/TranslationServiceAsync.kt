@@ -25,11 +25,20 @@ interface TranslationServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranslationServiceAsync
 
-    /** Translates audio into English. */
+    /**
+     * Translates audio into English.
+     *
+     * This endpoint supports only `whisper-1`. The endpoint and model are deprecated and scheduled
+     * to shut down on February 26, 2027. Migrate to `/v1/realtime/translations`, which requires a
+     * separate integration. See the
+     * [deprecation schedule](https://developers.openai.com/api/docs/deprecations) for details.
+     */
+    @Deprecated("deprecated")
     fun create(params: TranslationCreateParams): CompletableFuture<TranslationCreateResponse> =
         create(params, RequestOptions.none())
 
     /** @see create */
+    @Deprecated("deprecated")
     fun create(
         params: TranslationCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -54,12 +63,14 @@ interface TranslationServiceAsync {
          * Returns a raw HTTP response for `post /audio/translations`, but is otherwise the same as
          * [TranslationServiceAsync.create].
          */
+        @Deprecated("deprecated")
         fun create(
             params: TranslationCreateParams
         ): CompletableFuture<HttpResponseFor<TranslationCreateResponse>> =
             create(params, RequestOptions.none())
 
         /** @see create */
+        @Deprecated("deprecated")
         fun create(
             params: TranslationCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

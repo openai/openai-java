@@ -128,6 +128,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -326,6 +327,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -476,6 +478,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -535,6 +538,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -596,6 +600,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -657,6 +662,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -720,6 +726,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -783,6 +790,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -846,6 +854,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -904,6 +913,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -961,6 +971,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -1026,6 +1037,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -1093,6 +1105,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -1163,6 +1176,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -1266,6 +1280,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -1368,6 +1383,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -1435,6 +1451,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -1510,6 +1527,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -1591,6 +1609,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -1704,6 +1723,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -1827,6 +1847,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -1899,6 +1920,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).contains(infoEvent)
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -1959,6 +1981,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).contains(transportDtmfReceived)
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -2019,6 +2042,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).contains(transportDtmfSend)
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -2030,6 +2054,68 @@ internal class ForkServerEventTest {
         val forkServerEvent =
             ForkServerEvent.ofTransportDtmfSend(
                 ForkServerEvent.TransportDtmfSend.builder()
+                    .event("#")
+                    .eventId("event_id")
+                    .clientEventId("client_event_id")
+                    .build()
+            )
+
+        val roundtrippedForkServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(forkServerEvent),
+                jacksonTypeRef<ForkServerEvent>(),
+            )
+
+        assertThat(roundtrippedForkServerEvent).isEqualTo(forkServerEvent)
+    }
+
+    @Test
+    fun ofTransportDtmfSent() {
+        val transportDtmfSent =
+            ForkServerEvent.TransportDtmfSent.builder()
+                .event("#")
+                .eventId("event_id")
+                .clientEventId("client_event_id")
+                .build()
+
+        val forkServerEvent = ForkServerEvent.ofTransportDtmfSent(transportDtmfSent)
+
+        assertThat(forkServerEvent.sessionStarted()).isEmpty
+        assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(forkServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(forkServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(forkServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(forkServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(forkServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(forkServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(forkServerEvent.decisionEvent()).isEmpty
+        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
+        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(forkServerEvent.responseEvent()).isEmpty
+        assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionClosed()).isEmpty
+        assertThat(forkServerEvent.errorEvent()).isEmpty
+        assertThat(forkServerEvent.infoEvent()).isEmpty
+        assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).contains(transportDtmfSent)
+        assertThat(forkServerEvent.transportRinging()).isEmpty
+        assertThat(forkServerEvent.transportAnswered()).isEmpty
+        assertThat(forkServerEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofTransportDtmfSentRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val forkServerEvent =
+            ForkServerEvent.ofTransportDtmfSent(
+                ForkServerEvent.TransportDtmfSent.builder()
                     .event("#")
                     .eventId("event_id")
                     .clientEventId("client_event_id")
@@ -2079,6 +2165,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).contains(transportRinging)
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -2138,6 +2225,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).contains(transportAnswered)
         assertThat(forkServerEvent.transportFailed()).isEmpty
@@ -2204,6 +2292,7 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.infoEvent()).isEmpty
         assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
         assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
         assertThat(forkServerEvent.transportRinging()).isEmpty
         assertThat(forkServerEvent.transportAnswered()).isEmpty
         assertThat(forkServerEvent.transportFailed()).contains(transportFailed)

@@ -157,10 +157,15 @@ private constructor(
             return true
         }
 
-        return other is TextFormatParam && text == other.text && jsonSchema == other.jsonSchema
+        return other is TextFormatParam &&
+            text == other.text &&
+            jsonSchema == other.jsonSchema &&
+            (text != null || jsonSchema != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(text, jsonSchema)
+    override fun hashCode(): Int =
+        if (text == null && jsonSchema == null) Objects.hash(_json)
+        else Objects.hash(text, jsonSchema)
 
     override fun toString(): String =
         when {

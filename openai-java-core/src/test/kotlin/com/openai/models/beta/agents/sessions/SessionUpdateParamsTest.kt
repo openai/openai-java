@@ -3,6 +3,7 @@
 package com.openai.models.beta.agents.sessions
 
 import com.openai.core.JsonValue
+import com.openai.models.beta.agents.AgentToolParam
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -21,6 +22,18 @@ internal class SessionUpdateParamsTest {
                             .build()
                     )
                     .serviceTier(SessionUpdateParams.Agent.ServiceTier.AUTO)
+                    .addTool(
+                        AgentToolParam.Function.builder()
+                            .description("description")
+                            .name("name")
+                            .parameters(
+                                AgentToolParam.Function.Parameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .deferLoading(true)
+                            .build()
+                    )
                     .build()
             )
             .metadata(
@@ -28,6 +41,7 @@ internal class SessionUpdateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+            .review(SessionUpdateParams.Review.NONE)
             .spendControl(SessionUpdateParams.SpendControl.builder().limit(1L).build())
             .build()
     }
@@ -55,6 +69,18 @@ internal class SessionUpdateParamsTest {
                                 .build()
                         )
                         .serviceTier(SessionUpdateParams.Agent.ServiceTier.AUTO)
+                        .addTool(
+                            AgentToolParam.Function.builder()
+                                .description("description")
+                                .name("name")
+                                .parameters(
+                                    AgentToolParam.Function.Parameters.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                        .build()
+                                )
+                                .deferLoading(true)
+                                .build()
+                        )
                         .build()
                 )
                 .metadata(
@@ -62,6 +88,7 @@ internal class SessionUpdateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .review(SessionUpdateParams.Review.NONE)
                 .spendControl(SessionUpdateParams.SpendControl.builder().limit(1L).build())
                 .build()
 
@@ -77,6 +104,18 @@ internal class SessionUpdateParamsTest {
                             .build()
                     )
                     .serviceTier(SessionUpdateParams.Agent.ServiceTier.AUTO)
+                    .addTool(
+                        AgentToolParam.Function.builder()
+                            .description("description")
+                            .name("name")
+                            .parameters(
+                                AgentToolParam.Function.Parameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .deferLoading(true)
+                            .build()
+                    )
                     .build()
             )
         assertThat(body.metadata())
@@ -85,6 +124,7 @@ internal class SessionUpdateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+        assertThat(body.review()).contains(SessionUpdateParams.Review.NONE)
         assertThat(body.spendControl())
             .contains(SessionUpdateParams.SpendControl.builder().limit(1L).build())
     }

@@ -97,6 +97,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -295,6 +296,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -445,6 +447,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -504,6 +507,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -565,6 +569,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -626,6 +631,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -687,6 +693,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -750,6 +757,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -813,6 +821,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -871,6 +880,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -928,6 +938,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -991,6 +1002,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -1057,6 +1069,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -1127,6 +1140,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -1230,6 +1244,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -1332,6 +1347,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -1399,6 +1415,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -1474,6 +1491,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -1555,6 +1573,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -1668,6 +1687,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -1791,6 +1811,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -1863,6 +1884,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).contains(infoEvent)
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -1923,6 +1945,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).contains(transportDtmfReceived)
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -1980,6 +2003,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).contains(transportDtmfSend)
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -1991,6 +2015,68 @@ internal class ServerEventTest {
         val serverEvent =
             ServerEvent.ofTransportDtmfSend(
                 ServerEvent.TransportDtmfSend.builder()
+                    .event("#")
+                    .eventId("event_id")
+                    .clientEventId("client_event_id")
+                    .build()
+            )
+
+        val roundtrippedServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(serverEvent),
+                jacksonTypeRef<ServerEvent>(),
+            )
+
+        assertThat(roundtrippedServerEvent).isEqualTo(serverEvent)
+    }
+
+    @Test
+    fun ofTransportDtmfSent() {
+        val transportDtmfSent =
+            ServerEvent.TransportDtmfSent.builder()
+                .event("#")
+                .eventId("event_id")
+                .clientEventId("client_event_id")
+                .build()
+
+        val serverEvent = ServerEvent.ofTransportDtmfSent(transportDtmfSent)
+
+        assertThat(serverEvent.sessionStarted()).isEmpty
+        assertThat(serverEvent.sessionUpdated()).isEmpty
+        assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(serverEvent.sessionThinkingAppended()).isEmpty
+        assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(serverEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(serverEvent.sessionDelegationCreated()).isEmpty
+        assertThat(serverEvent.decisionEvent()).isEmpty
+        assertThat(serverEvent.decisionItemCreated()).isEmpty
+        assertThat(serverEvent.decisionItemDeleted()).isEmpty
+        assertThat(serverEvent.responseEvent()).isEmpty
+        assertThat(serverEvent.sessionUsageUpdated()).isEmpty
+        assertThat(serverEvent.sessionClosed()).isEmpty
+        assertThat(serverEvent.errorEvent()).isEmpty
+        assertThat(serverEvent.infoEvent()).isEmpty
+        assertThat(serverEvent.transportDtmfReceived()).isEmpty
+        assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).contains(transportDtmfSent)
+        assertThat(serverEvent.transportRinging()).isEmpty
+        assertThat(serverEvent.transportAnswered()).isEmpty
+        assertThat(serverEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofTransportDtmfSentRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val serverEvent =
+            ServerEvent.ofTransportDtmfSent(
+                ServerEvent.TransportDtmfSent.builder()
                     .event("#")
                     .eventId("event_id")
                     .clientEventId("client_event_id")
@@ -2040,6 +2126,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).contains(transportRinging)
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -2099,6 +2186,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).contains(transportAnswered)
         assertThat(serverEvent.transportFailed()).isEmpty
@@ -2165,6 +2253,7 @@ internal class ServerEventTest {
         assertThat(serverEvent.infoEvent()).isEmpty
         assertThat(serverEvent.transportDtmfReceived()).isEmpty
         assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportDtmfSent()).isEmpty
         assertThat(serverEvent.transportRinging()).isEmpty
         assertThat(serverEvent.transportAnswered()).isEmpty
         assertThat(serverEvent.transportFailed()).contains(transportFailed)

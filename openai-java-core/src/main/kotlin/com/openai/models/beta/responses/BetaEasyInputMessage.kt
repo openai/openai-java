@@ -478,10 +478,16 @@ private constructor(
 
             return other is Content &&
                 textInput == other.textInput &&
-                betaResponseInputMessageContentList == other.betaResponseInputMessageContentList
+                betaResponseInputMessageContentList == other.betaResponseInputMessageContentList &&
+                (textInput != null ||
+                    betaResponseInputMessageContentList != null ||
+                    _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(textInput, betaResponseInputMessageContentList)
+        override fun hashCode(): Int =
+            if (textInput == null && betaResponseInputMessageContentList == null)
+                Objects.hash(_json)
+            else Objects.hash(textInput, betaResponseInputMessageContentList)
 
         override fun toString(): String =
             when {

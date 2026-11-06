@@ -654,10 +654,15 @@ private constructor(
                 return true
             }
 
-            return other is Output && string == other.string && contentList == other.contentList
+            return other is Output &&
+                string == other.string &&
+                contentList == other.contentList &&
+                (string != null || contentList != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(string, contentList)
+        override fun hashCode(): Int =
+            if (string == null && contentList == null) Objects.hash(_json)
+            else Objects.hash(string, contentList)
 
         override fun toString(): String =
             when {
@@ -905,10 +910,17 @@ private constructor(
                 return other is FunctionAndCustomToolCallOutput &&
                     inputText == other.inputText &&
                     inputImage == other.inputImage &&
-                    inputFile == other.inputFile
+                    inputFile == other.inputFile &&
+                    (inputText != null ||
+                        inputImage != null ||
+                        inputFile != null ||
+                        _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(inputText, inputImage, inputFile)
+            override fun hashCode(): Int =
+                if (inputText == null && inputImage == null && inputFile == null)
+                    Objects.hash(_json)
+                else Objects.hash(inputText, inputImage, inputFile)
 
             override fun toString(): String =
                 when {
@@ -1302,10 +1314,15 @@ private constructor(
                 return true
             }
 
-            return other is Caller && direct == other.direct && program == other.program
+            return other is Caller &&
+                direct == other.direct &&
+                program == other.program &&
+                (direct != null || program != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(direct, program)
+        override fun hashCode(): Int =
+            if (direct == null && program == null) Objects.hash(_json)
+            else Objects.hash(direct, program)
 
         override fun toString(): String =
             when {

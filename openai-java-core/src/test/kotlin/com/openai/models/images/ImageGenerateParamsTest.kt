@@ -12,6 +12,9 @@ internal class ImageGenerateParamsTest {
         ImageGenerateParams.builder()
             .prompt("A cute baby sea otter")
             .background(ImageGenerateParams.Background.TRANSPARENT)
+            .complexity(ImageGenerateParams.Complexity.LOW)
+            .frameCount(2L)
+            .frameDurationMs(20L)
             .model(ImageModel.GPT_IMAGE_2_5_FLARE)
             .moderation(ImageGenerateParams.Moderation.LOW)
             .n(1L)
@@ -23,6 +26,16 @@ internal class ImageGenerateParamsTest {
             .safetyIdentifier("user-1234")
             .size(ImageGenerateParams.Size._1024X1024)
             .style(ImageGenerateParams.Style.VIVID)
+            .svg(
+                ImageGenerateParams.Svg.builder()
+                    .model("x")
+                    .reasoning(
+                        ImageGenerateParams.Svg.Reasoning.builder()
+                            .effort(ImageGenerateParams.Svg.Reasoning.Effort.NONE)
+                            .build()
+                    )
+                    .build()
+            )
             .user("user-1234")
             .build()
     }
@@ -33,6 +46,9 @@ internal class ImageGenerateParamsTest {
             ImageGenerateParams.builder()
                 .prompt("A cute baby sea otter")
                 .background(ImageGenerateParams.Background.TRANSPARENT)
+                .complexity(ImageGenerateParams.Complexity.LOW)
+                .frameCount(2L)
+                .frameDurationMs(20L)
                 .model(ImageModel.GPT_IMAGE_2_5_FLARE)
                 .moderation(ImageGenerateParams.Moderation.LOW)
                 .n(1L)
@@ -44,6 +60,16 @@ internal class ImageGenerateParamsTest {
                 .safetyIdentifier("user-1234")
                 .size(ImageGenerateParams.Size._1024X1024)
                 .style(ImageGenerateParams.Style.VIVID)
+                .svg(
+                    ImageGenerateParams.Svg.builder()
+                        .model("x")
+                        .reasoning(
+                            ImageGenerateParams.Svg.Reasoning.builder()
+                                .effort(ImageGenerateParams.Svg.Reasoning.Effort.NONE)
+                                .build()
+                        )
+                        .build()
+                )
                 .user("user-1234")
                 .build()
 
@@ -51,6 +77,9 @@ internal class ImageGenerateParamsTest {
 
         assertThat(body.prompt()).isEqualTo("A cute baby sea otter")
         assertThat(body.background()).contains(ImageGenerateParams.Background.TRANSPARENT)
+        assertThat(body.complexity()).contains(ImageGenerateParams.Complexity.LOW)
+        assertThat(body.frameCount()).contains(2L)
+        assertThat(body.frameDurationMs()).contains(20L)
         assertThat(body.model()).contains(ImageModel.GPT_IMAGE_2_5_FLARE)
         assertThat(body.moderation()).contains(ImageGenerateParams.Moderation.LOW)
         assertThat(body.n()).contains(1L)
@@ -62,6 +91,17 @@ internal class ImageGenerateParamsTest {
         assertThat(body.safetyIdentifier()).contains("user-1234")
         assertThat(body.size()).contains(ImageGenerateParams.Size._1024X1024)
         assertThat(body.style()).contains(ImageGenerateParams.Style.VIVID)
+        assertThat(body.svg())
+            .contains(
+                ImageGenerateParams.Svg.builder()
+                    .model("x")
+                    .reasoning(
+                        ImageGenerateParams.Svg.Reasoning.builder()
+                            .effort(ImageGenerateParams.Svg.Reasoning.Effort.NONE)
+                            .build()
+                    )
+                    .build()
+            )
         assertThat(body.user()).contains("user-1234")
     }
 

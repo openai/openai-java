@@ -704,11 +704,16 @@ private constructor(
 
             return other is Usage &&
                 transcriptTextUsageTokens == other.transcriptTextUsageTokens &&
-                transcriptTextUsageDuration == other.transcriptTextUsageDuration
+                transcriptTextUsageDuration == other.transcriptTextUsageDuration &&
+                (transcriptTextUsageTokens != null ||
+                    transcriptTextUsageDuration != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(transcriptTextUsageTokens, transcriptTextUsageDuration)
+            if (transcriptTextUsageTokens == null && transcriptTextUsageDuration == null)
+                Objects.hash(_json)
+            else Objects.hash(transcriptTextUsageTokens, transcriptTextUsageDuration)
 
         override fun toString(): String =
             when {

@@ -21,6 +21,7 @@ internal class RealtimeAudioConfigInputTest {
                 )
                 .noiseReduction(
                     RealtimeAudioConfigInput.NoiseReduction.builder()
+                        .strength(0.0)
                         .type(NoiseReductionType.NEAR_FIELD)
                         .build()
                 )
@@ -58,6 +59,7 @@ internal class RealtimeAudioConfigInputTest {
         assertThat(realtimeAudioConfigInput.noiseReduction())
             .contains(
                 RealtimeAudioConfigInput.NoiseReduction.builder()
+                    .strength(0.0)
                     .type(NoiseReductionType.NEAR_FIELD)
                     .build()
             )

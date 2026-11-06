@@ -153,10 +153,13 @@ private constructor(
 
         return other is AgentContent &&
             outputText == other.outputText &&
-            encrypted == other.encrypted
+            encrypted == other.encrypted &&
+            (outputText != null || encrypted != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(outputText, encrypted)
+    override fun hashCode(): Int =
+        if (outputText == null && encrypted == null) Objects.hash(_json)
+        else Objects.hash(outputText, encrypted)
 
     override fun toString(): String =
         when {

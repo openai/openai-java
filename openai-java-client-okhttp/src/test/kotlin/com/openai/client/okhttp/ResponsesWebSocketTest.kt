@@ -2712,6 +2712,7 @@ class ResponsesWebSocketTest {
         Peer { socket, headers ->
                 assertThat(headers["authorization"]).isEqualTo("Bearer fake-key")
                 assertThat(headers["x-test"]).isEqualTo("through-proxy")
+                assertThat(headers["proxy-authorization"]).isNull()
                 readMessage(socket)
                 send(socket, event("response.completed"))
                 while (socket.getInputStream().read() != -1) {}
@@ -2764,6 +2765,7 @@ class ResponsesWebSocketTest {
                         OpenAIOkHttpClient.builder()
                             .apiKey("fake-key")
                             .baseUrl(peer.url)
+                            .putHeader("Proxy-Authorization", "Basic Zml4dHVyZTpmaXh0dXJl")
                             .proxy(
                                 java.net.Proxy(
                                     java.net.Proxy.Type.SOCKS,

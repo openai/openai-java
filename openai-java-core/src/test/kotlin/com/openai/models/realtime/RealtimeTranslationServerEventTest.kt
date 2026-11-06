@@ -86,6 +86,7 @@ internal class RealtimeTranslationServerEventTest {
                                             RealtimeTranslationSession.Audio.Input.NoiseReduction
                                                 .builder()
                                                 .type(NoiseReductionType.NEAR_FIELD)
+                                                .strength(0.0)
                                                 .build()
                                         )
                                         .transcription(
@@ -140,6 +141,7 @@ internal class RealtimeTranslationServerEventTest {
                                                     .NoiseReduction
                                                     .builder()
                                                     .type(NoiseReductionType.NEAR_FIELD)
+                                                    .strength(0.0)
                                                     .build()
                                             )
                                             .transcription(
@@ -190,6 +192,7 @@ internal class RealtimeTranslationServerEventTest {
                                             RealtimeTranslationSession.Audio.Input.NoiseReduction
                                                 .builder()
                                                 .type(NoiseReductionType.NEAR_FIELD)
+                                                .strength(0.0)
                                                 .build()
                                         )
                                         .transcription(
@@ -244,6 +247,7 @@ internal class RealtimeTranslationServerEventTest {
                                                     .NoiseReduction
                                                     .builder()
                                                     .type(NoiseReductionType.NEAR_FIELD)
+                                                    .strength(0.0)
                                                     .build()
                                             )
                                             .transcription(

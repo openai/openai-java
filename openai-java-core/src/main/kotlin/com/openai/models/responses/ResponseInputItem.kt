@@ -139,8 +139,8 @@ private constructor(
     fun additionalTools(): Optional<AdditionalTools> = Optional.ofNullable(additionalTools)
 
     /**
-     * An update to the conversation's response configuration. The configuration remains in effect
-     * for subsequent responses until it is replaced by another configuration update.
+     * An update to the conversation's response configuration. Supply reasoning, text, or both. Each
+     * setting stays in effect until a later update replaces it.
      */
     fun configurationUpdate(): Optional<ResponseConfigurationUpdateItemParam> =
         Optional.ofNullable(configurationUpdate)
@@ -346,8 +346,8 @@ private constructor(
     fun asAdditionalTools(): AdditionalTools = additionalTools.getOrThrow("additionalTools")
 
     /**
-     * An update to the conversation's response configuration. The configuration remains in effect
-     * for subsequent responses until it is replaced by another configuration update.
+     * An update to the conversation's response configuration. Supply reasoning, text, or both. Each
+     * setting stays in effect until a later update replaces it.
      */
     fun asConfigurationUpdate(): ResponseConfigurationUpdateItemParam =
         configurationUpdate.getOrThrow("configurationUpdate")
@@ -830,45 +830,116 @@ private constructor(
             compactionTrigger == other.compactionTrigger &&
             itemReference == other.itemReference &&
             program == other.program &&
-            programOutput == other.programOutput
+            programOutput == other.programOutput &&
+            (easyInputMessage != null ||
+                message != null ||
+                responseOutputMessage != null ||
+                fileSearchCall != null ||
+                computerCall != null ||
+                computerCallOutput != null ||
+                webSearchCall != null ||
+                functionCall != null ||
+                functionCallOutput != null ||
+                toolSearchCall != null ||
+                toolSearchOutput != null ||
+                additionalTools != null ||
+                configurationUpdate != null ||
+                reasoning != null ||
+                compaction != null ||
+                imageGenerationCall != null ||
+                codeInterpreterCall != null ||
+                localShellCall != null ||
+                localShellCallOutput != null ||
+                shellCall != null ||
+                shellCallOutput != null ||
+                applyPatchCall != null ||
+                applyPatchCallOutput != null ||
+                mcpListTools != null ||
+                mcpApprovalRequest != null ||
+                mcpApprovalResponse != null ||
+                mcpCall != null ||
+                customToolCallOutput != null ||
+                customToolCall != null ||
+                compactionTrigger != null ||
+                itemReference != null ||
+                program != null ||
+                programOutput != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            easyInputMessage,
-            message,
-            responseOutputMessage,
-            fileSearchCall,
-            computerCall,
-            computerCallOutput,
-            webSearchCall,
-            functionCall,
-            functionCallOutput,
-            toolSearchCall,
-            toolSearchOutput,
-            additionalTools,
-            configurationUpdate,
-            reasoning,
-            compaction,
-            imageGenerationCall,
-            codeInterpreterCall,
-            localShellCall,
-            localShellCallOutput,
-            shellCall,
-            shellCallOutput,
-            applyPatchCall,
-            applyPatchCallOutput,
-            mcpListTools,
-            mcpApprovalRequest,
-            mcpApprovalResponse,
-            mcpCall,
-            customToolCallOutput,
-            customToolCall,
-            compactionTrigger,
-            itemReference,
-            program,
-            programOutput,
+        if (
+            easyInputMessage == null &&
+                message == null &&
+                responseOutputMessage == null &&
+                fileSearchCall == null &&
+                computerCall == null &&
+                computerCallOutput == null &&
+                webSearchCall == null &&
+                functionCall == null &&
+                functionCallOutput == null &&
+                toolSearchCall == null &&
+                toolSearchOutput == null &&
+                additionalTools == null &&
+                configurationUpdate == null &&
+                reasoning == null &&
+                compaction == null &&
+                imageGenerationCall == null &&
+                codeInterpreterCall == null &&
+                localShellCall == null &&
+                localShellCallOutput == null &&
+                shellCall == null &&
+                shellCallOutput == null &&
+                applyPatchCall == null &&
+                applyPatchCallOutput == null &&
+                mcpListTools == null &&
+                mcpApprovalRequest == null &&
+                mcpApprovalResponse == null &&
+                mcpCall == null &&
+                customToolCallOutput == null &&
+                customToolCall == null &&
+                compactionTrigger == null &&
+                itemReference == null &&
+                program == null &&
+                programOutput == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                easyInputMessage,
+                message,
+                responseOutputMessage,
+                fileSearchCall,
+                computerCall,
+                computerCallOutput,
+                webSearchCall,
+                functionCall,
+                functionCallOutput,
+                toolSearchCall,
+                toolSearchOutput,
+                additionalTools,
+                configurationUpdate,
+                reasoning,
+                compaction,
+                imageGenerationCall,
+                codeInterpreterCall,
+                localShellCall,
+                localShellCallOutput,
+                shellCall,
+                shellCallOutput,
+                applyPatchCall,
+                applyPatchCallOutput,
+                mcpListTools,
+                mcpApprovalRequest,
+                mcpApprovalResponse,
+                mcpCall,
+                customToolCallOutput,
+                customToolCall,
+                compactionTrigger,
+                itemReference,
+                program,
+                programOutput,
+            )
 
     override fun toString(): String =
         when {
@@ -1003,8 +1074,8 @@ private constructor(
             ResponseInputItem(additionalTools = additionalTools)
 
         /**
-         * An update to the conversation's response configuration. The configuration remains in
-         * effect for subsequent responses until it is replaced by another configuration update.
+         * An update to the conversation's response configuration. Supply reasoning, text, or both.
+         * Each setting stays in effect until a later update replaces it.
          */
         @JvmStatic
         fun ofConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItemParam) =
@@ -1183,8 +1254,8 @@ private constructor(
         fun visitAdditionalTools(additionalTools: AdditionalTools): T
 
         /**
-         * An update to the conversation's response configuration. The configuration remains in
-         * effect for subsequent responses until it is replaced by another configuration update.
+         * An update to the conversation's response configuration. Supply reasoning, text, or both.
+         * Each setting stays in effect until a later update replaces it.
          */
         fun visitConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItemParam): T
 
@@ -3820,10 +3891,17 @@ private constructor(
 
                 return other is Output &&
                     string == other.string &&
-                    responseFunctionCallOutputItemList == other.responseFunctionCallOutputItemList
+                    responseFunctionCallOutputItemList ==
+                        other.responseFunctionCallOutputItemList &&
+                    (string != null ||
+                        responseFunctionCallOutputItemList != null ||
+                        _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(string, responseFunctionCallOutputItemList)
+            override fun hashCode(): Int =
+                if (string == null && responseFunctionCallOutputItemList == null)
+                    Objects.hash(_json)
+                else Objects.hash(string, responseFunctionCallOutputItemList)
 
             override fun toString(): String =
                 when {
@@ -4065,10 +4143,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {
@@ -5699,6 +5782,7 @@ private constructor(
         private val quality: JsonField<Quality>,
         private val revisedPrompt: JsonField<String>,
         private val size: JsonField<Size>,
+        private val svgUsage: JsonField<SvgUsage>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -5721,6 +5805,9 @@ private constructor(
             @ExcludeMissing
             revisedPrompt: JsonField<String> = JsonMissing.of(),
             @JsonProperty("size") @ExcludeMissing size: JsonField<Size> = JsonMissing.of(),
+            @JsonProperty("svg_usage")
+            @ExcludeMissing
+            svgUsage: JsonField<SvgUsage> = JsonMissing.of(),
         ) : this(
             id,
             result,
@@ -5733,6 +5820,7 @@ private constructor(
             quality,
             revisedPrompt,
             size,
+            svgUsage,
             mutableMapOf(),
         )
 
@@ -5831,6 +5919,12 @@ private constructor(
         fun size(): Optional<Size> = size.getOptional("size")
 
         /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun svgUsage(): Optional<SvgUsage> = svgUsage.getOptional("svg_usage")
+
+        /**
          * Returns the raw JSON value of [id].
          *
          * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -5908,6 +6002,13 @@ private constructor(
          */
         @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<Size> = size
 
+        /**
+         * Returns the raw JSON value of [svgUsage].
+         *
+         * Unlike [svgUsage], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("svg_usage") @ExcludeMissing fun _svgUsage(): JsonField<SvgUsage> = svgUsage
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -5935,6 +6036,7 @@ private constructor(
                 "quality" to this.quality,
                 "revised_prompt" to this.revisedPrompt,
                 "size" to this.size,
+                "svg_usage" to this.svgUsage,
             )
 
         /**
@@ -5980,6 +6082,7 @@ private constructor(
             private var quality: JsonField<Quality> = JsonMissing.of()
             private var revisedPrompt: JsonField<String> = JsonMissing.of()
             private var size: JsonField<Size> = JsonMissing.of()
+            private var svgUsage: JsonField<SvgUsage> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -5995,6 +6098,7 @@ private constructor(
                 quality = imageGenerationCall.quality
                 revisedPrompt = imageGenerationCall.revisedPrompt
                 size = imageGenerationCall.size
+                svgUsage = imageGenerationCall.svgUsage
                 additionalProperties = imageGenerationCall.additionalProperties.toMutableMap()
             }
 
@@ -6174,6 +6278,17 @@ private constructor(
              */
             fun size(value: String) = size(Size.of(value))
 
+            fun svgUsage(svgUsage: SvgUsage) = svgUsage(JsonField.of(svgUsage))
+
+            /**
+             * Sets [Builder.svgUsage] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.svgUsage] with a well-typed [SvgUsage] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun svgUsage(svgUsage: JsonField<SvgUsage>) = apply { this.svgUsage = svgUsage }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -6220,6 +6335,7 @@ private constructor(
                     quality,
                     revisedPrompt,
                     size,
+                    svgUsage,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -6255,6 +6371,7 @@ private constructor(
             quality().ifPresent { it.validate() }
             revisedPrompt()
             size()
+            svgUsage().ifPresent { it.validate() }
             validated = true
         }
 
@@ -6284,7 +6401,8 @@ private constructor(
                 (outputFormat.asKnown().getOrNull()?.validity() ?: 0) +
                 (quality.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (revisedPrompt.asKnown().isPresent) 1 else 0) +
-                (if (size.asKnown().isPresent) 1 else 0)
+                (if (size.asKnown().isPresent) 1 else 0) +
+                (svgUsage.asKnown().getOrNull()?.validity() ?: 0)
 
         /** The status of the image generation call. */
         class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -7546,6 +7664,10 @@ private constructor(
 
                 @JvmField val JPEG = of("jpeg")
 
+                @JvmField val GIF = of("gif")
+
+                @JvmField val SVG = of("svg")
+
                 @JvmStatic fun of(value: String) = OutputFormat(JsonField.of(value))
             }
 
@@ -7554,6 +7676,8 @@ private constructor(
                 PNG,
                 WEBP,
                 JPEG,
+                GIF,
+                SVG,
             }
 
             /**
@@ -7569,6 +7693,8 @@ private constructor(
                 PNG,
                 WEBP,
                 JPEG,
+                GIF,
+                SVG,
                 /**
                  * An enum member indicating that [OutputFormat] was instantiated with an unknown
                  * value.
@@ -7588,6 +7714,8 @@ private constructor(
                     PNG -> Value.PNG
                     WEBP -> Value.WEBP
                     JPEG -> Value.JPEG
+                    GIF -> Value.GIF
+                    SVG -> Value.SVG
                     else -> Value._UNKNOWN
                 }
 
@@ -7605,6 +7733,8 @@ private constructor(
                     PNG -> Known.PNG
                     WEBP -> Known.WEBP
                     JPEG -> Known.JPEG
+                    GIF -> Known.GIF
+                    SVG -> Known.SVG
                     else -> throw OpenAIInvalidDataException("Unknown OutputFormat: $value")
                 }
 
@@ -7984,6 +8114,383 @@ private constructor(
             override fun toString() = value.toString()
         }
 
+        class SvgUsage
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val inputTokens: JsonField<Long>,
+            private val model: JsonField<String>,
+            private val outputTokens: JsonField<Long>,
+            private val reasoningTokens: JsonField<Long>,
+            private val totalTokens: JsonField<Long>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("input_tokens")
+                @ExcludeMissing
+                inputTokens: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("output_tokens")
+                @ExcludeMissing
+                outputTokens: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("reasoning_tokens")
+                @ExcludeMissing
+                reasoningTokens: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("total_tokens")
+                @ExcludeMissing
+                totalTokens: JsonField<Long> = JsonMissing.of(),
+            ) : this(inputTokens, model, outputTokens, reasoningTokens, totalTokens, mutableMapOf())
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun inputTokens(): Long = inputTokens.getRequired("input_tokens")
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun model(): String = model.getRequired("model")
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun outputTokens(): Long = outputTokens.getRequired("output_tokens")
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun reasoningTokens(): Long = reasoningTokens.getRequired("reasoning_tokens")
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun totalTokens(): Long = totalTokens.getRequired("total_tokens")
+
+            /**
+             * Returns the raw JSON value of [inputTokens].
+             *
+             * Unlike [inputTokens], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("input_tokens")
+            @ExcludeMissing
+            fun _inputTokens(): JsonField<Long> = inputTokens
+
+            /**
+             * Returns the raw JSON value of [model].
+             *
+             * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+
+            /**
+             * Returns the raw JSON value of [outputTokens].
+             *
+             * Unlike [outputTokens], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("output_tokens")
+            @ExcludeMissing
+            fun _outputTokens(): JsonField<Long> = outputTokens
+
+            /**
+             * Returns the raw JSON value of [reasoningTokens].
+             *
+             * Unlike [reasoningTokens], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("reasoning_tokens")
+            @ExcludeMissing
+            fun _reasoningTokens(): JsonField<Long> = reasoningTokens
+
+            /**
+             * Returns the raw JSON value of [totalTokens].
+             *
+             * Unlike [totalTokens], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("total_tokens")
+            @ExcludeMissing
+            fun _totalTokens(): JsonField<Long> = totalTokens
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "input_tokens" to this.inputTokens,
+                    "model" to this.model,
+                    "output_tokens" to this.outputTokens,
+                    "reasoning_tokens" to this.reasoningTokens,
+                    "total_tokens" to this.totalTokens,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [SvgUsage].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .inputTokens()
+                 * .model()
+                 * .outputTokens()
+                 * .reasoningTokens()
+                 * .totalTokens()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [SvgUsage]. */
+            class Builder internal constructor() {
+
+                private var inputTokens: JsonField<Long>? = null
+                private var model: JsonField<String>? = null
+                private var outputTokens: JsonField<Long>? = null
+                private var reasoningTokens: JsonField<Long>? = null
+                private var totalTokens: JsonField<Long>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(svgUsage: SvgUsage) = apply {
+                    inputTokens = svgUsage.inputTokens
+                    model = svgUsage.model
+                    outputTokens = svgUsage.outputTokens
+                    reasoningTokens = svgUsage.reasoningTokens
+                    totalTokens = svgUsage.totalTokens
+                    additionalProperties = svgUsage.additionalProperties.toMutableMap()
+                }
+
+                fun inputTokens(inputTokens: Long) = inputTokens(JsonField.of(inputTokens))
+
+                /**
+                 * Sets [Builder.inputTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.inputTokens] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun inputTokens(inputTokens: JsonField<Long>) = apply {
+                    this.inputTokens = inputTokens
+                }
+
+                fun model(model: String) = model(JsonField.of(model))
+
+                /**
+                 * Sets [Builder.model] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.model] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun model(model: JsonField<String>) = apply { this.model = model }
+
+                fun outputTokens(outputTokens: Long) = outputTokens(JsonField.of(outputTokens))
+
+                /**
+                 * Sets [Builder.outputTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.outputTokens] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun outputTokens(outputTokens: JsonField<Long>) = apply {
+                    this.outputTokens = outputTokens
+                }
+
+                fun reasoningTokens(reasoningTokens: Long) =
+                    reasoningTokens(JsonField.of(reasoningTokens))
+
+                /**
+                 * Sets [Builder.reasoningTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.reasoningTokens] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun reasoningTokens(reasoningTokens: JsonField<Long>) = apply {
+                    this.reasoningTokens = reasoningTokens
+                }
+
+                fun totalTokens(totalTokens: Long) = totalTokens(JsonField.of(totalTokens))
+
+                /**
+                 * Sets [Builder.totalTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.totalTokens] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun totalTokens(totalTokens: JsonField<Long>) = apply {
+                    this.totalTokens = totalTokens
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [SvgUsage].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .inputTokens()
+                 * .model()
+                 * .outputTokens()
+                 * .reasoningTokens()
+                 * .totalTokens()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): SvgUsage =
+                    SvgUsage(
+                        checkRequired("inputTokens", inputTokens),
+                        checkRequired("model", model),
+                        checkRequired("outputTokens", outputTokens),
+                        checkRequired("reasoningTokens", reasoningTokens),
+                        checkRequired("totalTokens", totalTokens),
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): SvgUsage = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                inputTokens()
+                model()
+                outputTokens()
+                reasoningTokens()
+                totalTokens()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (inputTokens.asKnown().isPresent) 1 else 0) +
+                    (if (model.asKnown().isPresent) 1 else 0) +
+                    (if (outputTokens.asKnown().isPresent) 1 else 0) +
+                    (if (reasoningTokens.asKnown().isPresent) 1 else 0) +
+                    (if (totalTokens.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is SvgUsage &&
+                    inputTokens == other.inputTokens &&
+                    model == other.model &&
+                    outputTokens == other.outputTokens &&
+                    reasoningTokens == other.reasoningTokens &&
+                    totalTokens == other.totalTokens &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    inputTokens,
+                    model,
+                    outputTokens,
+                    reasoningTokens,
+                    totalTokens,
+                    additionalProperties,
+                )
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "SvgUsage{inputTokens=$inputTokens, model=$model, outputTokens=$outputTokens, reasoningTokens=$reasoningTokens, totalTokens=$totalTokens, additionalProperties=$additionalProperties}"
+        }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -8001,6 +8508,7 @@ private constructor(
                 quality == other.quality &&
                 revisedPrompt == other.revisedPrompt &&
                 size == other.size &&
+                svgUsage == other.svgUsage &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -8017,6 +8525,7 @@ private constructor(
                 quality,
                 revisedPrompt,
                 size,
+                svgUsage,
                 additionalProperties,
             )
         }
@@ -8024,7 +8533,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ImageGenerationCall{id=$id, result=$result, status=$status, type=$type, action=$action, background=$background, error=$error, outputFormat=$outputFormat, quality=$quality, revisedPrompt=$revisedPrompt, size=$size, additionalProperties=$additionalProperties}"
+            "ImageGenerationCall{id=$id, result=$result, status=$status, type=$type, action=$action, background=$background, error=$error, outputFormat=$outputFormat, quality=$quality, revisedPrompt=$revisedPrompt, size=$size, svgUsage=$svgUsage, additionalProperties=$additionalProperties}"
     }
 
     /** A tool call to run a command on the local shell. */
@@ -10480,10 +10989,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {
@@ -10942,10 +11456,13 @@ private constructor(
 
                 return other is Environment &&
                     local == other.local &&
-                    containerReference == other.containerReference
+                    containerReference == other.containerReference &&
+                    (local != null || containerReference != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(local, containerReference)
+            override fun hashCode(): Int =
+                if (local == null && containerReference == null) Objects.hash(_json)
+                else Objects.hash(local, containerReference)
 
             override fun toString(): String =
                 when {
@@ -11808,10 +12325,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {
@@ -12875,10 +13397,17 @@ private constructor(
                 return other is Operation &&
                     createFile == other.createFile &&
                     deleteFile == other.deleteFile &&
-                    updateFile == other.updateFile
+                    updateFile == other.updateFile &&
+                    (createFile != null ||
+                        deleteFile != null ||
+                        updateFile != null ||
+                        _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(createFile, deleteFile, updateFile)
+            override fun hashCode(): Int =
+                if (createFile == null && deleteFile == null && updateFile == null)
+                    Objects.hash(_json)
+                else Objects.hash(createFile, deleteFile, updateFile)
 
             override fun toString(): String =
                 when {
@@ -14066,10 +14595,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {
@@ -15082,10 +15616,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {

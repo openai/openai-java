@@ -197,10 +197,18 @@ private constructor(
             text == other.text &&
             imageUrl == other.imageUrl &&
             inputAudio == other.inputAudio &&
-            file == other.file
+            file == other.file &&
+            (text != null ||
+                imageUrl != null ||
+                inputAudio != null ||
+                file != null ||
+                _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(text, imageUrl, inputAudio, file)
+    override fun hashCode(): Int =
+        if (text == null && imageUrl == null && inputAudio == null && file == null)
+            Objects.hash(_json)
+        else Objects.hash(text, imageUrl, inputAudio, file)
 
     override fun toString(): String =
         when {

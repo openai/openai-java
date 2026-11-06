@@ -548,10 +548,15 @@ private constructor(
                 return true
             }
 
-            return other is Result && c2pa == other.c2pa && synthID == other.synthID
+            return other is Result &&
+                c2pa == other.c2pa &&
+                synthID == other.synthID &&
+                (c2pa != null || synthID != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(c2pa, synthID)
+        override fun hashCode(): Int =
+            if (c2pa == null && synthID == null) Objects.hash(_json)
+            else Objects.hash(c2pa, synthID)
 
         override fun toString(): String =
             when {

@@ -35,6 +35,14 @@ internal class ResponsesClientEventTest {
                         .build()
                 )
                 .conversation("string")
+                .generate(true)
+                .image(
+                    ResponsesClientEvent.ResponseCreate.Image.builder()
+                        .contextCompression(
+                            ResponsesClientEvent.ResponseCreate.Image.ContextCompression.AUTO
+                        )
+                        .build()
+                )
                 .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                 .input("string")
                 .instructions("instructions")
@@ -182,6 +190,14 @@ internal class ResponsesClientEventTest {
                             .build()
                     )
                     .conversation("string")
+                    .generate(true)
+                    .image(
+                        ResponsesClientEvent.ResponseCreate.Image.builder()
+                            .contextCompression(
+                                ResponsesClientEvent.ResponseCreate.Image.ContextCompression.AUTO
+                            )
+                            .build()
+                    )
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .input("string")
                     .instructions("instructions")

@@ -572,6 +572,14 @@ internal class AgentSessionEventTest {
                                         )
                                         .build()
                                 )
+                                .compaction(
+                                    AgentSession.Agent.Compaction.builder().async(true).build()
+                                )
+                                .experimental(
+                                    AgentSession.Agent.Experimental.builder()
+                                        .timeAwareness(true)
+                                        .build()
+                                )
                                 .build()
                         )
                         .createdAt(0L)
@@ -637,6 +645,7 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addVaultId("string")
+                        .review(AgentSession.Review.NONE)
                         .spendControl(
                             AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                         )
@@ -731,6 +740,14 @@ internal class AgentSessionEventTest {
                                             )
                                             .build()
                                     )
+                                    .compaction(
+                                        AgentSession.Agent.Compaction.builder().async(true).build()
+                                    )
+                                    .experimental(
+                                        AgentSession.Agent.Experimental.builder()
+                                            .timeAwareness(true)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .createdAt(0L)
@@ -801,6 +818,7 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addVaultId("string")
+                            .review(AgentSession.Review.NONE)
                             .spendControl(
                                 AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                             )
@@ -1715,6 +1733,14 @@ internal class AgentSessionEventTest {
                                         )
                                         .build()
                                 )
+                                .compaction(
+                                    AgentSession.Agent.Compaction.builder().async(true).build()
+                                )
+                                .experimental(
+                                    AgentSession.Agent.Experimental.builder()
+                                        .timeAwareness(true)
+                                        .build()
+                                )
                                 .build()
                         )
                         .createdAt(0L)
@@ -1780,6 +1806,7 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addVaultId("string")
+                        .review(AgentSession.Review.NONE)
                         .spendControl(
                             AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                         )
@@ -1874,6 +1901,14 @@ internal class AgentSessionEventTest {
                                             )
                                             .build()
                                     )
+                                    .compaction(
+                                        AgentSession.Agent.Compaction.builder().async(true).build()
+                                    )
+                                    .experimental(
+                                        AgentSession.Agent.Experimental.builder()
+                                            .timeAwareness(true)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .createdAt(0L)
@@ -1944,6 +1979,7 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addVaultId("string")
+                            .review(AgentSession.Review.NONE)
                             .spendControl(
                                 AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                             )
@@ -2004,6 +2040,14 @@ internal class AgentSessionEventTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .build()
+                                )
+                                .compaction(
+                                    AgentSession.Agent.Compaction.builder().async(true).build()
+                                )
+                                .experimental(
+                                    AgentSession.Agent.Experimental.builder()
+                                        .timeAwareness(true)
                                         .build()
                                 )
                                 .build()
@@ -2071,6 +2115,7 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addVaultId("string")
+                        .review(AgentSession.Review.NONE)
                         .spendControl(
                             AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                         )
@@ -2165,6 +2210,14 @@ internal class AgentSessionEventTest {
                                             )
                                             .build()
                                     )
+                                    .compaction(
+                                        AgentSession.Agent.Compaction.builder().async(true).build()
+                                    )
+                                    .experimental(
+                                        AgentSession.Agent.Experimental.builder()
+                                            .timeAwareness(true)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .createdAt(0L)
@@ -2235,6 +2288,7 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addVaultId("string")
+                            .review(AgentSession.Review.NONE)
                             .spendControl(
                                 AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                             )
@@ -2295,6 +2349,14 @@ internal class AgentSessionEventTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .build()
+                                )
+                                .compaction(
+                                    AgentSession.Agent.Compaction.builder().async(true).build()
+                                )
+                                .experimental(
+                                    AgentSession.Agent.Experimental.builder()
+                                        .timeAwareness(true)
                                         .build()
                                 )
                                 .build()
@@ -2362,6 +2424,7 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addVaultId("string")
+                        .review(AgentSession.Review.NONE)
                         .spendControl(
                             AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                         )
@@ -2456,6 +2519,14 @@ internal class AgentSessionEventTest {
                                             )
                                             .build()
                                     )
+                                    .compaction(
+                                        AgentSession.Agent.Compaction.builder().async(true).build()
+                                    )
+                                    .experimental(
+                                        AgentSession.Agent.Experimental.builder()
+                                            .timeAwareness(true)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .createdAt(0L)
@@ -2526,6 +2597,7 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addVaultId("string")
+                            .review(AgentSession.Review.NONE)
                             .spendControl(
                                 AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                             )
@@ -2586,6 +2658,14 @@ internal class AgentSessionEventTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .build()
+                                )
+                                .compaction(
+                                    AgentSession.Agent.Compaction.builder().async(true).build()
+                                )
+                                .experimental(
+                                    AgentSession.Agent.Experimental.builder()
+                                        .timeAwareness(true)
                                         .build()
                                 )
                                 .build()
@@ -2653,6 +2733,7 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addVaultId("string")
+                        .review(AgentSession.Review.NONE)
                         .spendControl(
                             AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                         )
@@ -2747,6 +2828,14 @@ internal class AgentSessionEventTest {
                                             )
                                             .build()
                                     )
+                                    .compaction(
+                                        AgentSession.Agent.Compaction.builder().async(true).build()
+                                    )
+                                    .experimental(
+                                        AgentSession.Agent.Experimental.builder()
+                                            .timeAwareness(true)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .createdAt(0L)
@@ -2817,6 +2906,7 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addVaultId("string")
+                            .review(AgentSession.Review.NONE)
                             .spendControl(
                                 AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                             )

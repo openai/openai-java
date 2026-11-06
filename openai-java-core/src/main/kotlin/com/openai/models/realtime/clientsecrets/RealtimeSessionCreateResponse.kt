@@ -1554,16 +1554,30 @@ private constructor(
             class NoiseReduction
             @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
+                private val strength: JsonField<Double>,
                 private val type: JsonField<NoiseReductionType>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
                 @JsonCreator
                 private constructor(
+                    @JsonProperty("strength")
+                    @ExcludeMissing
+                    strength: JsonField<Double> = JsonMissing.of(),
                     @JsonProperty("type")
                     @ExcludeMissing
-                    type: JsonField<NoiseReductionType> = JsonMissing.of()
-                ) : this(type, mutableMapOf())
+                    type: JsonField<NoiseReductionType> = JsonMissing.of(),
+                ) : this(strength, type, mutableMapOf())
+
+                /**
+                 * Input noise suppression strength. Higher values apply more suppression. Defaults
+                 * to 1 when noise reduction is first enabled. Omitting strength from a session
+                 * update preserves the current strength.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun strength(): Optional<Double> = strength.getOptional("strength")
 
                 /**
                  * Type of noise reduction. `near_field` is for close-talking microphones such as
@@ -1574,6 +1588,16 @@ private constructor(
                  *   if the server responded with an unexpected value).
                  */
                 fun type(): Optional<NoiseReductionType> = type.getOptional("type")
+
+                /**
+                 * Returns the raw JSON value of [strength].
+                 *
+                 * Unlike [strength], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("strength")
+                @ExcludeMissing
+                fun _strength(): JsonField<Double> = strength
 
                 /**
                  * Returns the raw JSON value of [type].
@@ -1599,7 +1623,11 @@ private constructor(
                  * nulls and unrecognized values are preserved.
                  */
                 fun _allProperties(): Map<String, JsonValue> =
-                    collectAllProperties(additionalProperties, "type" to this.type)
+                    collectAllProperties(
+                        additionalProperties,
+                        "strength" to this.strength,
+                        "type" to this.type,
+                    )
 
                 /**
                  * Returns the legacy additional-properties view.
@@ -1628,14 +1656,32 @@ private constructor(
                 /** A builder for [NoiseReduction]. */
                 class Builder internal constructor() {
 
+                    private var strength: JsonField<Double> = JsonMissing.of()
                     private var type: JsonField<NoiseReductionType> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
                     internal fun from(noiseReduction: NoiseReduction) = apply {
+                        strength = noiseReduction.strength
                         type = noiseReduction.type
                         additionalProperties = noiseReduction.additionalProperties.toMutableMap()
                     }
+
+                    /**
+                     * Input noise suppression strength. Higher values apply more suppression.
+                     * Defaults to 1 when noise reduction is first enabled. Omitting strength from a
+                     * session update preserves the current strength.
+                     */
+                    fun strength(strength: Double) = strength(JsonField.of(strength))
+
+                    /**
+                     * Sets [Builder.strength] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.strength] with a well-typed [Double] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun strength(strength: JsonField<Double>) = apply { this.strength = strength }
 
                     /**
                      * Type of noise reduction. `near_field` is for close-talking microphones such
@@ -1681,7 +1727,7 @@ private constructor(
                      * Further updates to this [Builder] will not mutate the returned instance.
                      */
                     fun build(): NoiseReduction =
-                        NoiseReduction(type, additionalProperties.toMutableMap())
+                        NoiseReduction(strength, type, additionalProperties.toMutableMap())
                 }
 
                 private var validated: Boolean = false
@@ -1701,6 +1747,7 @@ private constructor(
                         return@apply
                     }
 
+                    strength()
                     type().ifPresent { it.validate() }
                     validated = true
                 }
@@ -1720,7 +1767,9 @@ private constructor(
                  * Used for best match union deserialization.
                  */
                 @JvmSynthetic
-                internal fun validity(): Int = (type.asKnown().getOrNull()?.validity() ?: 0)
+                internal fun validity(): Int =
+                    (if (strength.asKnown().isPresent) 1 else 0) +
+                        (type.asKnown().getOrNull()?.validity() ?: 0)
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -1728,16 +1777,19 @@ private constructor(
                     }
 
                     return other is NoiseReduction &&
+                        strength == other.strength &&
                         type == other.type &&
                         additionalProperties == other.additionalProperties
                 }
 
-                private val hashCode: Int by lazy { Objects.hash(type, additionalProperties) }
+                private val hashCode: Int by lazy {
+                    Objects.hash(strength, type, additionalProperties)
+                }
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "NoiseReduction{type=$type, additionalProperties=$additionalProperties}"
+                    "NoiseReduction{strength=$strength, type=$type, additionalProperties=$additionalProperties}"
             }
 
             /**
@@ -1898,10 +1950,13 @@ private constructor(
 
                     return other is TurnDetection &&
                         serverVad == other.serverVad &&
-                        semanticVad == other.semanticVad
+                        semanticVad == other.semanticVad &&
+                        (serverVad != null || semanticVad != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(serverVad, semanticVad)
+                override fun hashCode(): Int =
+                    if (serverVad == null && semanticVad == null) Objects.hash(_json)
+                    else Objects.hash(serverVad, semanticVad)
 
                 override fun toString(): String =
                     when {
@@ -3896,10 +3951,14 @@ private constructor(
                 return true
             }
 
-            return other is MaxOutputTokens && integer == other.integer && inf == other.inf
+            return other is MaxOutputTokens &&
+                integer == other.integer &&
+                inf == other.inf &&
+                (integer != null || inf != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(integer, inf)
+        override fun hashCode(): Int =
+            if (integer == null && inf == null) Objects.hash(_json) else Objects.hash(integer, inf)
 
         override fun toString(): String =
             when {
@@ -4003,7 +4062,11 @@ private constructor(
 
         companion object {
 
-            @JvmField val GPT_REALTIME = of("gpt-realtime")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_REALTIME = of("gpt-realtime")
 
             @JvmField val GPT_REALTIME_1_5 = of("gpt-realtime-1.5")
 
@@ -4013,7 +4076,11 @@ private constructor(
 
             @JvmField val GPT_REALTIME_2_1_MINI = of("gpt-realtime-2.1-mini")
 
-            @JvmField val GPT_REALTIME_2025_08_28 = of("gpt-realtime-2025-08-28")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_REALTIME_2025_08_28 = of("gpt-realtime-2025-08-28")
 
             @JvmField val GPT_4O_REALTIME_PREVIEW = of("gpt-4o-realtime-preview")
 
@@ -4032,30 +4099,52 @@ private constructor(
             val GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 =
                 of("gpt-4o-mini-realtime-preview-2024-12-17")
 
-            @JvmField val GPT_REALTIME_MINI = of("gpt-realtime-mini")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_REALTIME_MINI = of("gpt-realtime-mini")
 
             @JvmField val GPT_REALTIME_MINI_2025_10_06 = of("gpt-realtime-mini-2025-10-06")
 
-            @JvmField val GPT_REALTIME_MINI_2025_12_15 = of("gpt-realtime-mini-2025-12-15")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_REALTIME_MINI_2025_12_15 = of("gpt-realtime-mini-2025-12-15")
 
             @JvmField val GPT_AUDIO_1_5 = of("gpt-audio-1.5")
 
-            @JvmField val GPT_AUDIO_MINI = of("gpt-audio-mini")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_AUDIO_MINI = of("gpt-audio-mini")
 
             @JvmField val GPT_AUDIO_MINI_2025_10_06 = of("gpt-audio-mini-2025-10-06")
 
-            @JvmField val GPT_AUDIO_MINI_2025_12_15 = of("gpt-audio-mini-2025-12-15")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_AUDIO_MINI_2025_12_15 = of("gpt-audio-mini-2025-12-15")
 
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME,
             GPT_REALTIME_1_5,
             GPT_REALTIME_2,
             GPT_REALTIME_2_1,
             GPT_REALTIME_2_1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
@@ -4063,12 +4152,24 @@ private constructor(
             GPT_4O_REALTIME_PREVIEW_2025_06_03,
             GPT_4O_MINI_REALTIME_PREVIEW,
             GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME_MINI,
             GPT_REALTIME_MINI_2025_10_06,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME_MINI_2025_12_15,
             GPT_AUDIO_1_5,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_AUDIO_MINI,
             GPT_AUDIO_MINI_2025_10_06,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_AUDIO_MINI_2025_12_15,
         }
 
@@ -4082,11 +4183,17 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME,
             GPT_REALTIME_1_5,
             GPT_REALTIME_2,
             GPT_REALTIME_2_1,
             GPT_REALTIME_2_1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
@@ -4094,12 +4201,24 @@ private constructor(
             GPT_4O_REALTIME_PREVIEW_2025_06_03,
             GPT_4O_MINI_REALTIME_PREVIEW,
             GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME_MINI,
             GPT_REALTIME_MINI_2025_10_06,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME_MINI_2025_12_15,
             GPT_AUDIO_1_5,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_AUDIO_MINI,
             GPT_AUDIO_MINI_2025_10_06,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_AUDIO_MINI_2025_12_15,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */
             _UNKNOWN,
@@ -4535,10 +4654,13 @@ private constructor(
             return other is ToolChoice &&
                 options == other.options &&
                 function == other.function &&
-                mcp == other.mcp
+                mcp == other.mcp &&
+                (options != null || function != null || mcp != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(options, function, mcp)
+        override fun hashCode(): Int =
+            if (options == null && function == null && mcp == null) Objects.hash(_json)
+            else Objects.hash(options, function, mcp)
 
         override fun toString(): String =
             when {
@@ -4801,10 +4923,15 @@ private constructor(
                 return true
             }
 
-            return other is Tool && realtimeFunction == other.realtimeFunction && mcp == other.mcp
+            return other is Tool &&
+                realtimeFunction == other.realtimeFunction &&
+                mcp == other.mcp &&
+                (realtimeFunction != null || mcp != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(realtimeFunction, mcp)
+        override fun hashCode(): Int =
+            if (realtimeFunction == null && mcp == null) Objects.hash(_json)
+            else Objects.hash(realtimeFunction, mcp)
 
         override fun toString(): String =
             when {
@@ -5950,10 +6077,13 @@ private constructor(
 
                     return other is AllowedTools &&
                         mcp == other.mcp &&
-                        mcpToolFilter == other.mcpToolFilter
+                        mcpToolFilter == other.mcpToolFilter &&
+                        (mcp != null || mcpToolFilter != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(mcp, mcpToolFilter)
+                override fun hashCode(): Int =
+                    if (mcp == null && mcpToolFilter == null) Objects.hash(_json)
+                    else Objects.hash(mcp, mcpToolFilter)
 
                 override fun toString(): String =
                     when {
@@ -6811,11 +6941,16 @@ private constructor(
 
                     return other is RequireApproval &&
                         mcpToolApprovalFilter == other.mcpToolApprovalFilter &&
-                        mcpToolApprovalSetting == other.mcpToolApprovalSetting
+                        mcpToolApprovalSetting == other.mcpToolApprovalSetting &&
+                        (mcpToolApprovalFilter != null ||
+                            mcpToolApprovalSetting != null ||
+                            _json == other._json)
                 }
 
                 override fun hashCode(): Int =
-                    Objects.hash(mcpToolApprovalFilter, mcpToolApprovalSetting)
+                    if (mcpToolApprovalFilter == null && mcpToolApprovalSetting == null)
+                        Objects.hash(_json)
+                    else Objects.hash(mcpToolApprovalFilter, mcpToolApprovalSetting)
 
                 override fun toString(): String =
                     when {
@@ -8053,10 +8188,15 @@ private constructor(
                 return true
             }
 
-            return other is Tracing && auto == other.auto && configuration == other.configuration
+            return other is Tracing &&
+                auto == other.auto &&
+                configuration == other.configuration &&
+                (auto != null || configuration != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(auto, configuration)
+        override fun hashCode(): Int =
+            if (auto == null && configuration == null) Objects.hash(_json)
+            else Objects.hash(auto, configuration)
 
         override fun toString(): String =
             when {
