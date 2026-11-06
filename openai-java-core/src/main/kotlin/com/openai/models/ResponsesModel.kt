@@ -154,10 +154,13 @@ private constructor(
         return other is ResponsesModel &&
             string == other.string &&
             chat == other.chat &&
-            only == other.only
+            only == other.only &&
+            (string != null || chat != null || only != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(string, chat, only)
+    override fun hashCode(): Int =
+        if (string == null && chat == null && only == null) Objects.hash(_json)
+        else Objects.hash(string, chat, only)
 
     override fun toString(): String =
         when {
@@ -308,6 +311,8 @@ private constructor(
 
             @JvmField val GPT_ROSALIND_RESEARCH = of("gpt-rosalind-research")
 
+            @JvmField val GPT_6_ROSALIND = of("gpt-6-rosalind")
+
             @JvmStatic fun of(value: String) = ResponsesOnlyModel(JsonField.of(value))
         }
 
@@ -333,6 +338,7 @@ private constructor(
             GPT_DAYBREAK_RED_LATEST,
             GPT_5_6_CYBER,
             GPT_ROSALIND_RESEARCH,
+            GPT_6_ROSALIND,
         }
 
         /**
@@ -365,6 +371,7 @@ private constructor(
             GPT_DAYBREAK_RED_LATEST,
             GPT_5_6_CYBER,
             GPT_ROSALIND_RESEARCH,
+            GPT_6_ROSALIND,
             /**
              * An enum member indicating that [ResponsesOnlyModel] was instantiated with an unknown
              * value.
@@ -401,6 +408,7 @@ private constructor(
                 GPT_DAYBREAK_RED_LATEST -> Value.GPT_DAYBREAK_RED_LATEST
                 GPT_5_6_CYBER -> Value.GPT_5_6_CYBER
                 GPT_ROSALIND_RESEARCH -> Value.GPT_ROSALIND_RESEARCH
+                GPT_6_ROSALIND -> Value.GPT_6_ROSALIND
                 else -> Value._UNKNOWN
             }
 
@@ -435,6 +443,7 @@ private constructor(
                 GPT_DAYBREAK_RED_LATEST -> Known.GPT_DAYBREAK_RED_LATEST
                 GPT_5_6_CYBER -> Known.GPT_5_6_CYBER
                 GPT_ROSALIND_RESEARCH -> Known.GPT_ROSALIND_RESEARCH
+                GPT_6_ROSALIND -> Known.GPT_6_ROSALIND
                 else -> throw OpenAIInvalidDataException("Unknown ResponsesOnlyModel: $value")
             }
 

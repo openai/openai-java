@@ -57,6 +57,10 @@ internal class StructuredResponseCreateParamsTest {
         private val RESPONSES_MODEL = ResponsesModel.ofChat(CHAT_MODEL)
         private val RESPONSES_ONLY_MODEL = ResponsesModel.ResponsesOnlyModel.O1_PRO
         private val PARAMS_INPUT = ResponseCreateParams.Input.ofText(STRING)
+        private val IMAGE =
+            ResponseCreateParams.Image.builder()
+                .contextCompression(ResponseCreateParams.Image.ContextCompression.ENABLED)
+                .build()
 
         private val INCLUDABLE = ResponseIncludable.of(STRING)
         private val METADATA = ResponseCreateParams.Metadata.builder().build()
@@ -161,6 +165,8 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("conversation", JSON_FIELD),
                 DelegationWriteTestCase("conversation", STRING),
                 DelegationWriteTestCase("conversation", RESPONSE_CONVERSATION_PARAM),
+                DelegationWriteTestCase("image", IMAGE),
+                DelegationWriteTestCase("image", JsonField.of(IMAGE)),
                 DelegationWriteTestCase("include", LIST),
                 DelegationWriteTestCase("include", OPTIONAL),
                 DelegationWriteTestCase("include", JSON_FIELD),

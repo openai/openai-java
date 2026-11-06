@@ -29,6 +29,7 @@ internal class RealtimeSessionCreateRequestTest {
                                 )
                                 .noiseReduction(
                                     RealtimeAudioConfigInput.NoiseReduction.builder()
+                                        .strength(0.0)
                                         .type(NoiseReductionType.NEAR_FIELD)
                                         .build()
                                 )
@@ -116,6 +117,7 @@ internal class RealtimeSessionCreateRequestTest {
                             )
                             .noiseReduction(
                                 RealtimeAudioConfigInput.NoiseReduction.builder()
+                                    .strength(0.0)
                                     .type(NoiseReductionType.NEAR_FIELD)
                                     .build()
                             )

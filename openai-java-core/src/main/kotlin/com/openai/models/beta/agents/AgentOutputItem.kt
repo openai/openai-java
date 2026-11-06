@@ -409,26 +409,59 @@ private constructor(
             resumeSubagentCall == other.resumeSubagentCall &&
             waitForSubagentsCall == other.waitForSubagentsCall &&
             interruptSubagentCall == other.interruptSubagentCall &&
-            closeSubagentCall == other.closeSubagentCall
+            closeSubagentCall == other.closeSubagentCall &&
+            (message != null ||
+                reasoning != null ||
+                functionCall != null ||
+                mcpCall != null ||
+                computerUseCall != null ||
+                computerUseApprovalRequest != null ||
+                webSearchCall != null ||
+                commandExecution != null ||
+                createSubagentCall != null ||
+                sendSubagentInputCall != null ||
+                resumeSubagentCall != null ||
+                waitForSubagentsCall != null ||
+                interruptSubagentCall != null ||
+                closeSubagentCall != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            message,
-            reasoning,
-            functionCall,
-            mcpCall,
-            computerUseCall,
-            computerUseApprovalRequest,
-            webSearchCall,
-            commandExecution,
-            createSubagentCall,
-            sendSubagentInputCall,
-            resumeSubagentCall,
-            waitForSubagentsCall,
-            interruptSubagentCall,
-            closeSubagentCall,
+        if (
+            message == null &&
+                reasoning == null &&
+                functionCall == null &&
+                mcpCall == null &&
+                computerUseCall == null &&
+                computerUseApprovalRequest == null &&
+                webSearchCall == null &&
+                commandExecution == null &&
+                createSubagentCall == null &&
+                sendSubagentInputCall == null &&
+                resumeSubagentCall == null &&
+                waitForSubagentsCall == null &&
+                interruptSubagentCall == null &&
+                closeSubagentCall == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                message,
+                reasoning,
+                functionCall,
+                mcpCall,
+                computerUseCall,
+                computerUseApprovalRequest,
+                webSearchCall,
+                commandExecution,
+                createSubagentCall,
+                sendSubagentInputCall,
+                resumeSubagentCall,
+                waitForSubagentsCall,
+                interruptSubagentCall,
+                closeSubagentCall,
+            )
 
     override fun toString(): String =
         when {

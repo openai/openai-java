@@ -305,9 +305,7 @@ internal class WorkloadIdentityAuth(
             jsonMapper.readValue(bodyString, jacksonTypeRef<TokenExchangeResponse>())
 
         if (tokenResponse.accessToken.isBlank()) {
-            throw OpenAIInvalidDataException(
-                "Token exchange response missing 'access_token' field. Response: $bodyString"
-            )
+            throw OpenAIInvalidDataException("Token exchange response missing 'access_token' field")
         }
 
         val expiresIn = tokenResponse.expiresIn ?: DEFAULT_TOKEN_EXPIRY_SECONDS

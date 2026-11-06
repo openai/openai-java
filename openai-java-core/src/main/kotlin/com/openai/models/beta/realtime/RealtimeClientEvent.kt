@@ -508,24 +508,54 @@ private constructor(
             responseCancel == other.responseCancel &&
             responseCreate == other.responseCreate &&
             sessionUpdate == other.sessionUpdate &&
-            transcriptionSessionUpdate == other.transcriptionSessionUpdate
+            transcriptionSessionUpdate == other.transcriptionSessionUpdate &&
+            (conversationItemCreate != null ||
+                conversationItemDelete != null ||
+                conversationItemRetrieve != null ||
+                conversationItemTruncate != null ||
+                inputAudioBufferAppend != null ||
+                inputAudioBufferClear != null ||
+                outputAudioBufferClear != null ||
+                inputAudioBufferCommit != null ||
+                responseCancel != null ||
+                responseCreate != null ||
+                sessionUpdate != null ||
+                transcriptionSessionUpdate != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            conversationItemCreate,
-            conversationItemDelete,
-            conversationItemRetrieve,
-            conversationItemTruncate,
-            inputAudioBufferAppend,
-            inputAudioBufferClear,
-            outputAudioBufferClear,
-            inputAudioBufferCommit,
-            responseCancel,
-            responseCreate,
-            sessionUpdate,
-            transcriptionSessionUpdate,
-        )
+        if (
+            conversationItemCreate != null ||
+                conversationItemDelete != null ||
+                conversationItemRetrieve != null ||
+                conversationItemTruncate != null ||
+                inputAudioBufferAppend != null ||
+                inputAudioBufferClear != null ||
+                outputAudioBufferClear != null ||
+                inputAudioBufferCommit != null ||
+                responseCancel != null ||
+                responseCreate != null ||
+                sessionUpdate != null ||
+                transcriptionSessionUpdate != null
+        ) {
+            Objects.hash(
+                conversationItemCreate,
+                conversationItemDelete,
+                conversationItemRetrieve,
+                conversationItemTruncate,
+                inputAudioBufferAppend,
+                inputAudioBufferClear,
+                outputAudioBufferClear,
+                inputAudioBufferCommit,
+                responseCancel,
+                responseCreate,
+                sessionUpdate,
+                transcriptionSessionUpdate,
+            )
+        } else {
+            Objects.hash(_json)
+        }
 
     override fun toString(): String =
         when {

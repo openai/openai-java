@@ -8,6 +8,7 @@ import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.ReasoningEffort
+import com.openai.models.ResponseFormatText
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -1034,6 +1035,11 @@ internal class ResponseItemTest {
                         .effort(ReasoningEffort.NONE)
                         .build()
                 )
+                .text(
+                    ResponseConfigurationUpdateItem.Text.builder()
+                        .format(ResponseFormatText.builder().build())
+                        .build()
+                )
                 .build()
 
         val responseItem = ResponseItem.ofConfigurationUpdate(configurationUpdate)
@@ -1080,6 +1086,11 @@ internal class ResponseItemTest {
                     .reasoning(
                         ResponseConfigurationUpdateItem.Reasoning.builder()
                             .effort(ReasoningEffort.NONE)
+                            .build()
+                    )
+                    .text(
+                        ResponseConfigurationUpdateItem.Text.builder()
+                            .format(ResponseFormatText.builder().build())
                             .build()
                     )
                     .build()
@@ -1389,6 +1400,15 @@ internal class ResponseItemTest {
                 .quality(ResponseItem.ImageGenerationCall.Quality.LOW)
                 .revisedPrompt("revised_prompt")
                 .size(ResponseItem.ImageGenerationCall.Size._1024X1024)
+                .svgUsage(
+                    ResponseItem.ImageGenerationCall.SvgUsage.builder()
+                        .inputTokens(0L)
+                        .model("model")
+                        .outputTokens(0L)
+                        .reasoningTokens(0L)
+                        .totalTokens(0L)
+                        .build()
+                )
                 .build()
 
         val responseItem = ResponseItem.ofImageGenerationCall(imageGenerationCall)
@@ -1458,6 +1478,15 @@ internal class ResponseItemTest {
                     .quality(ResponseItem.ImageGenerationCall.Quality.LOW)
                     .revisedPrompt("revised_prompt")
                     .size(ResponseItem.ImageGenerationCall.Size._1024X1024)
+                    .svgUsage(
+                        ResponseItem.ImageGenerationCall.SvgUsage.builder()
+                            .inputTokens(0L)
+                            .model("model")
+                            .outputTokens(0L)
+                            .reasoningTokens(0L)
+                            .totalTokens(0L)
+                            .build()
+                    )
                     .build()
             )
 

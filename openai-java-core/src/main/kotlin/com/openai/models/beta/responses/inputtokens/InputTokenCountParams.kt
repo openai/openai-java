@@ -2079,10 +2079,13 @@ private constructor(
 
             return other is Conversation &&
                 id == other.id &&
-                betaResponseConversationParam == other.betaResponseConversationParam
+                betaResponseConversationParam == other.betaResponseConversationParam &&
+                (id != null || betaResponseConversationParam != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(id, betaResponseConversationParam)
+        override fun hashCode(): Int =
+            if (id == null && betaResponseConversationParam == null) Objects.hash(_json)
+            else Objects.hash(id, betaResponseConversationParam)
 
         override fun toString(): String =
             when {
@@ -2315,10 +2318,13 @@ private constructor(
 
             return other is Input &&
                 string == other.string &&
-                betaResponseInputItems == other.betaResponseInputItems
+                betaResponseInputItems == other.betaResponseInputItems &&
+                (string != null || betaResponseInputItems != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(string, betaResponseInputItems)
+        override fun hashCode(): Int =
+            if (string == null && betaResponseInputItems == null) Objects.hash(_json)
+            else Objects.hash(string, betaResponseInputItems)
 
         override fun toString(): String =
             when {
@@ -4517,21 +4523,44 @@ private constructor(
                 betaSpecificProgrammaticToolCallingParam ==
                     other.betaSpecificProgrammaticToolCallingParam &&
                 betaToolChoiceApplyPatch == other.betaToolChoiceApplyPatch &&
-                betaToolChoiceShell == other.betaToolChoiceShell
+                betaToolChoiceShell == other.betaToolChoiceShell &&
+                (betaToolChoiceOptions != null ||
+                    betaToolChoiceAllowed != null ||
+                    betaToolChoiceTypes != null ||
+                    betaToolChoiceFunction != null ||
+                    betaToolChoiceMcp != null ||
+                    betaToolChoiceCustom != null ||
+                    betaSpecificProgrammaticToolCallingParam != null ||
+                    betaToolChoiceApplyPatch != null ||
+                    betaToolChoiceShell != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(
-                betaToolChoiceOptions,
-                betaToolChoiceAllowed,
-                betaToolChoiceTypes,
-                betaToolChoiceFunction,
-                betaToolChoiceMcp,
-                betaToolChoiceCustom,
-                betaSpecificProgrammaticToolCallingParam,
-                betaToolChoiceApplyPatch,
-                betaToolChoiceShell,
+            if (
+                betaToolChoiceOptions == null &&
+                    betaToolChoiceAllowed == null &&
+                    betaToolChoiceTypes == null &&
+                    betaToolChoiceFunction == null &&
+                    betaToolChoiceMcp == null &&
+                    betaToolChoiceCustom == null &&
+                    betaSpecificProgrammaticToolCallingParam == null &&
+                    betaToolChoiceApplyPatch == null &&
+                    betaToolChoiceShell == null
             )
+                Objects.hash(_json)
+            else
+                Objects.hash(
+                    betaToolChoiceOptions,
+                    betaToolChoiceAllowed,
+                    betaToolChoiceTypes,
+                    betaToolChoiceFunction,
+                    betaToolChoiceMcp,
+                    betaToolChoiceCustom,
+                    betaSpecificProgrammaticToolCallingParam,
+                    betaToolChoiceApplyPatch,
+                    betaToolChoiceShell,
+                )
 
         override fun toString(): String =
             when {

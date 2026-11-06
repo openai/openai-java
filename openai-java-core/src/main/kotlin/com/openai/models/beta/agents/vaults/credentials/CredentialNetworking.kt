@@ -179,10 +179,13 @@ private constructor(
 
         return other is CredentialNetworking &&
             unrestricted == other.unrestricted &&
-            limited == other.limited
+            limited == other.limited &&
+            (unrestricted != null || limited != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(unrestricted, limited)
+    override fun hashCode(): Int =
+        if (unrestricted == null && limited == null) Objects.hash(_json)
+        else Objects.hash(unrestricted, limited)
 
     override fun toString(): String =
         when {

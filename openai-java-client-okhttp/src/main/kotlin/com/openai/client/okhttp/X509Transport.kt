@@ -52,7 +52,11 @@ private constructor(
          */
         fun keyManager(keyManager: X509ExtendedKeyManager) = apply { this.keyManager = keyManager }
 
-        /** Sets the one client-certificate alias allowed on both network legs. */
+        /**
+         * Sets the one client-certificate alias allowed on both network legs. This explicit
+         * selection overrides server CA issuer hints, which may not list the enrolled issuer. The
+         * alias must still support the requested key type; server trust is unchanged.
+         */
         fun certificateAlias(certificateAlias: String) = apply {
             this.certificateAlias = certificateAlias
         }
@@ -81,7 +85,7 @@ private constructor(
                 "certificateAlias does not identify a certificate chain"
             }
 
-            val fixedAliasKeyManager = FixedAliasKeyManager(keyManager, alias)
+            val fixedAliasKeyManager = fixedAliasKeyManager(keyManager, alias)
             val sslContext =
                 SSLContext.getInstance("TLS").apply {
                     init(arrayOf<KeyManager>(fixedAliasKeyManager), arrayOf(trustManager), null)
@@ -169,6 +173,12 @@ internal class BoundX509Transport(val exchangeClient: OkHttpClient, val apiClien
     }
 }
 
+@JvmSynthetic
+internal fun fixedAliasKeyManager(
+    delegate: X509ExtendedKeyManager,
+    alias: String,
+): X509ExtendedKeyManager = FixedAliasKeyManager(delegate, alias)
+
 private class FixedAliasKeyManager(
     private val delegate: X509ExtendedKeyManager,
     private val alias: String,
@@ -176,7 +186,7 @@ private class FixedAliasKeyManager(
 
     override fun getClientAliases(keyType: String, issuers: Array<out Principal>?): Array<String>? =
         delegate
-            .getClientAliases(keyType, issuers)
+            .getClientAliases(keyType, null)
             ?.takeIf { aliases -> alias in aliases }
             ?.let { arrayOf(alias) }
 
@@ -184,23 +194,18 @@ private class FixedAliasKeyManager(
         keyType: Array<out String>?,
         issuers: Array<out Principal>?,
         socket: Socket?,
-    ): String? = chooseEligibleAlias(keyType, issuers)
+    ): String? = chooseEligibleAlias(keyType)
 
     override fun chooseEngineClientAlias(
         keyType: Array<out String>?,
         issuers: Array<out Principal>?,
         engine: SSLEngine?,
-    ): String? = chooseEligibleAlias(keyType, issuers)
+    ): String? = chooseEligibleAlias(keyType)
 
-    private fun chooseEligibleAlias(
-        keyTypes: Array<out String>?,
-        issuers: Array<out Principal>?,
-    ): String? =
+    private fun chooseEligibleAlias(keyTypes: Array<out String>?): String? =
         keyTypes
             ?.asSequence()
-            ?.flatMap { keyType ->
-                delegate.getClientAliases(keyType, issuers).orEmpty().asSequence()
-            }
+            ?.flatMap { keyType -> getClientAliases(keyType, null).orEmpty().asSequence() }
             ?.firstOrNull { it == alias }
 
     override fun getServerAliases(keyType: String, issuers: Array<out Principal>?): Array<String>? =

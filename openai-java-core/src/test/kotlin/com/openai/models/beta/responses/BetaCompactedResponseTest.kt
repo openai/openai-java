@@ -60,6 +60,13 @@ internal class BetaCompactedResponseTest {
                             BetaResponseUsage.InputTokensDetails.builder()
                                 .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
+                                .cacheWriteTokensDetails(
+                                    BetaResponseUsage.InputTokensDetails.CacheWriteTokensDetails
+                                        .builder()
+                                        .ttl12hTokens(0L)
+                                        .ttl30mTokens(0L)
+                                        .build()
+                                )
                                 .build()
                         )
                         .outputTokens(0L)
@@ -69,6 +76,11 @@ internal class BetaCompactedResponseTest {
                                 .build()
                         )
                         .totalTokens(0L)
+                        .build()
+                )
+                .image(
+                    BetaCompactedResponse.Image.builder()
+                        .contextCompression(BetaCompactedResponse.Image.ContextCompression.ENABLED)
                         .build()
                 )
                 .build()
@@ -124,6 +136,13 @@ internal class BetaCompactedResponseTest {
                         BetaResponseUsage.InputTokensDetails.builder()
                             .cacheWriteTokens(0L)
                             .cachedTokens(0L)
+                            .cacheWriteTokensDetails(
+                                BetaResponseUsage.InputTokensDetails.CacheWriteTokensDetails
+                                    .builder()
+                                    .ttl12hTokens(0L)
+                                    .ttl30mTokens(0L)
+                                    .build()
+                            )
                             .build()
                     )
                     .outputTokens(0L)
@@ -131,6 +150,12 @@ internal class BetaCompactedResponseTest {
                         BetaResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                     )
                     .totalTokens(0L)
+                    .build()
+            )
+        assertThat(betaCompactedResponse.image())
+            .contains(
+                BetaCompactedResponse.Image.builder()
+                    .contextCompression(BetaCompactedResponse.Image.ContextCompression.ENABLED)
                     .build()
             )
 

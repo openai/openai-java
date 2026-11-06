@@ -766,36 +766,89 @@ private constructor(
             threadMessageDelta == other.threadMessageDelta &&
             threadMessageCompleted == other.threadMessageCompleted &&
             threadMessageIncomplete == other.threadMessageIncomplete &&
-            errorEvent == other.errorEvent
+            errorEvent == other.errorEvent &&
+            (threadCreated != null ||
+                threadRunCreated != null ||
+                threadRunQueued != null ||
+                threadRunInProgress != null ||
+                threadRunRequiresAction != null ||
+                threadRunCompleted != null ||
+                threadRunIncomplete != null ||
+                threadRunFailed != null ||
+                threadRunCancelling != null ||
+                threadRunCancelled != null ||
+                threadRunExpired != null ||
+                threadRunStepCreated != null ||
+                threadRunStepInProgress != null ||
+                threadRunStepDelta != null ||
+                threadRunStepCompleted != null ||
+                threadRunStepFailed != null ||
+                threadRunStepCancelled != null ||
+                threadRunStepExpired != null ||
+                threadMessageCreated != null ||
+                threadMessageInProgress != null ||
+                threadMessageDelta != null ||
+                threadMessageCompleted != null ||
+                threadMessageIncomplete != null ||
+                errorEvent != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            threadCreated,
-            threadRunCreated,
-            threadRunQueued,
-            threadRunInProgress,
-            threadRunRequiresAction,
-            threadRunCompleted,
-            threadRunIncomplete,
-            threadRunFailed,
-            threadRunCancelling,
-            threadRunCancelled,
-            threadRunExpired,
-            threadRunStepCreated,
-            threadRunStepInProgress,
-            threadRunStepDelta,
-            threadRunStepCompleted,
-            threadRunStepFailed,
-            threadRunStepCancelled,
-            threadRunStepExpired,
-            threadMessageCreated,
-            threadMessageInProgress,
-            threadMessageDelta,
-            threadMessageCompleted,
-            threadMessageIncomplete,
-            errorEvent,
+        if (
+            threadCreated == null &&
+                threadRunCreated == null &&
+                threadRunQueued == null &&
+                threadRunInProgress == null &&
+                threadRunRequiresAction == null &&
+                threadRunCompleted == null &&
+                threadRunIncomplete == null &&
+                threadRunFailed == null &&
+                threadRunCancelling == null &&
+                threadRunCancelled == null &&
+                threadRunExpired == null &&
+                threadRunStepCreated == null &&
+                threadRunStepInProgress == null &&
+                threadRunStepDelta == null &&
+                threadRunStepCompleted == null &&
+                threadRunStepFailed == null &&
+                threadRunStepCancelled == null &&
+                threadRunStepExpired == null &&
+                threadMessageCreated == null &&
+                threadMessageInProgress == null &&
+                threadMessageDelta == null &&
+                threadMessageCompleted == null &&
+                threadMessageIncomplete == null &&
+                errorEvent == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                threadCreated,
+                threadRunCreated,
+                threadRunQueued,
+                threadRunInProgress,
+                threadRunRequiresAction,
+                threadRunCompleted,
+                threadRunIncomplete,
+                threadRunFailed,
+                threadRunCancelling,
+                threadRunCancelled,
+                threadRunExpired,
+                threadRunStepCreated,
+                threadRunStepInProgress,
+                threadRunStepDelta,
+                threadRunStepCompleted,
+                threadRunStepFailed,
+                threadRunStepCancelled,
+                threadRunStepExpired,
+                threadMessageCreated,
+                threadMessageInProgress,
+                threadMessageDelta,
+                threadMessageCompleted,
+                threadMessageIncomplete,
+                errorEvent,
+            )
 
     override fun toString(): String =
         when {

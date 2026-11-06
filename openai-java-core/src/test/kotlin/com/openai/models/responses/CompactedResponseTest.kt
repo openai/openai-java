@@ -55,6 +55,13 @@ internal class CompactedResponseTest {
                             ResponseUsage.InputTokensDetails.builder()
                                 .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
+                                .cacheWriteTokensDetails(
+                                    ResponseUsage.InputTokensDetails.CacheWriteTokensDetails
+                                        .builder()
+                                        .ttl12hTokens(0L)
+                                        .ttl30mTokens(0L)
+                                        .build()
+                                )
                                 .build()
                         )
                         .outputTokens(0L)
@@ -62,6 +69,11 @@ internal class CompactedResponseTest {
                             ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                         )
                         .totalTokens(0L)
+                        .build()
+                )
+                .image(
+                    CompactedResponse.Image.builder()
+                        .contextCompression(CompactedResponse.Image.ContextCompression.ENABLED)
                         .build()
                 )
                 .build()
@@ -112,6 +124,12 @@ internal class CompactedResponseTest {
                         ResponseUsage.InputTokensDetails.builder()
                             .cacheWriteTokens(0L)
                             .cachedTokens(0L)
+                            .cacheWriteTokensDetails(
+                                ResponseUsage.InputTokensDetails.CacheWriteTokensDetails.builder()
+                                    .ttl12hTokens(0L)
+                                    .ttl30mTokens(0L)
+                                    .build()
+                            )
                             .build()
                     )
                     .outputTokens(0L)
@@ -119,6 +137,12 @@ internal class CompactedResponseTest {
                         ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                     )
                     .totalTokens(0L)
+                    .build()
+            )
+        assertThat(compactedResponse.image())
+            .contains(
+                CompactedResponse.Image.builder()
+                    .contextCompression(CompactedResponse.Image.ContextCompression.ENABLED)
                     .build()
             )
 

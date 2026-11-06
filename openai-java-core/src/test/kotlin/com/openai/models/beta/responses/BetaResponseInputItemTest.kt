@@ -1544,6 +1544,7 @@ internal class BetaResponseInputItemTest {
                         .effort(BetaResponseConfigurationUpdateItemParam.Reasoning.Effort.NONE)
                         .build()
                 )
+                .text(BetaResponseConfigurationUpdateItemParam.Text.builder().formatText().build())
                 .build()
 
         val betaResponseInputItem = BetaResponseInputItem.ofConfigurationUpdate(configurationUpdate)
@@ -1602,6 +1603,9 @@ internal class BetaResponseInputItemTest {
                         BetaResponseConfigurationUpdateItemParam.Reasoning.builder()
                             .effort(BetaResponseConfigurationUpdateItemParam.Reasoning.Effort.NONE)
                             .build()
+                    )
+                    .text(
+                        BetaResponseConfigurationUpdateItemParam.Text.builder().formatText().build()
                     )
                     .build()
             )
@@ -1807,6 +1811,15 @@ internal class BetaResponseInputItemTest {
                 .quality(BetaResponseInputItem.ImageGenerationCall.Quality.LOW)
                 .revisedPrompt("revised_prompt")
                 .size(BetaResponseInputItem.ImageGenerationCall.Size._1024X1024)
+                .svgUsage(
+                    BetaResponseInputItem.ImageGenerationCall.SvgUsage.builder()
+                        .inputTokens(0L)
+                        .model("model")
+                        .outputTokens(0L)
+                        .reasoningTokens(0L)
+                        .totalTokens(0L)
+                        .build()
+                )
                 .build()
 
         val betaResponseInputItem = BetaResponseInputItem.ofImageGenerationCall(imageGenerationCall)
@@ -1889,6 +1902,15 @@ internal class BetaResponseInputItemTest {
                     .quality(BetaResponseInputItem.ImageGenerationCall.Quality.LOW)
                     .revisedPrompt("revised_prompt")
                     .size(BetaResponseInputItem.ImageGenerationCall.Size._1024X1024)
+                    .svgUsage(
+                        BetaResponseInputItem.ImageGenerationCall.SvgUsage.builder()
+                            .inputTokens(0L)
+                            .model("model")
+                            .outputTokens(0L)
+                            .reasoningTokens(0L)
+                            .totalTokens(0L)
+                            .build()
+                    )
                     .build()
             )
 

@@ -43,6 +43,8 @@ import com.openai.services.blocking.admin.organization.projects.RoleService
 import com.openai.services.blocking.admin.organization.projects.RoleServiceImpl
 import com.openai.services.blocking.admin.organization.projects.ServiceAccountService
 import com.openai.services.blocking.admin.organization.projects.ServiceAccountServiceImpl
+import com.openai.services.blocking.admin.organization.projects.ServiceTierSettingService
+import com.openai.services.blocking.admin.organization.projects.ServiceTierSettingServiceImpl
 import com.openai.services.blocking.admin.organization.projects.SpendAlertService
 import com.openai.services.blocking.admin.organization.projects.SpendAlertServiceImpl
 import com.openai.services.blocking.admin.organization.projects.SpendLimitService
@@ -71,6 +73,10 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
 
     private val modelPermissions: ModelPermissionService by lazy {
         ModelPermissionServiceImpl(clientOptions)
+    }
+
+    private val serviceTierSettings: ServiceTierSettingService by lazy {
+        ServiceTierSettingServiceImpl(clientOptions)
     }
 
     private val hostedToolPermissions: HostedToolPermissionService by lazy {
@@ -105,6 +111,8 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
     override fun rateLimits(): RateLimitService = rateLimits
 
     override fun modelPermissions(): ModelPermissionService = modelPermissions
+
+    override fun serviceTierSettings(): ServiceTierSettingService = serviceTierSettings
 
     override fun hostedToolPermissions(): HostedToolPermissionService = hostedToolPermissions
 
@@ -166,6 +174,10 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
             ModelPermissionServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val serviceTierSettings: ServiceTierSettingService.WithRawResponse by lazy {
+            ServiceTierSettingServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val hostedToolPermissions: HostedToolPermissionService.WithRawResponse by lazy {
             HostedToolPermissionServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -210,6 +222,9 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
         override fun rateLimits(): RateLimitService.WithRawResponse = rateLimits
 
         override fun modelPermissions(): ModelPermissionService.WithRawResponse = modelPermissions
+
+        override fun serviceTierSettings(): ServiceTierSettingService.WithRawResponse =
+            serviceTierSettings
 
         override fun hostedToolPermissions(): HostedToolPermissionService.WithRawResponse =
             hostedToolPermissions

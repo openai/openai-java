@@ -173,10 +173,13 @@ private constructor(
         return other is TranscriptionCreateResponse &&
             transcription == other.transcription &&
             diarized == other.diarized &&
-            verbose == other.verbose
+            verbose == other.verbose &&
+            (transcription != null || diarized != null || verbose != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(transcription, diarized, verbose)
+    override fun hashCode(): Int =
+        if (transcription == null && diarized == null && verbose == null) Objects.hash(_json)
+        else Objects.hash(transcription, diarized, verbose)
 
     override fun toString(): String =
         when {

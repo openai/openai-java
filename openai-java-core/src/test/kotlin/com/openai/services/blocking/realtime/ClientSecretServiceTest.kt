@@ -61,6 +61,7 @@ internal class ClientSecretServiceTest {
                                             )
                                             .noiseReduction(
                                                 RealtimeAudioConfigInput.NoiseReduction.builder()
+                                                    .strength(0.0)
                                                     .type(NoiseReductionType.NEAR_FIELD)
                                                     .build()
                                             )

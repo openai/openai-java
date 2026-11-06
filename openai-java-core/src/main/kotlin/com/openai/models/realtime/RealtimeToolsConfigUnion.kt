@@ -162,10 +162,14 @@ private constructor(
             return true
         }
 
-        return other is RealtimeToolsConfigUnion && function == other.function && mcp == other.mcp
+        return other is RealtimeToolsConfigUnion &&
+            function == other.function &&
+            mcp == other.mcp &&
+            (function != null || mcp != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(function, mcp)
+    override fun hashCode(): Int =
+        if (function == null && mcp == null) Objects.hash(_json) else Objects.hash(function, mcp)
 
     override fun toString(): String =
         when {
@@ -1279,10 +1283,13 @@ private constructor(
 
                 return other is AllowedTools &&
                     mcp == other.mcp &&
-                    mcpToolFilter == other.mcpToolFilter
+                    mcpToolFilter == other.mcpToolFilter &&
+                    (mcp != null || mcpToolFilter != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(mcp, mcpToolFilter)
+            override fun hashCode(): Int =
+                if (mcp == null && mcpToolFilter == null) Objects.hash(_json)
+                else Objects.hash(mcp, mcpToolFilter)
 
             override fun toString(): String =
                 when {
@@ -2127,11 +2134,16 @@ private constructor(
 
                 return other is RequireApproval &&
                     mcpToolApprovalFilter == other.mcpToolApprovalFilter &&
-                    mcpToolApprovalSetting == other.mcpToolApprovalSetting
+                    mcpToolApprovalSetting == other.mcpToolApprovalSetting &&
+                    (mcpToolApprovalFilter != null ||
+                        mcpToolApprovalSetting != null ||
+                        _json == other._json)
             }
 
             override fun hashCode(): Int =
-                Objects.hash(mcpToolApprovalFilter, mcpToolApprovalSetting)
+                if (mcpToolApprovalFilter == null && mcpToolApprovalSetting == null)
+                    Objects.hash(_json)
+                else Objects.hash(mcpToolApprovalFilter, mcpToolApprovalSetting)
 
             override fun toString(): String =
                 when {

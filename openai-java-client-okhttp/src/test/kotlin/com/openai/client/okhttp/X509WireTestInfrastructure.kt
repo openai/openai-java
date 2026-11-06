@@ -4,6 +4,7 @@ import java.net.Proxy
 import java.net.Socket
 import java.security.KeyStore
 import java.security.SecureRandom
+import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.net.ssl.ExtendedSSLSession
@@ -57,6 +58,7 @@ internal class X509TestPeer(
     val authority: String,
     trustedClientRoot: X509Certificate,
     private val tunnelProxy: Boolean = true,
+    advertisedClientRoots: List<X509Certificate>? = null,
 ) : AutoCloseable {
     private val serverRoot =
         HeldCertificate.Builder().commonName("$authority test root").certificateAuthority(1).build()
@@ -71,7 +73,8 @@ internal class X509TestPeer(
             HandshakeCertificates.Builder()
                 .addTrustedCertificate(trustedClientRoot)
                 .build()
-                .trustManager
+                .trustManager,
+            advertisedClientRoots,
         )
     private val serverIdentity = HandshakeCertificates.Builder().heldCertificate(serverLeaf).build()
     private val sslContext =
@@ -94,6 +97,9 @@ internal class X509TestPeer(
 
     val requestedServerNames: List<String>
         get() = recordingTrustManager.requestedServerNames.toList()
+
+    val rejectedClientCertificates: List<X509Certificate>
+        get() = recordingTrustManager.rejectedClientCertificates.toList()
 
     fun enqueue(response: MockResponse) {
         if (tunnelProxy)
@@ -138,9 +144,12 @@ internal fun x509TestKeyManager(identities: Map<String, X509TestIdentity>): X509
     return keyManagerFactory.keyManagers.filterIsInstance<X509ExtendedKeyManager>().single()
 }
 
-private class RecordingClientTrustManager(private val delegate: X509TrustManager) :
-    X509ExtendedTrustManager() {
+private class RecordingClientTrustManager(
+    private val delegate: X509TrustManager,
+    private val advertisedClientRoots: List<X509Certificate>? = null,
+) : X509ExtendedTrustManager() {
     val requestedServerNames = CopyOnWriteArrayList<String>()
+    val rejectedClientCertificates = CopyOnWriteArrayList<X509Certificate>()
 
     override fun checkClientTrusted(
         chain: Array<out X509Certificate>,
@@ -148,7 +157,7 @@ private class RecordingClientTrustManager(private val delegate: X509TrustManager
         socket: Socket,
     ) {
         recordRequestedServerNames((socket as? SSLSocket)?.handshakeSession)
-        delegate.checkClientTrusted(chain, authType)
+        validateClient(chain, authType)
     }
 
     override fun checkClientTrusted(
@@ -157,11 +166,20 @@ private class RecordingClientTrustManager(private val delegate: X509TrustManager
         engine: SSLEngine,
     ) {
         recordRequestedServerNames(engine.handshakeSession)
-        delegate.checkClientTrusted(chain, authType)
+        validateClient(chain, authType)
     }
 
     override fun checkClientTrusted(chain: Array<out X509Certificate>, authType: String) {
-        delegate.checkClientTrusted(chain, authType)
+        validateClient(chain, authType)
+    }
+
+    private fun validateClient(chain: Array<out X509Certificate>, authType: String) {
+        try {
+            delegate.checkClientTrusted(chain, authType)
+        } catch (error: CertificateException) {
+            chain.firstOrNull()?.let(rejectedClientCertificates::add)
+            throw error
+        }
     }
 
     override fun checkServerTrusted(
@@ -184,7 +202,8 @@ private class RecordingClientTrustManager(private val delegate: X509TrustManager
         delegate.checkServerTrusted(chain, authType)
     }
 
-    override fun getAcceptedIssuers(): Array<X509Certificate> = delegate.acceptedIssuers
+    override fun getAcceptedIssuers(): Array<X509Certificate> =
+        advertisedClientRoots?.toTypedArray() ?: delegate.acceptedIssuers
 
     private fun recordRequestedServerNames(session: javax.net.ssl.SSLSession?) {
         val extendedSession = session as? ExtendedSSLSession ?: return

@@ -42,4 +42,5 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testImplementation("org.junit-pioneer:junit-pioneer:1.9.1")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 }

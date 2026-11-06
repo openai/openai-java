@@ -289,11 +289,33 @@ private constructor(
             screenshot == other.screenshot &&
             scroll == other.scroll &&
             type == other.type &&
-            wait == other.wait
+            wait == other.wait &&
+            (click != null ||
+                doubleClick != null ||
+                drag != null ||
+                keypress != null ||
+                move != null ||
+                screenshot != null ||
+                scroll != null ||
+                type != null ||
+                wait != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(click, doubleClick, drag, keypress, move, screenshot, scroll, type, wait)
+        if (
+            click == null &&
+                doubleClick == null &&
+                drag == null &&
+                keypress == null &&
+                move == null &&
+                screenshot == null &&
+                scroll == null &&
+                type == null &&
+                wait == null
+        )
+            Objects.hash(_json)
+        else Objects.hash(click, doubleClick, drag, keypress, move, screenshot, scroll, type, wait)
 
     override fun toString(): String =
         when {

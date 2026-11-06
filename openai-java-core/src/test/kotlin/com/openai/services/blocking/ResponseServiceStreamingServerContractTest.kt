@@ -48,6 +48,11 @@ internal class ResponseServiceStreamingServerContractTest {
                             .build()
                     )
                     .conversation("string")
+                    .image(
+                        ResponseCreateParams.Image.builder()
+                            .contextCompression(ResponseCreateParams.Image.ContextCompression.AUTO)
+                            .build()
+                    )
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .input("string")
                     .instructions("instructions")

@@ -186,10 +186,18 @@ private constructor(
             imageFile == other.imageFile &&
             imageUrl == other.imageUrl &&
             text == other.text &&
-            refusal == other.refusal
+            refusal == other.refusal &&
+            (imageFile != null ||
+                imageUrl != null ||
+                text != null ||
+                refusal != null ||
+                _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(imageFile, imageUrl, text, refusal)
+    override fun hashCode(): Int =
+        if (imageFile == null && imageUrl == null && text == null && refusal == null)
+            Objects.hash(_json)
+        else Objects.hash(imageFile, imageUrl, text, refusal)
 
     override fun toString(): String =
         when {

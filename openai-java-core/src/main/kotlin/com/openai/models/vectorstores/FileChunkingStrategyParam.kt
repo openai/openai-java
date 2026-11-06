@@ -151,10 +151,14 @@ private constructor(
             return true
         }
 
-        return other is FileChunkingStrategyParam && auto == other.auto && static_ == other.static_
+        return other is FileChunkingStrategyParam &&
+            auto == other.auto &&
+            static_ == other.static_ &&
+            (auto != null || static_ != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(auto, static_)
+    override fun hashCode(): Int =
+        if (auto == null && static_ == null) Objects.hash(_json) else Objects.hash(auto, static_)
 
     override fun toString(): String =
         when {

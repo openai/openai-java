@@ -292,19 +292,38 @@ private constructor(
             shellCallOutput == other.shellCallOutput &&
             applyPatchCallOutput == other.applyPatchCallOutput &&
             toolSearchOutput == other.toolSearchOutput &&
-            mcpApprovalResponse == other.mcpApprovalResponse
+            mcpApprovalResponse == other.mcpApprovalResponse &&
+            (functionCallOutput != null ||
+                customToolCallOutput != null ||
+                computerCallOutput != null ||
+                shellCallOutput != null ||
+                applyPatchCallOutput != null ||
+                toolSearchOutput != null ||
+                mcpApprovalResponse != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            functionCallOutput,
-            customToolCallOutput,
-            computerCallOutput,
-            shellCallOutput,
-            applyPatchCallOutput,
-            toolSearchOutput,
-            mcpApprovalResponse,
+        if (
+            functionCallOutput == null &&
+                customToolCallOutput == null &&
+                computerCallOutput == null &&
+                shellCallOutput == null &&
+                applyPatchCallOutput == null &&
+                toolSearchOutput == null &&
+                mcpApprovalResponse == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                functionCallOutput,
+                customToolCallOutput,
+                computerCallOutput,
+                shellCallOutput,
+                applyPatchCallOutput,
+                toolSearchOutput,
+                mcpApprovalResponse,
+            )
 
     override fun toString(): String =
         when {

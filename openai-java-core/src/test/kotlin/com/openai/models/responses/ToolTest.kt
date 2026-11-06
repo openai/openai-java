@@ -476,6 +476,9 @@ internal class ToolTest {
             Tool.ImageGeneration.builder()
                 .action(Tool.ImageGeneration.Action.GENERATE)
                 .background(Tool.ImageGeneration.Background.TRANSPARENT)
+                .complexity(Tool.ImageGeneration.Complexity.LOW)
+                .frameCount(2L)
+                .frameDurationMs(20L)
                 .inputFidelity(Tool.ImageGeneration.InputFidelity.HIGH)
                 .inputImageMask(
                     Tool.ImageGeneration.InputImageMask.builder()
@@ -490,6 +493,16 @@ internal class ToolTest {
                 .partialImages(0L)
                 .quality(Tool.ImageGeneration.Quality.LOW)
                 .size(Tool.ImageGeneration.Size._1024X1024)
+                .svg(
+                    Tool.ImageGeneration.Svg.builder()
+                        .model("x")
+                        .reasoning(
+                            Tool.ImageGeneration.Svg.Reasoning.builder()
+                                .effort(Tool.ImageGeneration.Svg.Reasoning.ReasoningEffortEnum.NONE)
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
 
         val tool = Tool.ofImageGeneration(imageGeneration)
@@ -520,6 +533,9 @@ internal class ToolTest {
                 Tool.ImageGeneration.builder()
                     .action(Tool.ImageGeneration.Action.GENERATE)
                     .background(Tool.ImageGeneration.Background.TRANSPARENT)
+                    .complexity(Tool.ImageGeneration.Complexity.LOW)
+                    .frameCount(2L)
+                    .frameDurationMs(20L)
                     .inputFidelity(Tool.ImageGeneration.InputFidelity.HIGH)
                     .inputImageMask(
                         Tool.ImageGeneration.InputImageMask.builder()
@@ -534,6 +550,18 @@ internal class ToolTest {
                     .partialImages(0L)
                     .quality(Tool.ImageGeneration.Quality.LOW)
                     .size(Tool.ImageGeneration.Size._1024X1024)
+                    .svg(
+                        Tool.ImageGeneration.Svg.builder()
+                            .model("x")
+                            .reasoning(
+                                Tool.ImageGeneration.Svg.Reasoning.builder()
+                                    .effort(
+                                        Tool.ImageGeneration.Svg.Reasoning.ReasoningEffortEnum.NONE
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
                     .build()
             )
 

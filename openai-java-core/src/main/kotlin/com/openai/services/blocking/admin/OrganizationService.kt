@@ -7,6 +7,7 @@ import com.openai.services.blocking.admin.organization.AdminApiKeyService
 import com.openai.services.blocking.admin.organization.AuditLogService
 import com.openai.services.blocking.admin.organization.CertificateService
 import com.openai.services.blocking.admin.organization.DataRetentionService
+import com.openai.services.blocking.admin.organization.ExternalKeyService
 import com.openai.services.blocking.admin.organization.ExternalStorageService
 import com.openai.services.blocking.admin.organization.GroupService
 import com.openai.services.blocking.admin.organization.InviteService
@@ -16,6 +17,7 @@ import com.openai.services.blocking.admin.organization.SpendAlertService
 import com.openai.services.blocking.admin.organization.SpendLimitService
 import com.openai.services.blocking.admin.organization.UsageService
 import com.openai.services.blocking.admin.organization.UserService
+import com.openai.services.blocking.admin.organization.WorkloadIdentityProviderService
 import java.util.function.Consumer
 
 interface OrganizationService {
@@ -55,6 +57,12 @@ interface OrganizationService {
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     fun dataRetention(): DataRetentionService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
+    fun externalKeys(): ExternalKeyService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
+    fun workloadIdentityProviders(): WorkloadIdentityProviderService =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     fun externalStorage(): ExternalStorageService =
@@ -123,6 +131,16 @@ interface OrganizationService {
             )
 
         fun dataRetention(): DataRetentionService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
+
+        fun externalKeys(): ExternalKeyService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
+
+        fun workloadIdentityProviders(): WorkloadIdentityProviderService.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
             )

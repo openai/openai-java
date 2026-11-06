@@ -186,11 +186,17 @@ private constructor(
         return other is RealtimeToolChoiceConfig &&
             toolChoiceOptions == other.toolChoiceOptions &&
             toolChoiceFunction == other.toolChoiceFunction &&
-            toolChoiceMcp == other.toolChoiceMcp
+            toolChoiceMcp == other.toolChoiceMcp &&
+            (toolChoiceOptions != null ||
+                toolChoiceFunction != null ||
+                toolChoiceMcp != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(toolChoiceOptions, toolChoiceFunction, toolChoiceMcp)
+        if (toolChoiceOptions == null && toolChoiceFunction == null && toolChoiceMcp == null)
+            Objects.hash(_json)
+        else Objects.hash(toolChoiceOptions, toolChoiceFunction, toolChoiceMcp)
 
     override fun toString(): String =
         when {

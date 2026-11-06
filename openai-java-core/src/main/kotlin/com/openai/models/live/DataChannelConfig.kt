@@ -401,10 +401,14 @@ private constructor(
                 return true
             }
 
-            return other is AllowedClientEvents && all == other.all && strings == other.strings
+            return other is AllowedClientEvents &&
+                all == other.all &&
+                strings == other.strings &&
+                (all != null || strings != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(all, strings)
+        override fun hashCode(): Int =
+            if (all == null && strings == null) Objects.hash(_json) else Objects.hash(all, strings)
 
         override fun toString(): String =
             when {
@@ -632,10 +636,13 @@ private constructor(
 
             return other is AllowedServerEvents &&
                 all == other.all &&
-                eventSelectors == other.eventSelectors
+                eventSelectors == other.eventSelectors &&
+                (all != null || eventSelectors != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(all, eventSelectors)
+        override fun hashCode(): Int =
+            if (all == null && eventSelectors == null) Objects.hash(_json)
+            else Objects.hash(all, eventSelectors)
 
         override fun toString(): String =
             when {

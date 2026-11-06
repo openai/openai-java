@@ -13,6 +13,8 @@ internal class AgentCreateParamsTest {
     fun create() {
         AgentCreateParams.builder()
             .model("model")
+            .compaction(AgentCreateParams.Compaction.builder().async(true).build())
+            .experimental(AgentCreateParams.Experimental.builder().timeAwareness(true).build())
             .instructions("instructions")
             .metadata(
                 AgentCreateParams.Metadata.builder()
@@ -56,6 +58,8 @@ internal class AgentCreateParamsTest {
         val params =
             AgentCreateParams.builder()
                 .model("model")
+                .compaction(AgentCreateParams.Compaction.builder().async(true).build())
+                .experimental(AgentCreateParams.Experimental.builder().timeAwareness(true).build())
                 .instructions("instructions")
                 .metadata(
                     AgentCreateParams.Metadata.builder()
@@ -96,6 +100,10 @@ internal class AgentCreateParamsTest {
         val body = params._body()
 
         assertThat(body.model()).isEqualTo("model")
+        assertThat(body.compaction())
+            .contains(AgentCreateParams.Compaction.builder().async(true).build())
+        assertThat(body.experimental())
+            .contains(AgentCreateParams.Experimental.builder().timeAwareness(true).build())
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.metadata())
             .contains(

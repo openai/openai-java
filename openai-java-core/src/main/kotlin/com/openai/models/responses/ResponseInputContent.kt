@@ -166,10 +166,13 @@ private constructor(
         return other is ResponseInputContent &&
             inputText == other.inputText &&
             inputImage == other.inputImage &&
-            inputFile == other.inputFile
+            inputFile == other.inputFile &&
+            (inputText != null || inputImage != null || inputFile != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(inputText, inputImage, inputFile)
+    override fun hashCode(): Int =
+        if (inputText == null && inputImage == null && inputFile == null) Objects.hash(_json)
+        else Objects.hash(inputText, inputImage, inputFile)
 
     override fun toString(): String =
         when {

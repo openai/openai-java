@@ -52,6 +52,10 @@ internal class AgentSessionTest {
                                 )
                                 .build()
                         )
+                        .compaction(AgentSession.Agent.Compaction.builder().async(true).build())
+                        .experimental(
+                            AgentSession.Agent.Experimental.builder().timeAwareness(true).build()
+                        )
                         .build()
                 )
                 .createdAt(0L)
@@ -113,6 +117,7 @@ internal class AgentSessionTest {
                         .build()
                 )
                 .addVaultId("string")
+                .review(AgentSession.Review.NONE)
                 .spendControl(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
                 .build()
 
@@ -148,6 +153,10 @@ internal class AgentSessionTest {
                                     .build()
                             )
                             .build()
+                    )
+                    .compaction(AgentSession.Agent.Compaction.builder().async(true).build())
+                    .experimental(
+                        AgentSession.Agent.Experimental.builder().timeAwareness(true).build()
                     )
                     .build()
             )
@@ -215,6 +224,7 @@ internal class AgentSessionTest {
                     .build()
             )
         assertThat(agentSession.vaultIds()).containsExactly("string")
+        assertThat(agentSession.review()).contains(AgentSession.Review.NONE)
         assertThat(agentSession.spendControl())
             .contains(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
 

@@ -21,6 +21,7 @@ import com.openai.services.async.admin.organization.projects.ModelPermissionServ
 import com.openai.services.async.admin.organization.projects.RateLimitServiceAsync
 import com.openai.services.async.admin.organization.projects.RoleServiceAsync
 import com.openai.services.async.admin.organization.projects.ServiceAccountServiceAsync
+import com.openai.services.async.admin.organization.projects.ServiceTierSettingServiceAsync
 import com.openai.services.async.admin.organization.projects.SpendAlertServiceAsync
 import com.openai.services.async.admin.organization.projects.SpendLimitServiceAsync
 import com.openai.services.async.admin.organization.projects.UserServiceAsync
@@ -54,6 +55,9 @@ interface ProjectServiceAsync {
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     fun modelPermissions(): ModelPermissionServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
+    fun serviceTierSettings(): ServiceTierSettingServiceAsync =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     fun hostedToolPermissions(): HostedToolPermissionServiceAsync =
@@ -239,6 +243,11 @@ interface ProjectServiceAsync {
             )
 
         fun modelPermissions(): ModelPermissionServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
+
+        fun serviceTierSettings(): ServiceTierSettingServiceAsync.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
             )

@@ -611,10 +611,13 @@ private constructor(
 
             return other is Files &&
                 inputStreams == other.inputStreams &&
-                inputStream == other.inputStream
+                inputStream == other.inputStream &&
+                (inputStreams != null || inputStream != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(inputStreams, inputStream)
+        override fun hashCode(): Int =
+            if (inputStreams == null && inputStream == null) Objects.hash(_json)
+            else Objects.hash(inputStreams, inputStream)
 
         override fun toString(): String =
             when {

@@ -154,10 +154,13 @@ private constructor(
 
         return other is McpOAuthTokenEndpointAuthRotateParam &&
             clientSecretBasic == other.clientSecretBasic &&
-            clientSecretPost == other.clientSecretPost
+            clientSecretPost == other.clientSecretPost &&
+            (clientSecretBasic != null || clientSecretPost != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(clientSecretBasic, clientSecretPost)
+    override fun hashCode(): Int =
+        if (clientSecretBasic == null && clientSecretPost == null) Objects.hash(_json)
+        else Objects.hash(clientSecretBasic, clientSecretPost)
 
     override fun toString(): String =
         when {

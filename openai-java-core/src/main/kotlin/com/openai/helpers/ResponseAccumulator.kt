@@ -1,6 +1,7 @@
 package com.openai.helpers
 
 import com.openai.core.JsonField
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.responses.Response
@@ -87,6 +88,9 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
     private var response: Response? = null
     private var partial: Response? = null
     private var materialized: Response? = null
+    private val finalizedOutput =
+        if (snapshotsEnabled) sortedMapOf<Long, ResponseOutputItem>() else null
+    private var reconstructionError = false
 
     private class PendingItem(val item: ResponseOutputItem) {
         var input: StringBuilder? = null
@@ -120,8 +124,8 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
     }
 
     /**
-     * The most recently observed response, including incremental output text, refusal and function
-     * call arguments. Empty until a response-bearing event arrives. Fields the server omitted
+     * The most recently observed response, including incremental output text, refusal, function and
+     * MCP call arguments. Empty until a response-bearing event arrives. Fields the server omitted
      * remain omitted. A snapshot is not a completed response: only [response] requires a terminal
      * event. Failed and incomplete terminal events replace the snapshot with their full response.
      * Other item kinds are retained when output-item events arrive and in the raw stream.
@@ -144,6 +148,12 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 if (call != null && arguments != null) {
                     return@map ResponseOutputItem.ofFunctionCall(
                         call.toBuilder().arguments(arguments.toString()).build()
+                    )
+                }
+                val mcp = item.mcpCall().orElse(null)
+                if (mcp != null && arguments != null) {
+                    return@map ResponseOutputItem.ofMcpCall(
+                        mcp.toBuilder().arguments(arguments.toString()).build()
                     )
                 }
                 val custom = item.customToolCall().orElse(null)
@@ -190,6 +200,32 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
     fun response() = checkNotNull(response) { "Completed response is not yet received." }
 
     /**
+     * Returns the terminal response, filling omitted or null output with finalized output items.
+     * This opt-in compatibility accessor requires [createWithSnapshots]. It leaves [response] and
+     * [snapshot] unchanged: any supplied non-null terminal output, including an empty list, wins.
+     *
+     * Only `response.output_item.done` records contribute to reconstructed output, sorted by their
+     * output index. Sparse indices are accepted; no finalized records produces an empty list.
+     * Partial items and deltas never become final output. The terminal status, errors, usage and
+     * other metadata remain authoritative, including for failed and incomplete responses.
+     *
+     * This method reads no events from the socket and never executes tool calls.
+     *
+     * @throws IllegalStateException If snapshots are disabled, no terminal response has arrived, or
+     *   a WebSocket protocol error was observed before the terminal response.
+     */
+    fun reconstructedResponse(): Response {
+        check(snapshotsEnabled) {
+            "Reconstruction requires ResponseAccumulator.createWithSnapshots()."
+        }
+        check(!reconstructionError) { "Cannot reconstruct a response after a WebSocket error." }
+        val terminal = response()
+        val value = terminal._output()
+        if (!value.isMissing() && value !is JsonNull) return terminal
+        return terminal.toBuilder().output(finalizedOutput!!.values.toList()).build()
+    }
+
+    /**
      * Gets the final accumulated response with support for structured outputs. Until the last event
      * has been accumulated, a [StructuredResponse] will not be available. Wait until all events
      * have been handled by [accumulate] before calling this method. See that method for more
@@ -214,6 +250,10 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
     fun accumulate(
         event: com.openai.models.responses.ResponsesServerEvent
     ): com.openai.models.responses.ResponsesServerEvent {
+        if (snapshotsEnabled && response == null && event.error().isPresent) {
+            reconstructionError = true
+            finalizedOutput!!.clear()
+        }
         event.responseCompleted().ifPresent { accumulate(ResponseStreamEvent.ofCompleted(it)) }
         event.responseFailed().ifPresent { accumulate(ResponseStreamEvent.ofFailed(it)) }
         event.responseIncomplete().ifPresent { accumulate(ResponseStreamEvent.ofIncomplete(it)) }
@@ -256,6 +296,12 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
             event.responseFunctionCallArgumentsDone().ifPresent {
                 accumulate(ResponseStreamEvent.ofFunctionCallArgumentsDone(it))
             }
+            event.responseMcpCallArgumentsDelta().ifPresent {
+                accumulate(ResponseStreamEvent.ofMcpCallArgumentsDelta(it))
+            }
+            event.responseMcpCallArgumentsDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofMcpCallArgumentsDone(it))
+            }
             event.responseCustomToolCallInputDelta().ifPresent {
                 accumulate(ResponseStreamEvent.ofCustomToolCallInputDelta(it))
             }
@@ -289,7 +335,11 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 // The following events _all_ have a `response` property.
 
                 override fun visitCreated(created: ResponseCreatedEvent) {
-                    if (snapshotsEnabled) replacePartial(created.response())
+                    if (snapshotsEnabled) {
+                        finalizedOutput!!.clear()
+                        reconstructionError = false
+                        replacePartial(created.response())
+                    }
                 }
 
                 override fun visitCompleted(completed: ResponseCompletedEvent) {
@@ -506,8 +556,11 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 }
 
                 override fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent) {
-                    if (snapshotsEnabled)
+                    if (snapshotsEnabled) {
+                        if (!reconstructionError)
+                            finalizedOutput!![outputItemDone.outputIndex()] = outputItemDone.item()
                         updateItem(outputItemDone.outputIndex()) { outputItemDone.item() }
+                    }
                 }
 
                 override fun visitReasoningSummaryPartAdded(
@@ -649,11 +702,31 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
 
                 override fun visitMcpCallArgumentsDelta(
                     mcpCallArgumentsDelta: ResponseMcpCallArgumentsDeltaEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    append(
+                        mcpCallArgumentsDelta.outputIndex(),
+                        mcpCallArgumentsDelta._itemId(),
+                        mcpCallArgumentsDelta.delta(),
+                    ) { item ->
+                        item.mcpCall().orElse(null)?._arguments()?.asKnown()?.orElse(null)
+                    }
+                }
 
                 override fun visitMcpCallArgumentsDone(
                     mcpCallArgumentsDone: ResponseMcpCallArgumentsDoneEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    updateItem(
+                        mcpCallArgumentsDone.outputIndex(),
+                        mcpCallArgumentsDone._itemId(),
+                    ) { item ->
+                        val call = item?.mcpCall()?.orElse(null) ?: return@updateItem null
+                        ResponseOutputItem.ofMcpCall(
+                            call.toBuilder().arguments(mcpCallArgumentsDone.arguments()).build()
+                        )
+                    }
+                }
 
                 override fun visitMcpCallCompleted(
                     mcpCallCompleted: ResponseMcpCallCompletedEvent
@@ -778,6 +851,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
             item?.message()?.orElse(null)?._id()
                 ?: item?.functionCall()?.orElse(null)?._id()
                 ?: item?.customToolCall()?.orElse(null)?._id()
+                ?: item?.mcpCall()?.orElse(null)?._id()
         return actual?.asKnown()?.orElse(null) == expected
     }
 

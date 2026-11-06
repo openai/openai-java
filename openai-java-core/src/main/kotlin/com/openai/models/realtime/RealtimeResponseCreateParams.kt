@@ -1176,10 +1176,14 @@ private constructor(
                 return true
             }
 
-            return other is MaxOutputTokens && integer == other.integer && inf == other.inf
+            return other is MaxOutputTokens &&
+                integer == other.integer &&
+                inf == other.inf &&
+                (integer != null || inf != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(integer, inf)
+        override fun hashCode(): Int =
+            if (integer == null && inf == null) Objects.hash(_json) else Objects.hash(integer, inf)
 
         override fun toString(): String =
             when {
@@ -1709,10 +1713,13 @@ private constructor(
             return other is ToolChoice &&
                 options == other.options &&
                 function == other.function &&
-                mcp == other.mcp
+                mcp == other.mcp &&
+                (options != null || function != null || mcp != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(options, function, mcp)
+        override fun hashCode(): Int =
+            if (options == null && function == null && mcp == null) Objects.hash(_json)
+            else Objects.hash(options, function, mcp)
 
         override fun toString(): String =
             when {
@@ -1984,10 +1991,15 @@ private constructor(
 
             return other is Tool &&
                 realtimeFunction == other.realtimeFunction &&
-                realtimeResponseCreateMcp == other.realtimeResponseCreateMcp
+                realtimeResponseCreateMcp == other.realtimeResponseCreateMcp &&
+                (realtimeFunction != null ||
+                    realtimeResponseCreateMcp != null ||
+                    _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(realtimeFunction, realtimeResponseCreateMcp)
+        override fun hashCode(): Int =
+            if (realtimeFunction == null && realtimeResponseCreateMcp == null) Objects.hash(_json)
+            else Objects.hash(realtimeFunction, realtimeResponseCreateMcp)
 
         override fun toString(): String =
             when {

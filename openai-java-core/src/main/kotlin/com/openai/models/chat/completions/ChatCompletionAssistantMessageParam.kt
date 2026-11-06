@@ -816,10 +816,13 @@ private constructor(
 
             return other is Content &&
                 text == other.text &&
-                arrayOfContentParts == other.arrayOfContentParts
+                arrayOfContentParts == other.arrayOfContentParts &&
+                (text != null || arrayOfContentParts != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(text, arrayOfContentParts)
+        override fun hashCode(): Int =
+            if (text == null && arrayOfContentParts == null) Objects.hash(_json)
+            else Objects.hash(text, arrayOfContentParts)
 
         override fun toString(): String =
             when {
@@ -1057,10 +1060,13 @@ private constructor(
 
                 return other is ChatCompletionRequestAssistantMessageContentPart &&
                     text == other.text &&
-                    refusal == other.refusal
+                    refusal == other.refusal &&
+                    (text != null || refusal != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(text, refusal)
+            override fun hashCode(): Int =
+                if (text == null && refusal == null) Objects.hash(_json)
+                else Objects.hash(text, refusal)
 
             override fun toString(): String =
                 when {

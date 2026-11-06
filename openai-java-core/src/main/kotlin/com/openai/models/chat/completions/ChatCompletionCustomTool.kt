@@ -636,10 +636,15 @@ private constructor(
                     return true
                 }
 
-                return other is Format && text == other.text && grammar == other.grammar
+                return other is Format &&
+                    text == other.text &&
+                    grammar == other.grammar &&
+                    (text != null || grammar != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(text, grammar)
+            override fun hashCode(): Int =
+                if (text == null && grammar == null) Objects.hash(_json)
+                else Objects.hash(text, grammar)
 
             override fun toString(): String =
                 when {

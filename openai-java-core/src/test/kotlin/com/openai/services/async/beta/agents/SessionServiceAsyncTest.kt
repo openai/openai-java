@@ -33,6 +33,14 @@ internal class SessionServiceAsyncTest {
                     .environmentNone()
                     .agent(
                         SessionCreateParams.Agent.builder()
+                            .compaction(
+                                SessionCreateParams.Agent.Compaction.builder().async(true).build()
+                            )
+                            .experimental(
+                                SessionCreateParams.Agent.Experimental.builder()
+                                    .timeAwareness(true)
+                                    .build()
+                            )
                             .instructions("instructions")
                             .model("model")
                             .multiAgent(
@@ -75,6 +83,7 @@ internal class SessionServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
+                    .review(SessionCreateParams.Review.NONE)
                     .spendControl(SessionCreateParams.SpendControl.builder().limit(1L).build())
                     .addVaultId("string")
                     .build()
@@ -132,6 +141,18 @@ internal class SessionServiceAsyncTest {
                                     .build()
                             )
                             .serviceTier(SessionUpdateParams.Agent.ServiceTier.AUTO)
+                            .addTool(
+                                AgentToolParam.Function.builder()
+                                    .description("description")
+                                    .name("name")
+                                    .parameters(
+                                        AgentToolParam.Function.Parameters.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                            .build()
+                                    )
+                                    .deferLoading(true)
+                                    .build()
+                            )
                             .build()
                     )
                     .metadata(
@@ -139,6 +160,7 @@ internal class SessionServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
+                    .review(SessionUpdateParams.Review.NONE)
                     .spendControl(SessionUpdateParams.SpendControl.builder().limit(1L).build())
                     .build()
             )

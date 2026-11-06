@@ -169,10 +169,13 @@ private constructor(
 
         return other is BetaResponseSteerInput &&
             text == other.text &&
-            responseSteerInputItemList == other.responseSteerInputItemList
+            responseSteerInputItemList == other.responseSteerInputItemList &&
+            (text != null || responseSteerInputItemList != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(text, responseSteerInputItemList)
+    override fun hashCode(): Int =
+        if (text == null && responseSteerInputItemList == null) Objects.hash(_json)
+        else Objects.hash(text, responseSteerInputItemList)
 
     override fun toString(): String =
         when {
@@ -401,10 +404,13 @@ private constructor(
 
             return other is ResponseSteerInputItem &&
                 message == other.message &&
-                functionCallOutput == other.functionCallOutput
+                functionCallOutput == other.functionCallOutput &&
+                (message != null || functionCallOutput != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(message, functionCallOutput)
+        override fun hashCode(): Int =
+            if (message == null && functionCallOutput == null) Objects.hash(_json)
+            else Objects.hash(message, functionCallOutput)
 
         override fun toString(): String =
             when {
@@ -1018,10 +1024,16 @@ private constructor(
 
                     return other is Content &&
                         betaResponseSteerInputContents == other.betaResponseSteerInputContents &&
-                        string == other.string
+                        string == other.string &&
+                        (betaResponseSteerInputContents != null ||
+                            string != null ||
+                            _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(betaResponseSteerInputContents, string)
+                override fun hashCode(): Int =
+                    if (betaResponseSteerInputContents == null && string == null)
+                        Objects.hash(_json)
+                    else Objects.hash(betaResponseSteerInputContents, string)
 
                 override fun toString(): String =
                     when {
@@ -2056,11 +2068,16 @@ private constructor(
                     return other is Output &&
                         string == other.string &&
                         betaResponseFunctionCallOutputItemList ==
-                            other.betaResponseFunctionCallOutputItemList
+                            other.betaResponseFunctionCallOutputItemList &&
+                        (string != null ||
+                            betaResponseFunctionCallOutputItemList != null ||
+                            _json == other._json)
                 }
 
                 override fun hashCode(): Int =
-                    Objects.hash(string, betaResponseFunctionCallOutputItemList)
+                    if (string == null && betaResponseFunctionCallOutputItemList == null)
+                        Objects.hash(_json)
+                    else Objects.hash(string, betaResponseFunctionCallOutputItemList)
 
                 override fun toString(): String =
                     when {
@@ -2514,10 +2531,15 @@ private constructor(
                         return true
                     }
 
-                    return other is Caller && direct == other.direct && program == other.program
+                    return other is Caller &&
+                        direct == other.direct &&
+                        program == other.program &&
+                        (direct != null || program != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(direct, program)
+                override fun hashCode(): Int =
+                    if (direct == null && program == null) Objects.hash(_json)
+                    else Objects.hash(direct, program)
 
                 override fun toString(): String =
                     when {
