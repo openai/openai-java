@@ -27,6 +27,8 @@ import com.openai.models.beta.agents.AgentListPageResponse
 import com.openai.models.beta.agents.AgentListParams
 import com.openai.models.beta.agents.AgentRetrieveParams
 import com.openai.models.beta.agents.AgentUpdateParams
+import com.openai.services.blocking.beta.agents.AutomationService
+import com.openai.services.blocking.beta.agents.AutomationServiceImpl
 import com.openai.services.blocking.beta.agents.EnvironmentService
 import com.openai.services.blocking.beta.agents.EnvironmentServiceImpl
 import com.openai.services.blocking.beta.agents.SessionService
@@ -48,6 +50,8 @@ class AgentServiceImpl internal constructor(private val clientOptions: ClientOpt
         WithRawResponseImpl(clientOptions)
     }
 
+    private val automations: AutomationService by lazy { AutomationServiceImpl(clientOptions) }
+
     private val environments: EnvironmentService by lazy { EnvironmentServiceImpl(clientOptions) }
 
     private val vaults: VaultService by lazy { VaultServiceImpl(clientOptions) }
@@ -58,6 +62,8 @@ class AgentServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AgentService =
         AgentServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun automations(): AutomationService = automations
 
     override fun environments(): EnvironmentService = environments
 
@@ -91,6 +97,10 @@ class AgentServiceImpl internal constructor(private val clientOptions: ClientOpt
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
+        private val automations: AutomationService.WithRawResponse by lazy {
+            AutomationServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val environments: EnvironmentService.WithRawResponse by lazy {
             EnvironmentServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -109,6 +119,8 @@ class AgentServiceImpl internal constructor(private val clientOptions: ClientOpt
             AgentServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun automations(): AutomationService.WithRawResponse = automations
 
         override fun environments(): EnvironmentService.WithRawResponse = environments
 
