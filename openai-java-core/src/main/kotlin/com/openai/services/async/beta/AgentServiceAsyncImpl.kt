@@ -27,6 +27,8 @@ import com.openai.models.beta.agents.AgentListPageResponse
 import com.openai.models.beta.agents.AgentListParams
 import com.openai.models.beta.agents.AgentRetrieveParams
 import com.openai.models.beta.agents.AgentUpdateParams
+import com.openai.services.async.beta.agents.AutomationServiceAsync
+import com.openai.services.async.beta.agents.AutomationServiceAsyncImpl
 import com.openai.services.async.beta.agents.EnvironmentServiceAsync
 import com.openai.services.async.beta.agents.EnvironmentServiceAsyncImpl
 import com.openai.services.async.beta.agents.SessionServiceAsync
@@ -49,6 +51,10 @@ class AgentServiceAsyncImpl internal constructor(private val clientOptions: Clie
         WithRawResponseImpl(clientOptions)
     }
 
+    private val automations: AutomationServiceAsync by lazy {
+        AutomationServiceAsyncImpl(clientOptions)
+    }
+
     private val environments: EnvironmentServiceAsync by lazy {
         EnvironmentServiceAsyncImpl(clientOptions)
     }
@@ -61,6 +67,8 @@ class AgentServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AgentServiceAsync =
         AgentServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun automations(): AutomationServiceAsync = automations
 
     override fun environments(): EnvironmentServiceAsync = environments
 
@@ -109,6 +117,10 @@ class AgentServiceAsyncImpl internal constructor(private val clientOptions: Clie
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
+        private val automations: AutomationServiceAsync.WithRawResponse by lazy {
+            AutomationServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val environments: EnvironmentServiceAsync.WithRawResponse by lazy {
             EnvironmentServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -127,6 +139,8 @@ class AgentServiceAsyncImpl internal constructor(private val clientOptions: Clie
             AgentServiceAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun automations(): AutomationServiceAsync.WithRawResponse = automations
 
         override fun environments(): EnvironmentServiceAsync.WithRawResponse = environments
 
