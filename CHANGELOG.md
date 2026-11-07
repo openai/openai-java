@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.101.1](https://github.com/openai/openai-java/compare/v4.101.0...v4.101.1) (2026-11-07)
+
+
+### Documentation
+
+* consolidate AGENTS.md guidance ([#1343](https://github.com/openai/openai-java/issues/1343)) ([0e0697b](https://github.com/openai/openai-java/commit/0e0697bc7eadac50a72c3704235be8a335af29e3))
+
 ## [4.101.0](https://github.com/openai/openai-java/compare/v4.100.0...v4.101.0) (2026-11-05)
 
 
