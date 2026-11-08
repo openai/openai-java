@@ -5071,6 +5071,8 @@ private constructor(
 
                 @JvmField val GPT_ROSALIND_RESEARCH = of("gpt-rosalind-research")
 
+                @JvmField val GPT_6_ROSALIND = of("gpt-6-rosalind")
+
                 @JvmStatic fun of(value: String) = Model(JsonField.of(value))
             }
 
@@ -5446,6 +5448,7 @@ private constructor(
                 GPT_5_6_CYBER,
                 GPT_6_CYBER,
                 GPT_ROSALIND_RESEARCH,
+                GPT_6_ROSALIND,
             }
 
             /**
@@ -5828,6 +5831,7 @@ private constructor(
                 GPT_5_6_CYBER,
                 GPT_6_CYBER,
                 GPT_ROSALIND_RESEARCH,
+                GPT_6_ROSALIND,
                 /**
                  * An enum member indicating that [Model] was instantiated with an unknown value.
                  */
@@ -5956,6 +5960,7 @@ private constructor(
                     GPT_5_6_CYBER -> Value.GPT_5_6_CYBER
                     GPT_6_CYBER -> Value.GPT_6_CYBER
                     GPT_ROSALIND_RESEARCH -> Value.GPT_ROSALIND_RESEARCH
+                    GPT_6_ROSALIND -> Value.GPT_6_ROSALIND
                     else -> Value._UNKNOWN
                 }
 
@@ -6083,6 +6088,7 @@ private constructor(
                     GPT_5_6_CYBER -> Known.GPT_5_6_CYBER
                     GPT_6_CYBER -> Known.GPT_6_CYBER
                     GPT_ROSALIND_RESEARCH -> Known.GPT_ROSALIND_RESEARCH
+                    GPT_6_ROSALIND -> Known.GPT_6_ROSALIND
                     else -> throw OpenAIInvalidDataException("Unknown Model: $value")
                 }
 
