@@ -14,6 +14,7 @@ import com.openai.models.beta.agents.AgentListPage
 import com.openai.models.beta.agents.AgentListParams
 import com.openai.models.beta.agents.AgentRetrieveParams
 import com.openai.models.beta.agents.AgentUpdateParams
+import com.openai.services.blocking.beta.agents.AutomationService
 import com.openai.services.blocking.beta.agents.EnvironmentService
 import com.openai.services.blocking.beta.agents.SessionService
 import com.openai.services.blocking.beta.agents.VaultService
@@ -32,6 +33,9 @@ interface AgentService {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AgentService
+
+    fun automations(): AutomationService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     fun environments(): EnvironmentService =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
@@ -175,6 +179,11 @@ interface AgentService {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): AgentService.WithRawResponse
+
+        fun automations(): AutomationService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         fun environments(): EnvironmentService.WithRawResponse =
             throw UnsupportedOperationException(
