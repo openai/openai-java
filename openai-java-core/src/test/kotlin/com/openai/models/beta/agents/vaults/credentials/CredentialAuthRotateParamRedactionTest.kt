@@ -152,7 +152,8 @@ internal class CredentialAuthRotateParamRedactionTest {
                 )
         }
         assertThat(environmentVariable.secretValue()).isEqualTo(secret)
-        assertThat(environmentVariable._allProperties()["secret_value"]).isEqualTo(JsonValue.from(secret))
+        assertThat(environmentVariable._allProperties()["secret_value"])
+            .isEqualTo(JsonValue.from(secret))
         assertThat(params._body().auth().get().asEnvironmentVariable())
             .isEqualTo(environmentVariable)
         assertThat(mapper.writeValueAsString(auth)).isEqualTo(serialized)
