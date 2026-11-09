@@ -201,6 +201,8 @@ dependencies {
         implementation(it)
     }
 
+    compileOnly(CoreCompilationDependencies.SWAGGER_ANNOTATIONS)
+    testImplementation(CoreCompilationDependencies.SWAGGER_ANNOTATIONS)
     testImplementation(kotlin("test"))
     // Gradle 9 requires an explicit launcher; JUnit's BOM aligns it with the test engine.
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

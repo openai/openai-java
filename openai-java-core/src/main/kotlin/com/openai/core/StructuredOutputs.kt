@@ -34,6 +34,18 @@ private val MAPPER =
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         .build()
 
+private val swaggerAnnotationsAvailable =
+    try {
+        Class.forName(
+            "io.swagger.v3.oas.annotations.media.Schema",
+            false,
+            Swagger2Module::class.java.classLoader,
+        )
+        true
+    } catch (_: ClassNotFoundException) {
+        false
+    }
+
 /**
  * Builds a response format using a JSON schema derived from the structure of an arbitrary Java
  * class.
@@ -203,9 +215,10 @@ internal fun extractSchema(type: Class<*>): ObjectNode {
             // Use `JacksonModule` to support the use of Jackson annotations to set property and
             // class names and descriptions and to mark fields with `@JsonIgnore`.
             .with(JacksonModule())
-            // Use `Swagger2Module` to support OpenAPI Swagger 2 `@Schema` annotations to set
-            // property constraints (e.g., a `"pattern"` constraint for a string property).
-            .with(Swagger2Module())
+
+    if (swaggerAnnotationsAvailable) {
+        configBuilder.with(Swagger2Module())
+    }
 
     configBuilder
         .forFields()

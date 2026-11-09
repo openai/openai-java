@@ -4,6 +4,8 @@ package com.openai.gradle
 object CoreCompilationDependencies {
     const val JACKSON_COMPATIBILITY_VERSION = "2.14.0"
 
+    const val SWAGGER_ANNOTATIONS = "io.swagger.core.v3:swagger-annotations:2.2.31"
+
     private val jacksonModules =
         listOf(
             "com.fasterxml.jackson.core:jackson-core",
@@ -22,7 +24,6 @@ object CoreCompilationDependencies {
             "com.fasterxml.jackson.core:jackson-core:$jacksonPublishedVersion",
             "com.fasterxml.jackson.core:jackson-databind:$jacksonPublishedVersion",
             "com.google.errorprone:error_prone_annotations:2.33.0",
-            "io.swagger.core.v3:swagger-annotations:2.2.31",
         )
 
     fun publishedImplementationDependencies(jacksonPublishedVersion: String) =
@@ -39,5 +40,6 @@ object CoreCompilationDependencies {
 
     fun compilerClasspathDependencies(jacksonPublishedVersion: String) =
         publishedApiDependencies(jacksonPublishedVersion) +
-            publishedImplementationDependencies(jacksonPublishedVersion)
+            publishedImplementationDependencies(jacksonPublishedVersion) +
+            SWAGGER_ANNOTATIONS
 }

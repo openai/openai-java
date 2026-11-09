@@ -19,7 +19,7 @@ class CoreCompilationDependenciesTest {
         assertEquals(6, jacksonDependencies.size)
         assertTrue(jacksonDependencies.all { it.endsWith(":$jacksonPublishedVersion") })
         assertEquals(
-            publishedDependencies,
+            publishedDependencies + CoreCompilationDependencies.SWAGGER_ANNOTATIONS,
             CoreCompilationDependencies.compilerClasspathDependencies(jacksonPublishedVersion),
         )
         assertTrue(

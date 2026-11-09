@@ -849,7 +849,28 @@ If you use `@JsonProperty(required = false)`, the `false` value will be ignored.
 must mark all properties as _required_, so the schema generated from your Java classes will respect
 that restriction and ignore any annotation that would violate it.
 
-You can also use [OpenAPI Swagger 2](https://swagger.io/specification/v2/)
+Plain classes and Jackson annotations work with the SDK alone. To use Swagger
+annotations on your models, add one annotation artifact to your application's
+compile and runtime classpaths. For standard Swagger annotations, use:
+
+```kotlin
+implementation("io.swagger.core.v3:swagger-annotations:2.2.31")
+```
+
+```xml
+<dependency>
+  <groupId>io.swagger.core.v3</groupId>
+  <artifactId>swagger-annotations</artifactId>
+  <version>2.2.31</version>
+</dependency>
+```
+
+For Jakarta, use `swagger-annotations-jakarta` as the artifact name in either
+snippet. When upgrading, add the dependency explicitly if your source imports
+these annotations. Already-compiled models also need their annotation artifact
+at runtime for Structured Outputs and function tools to retain their constraints.
+
+You can use [OpenAPI Swagger 2](https://swagger.io/specification/v2/)
 [`@Schema`](https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations#schema) and
 [`@ArraySchema`](https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations#arrayschema)
 annotations. These allow type-specific constraints to be added to your schema properties. You can
