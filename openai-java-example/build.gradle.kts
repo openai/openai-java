@@ -9,6 +9,7 @@ repositories {
 
 dependencies {
     implementation(project(":openai-java"))
+    implementation(com.openai.gradle.CoreCompilationDependencies.SWAGGER_ANNOTATIONS)
     implementation(project(":openai-java-bedrock"))
     // Keep Azure Identity's Netty runtime aligned on a secure release.
     implementation(platform("io.netty:netty-bom:4.1.137.Final"))
