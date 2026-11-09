@@ -2,7 +2,9 @@ package com.openai.models.live
 
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 class ResponsesDelegationPolymorphismTest {
@@ -41,37 +43,22 @@ class ResponsesDelegationPolymorphismTest {
                 )
             )
             .isEqualTo("ctr_test")
-        val legacyVisitor =
-            object : ResponsesDelegationConfig.ToolChoice.Visitor<JsonValue?> {
-                override fun visitLiveToolChoiceEnum(
-                    liveToolChoiceEnum: ResponsesDelegationConfig.ToolChoice.LiveToolChoiceEnum
-                ): JsonValue = JsonValue.from(liveToolChoiceEnum.value().name)
-
-                override fun visitLiveFunctionToolChoiceParam(
-                    liveFunctionToolChoiceParam:
-                        ResponsesDelegationConfig.ToolChoice.LiveFunctionToolChoiceParam
-                ): JsonValue? = null
-
-                override fun visitLiveMcpToolChoiceParam(
-                    liveMcpToolChoiceParam:
-                        ResponsesDelegationConfig.ToolChoice.LiveMcpToolChoiceParam
-                ): JsonValue? = null
-
-                override fun unknown(json: JsonValue?) = json
-            }
-        assertThat(choice.accept(legacyVisitor))
-            .isEqualTo(JsonValue.from(mapOf("type" to "file_search")))
+        val handler =
+            ResponsesDelegationConfig.ToolChoice.Handler.builder<JsonValue>()
+                .onLiveToolChoiceEnum { JsonValue.from(it.value().name) }
+                .onDefault { JsonValue.from(it) }
+                .build()
+        val auto = mapper.readValue("\"auto\"", ResponsesDelegationConfig.ToolChoice::class.java)
+        assertThat(auto.match(handler)).isEqualTo(JsonValue.from("AUTO"))
+        assertThat(choice.match(handler)).isEqualTo(JsonValue.from(mapOf("type" to "file_search")))
         val unknown =
             mapper.readValue(unknownPayload, ResponsesDelegationConfig.ToolChoice::class.java)
-        assertThat(unknown.accept(legacyVisitor)).isEqualTo(JsonValue.from("_UNKNOWN"))
-        assertThat(
-                unknown.match(
-                    ResponsesDelegationConfig.ToolChoice.Handler.builder<JsonValue>()
-                        .onDefault { it._json().get() }
-                        .build()
-                )
-            )
-            .isEqualTo(unknownValue)
+        assertThat(unknown.match(handler)).isEqualTo(JsonValue.from("_UNKNOWN"))
+        val fallback =
+            ResponsesDelegationConfig.ToolChoice.Handler.builder<JsonValue>()
+                .onDefault { it._json().get() }
+                .build()
+        assertThat(unknown.match(fallback)).isEqualTo(unknownValue)
         assertThat(mapper.readTree(mapper.writeValueAsString(config)))
             .isEqualTo(mapper.readTree(payload))
     }
@@ -93,36 +80,21 @@ class ResponsesDelegationPolymorphismTest {
                 )
             )
             .isEqualTo(JsonValue.from(mapOf("type" to "file_search")))
-        val legacyVisitor =
-            object : ResponsesDelegationUpdateConfig.Tool.Visitor<JsonValue?> {
-                override fun visitFunction(function: FunctionTool): JsonValue? = null
-
-                override fun visitWebSearch(webSearch: JsonValue): JsonValue? = null
-
-                override fun unknown(json: JsonValue?) = json
-            }
-        assertThat(shell.accept(legacyVisitor))
-            .isEqualTo(
-                JsonValue.from(
-                    mapOf(
-                        "type" to "shell",
-                        "environment" to
-                            mapOf("type" to "container_reference", "container_id" to "ctr_test"),
-                        "client_tag" to "retained",
-                    )
-                )
-            )
+        val handler =
+            ResponsesDelegationUpdateConfig.Tool.Handler.builder<JsonValue>()
+                .onWebSearch { it }
+                .onDefault { JsonValue.from(it) }
+                .build()
+        assertThat(shell.match(handler))
+            .isEqualTo(JsonValue.from(mapper.readTree(payload)["tools"][0]))
         val unknown =
             mapper.readValue(unknownPayload, ResponsesDelegationUpdateConfig.Tool::class.java)
-        assertThat(unknown.accept(legacyVisitor)).isEqualTo(unknownValue)
-        assertThat(
-                unknown.match(
-                    ResponsesDelegationUpdateConfig.Tool.Handler.builder<JsonValue>()
-                        .onDefault { it._json().get() }
-                        .build()
-                )
-            )
-            .isEqualTo(unknownValue)
+        assertThat(unknown.match(handler)).isEqualTo(unknownValue)
+        val withoutFallback = ResponsesDelegationUpdateConfig.Tool.Handler.builder<Unit>().build()
+        assertThatThrownBy { shell.match(withoutFallback) }
+            .isInstanceOf(OpenAIInvalidDataException::class.java)
+        assertThatThrownBy { unknown.match(withoutFallback) }
+            .isInstanceOf(OpenAIInvalidDataException::class.java)
         assertThat(mapper.readTree(mapper.writeValueAsString(config)))
             .isEqualTo(mapper.readTree(payload))
     }
