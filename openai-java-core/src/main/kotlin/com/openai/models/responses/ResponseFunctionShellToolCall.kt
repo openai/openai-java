@@ -950,10 +950,13 @@ private constructor(
 
             return other is Environment &&
                 local == other.local &&
-                containerReference == other.containerReference
+                containerReference == other.containerReference &&
+                (local != null || containerReference != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(local, containerReference)
+        override fun hashCode(): Int =
+            if (local == null && containerReference == null) Objects.hash(_json)
+            else Objects.hash(local, containerReference)
 
         override fun toString(): String =
             when {
@@ -1311,10 +1314,15 @@ private constructor(
                 return true
             }
 
-            return other is Caller && direct == other.direct && program == other.program
+            return other is Caller &&
+                direct == other.direct &&
+                program == other.program &&
+                (direct != null || program != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(direct, program)
+        override fun hashCode(): Int =
+            if (direct == null && program == null) Objects.hash(_json)
+            else Objects.hash(direct, program)
 
         override fun toString(): String =
             when {

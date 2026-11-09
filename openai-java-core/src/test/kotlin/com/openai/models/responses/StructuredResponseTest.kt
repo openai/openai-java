@@ -16,6 +16,7 @@ import com.openai.core.checkAllDelegatorReadFunctionsAreTested
 import com.openai.core.checkOneDelegationRead
 import com.openai.models.ChatModel
 import com.openai.models.ResponsesModel
+import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -39,6 +40,10 @@ import org.mockito.kotlin.verify
 internal class StructuredResponseTest {
     companion object {
         private val RESPONSES_MODEL = ResponsesModel.ofChat(ChatModel.GPT_4O)
+        private val IMAGE =
+            Response.Image.builder()
+                .contextCompression(Response.Image.ContextCompression.ENABLED)
+                .build()
 
         private val TOOL_CHOICE =
             Response.ToolChoice.ofFunction(ToolChoiceFunction.builder().name(STRING).build())
@@ -71,6 +76,8 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("temperature", OPTIONAL),
                 DelegationReadTestCase("toolChoice", TOOL_CHOICE),
                 DelegationReadTestCase("tools", LIST),
+                DelegationReadTestCase("toolUsage", OPTIONAL),
+                DelegationReadTestCase("_toolUsage", JSON_FIELD),
                 DelegationReadTestCase("topP", OPTIONAL),
                 DelegationReadTestCase("maxToolCalls", OPTIONAL),
                 DelegationReadTestCase("topLogprobs", OPTIONAL),
@@ -126,6 +133,8 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("_completedAt", JSON_FIELD),
                 DelegationReadTestCase("conversation", OPTIONAL),
                 DelegationReadTestCase("_conversation", JSON_FIELD),
+                DelegationReadTestCase("image", Optional.of(IMAGE)),
+                DelegationReadTestCase("_image", JsonField.of(IMAGE)),
                 DelegationReadTestCase("_allProperties", MAP),
                 DelegationReadTestCase("_additionalProperties", MAP),
                 // `validate()` and `isValid()` (which calls `validate()`) are tested separately,

@@ -810,42 +810,107 @@ private constructor(
             safetyAlertCreated == other.safetyAlertCreated &&
             safetyDeactivationIssued == other.safetyDeactivationIssued &&
             safetyOrgAlertCreated == other.safetyOrgAlertCreated &&
-            safetyWarningIssued == other.safetyWarningIssued
+            safetyWarningIssued == other.safetyWarningIssued &&
+            (agentEnvironmentExpired != null ||
+                agentEnvironmentFailed != null ||
+                agentEnvironmentReady != null ||
+                agentEnvironmentSuspended != null ||
+                agentSessionActionRequired != null ||
+                agentSessionCreated != null ||
+                agentSessionFailed != null ||
+                agentSessionIdle != null ||
+                agentSessionInProgress != null ||
+                batchCancelled != null ||
+                batchCompleted != null ||
+                batchExpired != null ||
+                batchFailed != null ||
+                evalRunCanceled != null ||
+                evalRunFailed != null ||
+                evalRunSucceeded != null ||
+                fineTuningJobCancelled != null ||
+                fineTuningJobFailed != null ||
+                fineTuningJobSucceeded != null ||
+                liveCallIncoming != null ||
+                liveTransportIncoming != null ||
+                realtimeCallIncoming != null ||
+                responseCancelled != null ||
+                responseCompleted != null ||
+                responseFailed != null ||
+                responseIncomplete != null ||
+                safetyAlertCreated != null ||
+                safetyDeactivationIssued != null ||
+                safetyOrgAlertCreated != null ||
+                safetyWarningIssued != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            agentEnvironmentExpired,
-            agentEnvironmentFailed,
-            agentEnvironmentReady,
-            agentEnvironmentSuspended,
-            agentSessionActionRequired,
-            agentSessionCreated,
-            agentSessionFailed,
-            agentSessionIdle,
-            agentSessionInProgress,
-            batchCancelled,
-            batchCompleted,
-            batchExpired,
-            batchFailed,
-            evalRunCanceled,
-            evalRunFailed,
-            evalRunSucceeded,
-            fineTuningJobCancelled,
-            fineTuningJobFailed,
-            fineTuningJobSucceeded,
-            liveCallIncoming,
-            liveTransportIncoming,
-            realtimeCallIncoming,
-            responseCancelled,
-            responseCompleted,
-            responseFailed,
-            responseIncomplete,
-            safetyAlertCreated,
-            safetyDeactivationIssued,
-            safetyOrgAlertCreated,
-            safetyWarningIssued,
+        if (
+            agentEnvironmentExpired == null &&
+                agentEnvironmentFailed == null &&
+                agentEnvironmentReady == null &&
+                agentEnvironmentSuspended == null &&
+                agentSessionActionRequired == null &&
+                agentSessionCreated == null &&
+                agentSessionFailed == null &&
+                agentSessionIdle == null &&
+                agentSessionInProgress == null &&
+                batchCancelled == null &&
+                batchCompleted == null &&
+                batchExpired == null &&
+                batchFailed == null &&
+                evalRunCanceled == null &&
+                evalRunFailed == null &&
+                evalRunSucceeded == null &&
+                fineTuningJobCancelled == null &&
+                fineTuningJobFailed == null &&
+                fineTuningJobSucceeded == null &&
+                liveCallIncoming == null &&
+                liveTransportIncoming == null &&
+                realtimeCallIncoming == null &&
+                responseCancelled == null &&
+                responseCompleted == null &&
+                responseFailed == null &&
+                responseIncomplete == null &&
+                safetyAlertCreated == null &&
+                safetyDeactivationIssued == null &&
+                safetyOrgAlertCreated == null &&
+                safetyWarningIssued == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                agentEnvironmentExpired,
+                agentEnvironmentFailed,
+                agentEnvironmentReady,
+                agentEnvironmentSuspended,
+                agentSessionActionRequired,
+                agentSessionCreated,
+                agentSessionFailed,
+                agentSessionIdle,
+                agentSessionInProgress,
+                batchCancelled,
+                batchCompleted,
+                batchExpired,
+                batchFailed,
+                evalRunCanceled,
+                evalRunFailed,
+                evalRunSucceeded,
+                fineTuningJobCancelled,
+                fineTuningJobFailed,
+                fineTuningJobSucceeded,
+                liveCallIncoming,
+                liveTransportIncoming,
+                realtimeCallIncoming,
+                responseCancelled,
+                responseCompleted,
+                responseFailed,
+                responseIncomplete,
+                safetyAlertCreated,
+                safetyDeactivationIssued,
+                safetyOrgAlertCreated,
+                safetyWarningIssued,
+            )
 
     override fun toString(): String =
         when {

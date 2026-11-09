@@ -191,10 +191,13 @@ private constructor(
         return other is ResponseFormatTextConfig &&
             text == other.text &&
             jsonSchema == other.jsonSchema &&
-            jsonObject == other.jsonObject
+            jsonObject == other.jsonObject &&
+            (text != null || jsonSchema != null || jsonObject != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(text, jsonSchema, jsonObject)
+    override fun hashCode(): Int =
+        if (text == null && jsonSchema == null && jsonObject == null) Objects.hash(_json)
+        else Objects.hash(text, jsonSchema, jsonObject)
 
     override fun toString(): String =
         when {

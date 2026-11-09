@@ -314,19 +314,38 @@ private constructor(
             threadRunStepCompleted == other.threadRunStepCompleted &&
             threadRunStepFailed == other.threadRunStepFailed &&
             threadRunStepCancelled == other.threadRunStepCancelled &&
-            threadRunStepExpired == other.threadRunStepExpired
+            threadRunStepExpired == other.threadRunStepExpired &&
+            (threadRunStepCreated != null ||
+                threadRunStepInProgress != null ||
+                threadRunStepDelta != null ||
+                threadRunStepCompleted != null ||
+                threadRunStepFailed != null ||
+                threadRunStepCancelled != null ||
+                threadRunStepExpired != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            threadRunStepCreated,
-            threadRunStepInProgress,
-            threadRunStepDelta,
-            threadRunStepCompleted,
-            threadRunStepFailed,
-            threadRunStepCancelled,
-            threadRunStepExpired,
+        if (
+            threadRunStepCreated == null &&
+                threadRunStepInProgress == null &&
+                threadRunStepDelta == null &&
+                threadRunStepCompleted == null &&
+                threadRunStepFailed == null &&
+                threadRunStepCancelled == null &&
+                threadRunStepExpired == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                threadRunStepCreated,
+                threadRunStepInProgress,
+                threadRunStepDelta,
+                threadRunStepCompleted,
+                threadRunStepFailed,
+                threadRunStepCancelled,
+                threadRunStepExpired,
+            )
 
     override fun toString(): String =
         when {

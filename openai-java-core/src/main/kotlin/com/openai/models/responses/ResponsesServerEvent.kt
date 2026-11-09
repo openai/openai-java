@@ -1949,74 +1949,203 @@ private constructor(
             error == other.error &&
             responseSteerAccepted == other.responseSteerAccepted &&
             responseSteerPending == other.responseSteerPending &&
-            responseSteerFailed == other.responseSteerFailed
+            responseSteerFailed == other.responseSteerFailed &&
+            (responseAudioDelta != null ||
+                responseAudioDone != null ||
+                responseAudioTranscriptDelta != null ||
+                responseAudioTranscriptDone != null ||
+                responseCodeInterpreterCallCodeDelta != null ||
+                responseCodeInterpreterCallCodeDone != null ||
+                responseCodeInterpreterCallCompleted != null ||
+                responseCodeInterpreterCallInProgress != null ||
+                responseCodeInterpreterCallInterpreting != null ||
+                responseCompactionCompacting != null ||
+                responseCompleted != null ||
+                responseContentPartAdded != null ||
+                responseContentPartDone != null ||
+                responseCreated != null ||
+                responseFileSearchCallCompleted != null ||
+                responseFileSearchCallInProgress != null ||
+                responseFileSearchCallSearching != null ||
+                responseFunctionCallArgumentsDelta != null ||
+                responseFunctionCallArgumentsDone != null ||
+                responseShellCallCommandAdded != null ||
+                responseShellCallCommandDelta != null ||
+                responseShellCallCommandDone != null ||
+                responseShellCallOutputContentDelta != null ||
+                responseShellCallOutputContentDone != null ||
+                responseInProgress != null ||
+                responseFailed != null ||
+                responseIncomplete != null ||
+                responseOutputItemAdded != null ||
+                responseOutputItemDone != null ||
+                responseReasoningSummaryPartAdded != null ||
+                responseReasoningSummaryPartDone != null ||
+                responseReasoningSummaryTextDelta != null ||
+                responseReasoningSummaryTextDone != null ||
+                responseReasoningTextDelta != null ||
+                responseReasoningTextDone != null ||
+                responseRefusalDelta != null ||
+                responseRefusalDone != null ||
+                responseOutputTextDelta != null ||
+                responseOutputTextDone != null ||
+                responseWebSearchCallCompleted != null ||
+                responseWebSearchCallInProgress != null ||
+                responseWebSearchCallSearching != null ||
+                responseImageGenerationCallCompleted != null ||
+                responseImageGenerationCallGenerating != null ||
+                responseImageGenerationCallInProgress != null ||
+                responseImageGenerationCallPartialImage != null ||
+                responseMcpCallArgumentsDelta != null ||
+                responseMcpCallArgumentsDone != null ||
+                responseMcpCallCompleted != null ||
+                responseMcpCallFailed != null ||
+                responseMcpCallInProgress != null ||
+                responseMcpListToolsCompleted != null ||
+                responseMcpListToolsFailed != null ||
+                responseMcpListToolsInProgress != null ||
+                responseOutputTextAnnotationAdded != null ||
+                responseQueued != null ||
+                responseCustomToolCallInputDelta != null ||
+                responseCustomToolCallInputDone != null ||
+                error != null ||
+                responseSteerAccepted != null ||
+                responseSteerPending != null ||
+                responseSteerFailed != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            responseAudioDelta,
-            responseAudioDone,
-            responseAudioTranscriptDelta,
-            responseAudioTranscriptDone,
-            responseCodeInterpreterCallCodeDelta,
-            responseCodeInterpreterCallCodeDone,
-            responseCodeInterpreterCallCompleted,
-            responseCodeInterpreterCallInProgress,
-            responseCodeInterpreterCallInterpreting,
-            responseCompactionCompacting,
-            responseCompleted,
-            responseContentPartAdded,
-            responseContentPartDone,
-            responseCreated,
-            responseFileSearchCallCompleted,
-            responseFileSearchCallInProgress,
-            responseFileSearchCallSearching,
-            responseFunctionCallArgumentsDelta,
-            responseFunctionCallArgumentsDone,
-            responseShellCallCommandAdded,
-            responseShellCallCommandDelta,
-            responseShellCallCommandDone,
-            responseShellCallOutputContentDelta,
-            responseShellCallOutputContentDone,
-            responseInProgress,
-            responseFailed,
-            responseIncomplete,
-            responseOutputItemAdded,
-            responseOutputItemDone,
-            responseReasoningSummaryPartAdded,
-            responseReasoningSummaryPartDone,
-            responseReasoningSummaryTextDelta,
-            responseReasoningSummaryTextDone,
-            responseReasoningTextDelta,
-            responseReasoningTextDone,
-            responseRefusalDelta,
-            responseRefusalDone,
-            responseOutputTextDelta,
-            responseOutputTextDone,
-            responseWebSearchCallCompleted,
-            responseWebSearchCallInProgress,
-            responseWebSearchCallSearching,
-            responseImageGenerationCallCompleted,
-            responseImageGenerationCallGenerating,
-            responseImageGenerationCallInProgress,
-            responseImageGenerationCallPartialImage,
-            responseMcpCallArgumentsDelta,
-            responseMcpCallArgumentsDone,
-            responseMcpCallCompleted,
-            responseMcpCallFailed,
-            responseMcpCallInProgress,
-            responseMcpListToolsCompleted,
-            responseMcpListToolsFailed,
-            responseMcpListToolsInProgress,
-            responseOutputTextAnnotationAdded,
-            responseQueued,
-            responseCustomToolCallInputDelta,
-            responseCustomToolCallInputDone,
-            error,
-            responseSteerAccepted,
-            responseSteerPending,
-            responseSteerFailed,
+        if (
+            responseAudioDelta == null &&
+                responseAudioDone == null &&
+                responseAudioTranscriptDelta == null &&
+                responseAudioTranscriptDone == null &&
+                responseCodeInterpreterCallCodeDelta == null &&
+                responseCodeInterpreterCallCodeDone == null &&
+                responseCodeInterpreterCallCompleted == null &&
+                responseCodeInterpreterCallInProgress == null &&
+                responseCodeInterpreterCallInterpreting == null &&
+                responseCompactionCompacting == null &&
+                responseCompleted == null &&
+                responseContentPartAdded == null &&
+                responseContentPartDone == null &&
+                responseCreated == null &&
+                responseFileSearchCallCompleted == null &&
+                responseFileSearchCallInProgress == null &&
+                responseFileSearchCallSearching == null &&
+                responseFunctionCallArgumentsDelta == null &&
+                responseFunctionCallArgumentsDone == null &&
+                responseShellCallCommandAdded == null &&
+                responseShellCallCommandDelta == null &&
+                responseShellCallCommandDone == null &&
+                responseShellCallOutputContentDelta == null &&
+                responseShellCallOutputContentDone == null &&
+                responseInProgress == null &&
+                responseFailed == null &&
+                responseIncomplete == null &&
+                responseOutputItemAdded == null &&
+                responseOutputItemDone == null &&
+                responseReasoningSummaryPartAdded == null &&
+                responseReasoningSummaryPartDone == null &&
+                responseReasoningSummaryTextDelta == null &&
+                responseReasoningSummaryTextDone == null &&
+                responseReasoningTextDelta == null &&
+                responseReasoningTextDone == null &&
+                responseRefusalDelta == null &&
+                responseRefusalDone == null &&
+                responseOutputTextDelta == null &&
+                responseOutputTextDone == null &&
+                responseWebSearchCallCompleted == null &&
+                responseWebSearchCallInProgress == null &&
+                responseWebSearchCallSearching == null &&
+                responseImageGenerationCallCompleted == null &&
+                responseImageGenerationCallGenerating == null &&
+                responseImageGenerationCallInProgress == null &&
+                responseImageGenerationCallPartialImage == null &&
+                responseMcpCallArgumentsDelta == null &&
+                responseMcpCallArgumentsDone == null &&
+                responseMcpCallCompleted == null &&
+                responseMcpCallFailed == null &&
+                responseMcpCallInProgress == null &&
+                responseMcpListToolsCompleted == null &&
+                responseMcpListToolsFailed == null &&
+                responseMcpListToolsInProgress == null &&
+                responseOutputTextAnnotationAdded == null &&
+                responseQueued == null &&
+                responseCustomToolCallInputDelta == null &&
+                responseCustomToolCallInputDone == null &&
+                error == null &&
+                responseSteerAccepted == null &&
+                responseSteerPending == null &&
+                responseSteerFailed == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                responseAudioDelta,
+                responseAudioDone,
+                responseAudioTranscriptDelta,
+                responseAudioTranscriptDone,
+                responseCodeInterpreterCallCodeDelta,
+                responseCodeInterpreterCallCodeDone,
+                responseCodeInterpreterCallCompleted,
+                responseCodeInterpreterCallInProgress,
+                responseCodeInterpreterCallInterpreting,
+                responseCompactionCompacting,
+                responseCompleted,
+                responseContentPartAdded,
+                responseContentPartDone,
+                responseCreated,
+                responseFileSearchCallCompleted,
+                responseFileSearchCallInProgress,
+                responseFileSearchCallSearching,
+                responseFunctionCallArgumentsDelta,
+                responseFunctionCallArgumentsDone,
+                responseShellCallCommandAdded,
+                responseShellCallCommandDelta,
+                responseShellCallCommandDone,
+                responseShellCallOutputContentDelta,
+                responseShellCallOutputContentDone,
+                responseInProgress,
+                responseFailed,
+                responseIncomplete,
+                responseOutputItemAdded,
+                responseOutputItemDone,
+                responseReasoningSummaryPartAdded,
+                responseReasoningSummaryPartDone,
+                responseReasoningSummaryTextDelta,
+                responseReasoningSummaryTextDone,
+                responseReasoningTextDelta,
+                responseReasoningTextDone,
+                responseRefusalDelta,
+                responseRefusalDone,
+                responseOutputTextDelta,
+                responseOutputTextDone,
+                responseWebSearchCallCompleted,
+                responseWebSearchCallInProgress,
+                responseWebSearchCallSearching,
+                responseImageGenerationCallCompleted,
+                responseImageGenerationCallGenerating,
+                responseImageGenerationCallInProgress,
+                responseImageGenerationCallPartialImage,
+                responseMcpCallArgumentsDelta,
+                responseMcpCallArgumentsDone,
+                responseMcpCallCompleted,
+                responseMcpCallFailed,
+                responseMcpCallInProgress,
+                responseMcpListToolsCompleted,
+                responseMcpListToolsFailed,
+                responseMcpListToolsInProgress,
+                responseOutputTextAnnotationAdded,
+                responseQueued,
+                responseCustomToolCallInputDelta,
+                responseCustomToolCallInputDone,
+                error,
+                responseSteerAccepted,
+                responseSteerPending,
+                responseSteerFailed,
+            )
 
     override fun toString(): String =
         when {

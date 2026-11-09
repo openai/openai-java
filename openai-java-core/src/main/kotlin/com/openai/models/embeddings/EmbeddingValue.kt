@@ -113,10 +113,18 @@ private constructor(
             return true
         }
 
-        return other is EmbeddingValue && floats == other.floats && base64 == other.base64
+        return other is EmbeddingValue &&
+            floats == other.floats &&
+            base64 == other.base64 &&
+            (floats != null || base64 != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(floats, base64)
+    override fun hashCode(): Int =
+        if (floats != null || base64 != null) {
+            Objects.hash(floats, base64)
+        } else {
+            Objects.hash(_json)
+        }
 
     override fun toString(): String =
         when {

@@ -55,6 +55,14 @@ internal class AgentSessionIdleEventTest {
                                         )
                                         .build()
                                 )
+                                .compaction(
+                                    AgentSession.Agent.Compaction.builder().async(true).build()
+                                )
+                                .experimental(
+                                    AgentSession.Agent.Experimental.builder()
+                                        .timeAwareness(true)
+                                        .build()
+                                )
                                 .build()
                         )
                         .createdAt(0L)
@@ -120,6 +128,7 @@ internal class AgentSessionIdleEventTest {
                                 .build()
                         )
                         .addVaultId("string")
+                        .review(AgentSession.Review.NONE)
                         .spendControl(
                             AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                         )
@@ -167,6 +176,12 @@ internal class AgentSessionIdleEventTest {
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )
+                                    .build()
+                            )
+                            .compaction(AgentSession.Agent.Compaction.builder().async(true).build())
+                            .experimental(
+                                AgentSession.Agent.Experimental.builder()
+                                    .timeAwareness(true)
                                     .build()
                             )
                             .build()
@@ -232,6 +247,7 @@ internal class AgentSessionIdleEventTest {
                             .build()
                     )
                     .addVaultId("string")
+                    .review(AgentSession.Review.NONE)
                     .spendControl(
                         AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                     )

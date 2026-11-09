@@ -1039,6 +1039,11 @@ internal class ResponseStreamEventTest {
                         .background(true)
                         .completedAt(0.0)
                         .conversation(Response.Conversation.builder().id("id").build())
+                        .image(
+                            Response.Image.builder()
+                                .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -1151,6 +1156,41 @@ internal class ResponseStreamEventTest {
                                 .verbosity(ResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            Response.ToolUsage.builder()
+                                .imageGen(
+                                    Response.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            Response.ToolUsage.ImageGen.InputTokensDetails.builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    Response.ToolUsage.WebSearch.builder().numRequests(0L).build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(Response.Truncation.AUTO)
                         .usage(
@@ -1160,6 +1200,13 @@ internal class ResponseStreamEventTest {
                                     ResponseUsage.InputTokensDetails.builder()
                                         .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
+                                        .cacheWriteTokensDetails(
+                                            ResponseUsage.InputTokensDetails.CacheWriteTokensDetails
+                                                .builder()
+                                                .ttl12hTokens(0L)
+                                                .ttl30mTokens(0L)
+                                                .build()
+                                        )
                                         .build()
                                 )
                                 .outputTokens(0L)
@@ -1351,6 +1398,11 @@ internal class ResponseStreamEventTest {
                             .background(true)
                             .completedAt(0.0)
                             .conversation(Response.Conversation.builder().id("id").build())
+                            .image(
+                                Response.Image.builder()
+                                    .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -1472,6 +1524,44 @@ internal class ResponseStreamEventTest {
                                     .verbosity(ResponseTextConfig.Verbosity.LOW)
                                     .build()
                             )
+                            .toolUsage(
+                                Response.ToolUsage.builder()
+                                    .imageGen(
+                                        Response.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                Response.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        Response.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .topLogprobs(0L)
                             .truncation(Response.Truncation.AUTO)
                             .usage(
@@ -1481,6 +1571,14 @@ internal class ResponseStreamEventTest {
                                         ResponseUsage.InputTokensDetails.builder()
                                             .cacheWriteTokens(0L)
                                             .cachedTokens(0L)
+                                            .cacheWriteTokensDetails(
+                                                ResponseUsage.InputTokensDetails
+                                                    .CacheWriteTokensDetails
+                                                    .builder()
+                                                    .ttl12hTokens(0L)
+                                                    .ttl30mTokens(0L)
+                                                    .build()
+                                            )
                                             .build()
                                     )
                                     .outputTokens(0L)
@@ -1910,6 +2008,11 @@ internal class ResponseStreamEventTest {
                         .background(true)
                         .completedAt(0.0)
                         .conversation(Response.Conversation.builder().id("id").build())
+                        .image(
+                            Response.Image.builder()
+                                .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -2022,6 +2125,41 @@ internal class ResponseStreamEventTest {
                                 .verbosity(ResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            Response.ToolUsage.builder()
+                                .imageGen(
+                                    Response.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            Response.ToolUsage.ImageGen.InputTokensDetails.builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    Response.ToolUsage.WebSearch.builder().numRequests(0L).build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(Response.Truncation.AUTO)
                         .usage(
@@ -2031,6 +2169,13 @@ internal class ResponseStreamEventTest {
                                     ResponseUsage.InputTokensDetails.builder()
                                         .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
+                                        .cacheWriteTokensDetails(
+                                            ResponseUsage.InputTokensDetails.CacheWriteTokensDetails
+                                                .builder()
+                                                .ttl12hTokens(0L)
+                                                .ttl30mTokens(0L)
+                                                .build()
+                                        )
                                         .build()
                                 )
                                 .outputTokens(0L)
@@ -2222,6 +2367,11 @@ internal class ResponseStreamEventTest {
                             .background(true)
                             .completedAt(0.0)
                             .conversation(Response.Conversation.builder().id("id").build())
+                            .image(
+                                Response.Image.builder()
+                                    .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -2343,6 +2493,44 @@ internal class ResponseStreamEventTest {
                                     .verbosity(ResponseTextConfig.Verbosity.LOW)
                                     .build()
                             )
+                            .toolUsage(
+                                Response.ToolUsage.builder()
+                                    .imageGen(
+                                        Response.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                Response.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        Response.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .topLogprobs(0L)
                             .truncation(Response.Truncation.AUTO)
                             .usage(
@@ -2352,6 +2540,14 @@ internal class ResponseStreamEventTest {
                                         ResponseUsage.InputTokensDetails.builder()
                                             .cacheWriteTokens(0L)
                                             .cachedTokens(0L)
+                                            .cacheWriteTokensDetails(
+                                                ResponseUsage.InputTokensDetails
+                                                    .CacheWriteTokensDetails
+                                                    .builder()
+                                                    .ttl12hTokens(0L)
+                                                    .ttl30mTokens(0L)
+                                                    .build()
+                                            )
                                             .build()
                                     )
                                     .outputTokens(0L)
@@ -3568,6 +3764,11 @@ internal class ResponseStreamEventTest {
                         .background(true)
                         .completedAt(0.0)
                         .conversation(Response.Conversation.builder().id("id").build())
+                        .image(
+                            Response.Image.builder()
+                                .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -3680,6 +3881,41 @@ internal class ResponseStreamEventTest {
                                 .verbosity(ResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            Response.ToolUsage.builder()
+                                .imageGen(
+                                    Response.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            Response.ToolUsage.ImageGen.InputTokensDetails.builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    Response.ToolUsage.WebSearch.builder().numRequests(0L).build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(Response.Truncation.AUTO)
                         .usage(
@@ -3689,6 +3925,13 @@ internal class ResponseStreamEventTest {
                                     ResponseUsage.InputTokensDetails.builder()
                                         .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
+                                        .cacheWriteTokensDetails(
+                                            ResponseUsage.InputTokensDetails.CacheWriteTokensDetails
+                                                .builder()
+                                                .ttl12hTokens(0L)
+                                                .ttl30mTokens(0L)
+                                                .build()
+                                        )
                                         .build()
                                 )
                                 .outputTokens(0L)
@@ -3880,6 +4123,11 @@ internal class ResponseStreamEventTest {
                             .background(true)
                             .completedAt(0.0)
                             .conversation(Response.Conversation.builder().id("id").build())
+                            .image(
+                                Response.Image.builder()
+                                    .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -4001,6 +4249,44 @@ internal class ResponseStreamEventTest {
                                     .verbosity(ResponseTextConfig.Verbosity.LOW)
                                     .build()
                             )
+                            .toolUsage(
+                                Response.ToolUsage.builder()
+                                    .imageGen(
+                                        Response.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                Response.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        Response.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .topLogprobs(0L)
                             .truncation(Response.Truncation.AUTO)
                             .usage(
@@ -4010,6 +4296,14 @@ internal class ResponseStreamEventTest {
                                         ResponseUsage.InputTokensDetails.builder()
                                             .cacheWriteTokens(0L)
                                             .cachedTokens(0L)
+                                            .cacheWriteTokensDetails(
+                                                ResponseUsage.InputTokensDetails
+                                                    .CacheWriteTokensDetails
+                                                    .builder()
+                                                    .ttl12hTokens(0L)
+                                                    .ttl30mTokens(0L)
+                                                    .build()
+                                            )
                                             .build()
                                     )
                                     .outputTokens(0L)
@@ -4145,6 +4439,11 @@ internal class ResponseStreamEventTest {
                         .background(true)
                         .completedAt(0.0)
                         .conversation(Response.Conversation.builder().id("id").build())
+                        .image(
+                            Response.Image.builder()
+                                .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -4257,6 +4556,41 @@ internal class ResponseStreamEventTest {
                                 .verbosity(ResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            Response.ToolUsage.builder()
+                                .imageGen(
+                                    Response.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            Response.ToolUsage.ImageGen.InputTokensDetails.builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    Response.ToolUsage.WebSearch.builder().numRequests(0L).build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(Response.Truncation.AUTO)
                         .usage(
@@ -4266,6 +4600,13 @@ internal class ResponseStreamEventTest {
                                     ResponseUsage.InputTokensDetails.builder()
                                         .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
+                                        .cacheWriteTokensDetails(
+                                            ResponseUsage.InputTokensDetails.CacheWriteTokensDetails
+                                                .builder()
+                                                .ttl12hTokens(0L)
+                                                .ttl30mTokens(0L)
+                                                .build()
+                                        )
                                         .build()
                                 )
                                 .outputTokens(0L)
@@ -4457,6 +4798,11 @@ internal class ResponseStreamEventTest {
                             .background(true)
                             .completedAt(0.0)
                             .conversation(Response.Conversation.builder().id("id").build())
+                            .image(
+                                Response.Image.builder()
+                                    .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -4578,6 +4924,44 @@ internal class ResponseStreamEventTest {
                                     .verbosity(ResponseTextConfig.Verbosity.LOW)
                                     .build()
                             )
+                            .toolUsage(
+                                Response.ToolUsage.builder()
+                                    .imageGen(
+                                        Response.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                Response.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        Response.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .topLogprobs(0L)
                             .truncation(Response.Truncation.AUTO)
                             .usage(
@@ -4587,6 +4971,14 @@ internal class ResponseStreamEventTest {
                                         ResponseUsage.InputTokensDetails.builder()
                                             .cacheWriteTokens(0L)
                                             .cachedTokens(0L)
+                                            .cacheWriteTokensDetails(
+                                                ResponseUsage.InputTokensDetails
+                                                    .CacheWriteTokensDetails
+                                                    .builder()
+                                                    .ttl12hTokens(0L)
+                                                    .ttl30mTokens(0L)
+                                                    .build()
+                                            )
                                             .build()
                                     )
                                     .outputTokens(0L)
@@ -4722,6 +5114,11 @@ internal class ResponseStreamEventTest {
                         .background(true)
                         .completedAt(0.0)
                         .conversation(Response.Conversation.builder().id("id").build())
+                        .image(
+                            Response.Image.builder()
+                                .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -4834,6 +5231,41 @@ internal class ResponseStreamEventTest {
                                 .verbosity(ResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            Response.ToolUsage.builder()
+                                .imageGen(
+                                    Response.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            Response.ToolUsage.ImageGen.InputTokensDetails.builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    Response.ToolUsage.WebSearch.builder().numRequests(0L).build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(Response.Truncation.AUTO)
                         .usage(
@@ -4843,6 +5275,13 @@ internal class ResponseStreamEventTest {
                                     ResponseUsage.InputTokensDetails.builder()
                                         .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
+                                        .cacheWriteTokensDetails(
+                                            ResponseUsage.InputTokensDetails.CacheWriteTokensDetails
+                                                .builder()
+                                                .ttl12hTokens(0L)
+                                                .ttl30mTokens(0L)
+                                                .build()
+                                        )
                                         .build()
                                 )
                                 .outputTokens(0L)
@@ -5034,6 +5473,11 @@ internal class ResponseStreamEventTest {
                             .background(true)
                             .completedAt(0.0)
                             .conversation(Response.Conversation.builder().id("id").build())
+                            .image(
+                                Response.Image.builder()
+                                    .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -5155,6 +5599,44 @@ internal class ResponseStreamEventTest {
                                     .verbosity(ResponseTextConfig.Verbosity.LOW)
                                     .build()
                             )
+                            .toolUsage(
+                                Response.ToolUsage.builder()
+                                    .imageGen(
+                                        Response.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                Response.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        Response.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .topLogprobs(0L)
                             .truncation(Response.Truncation.AUTO)
                             .usage(
@@ -5164,6 +5646,14 @@ internal class ResponseStreamEventTest {
                                         ResponseUsage.InputTokensDetails.builder()
                                             .cacheWriteTokens(0L)
                                             .cachedTokens(0L)
+                                            .cacheWriteTokensDetails(
+                                                ResponseUsage.InputTokensDetails
+                                                    .CacheWriteTokensDetails
+                                                    .builder()
+                                                    .ttl12hTokens(0L)
+                                                    .ttl30mTokens(0L)
+                                                    .build()
+                                            )
                                             .build()
                                     )
                                     .outputTokens(0L)
@@ -8179,6 +8669,11 @@ internal class ResponseStreamEventTest {
                         .background(true)
                         .completedAt(0.0)
                         .conversation(Response.Conversation.builder().id("id").build())
+                        .image(
+                            Response.Image.builder()
+                                .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -8291,6 +8786,41 @@ internal class ResponseStreamEventTest {
                                 .verbosity(ResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            Response.ToolUsage.builder()
+                                .imageGen(
+                                    Response.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            Response.ToolUsage.ImageGen.InputTokensDetails.builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    Response.ToolUsage.WebSearch.builder().numRequests(0L).build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(Response.Truncation.AUTO)
                         .usage(
@@ -8300,6 +8830,13 @@ internal class ResponseStreamEventTest {
                                     ResponseUsage.InputTokensDetails.builder()
                                         .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
+                                        .cacheWriteTokensDetails(
+                                            ResponseUsage.InputTokensDetails.CacheWriteTokensDetails
+                                                .builder()
+                                                .ttl12hTokens(0L)
+                                                .ttl30mTokens(0L)
+                                                .build()
+                                        )
                                         .build()
                                 )
                                 .outputTokens(0L)
@@ -8491,6 +9028,11 @@ internal class ResponseStreamEventTest {
                             .background(true)
                             .completedAt(0.0)
                             .conversation(Response.Conversation.builder().id("id").build())
+                            .image(
+                                Response.Image.builder()
+                                    .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -8612,6 +9154,44 @@ internal class ResponseStreamEventTest {
                                     .verbosity(ResponseTextConfig.Verbosity.LOW)
                                     .build()
                             )
+                            .toolUsage(
+                                Response.ToolUsage.builder()
+                                    .imageGen(
+                                        Response.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                Response.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        Response.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .topLogprobs(0L)
                             .truncation(Response.Truncation.AUTO)
                             .usage(
@@ -8621,6 +9201,14 @@ internal class ResponseStreamEventTest {
                                         ResponseUsage.InputTokensDetails.builder()
                                             .cacheWriteTokens(0L)
                                             .cachedTokens(0L)
+                                            .cacheWriteTokensDetails(
+                                                ResponseUsage.InputTokensDetails
+                                                    .CacheWriteTokensDetails
+                                                    .builder()
+                                                    .ttl12hTokens(0L)
+                                                    .ttl30mTokens(0L)
+                                                    .build()
+                                            )
                                             .build()
                                     )
                                     .outputTokens(0L)

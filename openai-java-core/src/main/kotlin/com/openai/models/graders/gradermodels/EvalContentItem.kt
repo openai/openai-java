@@ -207,11 +207,25 @@ private constructor(
             responseInputText == other.responseInputText &&
             outputText == other.outputText &&
             inputImage == other.inputImage &&
-            responseInputAudio == other.responseInputAudio
+            responseInputAudio == other.responseInputAudio &&
+            (textInput != null ||
+                responseInputText != null ||
+                outputText != null ||
+                inputImage != null ||
+                responseInputAudio != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(textInput, responseInputText, outputText, inputImage, responseInputAudio)
+        if (
+            textInput == null &&
+                responseInputText == null &&
+                outputText == null &&
+                inputImage == null &&
+                responseInputAudio == null
+        )
+            Objects.hash(_json)
+        else Objects.hash(textInput, responseInputText, outputText, inputImage, responseInputAudio)
 
     override fun toString(): String =
         when {

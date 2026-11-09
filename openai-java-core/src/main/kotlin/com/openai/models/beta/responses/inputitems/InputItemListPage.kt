@@ -58,8 +58,12 @@ private constructor(
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
-    fun nextPageParams(): InputItemListParams =
-        params
+    fun nextPageParams(): InputItemListParams {
+        val envelopeCursor = response._lastId().getOptional("last_id")
+        if (envelopeCursor.isPresent) {
+            return params.toBuilder().after(envelopeCursor).build()
+        }
+        return params
             .toBuilder()
             .after(
                 items()
@@ -202,6 +206,7 @@ private constructor(
                     )
             )
             .build()
+    }
 
     override fun nextPage(): InputItemListPage = service.list(nextPageParams())
 

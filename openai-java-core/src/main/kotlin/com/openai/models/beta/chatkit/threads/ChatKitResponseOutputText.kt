@@ -448,10 +448,14 @@ private constructor(
                 return true
             }
 
-            return other is Annotation && file == other.file && url == other.url
+            return other is Annotation &&
+                file == other.file &&
+                url == other.url &&
+                (file != null || url != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(file, url)
+        override fun hashCode(): Int =
+            if (file == null && url == null) Objects.hash(_json) else Objects.hash(file, url)
 
         override fun toString(): String =
             when {

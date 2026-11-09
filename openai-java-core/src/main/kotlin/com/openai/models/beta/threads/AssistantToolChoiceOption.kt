@@ -164,10 +164,13 @@ private constructor(
 
         return other is AssistantToolChoiceOption &&
             auto == other.auto &&
-            assistantToolChoice == other.assistantToolChoice
+            assistantToolChoice == other.assistantToolChoice &&
+            (auto != null || assistantToolChoice != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(auto, assistantToolChoice)
+    override fun hashCode(): Int =
+        if (auto == null && assistantToolChoice == null) Objects.hash(_json)
+        else Objects.hash(auto, assistantToolChoice)
 
     override fun toString(): String =
         when {

@@ -610,18 +610,35 @@ private constructor(
                 chatkitWidget == other.chatkitWidget &&
                 chatkitClientToolCall == other.chatkitClientToolCall &&
                 chatkitTask == other.chatkitTask &&
-                chatkitTaskGroup == other.chatkitTaskGroup
+                chatkitTaskGroup == other.chatkitTaskGroup &&
+                (chatkitUserMessage != null ||
+                    chatkitAssistantMessage != null ||
+                    chatkitWidget != null ||
+                    chatkitClientToolCall != null ||
+                    chatkitTask != null ||
+                    chatkitTaskGroup != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(
-                chatkitUserMessage,
-                chatkitAssistantMessage,
-                chatkitWidget,
-                chatkitClientToolCall,
-                chatkitTask,
-                chatkitTaskGroup,
+            if (
+                chatkitUserMessage == null &&
+                    chatkitAssistantMessage == null &&
+                    chatkitWidget == null &&
+                    chatkitClientToolCall == null &&
+                    chatkitTask == null &&
+                    chatkitTaskGroup == null
             )
+                Objects.hash(_json)
+            else
+                Objects.hash(
+                    chatkitUserMessage,
+                    chatkitAssistantMessage,
+                    chatkitWidget,
+                    chatkitClientToolCall,
+                    chatkitTask,
+                    chatkitTaskGroup,
+                )
 
         override fun toString(): String =
             when {

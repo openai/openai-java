@@ -27,6 +27,15 @@ internal class ImagesResponseTest {
                 .quality(ImagesResponse.Quality.LOW)
                 .safetyIdentifier("safety_identifier")
                 .size(ImagesResponse.Size._1024X1024)
+                .svgUsage(
+                    ImagesResponse.SvgUsage.builder()
+                        .inputTokens(0L)
+                        .model("model")
+                        .outputTokens(0L)
+                        .reasoningTokens(0L)
+                        .totalTokens(0L)
+                        .build()
+                )
                 .usage(
                     ImagesResponse.Usage.builder()
                         .inputTokens(0L)
@@ -62,6 +71,16 @@ internal class ImagesResponseTest {
         assertThat(imagesResponse.quality()).contains(ImagesResponse.Quality.LOW)
         assertThat(imagesResponse.safetyIdentifier()).contains("safety_identifier")
         assertThat(imagesResponse.size()).contains(ImagesResponse.Size._1024X1024)
+        assertThat(imagesResponse.svgUsage())
+            .contains(
+                ImagesResponse.SvgUsage.builder()
+                    .inputTokens(0L)
+                    .model("model")
+                    .outputTokens(0L)
+                    .reasoningTokens(0L)
+                    .totalTokens(0L)
+                    .build()
+            )
         assertThat(imagesResponse.usage())
             .contains(
                 ImagesResponse.Usage.builder()

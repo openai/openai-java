@@ -214,11 +214,21 @@ private constructor(
         return other is TranscriptionStreamEvent &&
             transcriptTextSegment == other.transcriptTextSegment &&
             transcriptTextDelta == other.transcriptTextDelta &&
-            transcriptTextDone == other.transcriptTextDone
+            transcriptTextDone == other.transcriptTextDone &&
+            (transcriptTextSegment != null ||
+                transcriptTextDelta != null ||
+                transcriptTextDone != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(transcriptTextSegment, transcriptTextDelta, transcriptTextDone)
+        if (
+            transcriptTextSegment == null &&
+                transcriptTextDelta == null &&
+                transcriptTextDone == null
+        )
+            Objects.hash(_json)
+        else Objects.hash(transcriptTextSegment, transcriptTextDelta, transcriptTextDone)
 
     override fun toString(): String =
         when {

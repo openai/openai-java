@@ -45,11 +45,11 @@ private constructor(
     /**
      * The image(s) to edit. Must be a supported image file or an array of images.
      *
-     * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+     * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
      * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
-     * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each
-     * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-     * images.
+     * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`), each image should be a `png`,
+     * `webp`, or `jpg` file less than 50MB. You can provide up to 16 images. `chatgpt-image-latest`
+     * follows the same input constraints as GPT image models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -81,15 +81,56 @@ private constructor(
     fun background(): Optional<Background> = body.background()
 
     /**
+     * Computation spent planning the image, independently of rendering quality. Uses the image
+     * model's configured default when omitted. For SVG output, controls the reference image,
+     * independently of the SVG author's reasoning.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun complexity(): Optional<Complexity> = body.complexity()
+
+    /**
+     * Number of frames for GIF output. Accepts integers from 2 through 16. Defaults to 9 when
+     * omitted. Only supported with output_format=gif. The requested size must satisfy the selected
+     * model's GIF size limits. GIF output does not support streaming, partial images, masks, or
+     * custom output compression. Requires access to the GIF preview for the selected model.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun frameCount(): Optional<Long> = body.frameCount()
+
+    /**
+     * Requested delay per GIF frame, in milliseconds. Defaults to 200 when omitted. GIF output
+     * rounds to the nearest 10 ms and caps the encoded delay at 655,350 ms per frame. Only
+     * supported with output_format=gif.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun frameDurationMs(): Optional<Long> = body.frameDurationMs()
+
+    /**
      * Control how much effort the model will exert to match the style and features, especially
-     * facial features, of input images. Supports `high` and `low` on `gpt-image-1` and
-     * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
-     * parameter. Defaults to `low` on supported models.
+     * facial features, of input images. Supports `high` and `low` on `gpt-image-1.5`;
+     * `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this parameter. Defaults to
+     * `low` on supported models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun inputFidelity(): Optional<InputFidelity> = body.inputFidelity()
+
+    /**
+     * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
+     * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5. Cannot
+     * be combined with mask.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun markup(): Optional<InputStream> = body.markup()
 
     /**
      * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate where
@@ -103,10 +144,13 @@ private constructor(
     fun mask(): Optional<InputStream> = body.mask()
 
     /**
-     * The GPT image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
-     * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+     * The GPT image model to use for image editing (`gpt-image-1-mini`, `gpt-image-1.5`,
+     * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
      * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`,
-     * or `chatgpt-image-latest`).
+     * `gpt-image-2.6-sunburst`, `gpt-image-2.6-flare`, or `chatgpt-image-latest`).
+     *
+     * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+     * `gpt-image-2.5-flare` instead.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -132,7 +176,7 @@ private constructor(
 
     /**
      * The format in which the generated images are returned. This parameter is only supported for
-     * the GPT image models. Must be one of `png`, `jpeg`, or `webp`. The default value is `png`.
+     * the GPT image models. The default value is `png`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -231,12 +275,41 @@ private constructor(
     fun _background(): MultipartField<Background> = body._background()
 
     /**
+     * Returns the raw multipart value of [complexity].
+     *
+     * Unlike [complexity], this method doesn't throw if the multipart field has an unexpected type.
+     */
+    fun _complexity(): MultipartField<Complexity> = body._complexity()
+
+    /**
+     * Returns the raw multipart value of [frameCount].
+     *
+     * Unlike [frameCount], this method doesn't throw if the multipart field has an unexpected type.
+     */
+    fun _frameCount(): MultipartField<Long> = body._frameCount()
+
+    /**
+     * Returns the raw multipart value of [frameDurationMs].
+     *
+     * Unlike [frameDurationMs], this method doesn't throw if the multipart field has an unexpected
+     * type.
+     */
+    fun _frameDurationMs(): MultipartField<Long> = body._frameDurationMs()
+
+    /**
      * Returns the raw multipart value of [inputFidelity].
      *
      * Unlike [inputFidelity], this method doesn't throw if the multipart field has an unexpected
      * type.
      */
     fun _inputFidelity(): MultipartField<InputFidelity> = body._inputFidelity()
+
+    /**
+     * Returns the raw multipart value of [markup].
+     *
+     * Unlike [markup], this method doesn't throw if the multipart field has an unexpected type.
+     */
+    fun _markup(): MultipartField<InputStream> = body._markup()
 
     /**
      * Returns the raw multipart value of [mask].
@@ -367,8 +440,8 @@ private constructor(
          * - [image]
          * - [prompt]
          * - [background]
-         * - [inputFidelity]
-         * - [mask]
+         * - [complexity]
+         * - [frameCount]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -376,11 +449,11 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-         * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+         * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+         * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+         * `chatgpt-image-latest` follows the same input constraints as GPT image models.
          */
         fun image(image: Image) = apply { body.image(image) }
 
@@ -398,22 +471,22 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-         * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+         * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+         * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+         * `chatgpt-image-latest` follows the same input constraints as GPT image models.
          */
         fun image(inputStream: ByteArray) = apply { body.image(inputStream) }
 
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-         * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+         * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+         * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+         * `chatgpt-image-latest` follows the same input constraints as GPT image models.
          */
         fun image(path: Path) = apply { body.image(path) }
 
@@ -464,10 +537,89 @@ private constructor(
         }
 
         /**
+         * Computation spent planning the image, independently of rendering quality. Uses the image
+         * model's configured default when omitted. For SVG output, controls the reference image,
+         * independently of the SVG author's reasoning.
+         */
+        fun complexity(complexity: Complexity?) = apply { body.complexity(complexity) }
+
+        /** Alias for calling [Builder.complexity] with `complexity.orElse(null)`. */
+        fun complexity(complexity: Optional<Complexity>) = complexity(complexity.getOrNull())
+
+        /**
+         * Sets [Builder.complexity] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.complexity] with a well-typed [Complexity] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun complexity(complexity: MultipartField<Complexity>) = apply {
+            body.complexity(complexity)
+        }
+
+        /**
+         * Number of frames for GIF output. Accepts integers from 2 through 16. Defaults to 9 when
+         * omitted. Only supported with output_format=gif. The requested size must satisfy the
+         * selected model's GIF size limits. GIF output does not support streaming, partial images,
+         * masks, or custom output compression. Requires access to the GIF preview for the selected
+         * model.
+         */
+        fun frameCount(frameCount: Long?) = apply { body.frameCount(frameCount) }
+
+        /**
+         * Alias for [Builder.frameCount].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun frameCount(frameCount: Long) = frameCount(frameCount as Long?)
+
+        /** Alias for calling [Builder.frameCount] with `frameCount.orElse(null)`. */
+        fun frameCount(frameCount: Optional<Long>) = frameCount(frameCount.getOrNull())
+
+        /**
+         * Sets [Builder.frameCount] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.frameCount] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun frameCount(frameCount: MultipartField<Long>) = apply { body.frameCount(frameCount) }
+
+        /**
+         * Requested delay per GIF frame, in milliseconds. Defaults to 200 when omitted. GIF output
+         * rounds to the nearest 10 ms and caps the encoded delay at 655,350 ms per frame. Only
+         * supported with output_format=gif.
+         */
+        fun frameDurationMs(frameDurationMs: Long?) = apply {
+            body.frameDurationMs(frameDurationMs)
+        }
+
+        /**
+         * Alias for [Builder.frameDurationMs].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun frameDurationMs(frameDurationMs: Long) = frameDurationMs(frameDurationMs as Long?)
+
+        /** Alias for calling [Builder.frameDurationMs] with `frameDurationMs.orElse(null)`. */
+        fun frameDurationMs(frameDurationMs: Optional<Long>) =
+            frameDurationMs(frameDurationMs.getOrNull())
+
+        /**
+         * Sets [Builder.frameDurationMs] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.frameDurationMs] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun frameDurationMs(frameDurationMs: MultipartField<Long>) = apply {
+            body.frameDurationMs(frameDurationMs)
+        }
+
+        /**
          * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. Supports `high` and `low` on `gpt-image-1` and
-         * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
-         * parameter. Defaults to `low` on supported models.
+         * facial features, of input images. Supports `high` and `low` on `gpt-image-1.5`;
+         * `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this parameter. Defaults
+         * to `low` on supported models.
          */
         fun inputFidelity(inputFidelity: InputFidelity?) = apply {
             body.inputFidelity(inputFidelity)
@@ -487,6 +639,36 @@ private constructor(
         fun inputFidelity(inputFidelity: MultipartField<InputFidelity>) = apply {
             body.inputFidelity(inputFidelity)
         }
+
+        /**
+         * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
+         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5.
+         * Cannot be combined with mask.
+         */
+        fun markup(markup: InputStream) = apply { body.markup(markup) }
+
+        /**
+         * Sets [Builder.markup] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.markup] with a well-typed [InputStream] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun markup(markup: MultipartField<InputStream>) = apply { body.markup(markup) }
+
+        /**
+         * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
+         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5.
+         * Cannot be combined with mask.
+         */
+        fun markup(markup: ByteArray) = apply { body.markup(markup) }
+
+        /**
+         * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
+         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5.
+         * Cannot be combined with mask.
+         */
+        fun markup(path: Path) = apply { body.markup(path) }
 
         /**
          * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
@@ -522,10 +704,14 @@ private constructor(
         fun mask(path: Path) = apply { body.mask(path) }
 
         /**
-         * The GPT image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
-         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * The GPT image model to use for image editing (`gpt-image-1-mini`, `gpt-image-1.5`,
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
          * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-         * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
+         * `gpt-image-2.5-flare-2026-09-08`, `gpt-image-2.6-sunburst`, `gpt-image-2.6-flare`, or
+         * `chatgpt-image-latest`).
+         *
+         * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+         * `gpt-image-2.5-flare` instead.
          */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
@@ -603,8 +789,7 @@ private constructor(
 
         /**
          * The format in which the generated images are returned. This parameter is only supported
-         * for the GPT image models. Must be one of `png`, `jpeg`, or `webp`. The default value is
-         * `png`.
+         * for the GPT image models. The default value is `png`.
          */
         fun outputFormat(outputFormat: OutputFormat?) = apply { body.outputFormat(outputFormat) }
 
@@ -911,7 +1096,11 @@ private constructor(
                 "image" to _image(),
                 "prompt" to _prompt(),
                 "background" to _background(),
+                "complexity" to _complexity(),
+                "frame_count" to _frameCount(),
+                "frame_duration_ms" to _frameDurationMs(),
                 "input_fidelity" to _inputFidelity(),
+                "markup" to _markup(),
                 "mask" to _mask(),
                 "model" to _model(),
                 "n" to _n(),
@@ -935,7 +1124,11 @@ private constructor(
         private val image: MultipartField<Image>,
         private val prompt: MultipartField<String>,
         private val background: MultipartField<Background>,
+        private val complexity: MultipartField<Complexity>,
+        private val frameCount: MultipartField<Long>,
+        private val frameDurationMs: MultipartField<Long>,
         private val inputFidelity: MultipartField<InputFidelity>,
+        private val markup: MultipartField<InputStream>,
         private val mask: MultipartField<InputStream>,
         private val model: MultipartField<ImageModel>,
         private val n: MultipartField<Long>,
@@ -953,11 +1146,11 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-         * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+         * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+         * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+         * `chatgpt-image-latest` follows the same input constraints as GPT image models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -990,16 +1183,59 @@ private constructor(
         fun background(): Optional<Background> = background.value.getOptional("background")
 
         /**
+         * Computation spent planning the image, independently of rendering quality. Uses the image
+         * model's configured default when omitted. For SVG output, controls the reference image,
+         * independently of the SVG author's reasoning.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun complexity(): Optional<Complexity> = complexity.value.getOptional("complexity")
+
+        /**
+         * Number of frames for GIF output. Accepts integers from 2 through 16. Defaults to 9 when
+         * omitted. Only supported with output_format=gif. The requested size must satisfy the
+         * selected model's GIF size limits. GIF output does not support streaming, partial images,
+         * masks, or custom output compression. Requires access to the GIF preview for the selected
+         * model.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun frameCount(): Optional<Long> = frameCount.value.getOptional("frame_count")
+
+        /**
+         * Requested delay per GIF frame, in milliseconds. Defaults to 200 when omitted. GIF output
+         * rounds to the nearest 10 ms and caps the encoded delay at 655,350 ms per frame. Only
+         * supported with output_format=gif.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun frameDurationMs(): Optional<Long> =
+            frameDurationMs.value.getOptional("frame_duration_ms")
+
+        /**
          * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. Supports `high` and `low` on `gpt-image-1` and
-         * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
-         * parameter. Defaults to `low` on supported models.
+         * facial features, of input images. Supports `high` and `low` on `gpt-image-1.5`;
+         * `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this parameter. Defaults
+         * to `low` on supported models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun inputFidelity(): Optional<InputFidelity> =
             inputFidelity.value.getOptional("input_fidelity")
+
+        /**
+         * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
+         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5.
+         * Cannot be combined with mask.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun markup(): Optional<InputStream> = markup.value.getOptional("markup")
 
         /**
          * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
@@ -1013,10 +1249,14 @@ private constructor(
         fun mask(): Optional<InputStream> = mask.value.getOptional("mask")
 
         /**
-         * The GPT image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
-         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * The GPT image model to use for image editing (`gpt-image-1-mini`, `gpt-image-1.5`,
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
          * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-         * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
+         * `gpt-image-2.5-flare-2026-09-08`, `gpt-image-2.6-sunburst`, `gpt-image-2.6-flare`, or
+         * `chatgpt-image-latest`).
+         *
+         * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+         * `gpt-image-2.5-flare` instead.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1043,8 +1283,7 @@ private constructor(
 
         /**
          * The format in which the generated images are returned. This parameter is only supported
-         * for the GPT image models. Must be one of `png`, `jpeg`, or `webp`. The default value is
-         * `png`.
+         * for the GPT image models. The default value is `png`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1150,6 +1389,36 @@ private constructor(
         fun _background(): MultipartField<Background> = background
 
         /**
+         * Returns the raw multipart value of [complexity].
+         *
+         * Unlike [complexity], this method doesn't throw if the multipart field has an unexpected
+         * type.
+         */
+        @JsonProperty("complexity")
+        @ExcludeMissing
+        fun _complexity(): MultipartField<Complexity> = complexity
+
+        /**
+         * Returns the raw multipart value of [frameCount].
+         *
+         * Unlike [frameCount], this method doesn't throw if the multipart field has an unexpected
+         * type.
+         */
+        @JsonProperty("frame_count")
+        @ExcludeMissing
+        fun _frameCount(): MultipartField<Long> = frameCount
+
+        /**
+         * Returns the raw multipart value of [frameDurationMs].
+         *
+         * Unlike [frameDurationMs], this method doesn't throw if the multipart field has an
+         * unexpected type.
+         */
+        @JsonProperty("frame_duration_ms")
+        @ExcludeMissing
+        fun _frameDurationMs(): MultipartField<Long> = frameDurationMs
+
+        /**
          * Returns the raw multipart value of [inputFidelity].
          *
          * Unlike [inputFidelity], this method doesn't throw if the multipart field has an
@@ -1158,6 +1427,13 @@ private constructor(
         @JsonProperty("input_fidelity")
         @ExcludeMissing
         fun _inputFidelity(): MultipartField<InputFidelity> = inputFidelity
+
+        /**
+         * Returns the raw multipart value of [markup].
+         *
+         * Unlike [markup], this method doesn't throw if the multipart field has an unexpected type.
+         */
+        @JsonProperty("markup") @ExcludeMissing fun _markup(): MultipartField<InputStream> = markup
 
         /**
          * Returns the raw multipart value of [mask].
@@ -1288,7 +1564,11 @@ private constructor(
             private var image: MultipartField<Image>? = null
             private var prompt: MultipartField<String>? = null
             private var background: MultipartField<Background> = MultipartField.of(null)
+            private var complexity: MultipartField<Complexity> = MultipartField.of(null)
+            private var frameCount: MultipartField<Long> = MultipartField.of(null)
+            private var frameDurationMs: MultipartField<Long> = MultipartField.of(null)
             private var inputFidelity: MultipartField<InputFidelity> = MultipartField.of(null)
+            private var markup: MultipartField<InputStream> = MultipartField.of(null)
             private var mask: MultipartField<InputStream> = MultipartField.of(null)
             private var model: MultipartField<ImageModel> = MultipartField.of(null)
             private var n: MultipartField<Long> = MultipartField.of(null)
@@ -1307,7 +1587,11 @@ private constructor(
                 image = body.image
                 prompt = body.prompt
                 background = body.background
+                complexity = body.complexity
+                frameCount = body.frameCount
+                frameDurationMs = body.frameDurationMs
                 inputFidelity = body.inputFidelity
+                markup = body.markup
                 mask = body.mask
                 model = body.model
                 n = body.n
@@ -1325,11 +1609,12 @@ private constructor(
             /**
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
-             * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
-             * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+             * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+             * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
+             * `gpt-image-2.5-flare-2026-09-08`), each image should be a `png`, `webp`, or `jpg`
+             * file less than 50MB. You can provide up to 16 images. `chatgpt-image-latest` follows
+             * the same input constraints as GPT image models.
              */
             fun image(image: Image) =
                 image(
@@ -1354,22 +1639,24 @@ private constructor(
             /**
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
-             * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
-             * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+             * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+             * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
+             * `gpt-image-2.5-flare-2026-09-08`), each image should be a `png`, `webp`, or `jpg`
+             * file less than 50MB. You can provide up to 16 images. `chatgpt-image-latest` follows
+             * the same input constraints as GPT image models.
              */
             fun image(inputStream: ByteArray) = image(inputStream.inputStream())
 
             /**
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
-             * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
-             * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+             * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+             * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
+             * `gpt-image-2.5-flare-2026-09-08`), each image should be a `png`, `webp`, or `jpg`
+             * file less than 50MB. You can provide up to 16 images. `chatgpt-image-latest` follows
+             * the same input constraints as GPT image models.
              */
             fun image(path: Path) =
                 image(
@@ -1427,10 +1714,91 @@ private constructor(
             }
 
             /**
+             * Computation spent planning the image, independently of rendering quality. Uses the
+             * image model's configured default when omitted. For SVG output, controls the reference
+             * image, independently of the SVG author's reasoning.
+             */
+            fun complexity(complexity: Complexity?) = complexity(MultipartField.of(complexity))
+
+            /** Alias for calling [Builder.complexity] with `complexity.orElse(null)`. */
+            fun complexity(complexity: Optional<Complexity>) = complexity(complexity.getOrNull())
+
+            /**
+             * Sets [Builder.complexity] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.complexity] with a well-typed [Complexity] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun complexity(complexity: MultipartField<Complexity>) = apply {
+                this.complexity = complexity
+            }
+
+            /**
+             * Number of frames for GIF output. Accepts integers from 2 through 16. Defaults to 9
+             * when omitted. Only supported with output_format=gif. The requested size must satisfy
+             * the selected model's GIF size limits. GIF output does not support streaming, partial
+             * images, masks, or custom output compression. Requires access to the GIF preview for
+             * the selected model.
+             */
+            fun frameCount(frameCount: Long?) = frameCount(MultipartField.of(frameCount))
+
+            /**
+             * Alias for [Builder.frameCount].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun frameCount(frameCount: Long) = frameCount(frameCount as Long?)
+
+            /** Alias for calling [Builder.frameCount] with `frameCount.orElse(null)`. */
+            fun frameCount(frameCount: Optional<Long>) = frameCount(frameCount.getOrNull())
+
+            /**
+             * Sets [Builder.frameCount] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.frameCount] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun frameCount(frameCount: MultipartField<Long>) = apply {
+                this.frameCount = frameCount
+            }
+
+            /**
+             * Requested delay per GIF frame, in milliseconds. Defaults to 200 when omitted. GIF
+             * output rounds to the nearest 10 ms and caps the encoded delay at 655,350 ms per
+             * frame. Only supported with output_format=gif.
+             */
+            fun frameDurationMs(frameDurationMs: Long?) =
+                frameDurationMs(MultipartField.of(frameDurationMs))
+
+            /**
+             * Alias for [Builder.frameDurationMs].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun frameDurationMs(frameDurationMs: Long) = frameDurationMs(frameDurationMs as Long?)
+
+            /** Alias for calling [Builder.frameDurationMs] with `frameDurationMs.orElse(null)`. */
+            fun frameDurationMs(frameDurationMs: Optional<Long>) =
+                frameDurationMs(frameDurationMs.getOrNull())
+
+            /**
+             * Sets [Builder.frameDurationMs] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.frameDurationMs] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun frameDurationMs(frameDurationMs: MultipartField<Long>) = apply {
+                this.frameDurationMs = frameDurationMs
+            }
+
+            /**
              * Control how much effort the model will exert to match the style and features,
              * especially facial features, of input images. Supports `high` and `low` on
-             * `gpt-image-1` and `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For
-             * `gpt-image-2`, omit this parameter. Defaults to `low` on supported models.
+             * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
+             * parameter. Defaults to `low` on supported models.
              */
             fun inputFidelity(inputFidelity: InputFidelity?) =
                 inputFidelity(MultipartField.of(inputFidelity))
@@ -1449,6 +1817,42 @@ private constructor(
             fun inputFidelity(inputFidelity: MultipartField<InputFidelity>) = apply {
                 this.inputFidelity = inputFidelity
             }
+
+            /**
+             * A transparent PNG overlaid on the first image to guide the edit. Must match that
+             * image's dimensions after orientation and contain transparent pixels. Supports GPT
+             * Image 2.5. Cannot be combined with mask.
+             */
+            fun markup(markup: InputStream) = markup(MultipartField.of(markup))
+
+            /**
+             * Sets [Builder.markup] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.markup] with a well-typed [InputStream] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun markup(markup: MultipartField<InputStream>) = apply { this.markup = markup }
+
+            /**
+             * A transparent PNG overlaid on the first image to guide the edit. Must match that
+             * image's dimensions after orientation and contain transparent pixels. Supports GPT
+             * Image 2.5. Cannot be combined with mask.
+             */
+            fun markup(markup: ByteArray) = markup(markup.inputStream())
+
+            /**
+             * A transparent PNG overlaid on the first image to guide the edit. Must match that
+             * image's dimensions after orientation and contain transparent pixels. Supports GPT
+             * Image 2.5. Cannot be combined with mask.
+             */
+            fun markup(path: Path) =
+                markup(
+                    MultipartField.builder<InputStream>()
+                        .value(path.inputStream())
+                        .filename(path.name)
+                        .build()
+                )
 
             /**
              * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
@@ -1490,10 +1894,14 @@ private constructor(
                 )
 
             /**
-             * The GPT image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
-             * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * The GPT image model to use for image editing (`gpt-image-1-mini`, `gpt-image-1.5`,
+             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
+             * `gpt-image-2.5-flare-2026-09-08`, `gpt-image-2.6-sunburst`, `gpt-image-2.6-flare`, or
+             * `chatgpt-image-latest`).
+             *
+             * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+             * `gpt-image-2.5-flare` instead.
              */
             fun model(model: ImageModel?) = model(MultipartField.of(model))
 
@@ -1575,8 +1983,7 @@ private constructor(
 
             /**
              * The format in which the generated images are returned. This parameter is only
-             * supported for the GPT image models. Must be one of `png`, `jpeg`, or `webp`. The
-             * default value is `png`.
+             * supported for the GPT image models. The default value is `png`.
              */
             fun outputFormat(outputFormat: OutputFormat?) =
                 outputFormat(MultipartField.of(outputFormat))
@@ -1791,7 +2198,11 @@ private constructor(
                     checkRequired("image", image),
                     checkRequired("prompt", prompt),
                     background,
+                    complexity,
+                    frameCount,
+                    frameDurationMs,
                     inputFidelity,
+                    markup,
                     mask,
                     model,
                     n,
@@ -1826,7 +2237,11 @@ private constructor(
             image().validate()
             prompt()
             background().ifPresent { it.validate() }
+            complexity().ifPresent { it.validate() }
+            frameCount()
+            frameDurationMs()
             inputFidelity().ifPresent { it.validate() }
+            markup()
             mask()
             model().ifPresent { it.validate() }
             n()
@@ -1858,7 +2273,11 @@ private constructor(
                 image == other.image &&
                 prompt == other.prompt &&
                 background == other.background &&
+                complexity == other.complexity &&
+                frameCount == other.frameCount &&
+                frameDurationMs == other.frameDurationMs &&
                 inputFidelity == other.inputFidelity &&
+                markup == other.markup &&
                 mask == other.mask &&
                 model == other.model &&
                 n == other.n &&
@@ -1878,7 +2297,11 @@ private constructor(
                 image,
                 prompt,
                 background,
+                complexity,
+                frameCount,
+                frameDurationMs,
                 inputFidelity,
+                markup,
                 mask,
                 model,
                 n,
@@ -1897,17 +2320,17 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{image=$image, prompt=$prompt, background=$background, inputFidelity=$inputFidelity, mask=$mask, model=$model, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, size=$size, user=$user, additionalProperties=$additionalProperties}"
+            "Body{image=$image, prompt=$prompt, background=$background, complexity=$complexity, frameCount=$frameCount, frameDurationMs=$frameDurationMs, inputFidelity=$inputFidelity, markup=$markup, mask=$mask, model=$model, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, size=$size, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**
      * The image(s) to edit. Must be a supported image file or an array of images.
      *
-     * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+     * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
      * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
-     * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each
-     * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-     * images.
+     * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`), each image should be a `png`,
+     * `webp`, or `jpg` file less than 50MB. You can provide up to 16 images. `chatgpt-image-latest`
+     * follows the same input constraints as GPT image models.
      */
     @JsonSerialize(using = Image.Serializer::class)
     class Image
@@ -2019,10 +2442,13 @@ private constructor(
 
             return other is Image &&
                 inputStream == other.inputStream &&
-                inputStreams == other.inputStreams
+                inputStreams == other.inputStreams &&
+                (inputStream != null || inputStreams != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(inputStream, inputStreams)
+        override fun hashCode(): Int =
+            if (inputStream == null && inputStreams == null) Objects.hash(_json)
+            else Objects.hash(inputStream, inputStreams)
 
         override fun toString(): String =
             when {
@@ -2234,10 +2660,157 @@ private constructor(
     }
 
     /**
+     * Computation spent planning the image, independently of rendering quality. Uses the image
+     * model's configured default when omitted. For SVG output, controls the reference image,
+     * independently of the SVG author's reasoning.
+     */
+    class Complexity @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val LOW = of("low")
+
+            @JvmField val MEDIUM = of("medium")
+
+            @JvmField val HIGH = of("high")
+
+            @JvmStatic fun of(value: String) = Complexity(JsonField.of(value))
+        }
+
+        /** An enum containing [Complexity]'s known values. */
+        enum class Known {
+            LOW,
+            MEDIUM,
+            HIGH,
+        }
+
+        /**
+         * An enum containing [Complexity]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Complexity] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            LOW,
+            MEDIUM,
+            HIGH,
+            /**
+             * An enum member indicating that [Complexity] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                LOW -> Value.LOW
+                MEDIUM -> Value.MEDIUM
+                HIGH -> Value.HIGH
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                LOW -> Known.LOW
+                MEDIUM -> Known.MEDIUM
+                HIGH -> Known.HIGH
+                else -> throw OpenAIInvalidDataException("Unknown Complexity: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Complexity = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Complexity && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /**
      * Control how much effort the model will exert to match the style and features, especially
-     * facial features, of input images. Supports `high` and `low` on `gpt-image-1` and
-     * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
-     * parameter. Defaults to `low` on supported models.
+     * facial features, of input images. Supports `high` and `low` on `gpt-image-1.5`;
+     * `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this parameter. Defaults to
+     * `low` on supported models.
      */
     class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -2379,7 +2952,7 @@ private constructor(
 
     /**
      * The format in which the generated images are returned. This parameter is only supported for
-     * the GPT image models. Must be one of `png`, `jpeg`, or `webp`. The default value is `png`.
+     * the GPT image models. The default value is `png`.
      */
     class OutputFormat @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -2402,6 +2975,8 @@ private constructor(
 
             @JvmField val WEBP = of("webp")
 
+            @JvmField val GIF = of("gif")
+
             @JvmStatic fun of(value: String) = OutputFormat(JsonField.of(value))
         }
 
@@ -2410,6 +2985,7 @@ private constructor(
             PNG,
             JPEG,
             WEBP,
+            GIF,
         }
 
         /**
@@ -2425,6 +3001,7 @@ private constructor(
             PNG,
             JPEG,
             WEBP,
+            GIF,
             /**
              * An enum member indicating that [OutputFormat] was instantiated with an unknown value.
              */
@@ -2443,6 +3020,7 @@ private constructor(
                 PNG -> Value.PNG
                 JPEG -> Value.JPEG
                 WEBP -> Value.WEBP
+                GIF -> Value.GIF
                 else -> Value._UNKNOWN
             }
 
@@ -2460,6 +3038,7 @@ private constructor(
                 PNG -> Known.PNG
                 JPEG -> Known.JPEG
                 WEBP -> Known.WEBP
+                GIF -> Known.GIF
                 else -> throw OpenAIInvalidDataException("Unknown OutputFormat: $value")
             }
 

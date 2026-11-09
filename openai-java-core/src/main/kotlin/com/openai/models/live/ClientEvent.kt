@@ -541,27 +541,62 @@ private constructor(
             decisionItemDelete == other.decisionItemDelete &&
             responseItemCreate == other.responseItemCreate &&
             responseCreate == other.responseCreate &&
-            sessionClose == other.sessionClose
+            sessionClose == other.sessionClose &&
+            (sessionStart != null ||
+                sessionUpdate != null ||
+                sessionInputAudioAppend != null ||
+                sessionInputAudioMute != null ||
+                sessionInputAudioUnmute != null ||
+                sessionOutputAudioFixturePlay != null ||
+                sessionInstructionsAppend != null ||
+                sessionThinkingAppend != null ||
+                sessionCommentaryAppend != null ||
+                decisionCreate != null ||
+                decisionItemCreate != null ||
+                decisionItemDelete != null ||
+                responseItemCreate != null ||
+                responseCreate != null ||
+                sessionClose != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            sessionStart,
-            sessionUpdate,
-            sessionInputAudioAppend,
-            sessionInputAudioMute,
-            sessionInputAudioUnmute,
-            sessionOutputAudioFixturePlay,
-            sessionInstructionsAppend,
-            sessionThinkingAppend,
-            sessionCommentaryAppend,
-            decisionCreate,
-            decisionItemCreate,
-            decisionItemDelete,
-            responseItemCreate,
-            responseCreate,
-            sessionClose,
+        if (
+            sessionStart == null &&
+                sessionUpdate == null &&
+                sessionInputAudioAppend == null &&
+                sessionInputAudioMute == null &&
+                sessionInputAudioUnmute == null &&
+                sessionOutputAudioFixturePlay == null &&
+                sessionInstructionsAppend == null &&
+                sessionThinkingAppend == null &&
+                sessionCommentaryAppend == null &&
+                decisionCreate == null &&
+                decisionItemCreate == null &&
+                decisionItemDelete == null &&
+                responseItemCreate == null &&
+                responseCreate == null &&
+                sessionClose == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                sessionStart,
+                sessionUpdate,
+                sessionInputAudioAppend,
+                sessionInputAudioMute,
+                sessionInputAudioUnmute,
+                sessionOutputAudioFixturePlay,
+                sessionInstructionsAppend,
+                sessionThinkingAppend,
+                sessionCommentaryAppend,
+                decisionCreate,
+                decisionItemCreate,
+                decisionItemDelete,
+                responseItemCreate,
+                responseCreate,
+                sessionClose,
+            )
 
     override fun toString(): String =
         when {

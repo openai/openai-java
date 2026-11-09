@@ -477,10 +477,13 @@ private constructor(
             return other is Action &&
                 search == other.search &&
                 openPage == other.openPage &&
-                findInPage == other.findInPage
+                findInPage == other.findInPage &&
+                (search != null || openPage != null || findInPage != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(search, openPage, findInPage)
+        override fun hashCode(): Int =
+            if (search == null && openPage == null && findInPage == null) Objects.hash(_json)
+            else Objects.hash(search, openPage, findInPage)
 
         override fun toString(): String =
             when {

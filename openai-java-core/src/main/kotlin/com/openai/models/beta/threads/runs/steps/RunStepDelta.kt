@@ -324,10 +324,13 @@ private constructor(
 
             return other is StepDetails &&
                 messageCreation == other.messageCreation &&
-                toolCalls == other.toolCalls
+                toolCalls == other.toolCalls &&
+                (messageCreation != null || toolCalls != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(messageCreation, toolCalls)
+        override fun hashCode(): Int =
+            if (messageCreation == null && toolCalls == null) Objects.hash(_json)
+            else Objects.hash(messageCreation, toolCalls)
 
         override fun toString(): String =
             when {

@@ -26,7 +26,15 @@ import java.util.Optional
 import kotlin.io.path.inputStream
 import kotlin.io.path.name
 
-/** Translates audio into English. */
+/**
+ * Translates audio into English.
+ *
+ * This endpoint supports only `whisper-1`. The endpoint and model are deprecated and scheduled to
+ * shut down on February 26, 2027. Migrate to `/v1/realtime/translations`, which requires a separate
+ * integration. See the [deprecation schedule](https://developers.openai.com/api/docs/deprecations)
+ * for details.
+ */
+@Deprecated("deprecated")
 class TranslationCreateParams
 private constructor(
     private val body: Body,

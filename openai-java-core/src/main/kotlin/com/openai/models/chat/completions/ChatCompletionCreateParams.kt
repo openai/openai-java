@@ -285,7 +285,7 @@ private constructor(
      * content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints.
      * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
      * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
-     * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
+     * breakpoint. The `ttl` defaults to `30m`. Supported lifetimes depend on the API. See the
      * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
      * current details.
      *
@@ -1452,8 +1452,8 @@ private constructor(
          * content blocks with `prompt_cache_breakpoint`. Each request can write up to four
          * breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the
          * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
-         * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
-         * supported value. See the
+         * the implicit breakpoint. The `ttl` defaults to `30m`. Supported lifetimes depend on the
+         * API. See the
          * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
          * current details.
          */
@@ -2569,8 +2569,8 @@ private constructor(
          * content blocks with `prompt_cache_breakpoint`. Each request can write up to four
          * breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the
          * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
-         * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
-         * supported value. See the
+         * the implicit breakpoint. The `ttl` defaults to `30m`. Supported lifetimes depend on the
+         * API. See the
          * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
          * current details.
          *
@@ -3980,8 +3980,8 @@ private constructor(
              * breakpoints to content blocks with `prompt_cache_breakpoint`. Each request can write
              * up to four breakpoints. For cache matching, OpenAI considers up to the latest 80
              * breakpoints in the conversation, without a content-block lookback limit. Set `mode`
-             * to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which
-             * is currently the only supported value. See the
+             * to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`.
+             * Supported lifetimes depend on the API. See the
              * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching)
              * for current details.
              */
@@ -4972,10 +4972,13 @@ private constructor(
 
             return other is FunctionCall &&
                 mode == other.mode &&
-                functionCallOption == other.functionCallOption
+                functionCallOption == other.functionCallOption &&
+                (mode != null || functionCallOption != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(mode, functionCallOption)
+        override fun hashCode(): Int =
+            if (mode == null && functionCallOption == null) Objects.hash(_json)
+            else Objects.hash(mode, functionCallOption)
 
         override fun toString(): String =
             when {
@@ -7059,7 +7062,7 @@ private constructor(
      * content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints.
      * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
      * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
-     * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
+     * breakpoint. The `ttl` defaults to `30m`. Supported lifetimes depend on the API. See the
      * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
      * current details.
      */
@@ -7892,10 +7895,13 @@ private constructor(
             return other is ResponseFormat &&
                 text == other.text &&
                 jsonSchema == other.jsonSchema &&
-                jsonObject == other.jsonObject
+                jsonObject == other.jsonObject &&
+                (text != null || jsonSchema != null || jsonObject != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(text, jsonSchema, jsonObject)
+        override fun hashCode(): Int =
+            if (text == null && jsonSchema == null && jsonObject == null) Objects.hash(_json)
+            else Objects.hash(text, jsonSchema, jsonObject)
 
         override fun toString(): String =
             when {
@@ -8315,10 +8321,15 @@ private constructor(
                 return true
             }
 
-            return other is Stop && string == other.string && strings == other.strings
+            return other is Stop &&
+                string == other.string &&
+                strings == other.strings &&
+                (string != null || strings != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(string, strings)
+        override fun hashCode(): Int =
+            if (string == null && strings == null) Objects.hash(_json)
+            else Objects.hash(string, strings)
 
         override fun toString(): String =
             when {

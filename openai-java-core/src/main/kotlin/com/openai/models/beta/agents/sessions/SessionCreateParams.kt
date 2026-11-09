@@ -99,6 +99,14 @@ private constructor(
     fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
+     * Action review mode. Omit to use none.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun review(): Optional<Review> = body.review()
+
+    /**
      * Optional spending limit in USD cents. Omission or null creates an unlimited session.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -148,6 +156,13 @@ private constructor(
      * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _metadata(): JsonField<Metadata> = body._metadata()
+
+    /**
+     * Returns the raw JSON value of [review].
+     *
+     * Unlike [review], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _review(): JsonField<Review> = body._review()
 
     /**
      * Returns the raw JSON value of [spendControl].
@@ -325,6 +340,17 @@ private constructor(
          * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
+
+        /** Action review mode. Omit to use none. */
+        fun review(review: Review) = apply { body.review(review) }
+
+        /**
+         * Sets [Builder.review] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.review] with a well-typed [Review] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun review(review: JsonField<Review>) = apply { body.review(review) }
 
         /** Optional spending limit in USD cents. Omission or null creates an unlimited session. */
         fun spendControl(spendControl: SpendControl?) = apply { body.spendControl(spendControl) }
@@ -518,6 +544,7 @@ private constructor(
         private val agentId: JsonField<String>,
         private val input: JsonField<Input>,
         private val metadata: JsonField<Metadata>,
+        private val review: JsonField<Review>,
         private val spendControl: JsonField<SpendControl>,
         private val vaultIds: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -534,6 +561,7 @@ private constructor(
             @JsonProperty("metadata")
             @ExcludeMissing
             metadata: JsonField<Metadata> = JsonMissing.of(),
+            @JsonProperty("review") @ExcludeMissing review: JsonField<Review> = JsonMissing.of(),
             @JsonProperty("spend_control")
             @ExcludeMissing
             spendControl: JsonField<SpendControl> = JsonMissing.of(),
@@ -546,6 +574,7 @@ private constructor(
             agentId,
             input,
             metadata,
+            review,
             spendControl,
             vaultIds,
             mutableMapOf(),
@@ -595,6 +624,14 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+
+        /**
+         * Action review mode. Omit to use none.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun review(): Optional<Review> = review.getOptional("review")
 
         /**
          * Optional spending limit in USD cents. Omission or null creates an unlimited session.
@@ -650,6 +687,13 @@ private constructor(
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
         /**
+         * Returns the raw JSON value of [review].
+         *
+         * Unlike [review], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("review") @ExcludeMissing fun _review(): JsonField<Review> = review
+
+        /**
          * Returns the raw JSON value of [spendControl].
          *
          * Unlike [spendControl], this method doesn't throw if the JSON field has an unexpected
@@ -689,6 +733,7 @@ private constructor(
                 "agent_id" to this.agentId,
                 "input" to this.input,
                 "metadata" to this.metadata,
+                "review" to this.review,
                 "spend_control" to this.spendControl,
                 "vault_ids" to this.vaultIds,
             )
@@ -728,6 +773,7 @@ private constructor(
             private var agentId: JsonField<String> = JsonMissing.of()
             private var input: JsonField<Input> = JsonMissing.of()
             private var metadata: JsonField<Metadata> = JsonMissing.of()
+            private var review: JsonField<Review> = JsonMissing.of()
             private var spendControl: JsonField<SpendControl> = JsonMissing.of()
             private var vaultIds: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -739,6 +785,7 @@ private constructor(
                 agentId = body.agentId
                 input = body.input
                 metadata = body.metadata
+                review = body.review
                 spendControl = body.spendControl
                 vaultIds = body.vaultIds.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
@@ -864,6 +911,18 @@ private constructor(
              */
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
+            /** Action review mode. Omit to use none. */
+            fun review(review: Review) = review(JsonField.of(review))
+
+            /**
+             * Sets [Builder.review] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.review] with a well-typed [Review] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun review(review: JsonField<Review>) = apply { this.review = review }
+
             /**
              * Optional spending limit in USD cents. Omission or null creates an unlimited session.
              */
@@ -951,6 +1010,7 @@ private constructor(
                     agentId,
                     input,
                     metadata,
+                    review,
                     spendControl,
                     (vaultIds ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
@@ -978,6 +1038,7 @@ private constructor(
             agentId()
             input().ifPresent { it.validate() }
             metadata().ifPresent { it.validate() }
+            review().ifPresent { it.validate() }
             spendControl().ifPresent { it.validate() }
             vaultIds()
             validated = true
@@ -1004,6 +1065,7 @@ private constructor(
                 (if (agentId.asKnown().isPresent) 1 else 0) +
                 (input.asKnown().getOrNull()?.validity() ?: 0) +
                 (metadata.asKnown().getOrNull()?.validity() ?: 0) +
+                (review.asKnown().getOrNull()?.validity() ?: 0) +
                 (spendControl.asKnown().getOrNull()?.validity() ?: 0) +
                 (vaultIds.asKnown().getOrNull()?.size ?: 0)
 
@@ -1018,6 +1080,7 @@ private constructor(
                 agentId == other.agentId &&
                 input == other.input &&
                 metadata == other.metadata &&
+                review == other.review &&
                 spendControl == other.spendControl &&
                 vaultIds == other.vaultIds &&
                 additionalProperties == other.additionalProperties
@@ -1030,6 +1093,7 @@ private constructor(
                 agentId,
                 input,
                 metadata,
+                review,
                 spendControl,
                 vaultIds,
                 additionalProperties,
@@ -1039,7 +1103,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{environment=$environment, agent=$agent, agentId=$agentId, input=$input, metadata=$metadata, spendControl=$spendControl, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
+            "Body{environment=$environment, agent=$agent, agentId=$agentId, input=$input, metadata=$metadata, review=$review, spendControl=$spendControl, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1049,6 +1113,8 @@ private constructor(
     class Agent
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val compaction: JsonField<Compaction>,
+        private val experimental: JsonField<Experimental>,
         private val instructions: JsonField<String>,
         private val model: JsonField<String>,
         private val multiAgent: JsonField<MultiAgentConfigParam>,
@@ -1061,6 +1127,12 @@ private constructor(
 
         @JsonCreator
         private constructor(
+            @JsonProperty("compaction")
+            @ExcludeMissing
+            compaction: JsonField<Compaction> = JsonMissing.of(),
+            @JsonProperty("experimental")
+            @ExcludeMissing
+            experimental: JsonField<Experimental> = JsonMissing.of(),
             @JsonProperty("instructions")
             @ExcludeMissing
             instructions: JsonField<String> = JsonMissing.of(),
@@ -1081,6 +1153,8 @@ private constructor(
             @ExcludeMissing
             tools: JsonField<List<AgentToolParam>> = JsonMissing.of(),
         ) : this(
+            compaction,
+            experimental,
             instructions,
             model,
             multiAgent,
@@ -1090,6 +1164,23 @@ private constructor(
             tools,
             mutableMapOf(),
         )
+
+        /**
+         * Context compaction settings. Omit to keep the current settings. A supplied object
+         * replaces the settings; null or an empty object enables background compaction.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun compaction(): Optional<Compaction> = compaction.getOptional("compaction")
+
+        /**
+         * Experimental settings to merge by key. Omitted settings keep their current values.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun experimental(): Optional<Experimental> = experimental.getOptional("experimental")
 
         /**
          * Additional instructions appended to the agent's default base instructions. Omit to leave
@@ -1149,6 +1240,25 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun tools(): Optional<List<AgentToolParam>> = tools.getOptional("tools")
+
+        /**
+         * Returns the raw JSON value of [compaction].
+         *
+         * Unlike [compaction], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("compaction")
+        @ExcludeMissing
+        fun _compaction(): JsonField<Compaction> = compaction
+
+        /**
+         * Returns the raw JSON value of [experimental].
+         *
+         * Unlike [experimental], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("experimental")
+        @ExcludeMissing
+        fun _experimental(): JsonField<Experimental> = experimental
 
         /**
          * Returns the raw JSON value of [instructions].
@@ -1224,6 +1334,8 @@ private constructor(
         fun _allProperties(): Map<String, JsonValue> =
             collectAllProperties(
                 additionalProperties,
+                "compaction" to this.compaction,
+                "experimental" to this.experimental,
                 "instructions" to this.instructions,
                 "model" to this.model,
                 "multi_agent" to this.multiAgent,
@@ -1256,6 +1368,8 @@ private constructor(
         /** A builder for [Agent]. */
         class Builder internal constructor() {
 
+            private var compaction: JsonField<Compaction> = JsonMissing.of()
+            private var experimental: JsonField<Experimental> = JsonMissing.of()
             private var instructions: JsonField<String> = JsonMissing.of()
             private var model: JsonField<String> = JsonMissing.of()
             private var multiAgent: JsonField<MultiAgentConfigParam> = JsonMissing.of()
@@ -1267,6 +1381,8 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(agent: Agent) = apply {
+                compaction = agent.compaction
+                experimental = agent.experimental
                 instructions = agent.instructions
                 model = agent.model
                 multiAgent = agent.multiAgent
@@ -1275,6 +1391,42 @@ private constructor(
                 text = agent.text
                 tools = agent.tools.map { it.toMutableList() }
                 additionalProperties = agent.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Context compaction settings. Omit to keep the current settings. A supplied object
+             * replaces the settings; null or an empty object enables background compaction.
+             */
+            fun compaction(compaction: Compaction?) = compaction(JsonField.ofNullable(compaction))
+
+            /** Alias for calling [Builder.compaction] with `compaction.orElse(null)`. */
+            fun compaction(compaction: Optional<Compaction>) = compaction(compaction.getOrNull())
+
+            /**
+             * Sets [Builder.compaction] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.compaction] with a well-typed [Compaction] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun compaction(compaction: JsonField<Compaction>) = apply {
+                this.compaction = compaction
+            }
+
+            /**
+             * Experimental settings to merge by key. Omitted settings keep their current values.
+             */
+            fun experimental(experimental: Experimental) = experimental(JsonField.of(experimental))
+
+            /**
+             * Sets [Builder.experimental] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.experimental] with a well-typed [Experimental] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun experimental(experimental: JsonField<Experimental>) = apply {
+                this.experimental = experimental
             }
 
             /**
@@ -1472,6 +1624,8 @@ private constructor(
              */
             fun build(): Agent =
                 Agent(
+                    compaction,
+                    experimental,
                     instructions,
                     model,
                     multiAgent,
@@ -1499,6 +1653,8 @@ private constructor(
                 return@apply
             }
 
+            compaction().ifPresent { it.validate() }
+            experimental().ifPresent { it.validate() }
             instructions()
             model()
             multiAgent().ifPresent { it.validate() }
@@ -1525,13 +1681,397 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (instructions.asKnown().isPresent) 1 else 0) +
+            (compaction.asKnown().getOrNull()?.validity() ?: 0) +
+                (experimental.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (instructions.asKnown().isPresent) 1 else 0) +
                 (if (model.asKnown().isPresent) 1 else 0) +
                 (multiAgent.asKnown().getOrNull()?.validity() ?: 0) +
                 (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
                 (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
                 (text.asKnown().getOrNull()?.validity() ?: 0) +
                 (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+
+        /**
+         * Context compaction settings. Omit to keep the current settings. A supplied object
+         * replaces the settings; null or an empty object enables background compaction.
+         */
+        class Compaction
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val async: JsonField<Boolean>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("async") @ExcludeMissing async: JsonField<Boolean> = JsonMissing.of()
+            ) : this(async, mutableMapOf())
+
+            /**
+             * Whether to compact context in the background. Omission or null defaults to true. Set
+             * to false to use blocking compaction. Background compaction may increase token usage.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun async(): Optional<Boolean> = async.getOptional("async")
+
+            /**
+             * Returns the raw JSON value of [async].
+             *
+             * Unlike [async], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("async") @ExcludeMissing fun _async(): JsonField<Boolean> = async
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(additionalProperties, "async" to this.async)
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Compaction]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Compaction]. */
+            class Builder internal constructor() {
+
+                private var async: JsonField<Boolean> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(compaction: Compaction) = apply {
+                    async = compaction.async
+                    additionalProperties = compaction.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * Whether to compact context in the background. Omission or null defaults to true.
+                 * Set to false to use blocking compaction. Background compaction may increase token
+                 * usage.
+                 */
+                fun async(async: Boolean?) = async(JsonField.ofNullable(async))
+
+                /**
+                 * Alias for [Builder.async].
+                 *
+                 * This unboxed primitive overload exists for backwards compatibility.
+                 */
+                fun async(async: Boolean) = async(async as Boolean?)
+
+                /** Alias for calling [Builder.async] with `async.orElse(null)`. */
+                fun async(async: Optional<Boolean>) = async(async.getOrNull())
+
+                /**
+                 * Sets [Builder.async] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.async] with a well-typed [Boolean] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun async(async: JsonField<Boolean>) = apply { this.async = async }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Compaction].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Compaction = Compaction(async, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Compaction = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                async()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = (if (async.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Compaction &&
+                    async == other.async &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(async, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Compaction{async=$async, additionalProperties=$additionalProperties}"
+        }
+
+        /** Experimental settings to merge by key. Omitted settings keep their current values. */
+        class Experimental
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val timeAwareness: JsonField<Boolean>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("time_awareness")
+                @ExcludeMissing
+                timeAwareness: JsonField<Boolean> = JsonMissing.of()
+            ) : this(timeAwareness, mutableMapOf())
+
+            /**
+             * Whether to give the model periodic current-time reminders. Omit to keep the current
+             * setting.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun timeAwareness(): Optional<Boolean> = timeAwareness.getOptional("time_awareness")
+
+            /**
+             * Returns the raw JSON value of [timeAwareness].
+             *
+             * Unlike [timeAwareness], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("time_awareness")
+            @ExcludeMissing
+            fun _timeAwareness(): JsonField<Boolean> = timeAwareness
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(additionalProperties, "time_awareness" to this.timeAwareness)
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Experimental]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Experimental]. */
+            class Builder internal constructor() {
+
+                private var timeAwareness: JsonField<Boolean> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(experimental: Experimental) = apply {
+                    timeAwareness = experimental.timeAwareness
+                    additionalProperties = experimental.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * Whether to give the model periodic current-time reminders. Omit to keep the
+                 * current setting.
+                 */
+                fun timeAwareness(timeAwareness: Boolean) =
+                    timeAwareness(JsonField.of(timeAwareness))
+
+                /**
+                 * Sets [Builder.timeAwareness] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.timeAwareness] with a well-typed [Boolean] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun timeAwareness(timeAwareness: JsonField<Boolean>) = apply {
+                    this.timeAwareness = timeAwareness
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Experimental].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Experimental =
+                    Experimental(timeAwareness, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Experimental = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                timeAwareness()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int = (if (timeAwareness.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Experimental &&
+                    timeAwareness == other.timeAwareness &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(timeAwareness, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Experimental{timeAwareness=$timeAwareness, additionalProperties=$additionalProperties}"
+        }
 
         /** The service tier used for model requests. */
         class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
@@ -1723,6 +2263,8 @@ private constructor(
             }
 
             return other is Agent &&
+                compaction == other.compaction &&
+                experimental == other.experimental &&
                 instructions == other.instructions &&
                 model == other.model &&
                 multiAgent == other.multiAgent &&
@@ -1735,6 +2277,8 @@ private constructor(
 
         private val hashCode: Int by lazy {
             Objects.hash(
+                compaction,
+                experimental,
                 instructions,
                 model,
                 multiAgent,
@@ -1749,7 +2293,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Agent{instructions=$instructions, model=$model, multiAgent=$multiAgent, reasoning=$reasoning, serviceTier=$serviceTier, text=$text, tools=$tools, additionalProperties=$additionalProperties}"
+            "Agent{compaction=$compaction, experimental=$experimental, instructions=$instructions, model=$model, multiAgent=$multiAgent, reasoning=$reasoning, serviceTier=$serviceTier, text=$text, tools=$tools, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1887,10 +2431,13 @@ private constructor(
 
             return other is Input &&
                 string == other.string &&
-                agentSessionInputMessageParams == other.agentSessionInputMessageParams
+                agentSessionInputMessageParams == other.agentSessionInputMessageParams &&
+                (string != null || agentSessionInputMessageParams != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(string, agentSessionInputMessageParams)
+        override fun hashCode(): Int =
+            if (string == null && agentSessionInputMessageParams == null) Objects.hash(_json)
+            else Objects.hash(string, agentSessionInputMessageParams)
 
         override fun toString(): String =
             when {
@@ -2119,6 +2666,147 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
+    }
+
+    /** Action review mode. Omit to use none. */
+    class Review @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            /** Keep the existing execution behavior without automatic action review. */
+            @JvmField val NONE = of("none")
+
+            /** Review eligible actions automatically. Deny manual approval fallbacks. */
+            @JvmField val AUTO_REVIEW = of("auto_review")
+
+            @JvmStatic fun of(value: String) = Review(JsonField.of(value))
+        }
+
+        /** An enum containing [Review]'s known values. */
+        enum class Known {
+            /** Keep the existing execution behavior without automatic action review. */
+            NONE,
+            /** Review eligible actions automatically. Deny manual approval fallbacks. */
+            AUTO_REVIEW,
+        }
+
+        /**
+         * An enum containing [Review]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Review] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            /** Keep the existing execution behavior without automatic action review. */
+            NONE,
+            /** Review eligible actions automatically. Deny manual approval fallbacks. */
+            AUTO_REVIEW,
+            /** An enum member indicating that [Review] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                NONE -> Value.NONE
+                AUTO_REVIEW -> Value.AUTO_REVIEW
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                NONE -> Known.NONE
+                AUTO_REVIEW -> Known.AUTO_REVIEW
+                else -> throw OpenAIInvalidDataException("Unknown Review: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Review = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Review && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     /** Optional spending limit in USD cents. Omission or null creates an unlimited session. */

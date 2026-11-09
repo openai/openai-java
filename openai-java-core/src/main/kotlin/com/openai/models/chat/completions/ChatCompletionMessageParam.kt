@@ -230,10 +230,27 @@ private constructor(
             user == other.user &&
             assistant == other.assistant &&
             tool == other.tool &&
-            function == other.function
+            function == other.function &&
+            (developer != null ||
+                system != null ||
+                user != null ||
+                assistant != null ||
+                tool != null ||
+                function != null ||
+                _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(developer, system, user, assistant, tool, function)
+    override fun hashCode(): Int =
+        if (
+            developer == null &&
+                system == null &&
+                user == null &&
+                assistant == null &&
+                tool == null &&
+                function == null
+        )
+            Objects.hash(_json)
+        else Objects.hash(developer, system, user, assistant, tool, function)
 
     override fun toString(): String =
         when {

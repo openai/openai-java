@@ -8,7 +8,6 @@ import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.audio.voices.Voice
 import com.openai.models.audio.voices.VoiceCreateParams
-import com.openai.models.audio.voices.VoiceCreateParams.Body
 import com.openai.models.audio.voices.VoiceDeleteParams
 import com.openai.models.audio.voices.VoiceDeleted
 import java.util.function.Consumer
@@ -48,11 +47,13 @@ interface VoiceService {
     ): Voice
 
     /** @see create */
-    fun create(body: Body, requestOptions: RequestOptions = RequestOptions.none()): Voice =
-        create(VoiceCreateParams.builder().body(body).build(), requestOptions)
+    fun create(
+        body: VoiceCreateParams.Body,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Voice = create(VoiceCreateParams.builder().body(body).build(), requestOptions)
 
     /** @see create */
-    fun create(body: Body): Voice = create(body, RequestOptions.none())
+    fun create(body: VoiceCreateParams.Body): Voice = create(body, RequestOptions.none())
 
     /**
      * Deletes a voice created from a text prompt or an audio sample.
@@ -120,14 +121,15 @@ interface VoiceService {
         /** @see create */
         @MustBeClosed
         fun create(
-            body: Body,
+            body: VoiceCreateParams.Body,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Voice> =
             create(VoiceCreateParams.builder().body(body).build(), requestOptions)
 
         /** @see create */
         @MustBeClosed
-        fun create(body: Body): HttpResponseFor<Voice> = create(body, RequestOptions.none())
+        fun create(body: VoiceCreateParams.Body): HttpResponseFor<Voice> =
+            create(body, RequestOptions.none())
 
         /**
          * Returns a raw HTTP response for `delete /audio/voices/{voice_id}`, but is otherwise the

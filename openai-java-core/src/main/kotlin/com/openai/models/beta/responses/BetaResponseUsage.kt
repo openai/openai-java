@@ -15,6 +15,7 @@ import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -379,6 +380,7 @@ private constructor(
     private constructor(
         private val cacheWriteTokens: JsonField<Long>,
         private val cachedTokens: JsonField<Long>,
+        private val cacheWriteTokensDetails: JsonField<CacheWriteTokensDetails>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -390,7 +392,10 @@ private constructor(
             @JsonProperty("cached_tokens")
             @ExcludeMissing
             cachedTokens: JsonField<Long> = JsonMissing.of(),
-        ) : this(cacheWriteTokens, cachedTokens, mutableMapOf())
+            @JsonProperty("cache_write_tokens_details")
+            @ExcludeMissing
+            cacheWriteTokensDetails: JsonField<CacheWriteTokensDetails> = JsonMissing.of(),
+        ) : this(cacheWriteTokens, cachedTokens, cacheWriteTokensDetails, mutableMapOf())
 
         /**
          * The number of input tokens that were written to the cache.
@@ -408,6 +413,13 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun cachedTokens(): Long = cachedTokens.getRequired("cached_tokens")
+
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun cacheWriteTokensDetails(): Optional<CacheWriteTokensDetails> =
+            cacheWriteTokensDetails.getOptional("cache_write_tokens_details")
 
         /**
          * Returns the raw JSON value of [cacheWriteTokens].
@@ -429,6 +441,16 @@ private constructor(
         @ExcludeMissing
         fun _cachedTokens(): JsonField<Long> = cachedTokens
 
+        /**
+         * Returns the raw JSON value of [cacheWriteTokensDetails].
+         *
+         * Unlike [cacheWriteTokensDetails], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("cache_write_tokens_details")
+        @ExcludeMissing
+        fun _cacheWriteTokensDetails(): JsonField<CacheWriteTokensDetails> = cacheWriteTokensDetails
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -447,6 +469,7 @@ private constructor(
                 additionalProperties,
                 "cache_write_tokens" to this.cacheWriteTokens,
                 "cached_tokens" to this.cachedTokens,
+                "cache_write_tokens_details" to this.cacheWriteTokensDetails,
             )
 
         /**
@@ -482,12 +505,15 @@ private constructor(
 
             private var cacheWriteTokens: JsonField<Long>? = null
             private var cachedTokens: JsonField<Long>? = null
+            private var cacheWriteTokensDetails: JsonField<CacheWriteTokensDetails> =
+                JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(inputTokensDetails: InputTokensDetails) = apply {
                 cacheWriteTokens = inputTokensDetails.cacheWriteTokens
                 cachedTokens = inputTokensDetails.cachedTokens
+                cacheWriteTokensDetails = inputTokensDetails.cacheWriteTokensDetails
                 additionalProperties = inputTokensDetails.additionalProperties.toMutableMap()
             }
 
@@ -522,6 +548,20 @@ private constructor(
             fun cachedTokens(cachedTokens: JsonField<Long>) = apply {
                 this.cachedTokens = cachedTokens
             }
+
+            fun cacheWriteTokensDetails(cacheWriteTokensDetails: CacheWriteTokensDetails) =
+                cacheWriteTokensDetails(JsonField.of(cacheWriteTokensDetails))
+
+            /**
+             * Sets [Builder.cacheWriteTokensDetails] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.cacheWriteTokensDetails] with a well-typed
+             * [CacheWriteTokensDetails] value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
+             */
+            fun cacheWriteTokensDetails(
+                cacheWriteTokensDetails: JsonField<CacheWriteTokensDetails>
+            ) = apply { this.cacheWriteTokensDetails = cacheWriteTokensDetails }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -559,6 +599,7 @@ private constructor(
                 InputTokensDetails(
                     checkRequired("cacheWriteTokens", cacheWriteTokens),
                     checkRequired("cachedTokens", cachedTokens),
+                    cacheWriteTokensDetails,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -581,6 +622,7 @@ private constructor(
 
             cacheWriteTokens()
             cachedTokens()
+            cacheWriteTokensDetails().ifPresent { it.validate() }
             validated = true
         }
 
@@ -601,7 +643,263 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (cacheWriteTokens.asKnown().isPresent) 1 else 0) +
-                (if (cachedTokens.asKnown().isPresent) 1 else 0)
+                (if (cachedTokens.asKnown().isPresent) 1 else 0) +
+                (cacheWriteTokensDetails.asKnown().getOrNull()?.validity() ?: 0)
+
+        class CacheWriteTokensDetails
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val ttl12hTokens: JsonField<Long>,
+            private val ttl30mTokens: JsonField<Long>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("ttl_12h_tokens")
+                @ExcludeMissing
+                ttl12hTokens: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("ttl_30m_tokens")
+                @ExcludeMissing
+                ttl30mTokens: JsonField<Long> = JsonMissing.of(),
+            ) : this(ttl12hTokens, ttl30mTokens, mutableMapOf())
+
+            /**
+             * The number of input tokens written with 12-hour retention.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun ttl12hTokens(): Long = ttl12hTokens.getRequired("ttl_12h_tokens")
+
+            /**
+             * The number of input tokens written with 30-minute retention.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun ttl30mTokens(): Long = ttl30mTokens.getRequired("ttl_30m_tokens")
+
+            /**
+             * Returns the raw JSON value of [ttl12hTokens].
+             *
+             * Unlike [ttl12hTokens], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("ttl_12h_tokens")
+            @ExcludeMissing
+            fun _ttl12hTokens(): JsonField<Long> = ttl12hTokens
+
+            /**
+             * Returns the raw JSON value of [ttl30mTokens].
+             *
+             * Unlike [ttl30mTokens], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("ttl_30m_tokens")
+            @ExcludeMissing
+            fun _ttl30mTokens(): JsonField<Long> = ttl30mTokens
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "ttl_12h_tokens" to this.ttl12hTokens,
+                    "ttl_30m_tokens" to this.ttl30mTokens,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of
+                 * [CacheWriteTokensDetails].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .ttl12hTokens()
+                 * .ttl30mTokens()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [CacheWriteTokensDetails]. */
+            class Builder internal constructor() {
+
+                private var ttl12hTokens: JsonField<Long>? = null
+                private var ttl30mTokens: JsonField<Long>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(cacheWriteTokensDetails: CacheWriteTokensDetails) = apply {
+                    ttl12hTokens = cacheWriteTokensDetails.ttl12hTokens
+                    ttl30mTokens = cacheWriteTokensDetails.ttl30mTokens
+                    additionalProperties =
+                        cacheWriteTokensDetails.additionalProperties.toMutableMap()
+                }
+
+                /** The number of input tokens written with 12-hour retention. */
+                fun ttl12hTokens(ttl12hTokens: Long) = ttl12hTokens(JsonField.of(ttl12hTokens))
+
+                /**
+                 * Sets [Builder.ttl12hTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.ttl12hTokens] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun ttl12hTokens(ttl12hTokens: JsonField<Long>) = apply {
+                    this.ttl12hTokens = ttl12hTokens
+                }
+
+                /** The number of input tokens written with 30-minute retention. */
+                fun ttl30mTokens(ttl30mTokens: Long) = ttl30mTokens(JsonField.of(ttl30mTokens))
+
+                /**
+                 * Sets [Builder.ttl30mTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.ttl30mTokens] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun ttl30mTokens(ttl30mTokens: JsonField<Long>) = apply {
+                    this.ttl30mTokens = ttl30mTokens
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [CacheWriteTokensDetails].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .ttl12hTokens()
+                 * .ttl30mTokens()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): CacheWriteTokensDetails =
+                    CacheWriteTokensDetails(
+                        checkRequired("ttl12hTokens", ttl12hTokens),
+                        checkRequired("ttl30mTokens", ttl30mTokens),
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): CacheWriteTokensDetails = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                ttl12hTokens()
+                ttl30mTokens()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (ttl12hTokens.asKnown().isPresent) 1 else 0) +
+                    (if (ttl30mTokens.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is CacheWriteTokensDetails &&
+                    ttl12hTokens == other.ttl12hTokens &&
+                    ttl30mTokens == other.ttl30mTokens &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(ttl12hTokens, ttl30mTokens, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "CacheWriteTokensDetails{ttl12hTokens=$ttl12hTokens, ttl30mTokens=$ttl30mTokens, additionalProperties=$additionalProperties}"
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -611,17 +909,23 @@ private constructor(
             return other is InputTokensDetails &&
                 cacheWriteTokens == other.cacheWriteTokens &&
                 cachedTokens == other.cachedTokens &&
+                cacheWriteTokensDetails == other.cacheWriteTokensDetails &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(cacheWriteTokens, cachedTokens, additionalProperties)
+            Objects.hash(
+                cacheWriteTokens,
+                cachedTokens,
+                cacheWriteTokensDetails,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "InputTokensDetails{cacheWriteTokens=$cacheWriteTokens, cachedTokens=$cachedTokens, additionalProperties=$additionalProperties}"
+            "InputTokensDetails{cacheWriteTokens=$cacheWriteTokens, cachedTokens=$cachedTokens, cacheWriteTokensDetails=$cacheWriteTokensDetails, additionalProperties=$additionalProperties}"
     }
 
     /** A detailed breakdown of the output tokens. */

@@ -24,32 +24,15 @@ management. The framework-neutral SDK requires Java 8, while development require
 Kotlin toolchain. See the [Java version support policy](docs/version-support-policy.md) for
 artifact-level runtime, framework, lifecycle, and release rules.
 
-<a id="custom-code-budget"></a>
-
 ## Generated-file ownership
 
-Do not edit generated SDK files by hand. Fix the API schema, generation
-configuration, or compiler and regenerate instead. Put SDK-specific behavior in
-separately owned handwritten helpers and extension points.
+Look up the repository-relative path in the [Castiron generated-file inventory](scripts/castiron/generated-files.json). To [report a bug](#contribution-policy), include the SDK version, affected call, and a small, sanitized reproduction.
 
-Regeneration replaces generated files and removes retired generated paths.
-Handwritten edits to generated output are overwritten, not carried forward.
-Separately owned handwritten files are preserved. Resolve ownership conflicts
-explicitly before regeneration. Follow the ownership rules in `AGENTS.md`
-and review generated output and inventory changes together. Generated-file
-ownership under the simplified workflow relies on contributor guidance and code
-review. Fix violations in the generation inputs/compiler and regenerate; do not
-edit inventory hashes to accept a handwritten patch.
+- **Incorrect API field.** If the API schema gives a field the wrong type or marks it required incorrectly, fix the schema and regenerate the SDK.
+- **Incorrect generated code.** If the schema is correct but the SDK exposes the wrong type or sends the wrong value, fix the generation configuration or compiler and regenerate. Verify the fix with a regression test that calls the public SDK.
+- **Handwritten helper or example.** Keep SDK-specific extensions in handwritten files and test them directly. For instance, [BedrockAuth.kt](openai-java-bedrock/src/main/kotlin/com/openai/bedrock/BedrockAuth.kt) is handwritten. The [openai-java-example directory](openai-java-example/) contains handwritten examples.
 
-Canonical regeneration retires the legacy strict checker, reporting workflows,
-and associated tools. The files present depend on the revision: while they
-remain in a checkout, preserve their security checks and satisfy required
-statuses. Do not start new budget changes. After removal, do not recreate the
-retired tools or introduce a replacement budget system.
-
-Repository rules and hosted workflow settings are configured separately from
-these files. Inspect the actual settings and check results before merging;
-this guidance neither disables workflows nor bypasses a required check.
+Regeneration replaces owned files, including generated tests, docs, and workflows, and removes retired paths. Review the output and inventory together. Resolve ownership collisions before regenerating. Never hand-edit generated output or its inventory. Maintainers enforce this policy in code review.
 
 ## Security expectations
 
@@ -100,9 +83,7 @@ artifact's eligibility on a given JVM come from `gradle/version-support.properti
 
 ## Modifying or adding code
 
-Most of the SDK is generated code. Never edit generated files by hand; change
-the authoritative generation inputs or compiler and regenerate instead. The generator will never
-modify the contents of the `openai-java-example/` directory.
+See [Generated-file ownership](#generated-file-ownership) before editing SDK source.
 
 ## Adding and running examples
 
@@ -141,14 +122,14 @@ Then in your project's `build.gradle.kts` or `pom.xml`, reference the locally pu
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java:4.93.0")
+implementation("com.openai:openai-java:4.101.0")
 ```
 
 ```xml
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.93.0</version>
+  <version>4.101.0</version>
 </dependency>
 ```
 

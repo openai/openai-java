@@ -138,10 +138,13 @@ private constructor(
 
         return other is TranslationCreateResponse &&
             translation == other.translation &&
-            verbose == other.verbose
+            verbose == other.verbose &&
+            (translation != null || verbose != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(translation, verbose)
+    override fun hashCode(): Int =
+        if (translation == null && verbose == null) Objects.hash(_json)
+        else Objects.hash(translation, verbose)
 
     override fun toString(): String =
         when {

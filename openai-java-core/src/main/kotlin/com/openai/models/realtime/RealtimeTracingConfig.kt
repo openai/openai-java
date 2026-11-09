@@ -167,10 +167,13 @@ private constructor(
 
         return other is RealtimeTracingConfig &&
             auto == other.auto &&
-            tracingConfiguration == other.tracingConfiguration
+            tracingConfiguration == other.tracingConfiguration &&
+            (auto != null || tracingConfiguration != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(auto, tracingConfiguration)
+    override fun hashCode(): Int =
+        if (auto == null && tracingConfiguration == null) Objects.hash(_json)
+        else Objects.hash(auto, tracingConfiguration)
 
     override fun toString(): String =
         when {

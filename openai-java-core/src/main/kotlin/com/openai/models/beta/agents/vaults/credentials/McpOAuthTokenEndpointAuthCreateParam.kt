@@ -177,10 +177,17 @@ private constructor(
         return other is McpOAuthTokenEndpointAuthCreateParam &&
             none == other.none &&
             clientSecretBasic == other.clientSecretBasic &&
-            clientSecretPost == other.clientSecretPost
+            clientSecretPost == other.clientSecretPost &&
+            (none != null ||
+                clientSecretBasic != null ||
+                clientSecretPost != null ||
+                _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(none, clientSecretBasic, clientSecretPost)
+    override fun hashCode(): Int =
+        if (none == null && clientSecretBasic == null && clientSecretPost == null)
+            Objects.hash(_json)
+        else Objects.hash(none, clientSecretBasic, clientSecretPost)
 
     override fun toString(): String =
         when {

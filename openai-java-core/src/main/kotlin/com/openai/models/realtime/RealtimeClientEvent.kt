@@ -563,23 +563,50 @@ private constructor(
             inputAudioBufferCommit == other.inputAudioBufferCommit &&
             responseCancel == other.responseCancel &&
             responseCreate == other.responseCreate &&
-            sessionUpdate == other.sessionUpdate
+            sessionUpdate == other.sessionUpdate &&
+            (conversationItemCreate != null ||
+                conversationItemDelete != null ||
+                conversationItemRetrieve != null ||
+                conversationItemTruncate != null ||
+                inputAudioBufferAppend != null ||
+                inputAudioBufferClear != null ||
+                outputAudioBufferClear != null ||
+                inputAudioBufferCommit != null ||
+                responseCancel != null ||
+                responseCreate != null ||
+                sessionUpdate != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            conversationItemCreate,
-            conversationItemDelete,
-            conversationItemRetrieve,
-            conversationItemTruncate,
-            inputAudioBufferAppend,
-            inputAudioBufferClear,
-            outputAudioBufferClear,
-            inputAudioBufferCommit,
-            responseCancel,
-            responseCreate,
-            sessionUpdate,
+        if (
+            conversationItemCreate == null &&
+                conversationItemDelete == null &&
+                conversationItemRetrieve == null &&
+                conversationItemTruncate == null &&
+                inputAudioBufferAppend == null &&
+                inputAudioBufferClear == null &&
+                outputAudioBufferClear == null &&
+                inputAudioBufferCommit == null &&
+                responseCancel == null &&
+                responseCreate == null &&
+                sessionUpdate == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                conversationItemCreate,
+                conversationItemDelete,
+                conversationItemRetrieve,
+                conversationItemTruncate,
+                inputAudioBufferAppend,
+                inputAudioBufferClear,
+                outputAudioBufferClear,
+                inputAudioBufferCommit,
+                responseCancel,
+                responseCreate,
+                sessionUpdate,
+            )
 
     override fun toString(): String =
         when {

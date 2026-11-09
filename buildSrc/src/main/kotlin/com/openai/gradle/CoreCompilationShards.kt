@@ -94,6 +94,7 @@ object CoreCompilationShards {
             "com/openai/core/Utils.kt",
             "com/openai/core/Values.kt",
             "com/openai/core/http/AsyncStreamResponse.kt",
+            "com/openai/core/http/Headers.kt",
             "com/openai/core/http/HttpMethod.kt",
             "com/openai/core/http/HttpRequestBody.kt",
             "com/openai/core/http/MultipartInputStreams.kt",

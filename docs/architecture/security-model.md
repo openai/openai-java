@@ -2,19 +2,19 @@
 
 Generated files are updated through authoritative inputs or the compiler and
 regeneration; handwritten edits to them are forbidden. Code review enforces this
-ownership rule. Canonical regeneration retires the legacy budget/reporting
-workflows and publisher. Determine whether the publisher boundary below applies
-by checking the files in the revision being reviewed; do not infer retirement
-from this documentation change. After canonical removal, do not recreate the
-tooling or introduce a replacement budget system.
-Repository rules and hosted workflow settings are separate: inspect their actual
-state and required checks rather than assuming source-file removal changes them.
+ownership rule. The customization-budget reporter and publishers are retired
+and are not part of the active CI or security controls.
 
 This is the repository's single canonical detailed threat model. Use it for
 security review and Codex Security scans of the revision being reviewed.
 SECURITY.md remains the authority for private disclosure and reportability
 instructions; this document is the authority for architecture, trust boundaries,
 attacker capabilities, security objectives, and severity calibration.
+
+Generated-file ownership currently relies on `AGENTS.md`, contributor guidance,
+and ordinary SDK code review. There is no dedicated generated-file edit check or
+required gate. Review generated output and inventory changes together; fix
+violations in the inputs/compiler and regenerate.
 
 ## Overview
 
@@ -30,10 +30,10 @@ repository.
 
 | Component | Purpose and important flow | Evidence |
 | --- | --- | --- |
-| openai-java-core | Transport-neutral client, generated services and models, request construction, authentication headers, retry/logging wrappers, JSON/SSE parsing, and webhook verification. | CONTRIBUTING.md:79-82; openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt:57-140; openai-java-core/src/main/kotlin/com/openai/core/ClientOptions.kt:747-808 |
-| openai-java-client-okhttp | Default HTTP transport, caller-configurable proxy, redirects, timeouts, TLS, and hostname verification. | CONTRIBUTING.md:83-85; openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt:54-65; openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OkHttpClient.kt:180-242 |
-| openai-java | Umbrella artifact exposing core and OkHttp APIs without its own logic. | CONTRIBUTING.md:86-88; openai-java/build.gradle.kts:1-8 |
-| openai-java-bedrock | Optional Bedrock endpoint selection and bearer or AWS SigV4 authentication. | CONTRIBUTING.md:89-90; openai-java-bedrock/src/main/kotlin/com/openai/bedrock/BedrockAuth.kt:64-215 |
+| openai-java-core | Transport-neutral client, generated services and models, request construction, authentication headers, retry/logging wrappers, JSON/SSE parsing, and webhook verification. | CONTRIBUTING.md:69-72; openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt:57-140; openai-java-core/src/main/kotlin/com/openai/core/ClientOptions.kt:747-808 |
+| openai-java-client-okhttp | Default HTTP transport, caller-configurable proxy, redirects, timeouts, TLS, and hostname verification. | CONTRIBUTING.md:73-75; openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt:54-65; openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OkHttpClient.kt:180-242 |
+| openai-java | Umbrella artifact exposing core and OkHttp APIs without its own logic. | CONTRIBUTING.md:76-78; openai-java/build.gradle.kts:1-8 |
+| openai-java-bedrock | Optional Bedrock endpoint selection and bearer or AWS SigV4 authentication. | CONTRIBUTING.md:79-80; openai-java-bedrock/src/main/kotlin/com/openai/bedrock/BedrockAuth.kt:64-215 |
 | openai-java-vertex | Optional Vertex endpoint selection and Google bearer authentication. | openai-java-vertex/README.md; openai-java-vertex/src/main/kotlin/com/openai/client/okhttp/VertexOpenAIOkHttpClient.kt |
 | Build and release workflows | Unprivileged PR validation and separately gated main-only release/publish jobs. | .github/workflows/ci.yml:3-24; .github/workflows/create-releases.yml:3-25 |
 
@@ -89,7 +89,7 @@ not exposed to the attestation action.
   application's responsibility.
 - Large JSON bodies and streaming events are supported API contracts. Reviews
   should prefer incremental processing, cleanup, and cancellation; a large
-  payload is not by itself hostile or malformed. (AGENTS.md:61-78)
+  payload is not by itself hostile or malformed. (AGENTS.md:49-66)
 - Main-branch integrity, protected release credentials, GPG signing material,
   OIDC attestation authority, artifact/source binding, and Gradle cache isolation
   must remain unreachable from unmerged PR code.
@@ -116,30 +116,14 @@ not exposed to the attestation action.
   boundary where independently mutable data enters a parser/evaluator, where
   runtime/network data reaches a sensitive sink, or where PR-controlled code can
   reach protected CI or release credentials.
+- Candidate Git objects remain lower-trust data when a separately privileged
+  evaluator handles them. Such an evaluator must independently constrain that
+  data before accessing protected CI or release authority.
+
 - Merged, reviewed repository source intentionally executes with trusted
   build/release authority. The security boundary is externally enforced branch
   governance, CODEOWNERS/rulesets, verified release selection, and protected
   environments—not an imagined sandbox around checked-in source.
-
-### Legacy publisher boundary — only while present
-
-If `.github/workflows/castiron-custom-code-comment.yml` and its
-`scripts/castiron` publisher exist in the reviewed revision, they remain an
-active privileged boundary. The `workflow_run` job evaluates candidate Git
-objects using a trusted checkout and publishes statuses with `statuses: write`.
-A PR author controls those candidate objects but must not gain execution with
-that publishing authority or forge an authoritative result. Preserve trusted-code
-selection, event/repository/revision binding, artifact validation, exact-head
-freshness checks, and least-privilege permissions. Review their implementation
-in that revision, including the protocol in `scripts/castiron/CUSTOM_CODE.md`.
-
-The review hypothesis is that mutable PR Git objects or artifacts could be
-accepted as trusted code or as an unbound status result. Such a bypass crosses a
-privilege boundary beyond ordinary PR CI and remains reportable while this
-publisher exists. Once canonical regeneration deletes the workflow and publisher,
-this component and hypothesis no longer apply; the runtime, ordinary CI, cache,
-and release boundaries elsewhere in this model still apply. Hosted rules must
-still be verified separately.
 
 ### Gradle cache accepted risk and assumptions
 
@@ -192,7 +176,7 @@ These are review hypotheses, not confirmed findings.
 | --- | --- | --- | --- | --- | --- | --- |
 | High | PR-controlled code reaches protected release credentials or signing/attestation authority before merge/release governance. | A workflow trigger, checkout ref, artifact restore, or environment gate is weakened. | Credential theft or forged official artifacts. | Release is main/schedule/manual only, selects/verifies source, gates runtime compatibility, uses protected publish, and disables release cache reuse. | Preserve source binding, least permissions, environment protection, and no PR artifact/cache import. | .github/workflows/create-releases.yml:3-25; .github/workflows/create-releases.yml:90-164; .github/workflows/create-releases.yml:241-290; .github/workflows/create-releases.yml:426-469 |
 | High | Untrusted webhook bytes are parsed or acted on without valid signature/freshness checks. | Embedding application exposes webhook ingress and relies on SDK verification. | Forged event acceptance. | Required headers, bounded timestamp tolerance, HMAC-SHA256, timing-safe compare, then parse; no replay deduplication. | Preserve verify-before-parse ordering and focused regression tests; embedding applications must deduplicate accepted webhook IDs when replay matters. | openai-java-core/src/main/kotlin/com/openai/services/WebhookVerification.kt:19-99; openai-java-core/src/main/kotlin/com/openai/services/blocking/WebhookServiceImpl.kt:33-41 |
-| Medium | Independently mutable API/SSE JSON crosses a parser boundary and causes unsafe interpretation, resource exhaustion, or sensitive exception/log output. | Attacker controls an API/network response or configured proxy; sink is reachable in caller deployment. | Client failure, data exposure, or downstream misuse. | Strict mapper defaults, typed parsing, stream iteration, and explicit DEBUG diagnostics. | Keep parsing robust and large-payload-compatible; avoid treating model output as executable authority without caller controls. | openai-java-core/src/main/kotlin/com/openai/core/ObjectMappers.kt:34-116; openai-java-core/src/main/kotlin/com/openai/core/handlers/SseHandler.kt:19-60; AGENTS.md:61-78 |
+| Medium | Independently mutable API/SSE JSON crosses a parser boundary and causes unsafe interpretation, resource exhaustion, or sensitive exception/log output. | Attacker controls an API/network response or configured proxy; sink is reachable in caller deployment. | Client failure, data exposure, or downstream misuse. | Strict mapper defaults, typed parsing, stream iteration, and explicit DEBUG diagnostics. | Keep parsing robust and large-payload-compatible; avoid treating model output as executable authority without caller controls. | openai-java-core/src/main/kotlin/com/openai/core/ObjectMappers.kt:34-116; openai-java-core/src/main/kotlin/com/openai/core/handlers/SseHandler.kt:19-60; AGENTS.md:49-66 |
 | Medium | Credentials or customer payloads reach an unintended destination or uncontrolled log. | Lower-trust actor independently controls base URL/proxy/TLS/log sink, or diagnostics are enabled in an unsafe deployment. | Secret or customer-data disclosure. | Production URL default, caller-owned configuration, auth wrappers, and default sensitive-header redaction; DEBUG is explicit. | Preserve redaction and destination/TLS controls; document caller obligations. | openai-java-core/src/main/kotlin/com/openai/core/ClientOptions.kt:151-172; openai-java-core/src/main/kotlin/com/openai/core/ClientOptions.kt:601-665; openai-java-core/src/main/kotlin/com/openai/core/http/LoggingHttpClient.kt:24-48; openai-java-core/src/main/kotlin/com/openai/core/http/LoggingHttpClient.kt:91-142 |
 | Low / not a boundary by itself | A PR changes a checked-in example, test, fixture, build script, or generated source and ordinary PR CI executes it. | The same PR author already controls the tracked executable checkout. | No new capability beyond the unprivileged PR job. | PR CI has read-only contents and no release credentials; cache scope is enforced outside PR code. | Investigate only if execution crosses an independent input or protected-authority boundary. | .github/workflows/ci.yml:8-20; .github/workflows/ci.yml:33-48; .github/workflows/ci.yml:92-107 |
 

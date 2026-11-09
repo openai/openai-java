@@ -610,10 +610,16 @@ private constructor(
             return other is Operation &&
                 createFile == other.createFile &&
                 deleteFile == other.deleteFile &&
-                updateFile == other.updateFile
+                updateFile == other.updateFile &&
+                (createFile != null ||
+                    deleteFile != null ||
+                    updateFile != null ||
+                    _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(createFile, deleteFile, updateFile)
+        override fun hashCode(): Int =
+            if (createFile == null && deleteFile == null && updateFile == null) Objects.hash(_json)
+            else Objects.hash(createFile, deleteFile, updateFile)
 
         override fun toString(): String =
             when {
@@ -1769,10 +1775,15 @@ private constructor(
                 return true
             }
 
-            return other is Caller && direct == other.direct && program == other.program
+            return other is Caller &&
+                direct == other.direct &&
+                program == other.program &&
+                (direct != null || program != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(direct, program)
+        override fun hashCode(): Int =
+            if (direct == null && program == null) Objects.hash(_json)
+            else Objects.hash(direct, program)
 
         override fun toString(): String =
             when {

@@ -1362,16 +1362,29 @@ class TranslationConnectionTest {
                                     }
                                 }
                     }
-                TranslationConnection.connect(options(server, client)).use { connection ->
-                    assertThatThrownBy { connection.finishAsync(deadline).get(7, TimeUnit.SECONDS) }
-                        .isInstanceOf(ExecutionException::class.java)
-                        .hasCause(closing)
-                    assertThat(connection.receive().asSessionOutputTranscriptDelta().delta())
-                        .isEqualTo("Hola")
-                    assertThat(connection.receive().asSessionOutputAudioDelta().delta())
-                        .isEqualTo("AQID")
-                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("done")
-                    assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                // This checks cleanup-error propagation, independent of transport scheduling time.
+                ControlledTiming().use { clock ->
+                    TranslationConnection.connect(
+                            options(server, client),
+                            TranslationWebSocketOptions.defaults(),
+                            clock.timing,
+                        )
+                        .use { connection ->
+                            assertThatThrownBy {
+                                    connection.finishAsync(deadline).get(7, TimeUnit.SECONDS)
+                                }
+                                .isInstanceOf(ExecutionException::class.java)
+                                .hasCause(closing)
+                            assertThat(
+                                    connection.receive().asSessionOutputTranscriptDelta().delta()
+                                )
+                                .isEqualTo("Hola")
+                            assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                                .isEqualTo("AQID")
+                            assertThat(connection.receive().asSessionClosed().eventId())
+                                .isEqualTo("done")
+                            assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                        }
                 }
             }
         }
@@ -1571,16 +1584,25 @@ class TranslationConnectionTest {
                                 }
                             )
                             .build()
-                    TranslationConnection.connect(configuration).use { connection ->
-                        val finish = connection.finishAsync(Duration.ofSeconds(1))
-                        assertThat(began.await(3, TimeUnit.SECONDS)).isTrue()
-                        assertThatThrownBy { finish.get(4, TimeUnit.SECONDS) }
-                            .isInstanceOf(ExecutionException::class.java)
-                            .hasCauseInstanceOf(TimeoutException::class.java)
-                        assertThat(closed.await(3, TimeUnit.SECONDS)).isTrue()
-                        assertThat(peer.terminated.await(3, TimeUnit.SECONDS)).isTrue()
-                        assertThat(peer.messages).isEmpty()
-                        assertThat(server.requestCount).isEqualTo(1)
+                    ControlledTiming().use { clock ->
+                        TranslationConnection.connect(
+                                configuration,
+                                TranslationWebSocketOptions.defaults(),
+                                clock.timing,
+                            )
+                            .use { connection ->
+                                val finish = connection.finishAsync(Duration.ofSeconds(1))
+                                assertThat(began.await(3, TimeUnit.SECONDS)).isTrue()
+                                // Expire only after the selected operation is blocked.
+                                clock.expire()
+                                assertThatThrownBy { finish.get(4, TimeUnit.SECONDS) }
+                                    .isInstanceOf(ExecutionException::class.java)
+                                    .hasCauseInstanceOf(TimeoutException::class.java)
+                                assertThat(closed.await(3, TimeUnit.SECONDS)).isTrue()
+                                assertThat(peer.terminated.await(3, TimeUnit.SECONDS)).isTrue()
+                                assertThat(peer.messages).isEmpty()
+                                assertThat(server.requestCount).isEqualTo(1)
+                            }
                     }
                 }
             }

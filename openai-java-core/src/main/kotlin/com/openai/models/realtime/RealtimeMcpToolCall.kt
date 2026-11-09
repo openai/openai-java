@@ -646,10 +646,13 @@ private constructor(
             return other is Error &&
                 protocol == other.protocol &&
                 toolExecution == other.toolExecution &&
-                http == other.http
+                http == other.http &&
+                (protocol != null || toolExecution != null || http != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(protocol, toolExecution, http)
+        override fun hashCode(): Int =
+            if (protocol == null && toolExecution == null && http == null) Objects.hash(_json)
+            else Objects.hash(protocol, toolExecution, http)
 
         override fun toString(): String =
             when {
