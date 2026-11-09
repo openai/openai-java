@@ -83,13 +83,7 @@ internal class AgentTurnResultsTest {
         assertThat(result.turnId()).isEqualTo("root")
         assertThat(result.sessionId()).isEqualTo("s")
         assertThat(result.messages()).hasSize(2)
-        assertThat(
-                result
-                    .messages()[0]
-                    .content()[0]
-                    .asOutputText()
-                    ._additionalProperties()["annotations"]
-            )
+        assertThat(result.messages()[0].content()[0].asOutputText()._allProperties()["annotations"])
             .isEqualTo(com.openai.core.JsonValue.from(emptyList<Any>()))
         assertThat(AgentTurnResults.getFinalResult(stream)).isSameAs(result)
         assertThatThrownBy { (result.messages() as MutableList).clear() }

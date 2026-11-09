@@ -15,7 +15,7 @@ internal class ErrorDiagnosticsCompatibilityTest {
     fun response() =
         verify(
             ResponseError::class.java,
-            { it._additionalProperties() },
+            { it._allProperties() },
             {
                 it.toBuilder()
                     .putAdditionalProperty("type", JsonValue.from("legacy"))
@@ -28,7 +28,7 @@ internal class ErrorDiagnosticsCompatibilityTest {
     fun betaResponse() =
         verify(
             BetaResponseError::class.java,
-            { it._additionalProperties() },
+            { it._allProperties() },
             {
                 it.toBuilder()
                     .putAdditionalProperty("type", JsonValue.from("legacy"))
@@ -41,7 +41,7 @@ internal class ErrorDiagnosticsCompatibilityTest {
     fun video() =
         verify(
             VideoCreateError::class.java,
-            { it._additionalProperties() },
+            { it._allProperties() },
             {
                 it.toBuilder()
                     .putAdditionalProperty("type", JsonValue.from("legacy"))
@@ -52,7 +52,7 @@ internal class ErrorDiagnosticsCompatibilityTest {
 
     private fun <T : Any> verify(
         clazz: Class<T>,
-        extras: (T) -> Map<String, JsonValue>,
+        allProperties: (T) -> Map<String, JsonValue>,
         stale: (T) -> T,
     ) {
         val mapper = jsonMapper().copy().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
@@ -66,7 +66,7 @@ internal class ErrorDiagnosticsCompatibilityTest {
             val raw = """{"code":"server_error","message":"synthetic","other":true$fields}"""
             val expected = mapper.readTree(raw) as com.fasterxml.jackson.databind.node.ObjectNode
             val error = mapper.readValue(raw, clazz)
-            val properties = extras(error)
+            val properties = allProperties(error)
             assertThat(properties["other"]).isEqualTo(JsonValue.from(true))
             for (key in listOf("type", "param")) {
                 assertThat(properties.containsKey(key)).isEqualTo(expected.has(key))
@@ -87,7 +87,9 @@ internal class ErrorDiagnosticsCompatibilityTest {
             }
             for (key in listOf("type", "param")) {
                 assertThat(
-                        mapper.readTree(mapper.writeValueAsString(extras(withLegacyEntries)[key]))
+                        mapper.readTree(
+                            mapper.writeValueAsString(allProperties(withLegacyEntries)[key])
+                        )
                     )
                     .isEqualTo(expected.get(key))
             }

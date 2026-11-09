@@ -116,8 +116,8 @@ internal class CredentialAuthRedactionTest {
                 .doesNotContain("fake-response-secret")
                 .contains("secret_value", "[REDACTED]", "future_field", "preserved")
         }
-        assertThat(environmentVariable._additionalProperties()["secret_value"]).isEqualTo(raw)
-        assertThat(original._additionalProperties()["secret_value"]).isEqualTo(raw)
+        assertThat(environmentVariable._allProperties()["secret_value"]).isEqualTo(raw)
+        assertThat(original._allProperties()["secret_value"]).isEqualTo(raw)
         assertThat(environmentVariable).isEqualTo(original)
         assertThat(mapper.readTree(mapper.writeValueAsString(auth)))
             .isEqualTo(mapper.readTree(serialized))
@@ -135,7 +135,8 @@ internal class CredentialAuthRedactionTest {
         assertThat(environmentVariable.toString())
             .contains("future_field", "preserved")
             .doesNotContain("secret_value", "[REDACTED]")
-        assertThat(environmentVariable._additionalProperties())
-            .containsExactlyEntriesOf(mapOf("future_field" to JsonValue.from("preserved")))
+        assertThat(environmentVariable._allProperties())
+            .containsEntry("future_field", JsonValue.from("preserved"))
+            .doesNotContainKey("secret_value")
     }
 }

@@ -476,9 +476,15 @@ validate_public_api_signatures() {
     LC_ALL=C sort -u -o "${actual_signatures}" "${actual_signatures}"
     comm -23 "${expected_signatures}" "${actual_signatures}" > "${missing_signatures}"
     if [ -s "${missing_signatures}" ]; then
-        echo "${policy_name} structured-output API is missing:" >&2
-        sed 's/^/  /' "${missing_signatures}" >&2
-        exit 1
+        local next_reader_policy=scripts/compatibility/next_property_readers.py
+        if [ "${policy_name}" = baseline ] && git cat-file -e "${BASE_COMMIT}:${next_reader_policy}" 2>/dev/null; then
+            # Read the exception from the same trusted commit as the expected signatures.
+            git show "${BASE_COMMIT}:${next_reader_policy}" | python3 - "${missing_signatures}"
+        else
+            echo "${policy_name} structured-output API is missing:" >&2
+            sed 's/^/  /' "${missing_signatures}" >&2
+            exit 1
+        fi
     fi
 
     if [ "${require_exact_match}" = true ]; then

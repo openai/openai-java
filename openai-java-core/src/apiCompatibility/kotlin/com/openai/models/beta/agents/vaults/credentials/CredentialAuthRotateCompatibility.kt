@@ -160,7 +160,7 @@ internal class CredentialAuthRotateCompatibility {
                 )
         }
         assertThat(environmentVariable.secretValue()).isEqualTo(secret)
-        assertThat(environmentVariable._additionalProperties()["secret_value"]).isEqualTo(raw)
+        assertThat(environmentVariable._allProperties()["secret_value"]).isEqualTo(raw)
         assertThat(auth.asEnvironmentVariable()).isEqualTo(environmentVariable)
         assertThat(mapper.writeValueAsString(auth)).isEqualTo(serialized)
         assertThat(serialized).contains(secret, "fake-additional-secret")
