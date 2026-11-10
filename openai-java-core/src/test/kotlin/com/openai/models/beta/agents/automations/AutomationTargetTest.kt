@@ -55,6 +55,7 @@ internal class AutomationTargetTest {
                                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                                         .build()
                                 )
+                                .async(true)
                                 .build()
                         )
                         .compaction(AutomationAgentConfig.Compaction.builder().async(true).build())
@@ -121,6 +122,7 @@ internal class AutomationTargetTest {
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )
+                                    .async(true)
                                     .build()
                             )
                             .compaction(
