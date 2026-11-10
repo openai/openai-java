@@ -25,6 +25,7 @@ internal class AgentToolParamTest {
                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                         .build()
                 )
+                .async(true)
                 .deferLoading(true)
                 .build()
 
@@ -52,6 +53,7 @@ internal class AgentToolParamTest {
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
+                    .async(true)
                     .deferLoading(true)
                     .build()
             )
