@@ -9,7 +9,7 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.legacyAdditionalProperties
+import com.openai.core.collectAllProperties
 import com.openai.core.serializableAdditionalProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -88,9 +88,18 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /** Returns an immutable snapshot of all present JSON properties by wire name. */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "error" to _error(),
+            "reason" to _reason(),
+            "type" to _type(),
+        )
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
+    private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
         Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
@@ -291,9 +300,14 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
-        // Retain the legacy message lookup until _additionalProperties is removed.
-        fun _additionalProperties(): Map<String, JsonValue> =
-            legacyAdditionalProperties(additionalProperties, mapOf("message" to message))
+        /** Returns an immutable snapshot of all present JSON properties by wire name. */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "code" to _code(),
+                "message" to _message(),
+                "type" to _type(),
+            )
 
         @JsonAnyGetter
         @ExcludeMissing

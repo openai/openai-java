@@ -3074,7 +3074,7 @@ class ResponsesWebSocketTest {
                                 assertThat(
                                         response
                                             .get(5, TimeUnit.SECONDS)
-                                            ._additionalProperties()["synthetic_payload"]
+                                            ._allProperties()["synthetic_payload"]
                                             ?.asString()
                                             ?.orElse(null)
                                     )

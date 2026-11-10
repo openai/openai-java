@@ -20,6 +20,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -328,9 +329,28 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /** Returns an immutable snapshot of all present JSON properties by wire name. */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "id" to _id(),
+            "conversation_id" to _conversationId(),
+            "max_output_tokens" to _maxOutputTokens(),
+            "metadata" to _metadata(),
+            "modalities" to _modalities(),
+            "object" to _object_(),
+            "output" to _output(),
+            "output_audio_format" to _outputAudioFormat(),
+            "status" to _status(),
+            "status_details" to _statusDetails(),
+            "temperature" to _temperature(),
+            "usage" to _usage(),
+            "voice" to _voice(),
+        )
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
+    private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
         Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
@@ -917,9 +937,13 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>
     ) {
 
+        /** Returns an immutable snapshot of all present JSON properties by wire name. */
+        fun _allProperties(): Map<String, JsonValue> = collectAllProperties(additionalProperties)
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
+            additionalProperties
 
         fun toBuilder() = Builder().from(this)
 

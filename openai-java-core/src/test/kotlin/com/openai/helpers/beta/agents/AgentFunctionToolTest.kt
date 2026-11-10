@@ -68,7 +68,7 @@ internal class AgentFunctionToolTest {
         val tool = AgentFunctionTool.of(LookupItem::class.java, catalog::lookup)
         val definition = jsonMapper().valueToTree<JsonNode>(tool.definition().validate())
         SessionCreateParams.Agent.builder().addTool(tool.definition()).build().validate()
-        assertThat(tool.definition().asFunction().parameters()._additionalProperties())
+        assertThat(tool.definition().asFunction().parameters()._allProperties())
             .containsKey("properties")
         assertThat(tool.name()).isEqualTo("lookup_item")
         assertThat(definition.path("type").asText()).isEqualTo("function")

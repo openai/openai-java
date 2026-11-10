@@ -260,10 +260,6 @@ class StructuredResponse<T : Any>(
     /** @see Response._allProperties */
     fun _allProperties(): Map<String, JsonValue> = rawResponse._allProperties()
 
-    /** @see Response._additionalProperties */
-    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
-    fun _additionalProperties(): Map<String, JsonValue> = rawResponse._additionalProperties()
-
     /** @see Response.validate */
     fun validate(): StructuredResponse<T> = apply {
         output().forEach { it.validate() }

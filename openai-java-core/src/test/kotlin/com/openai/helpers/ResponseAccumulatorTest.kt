@@ -180,7 +180,7 @@ internal class ResponseAccumulatorTest {
                 text
                     .annotations()[0]
                     .asUrlCitation()
-                    ._additionalProperties()["provider_tag"]
+                    ._allProperties()["provider_tag"]
                     ?.convert(String::class.java)
             )
             .isEqualTo("kept")
@@ -291,7 +291,7 @@ internal class ResponseAccumulatorTest {
                     .logprobs()
                     .get()
                     .single()
-                    ._additionalProperties()["provider_tag"]
+                    ._allProperties()["provider_tag"]
                     ?.convert(String::class.java)
             )
             .isEqualTo("kept")

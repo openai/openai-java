@@ -42,9 +42,7 @@ internal class ChatCompletionAccumulatorAudioCompatibilityTest {
         assertThat(first.audio().get().data()).isEqualTo("abcd")
         assertThat(first.audio().get().transcript()).isEqualTo("Hi there")
         assertThat(first.audio().get().expiresAt()).isEqualTo(7)
-        assertThat(
-                first.audio().get()._additionalProperties()["custom"]?.asNumber()?.get()?.toLong()
-            )
+        assertThat(first.audio().get()._allProperties()["custom"]?.asNumber()?.get()?.toLong())
             .isEqualTo(5L)
         val second = result.choices()[1].message().audio().get()
         assertThat(second.id()).isEqualTo("audio-1")
