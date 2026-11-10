@@ -9,6 +9,7 @@ from pathlib import Path
 
 MODEL = "openai-java-core/src/main/kotlin/com/openai/models/responses/CompactedResponse.kt"
 PATCH = "scripts/compatibility/next-compaction-assertions.patch"
+GETTER_PATCH = "scripts/compatibility/next-compaction-getter-assertions.patch"
 STAGED = Path("openai-java-core/build/api-compatibility-source")
 
 
@@ -25,15 +26,20 @@ def targets_next():
 def migrate(base):
     if not targets_next() or not Path(MODEL).is_file():
         return
-    if "fun output(): List<ResponseItem>" not in Path(MODEL).read_text():
+    current = Path(MODEL).read_text()
+    if "fun output(): List<ResponseItem>" in current:
+        accessor, patch_path = "output", PATCH
+    elif "fun outputOrThrow(): List<ResponseItem>" in current:
+        accessor, patch_path = "outputOrThrow", GETTER_PATCH
+    else:
         return
-    previous = subprocess.check_output(["git", "show", f"{base}:{MODEL}"])
-    if b"fun output(): List<ResponseOutputItem>" not in previous:
+    previous = subprocess.check_output(["git", "show", f"{base}:{MODEL}"], text=True)
+    if f"fun {accessor}(): List<ResponseOutputItem>" not in previous:
         return
 
     if STAGED.resolve(strict=True) != Path.cwd() / STAGED:
         raise ValueError(f"Expected a temporary fixture directory without symlinks: {STAGED}")
-    patch = subprocess.check_output(["git", "show", f"{base}:{PATCH}"])
+    patch = subprocess.check_output(["git", "show", f"{base}:{patch_path}"])
     # git apply rejects symlinks in a patched path and fails if the context changed.
     subprocess.run(["git", "apply", f"--directory={STAGED}", "-"], input=patch, check=True)
 

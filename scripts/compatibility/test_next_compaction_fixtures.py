@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from next_compaction_fixtures import MODEL, PATCH, STAGED
+from next_compaction_fixtures import GETTER_PATCH, MODEL, PATCH, STAGED
 
 
 POLICY = Path(__file__).with_name("next_compaction_fixtures.py")
@@ -55,9 +55,10 @@ class NextCompactionFixturesTest(unittest.TestCase):
         self.model.write_text(OLD)
         patch = self.repo / PATCH
         patch.parent.mkdir(parents=True)
-        shutil.copyfile(POLICY.with_name(Path(PATCH).name), patch)
+        for name in (PATCH, GETTER_PATCH):
+            shutil.copyfile(POLICY.with_name(Path(name).name), self.repo / name)
         self.git("init", "-q")
-        self.git("add", "--", MODEL, PATCH)
+        self.git("add", "--", MODEL, PATCH, GETTER_PATCH)
         self.git("-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-qm", "Trusted base")
         self.model.write_text(NEW)
         # A proposed patch must never supply the migration applied to the archived sources.
@@ -94,6 +95,34 @@ class NextCompactionFixturesTest(unittest.TestCase):
             else:
                 self.assertIn('.contains(JsonValue.from(mapOf("type" to "compaction_trigger")))', staged)
             for root in (self.repo, self.repo / STAGED / "proposed"):
+                self.assertEqual((root / path).read_text(), original)
+
+    def test_getter_transition_preserves_all_three_assertions(self):
+        self.model.write_text("fun outputOrThrow(): List<ResponseOutputItem>")
+        self.git("-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-qm", "Getter baseline", "--", MODEL)
+        fixtures = self.repo / STAGED
+        for path, original in FIXTURES.items():
+            (fixtures / path).write_text(
+                original.replace("createdAt()).isEqualTo(0L)", "createdAt()).contains(0L)")
+                .replace(".output())", ".output().getOrNull())")
+            )
+        self.assertEqual(self.run_policy().returncode, 0)
+        for path in FIXTURES:
+            self.assertNotIn(".map { JsonValue.from(it) }", (fixtures / path).read_text())
+        self.model.write_text("fun outputOrThrow(): List<ResponseItem>")
+        (self.repo / GETTER_PATCH).write_text("invalid proposed patch")
+        result = self.run_policy()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for path, original in FIXTURES.items():
+            staged = (fixtures / path).read_text()
+            if "CompactedResponseTest" in path.name:
+                self.assertIn(".outputOrThrow().map { JsonValue.from(it) }", staged)
+                self.assertIn('.id("expected_id").build()', staged)
+                self.assertIn(".containsExactly(\n                JsonValue.from(", staged)
+            else:
+                self.assertIn("compactionTrigger().map { JsonValue.from(it) }", staged)
+                self.assertIn('.contains(JsonValue.from(mapOf("type" to "compaction_trigger")))', staged)
+            for root in (self.repo, fixtures / "proposed"):
                 self.assertEqual((root / path).read_text(), original)
 
     def test_skips_other_targets_and_unchanged_sdk(self):
