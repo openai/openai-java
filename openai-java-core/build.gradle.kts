@@ -1,3 +1,5 @@
+import com.openai.gradle.ClaimedCoreTestSourceSpec
+import com.openai.gradle.CoreTestCompilationLayout
 import com.openai.gradle.CoreCompilationClaimedSourceSpec
 import com.openai.gradle.CoreCompilationDependencies
 import com.openai.gradle.CoreCompilationShards
@@ -78,30 +80,35 @@ mainClassesDirectories.setFrom(combinedClassesDirectory)
 mainClassesDirectories.builtBy(assembleCoreClasses)
 tasks.named("classes") { dependsOn(assembleCoreClasses) }
 
-// These generated model tests do not use the shared fixtures needed by services and core tests.
-// Compile them independently, without moving generated sources or changing test discovery.
-val independentModelTests =
-    listOf(
-        "betaModelTest" to "com/openai/models/beta/**",
-        "adminModelTest" to "com/openai/models/admin/**",
-    )
+// Compile generated tests in balanced groups without changing their files or discovery.
+val testLayout = CoreTestCompilationLayout(kotlin.sourceSets.getByName("test").kotlin.files)
 val coreTestSourceSet = sourceSets.test.get()
 val coreTestClassesDirectories = coreTestSourceSet.output.classesDirs as ConfigurableFileCollection
-independentModelTests.forEach { (name, pattern) ->
-    val modelTests = sourceSets.create(name)
-    // Resolve exactly the dependencies/Java 17 attributes already used to compile core tests.
-    modelTests.compileClasspath = coreTestSourceSet.compileClasspath
-    kotlin.sourceSets.named(name) {
-        kotlin.setSrcDirs(listOf(layout.projectDirectory.dir("src/test/kotlin")))
-        kotlin.include(pattern)
-    }
-    kotlin.sourceSets.named("test") { kotlin.exclude(pattern) }
+kotlin.sourceSets.named("test") { kotlin.exclude(ClaimedCoreTestSourceSpec(testLayout.moved)) }
 
-    val compileModelTests = tasks.named<KotlinCompile>(modelTests.getCompileTaskName("kotlin")) {
+fun registerTestCompilation(name: String, files: List<File>) = run {
+    val testSources = sourceSets.create(name)
+    testSources.compileClasspath = coreTestSourceSet.compileClasspath
+    val compileTests = tasks.named<KotlinCompile>(testSources.getCompileTaskName("kotlin")) {
+        setSource(files)
         friendPaths.setFrom(sourceSets.main.map { it.output.classesDirs })
     }
-    coreTestClassesDirectories.from(compileModelTests.flatMap { it.destinationDirectory })
-    tasks.named("testClasses") { dependsOn(modelTests.classesTaskName) }
+    coreTestClassesDirectories.from(compileTests.flatMap { it.destinationDirectory })
+    tasks.named("testClasses") { dependsOn(testSources.classesTaskName) }
+    compileTests
+}
+
+// Compile the singleton server fixture once so every test group shares its process-wide lock.
+val compileServerFixture = registerTestCompilation("sharedFixtureTest", listOf(testLayout.fixture))
+testLayout.models.forEachIndexed { index, files -> registerTestCompilation("modelGroup${index}Test", files) }
+val serviceCompilations = testLayout.services.mapIndexed { index, files ->
+    registerTestCompilation("serviceGroup${index}Test", files)
+}
+(serviceCompilations + tasks.named<KotlinCompile>("compileTestKotlin")).forEach { compilation ->
+    compilation.configure {
+        libraries.from(compileServerFixture.flatMap { it.destinationDirectory })
+        friendPaths.from(compileServerFixture.flatMap { it.destinationDirectory })
+    }
 }
 
 val coreJar = tasks.named<Jar>("jar") {
