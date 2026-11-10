@@ -245,6 +245,8 @@ tasks.withType<Test>().configureEach {
 }
 
 tasks.test {
+    // Model and serialization tests benefit from fewer young-generation collections.
+    maxHeapSize = "2g"
     systemProperty("expected.jackson.version", jacksonPublishedVersion)
 }
 
