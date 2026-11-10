@@ -496,6 +496,7 @@ private constructor(
         }
 
         /** An enum containing [RetentionType]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             ORGANIZATION_DEFAULT,
             NONE,
@@ -514,6 +515,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             ORGANIZATION_DEFAULT,
             NONE,
@@ -535,6 +537,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 ORGANIZATION_DEFAULT -> Value.ORGANIZATION_DEFAULT
@@ -555,6 +558,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 ORGANIZATION_DEFAULT -> Known.ORGANIZATION_DEFAULT

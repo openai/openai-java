@@ -948,6 +948,7 @@ private constructor(
             }
 
             /** An enum containing [Effort]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 NONE,
                 MINIMAL,
@@ -966,6 +967,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 NONE,
                 MINIMAL,
@@ -986,6 +988,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     NONE -> Value.NONE
@@ -1006,6 +1009,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     NONE -> Known.NONE
@@ -1107,6 +1111,7 @@ private constructor(
             }
 
             /** An enum containing [Summary]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 CONCISE,
                 DETAILED,
@@ -1122,6 +1127,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 CONCISE,
                 DETAILED,
@@ -1139,6 +1145,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     CONCISE -> Value.CONCISE
@@ -1156,6 +1163,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     CONCISE -> Known.CONCISE
@@ -1279,6 +1287,7 @@ private constructor(
         }
 
         /** An enum containing [ServiceTier]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             AUTO,
             DEFAULT,
@@ -1297,6 +1306,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             AUTO,
             DEFAULT,
@@ -1317,6 +1327,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 AUTO -> Value.AUTO
@@ -1337,6 +1348,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 AUTO -> Known.AUTO
@@ -1601,6 +1613,7 @@ private constructor(
             }
 
             /** An enum containing [Verbosity]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 LOW,
                 MEDIUM,
@@ -1616,6 +1629,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 LOW,
                 MEDIUM,
@@ -1634,6 +1648,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     LOW -> Value.LOW
@@ -1651,6 +1666,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     LOW -> Known.LOW
@@ -2758,6 +2774,7 @@ private constructor(
             }
 
             /** An enum containing [LiveToolChoiceEnum]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 AUTO,
                 NONE,
@@ -2775,6 +2792,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 AUTO,
                 NONE,
@@ -2793,6 +2811,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     AUTO -> Value.AUTO
@@ -2810,6 +2829,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     AUTO -> Known.AUTO
@@ -5424,6 +5444,7 @@ private constructor(
                 }
 
                 /** An enum containing [Mode]'s known values. */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Known {
                     NONE,
                     AUTO,
@@ -5439,6 +5460,7 @@ private constructor(
                  *   new members that the SDK is unaware of.
                  * - It was constructed with an arbitrary value using the [of] method.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Value {
                     NONE,
                     AUTO,
@@ -5456,6 +5478,7 @@ private constructor(
                  * Use the [known] method instead if you're certain the value is always known or if
                  * you want to throw for the unknown case.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun value(): Value =
                     when (this) {
                         NONE -> Value.NONE
@@ -5473,6 +5496,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if this class instance's value is a not a
                  *   known member.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun known(): Known =
                     when (this) {
                         NONE -> Known.NONE
@@ -7314,6 +7338,7 @@ private constructor(
                         }
 
                         /** An enum containing [MemoryLimit]'s known values. */
+                        @Deprecated("Use asString() for string values or _value() for raw JSON.")
                         enum class Known {
                             _1G,
                             _4G,
@@ -7332,6 +7357,7 @@ private constructor(
                          *   may respond with new members that the SDK is unaware of.
                          * - It was constructed with an arbitrary value using the [of] method.
                          */
+                        @Deprecated("Use asString() for string values or _value() for raw JSON.")
                         enum class Value {
                             _1G,
                             _4G,
@@ -7351,6 +7377,7 @@ private constructor(
                          * Use the [known] method instead if you're certain the value is always
                          * known or if you want to throw for the unknown case.
                          */
+                        @Deprecated("Use asString() for string values or _value() for raw JSON.")
                         fun value(): Value =
                             when (this) {
                                 _1G -> Value._1G
@@ -7369,6 +7396,7 @@ private constructor(
                          * @throws OpenAIInvalidDataException if this class instance's value is a
                          *   not a known member.
                          */
+                        @Deprecated("Use asString() for string values or _value() for raw JSON.")
                         fun known(): Known =
                             when (this) {
                                 _1G -> Known._1G

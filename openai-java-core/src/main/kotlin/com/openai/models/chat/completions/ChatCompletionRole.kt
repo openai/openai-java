@@ -38,6 +38,7 @@ class ChatCompletionRole @JsonCreator private constructor(private val value: Jso
     }
 
     /** An enum containing [ChatCompletionRole]'s known values. */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Known {
         DEVELOPER,
         SYSTEM,
@@ -56,6 +57,7 @@ class ChatCompletionRole @JsonCreator private constructor(private val value: Jso
      *   is unaware of.
      * - It was constructed with an arbitrary value using the [of] method.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Value {
         DEVELOPER,
         SYSTEM,
@@ -77,6 +79,7 @@ class ChatCompletionRole @JsonCreator private constructor(private val value: Jso
      * Use the [known] method instead if you're certain the value is always known or if you want to
      * throw for the unknown case.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun value(): Value =
         when (this) {
             DEVELOPER -> Value.DEVELOPER
@@ -96,6 +99,7 @@ class ChatCompletionRole @JsonCreator private constructor(private val value: Jso
      *
      * @throws OpenAIInvalidDataException if this class instance's value is a not a known member.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun known(): Known =
         when (this) {
             DEVELOPER -> Known.DEVELOPER

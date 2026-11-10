@@ -47,6 +47,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
     }
 
     /** An enum containing [ReasoningEffort]'s known values. */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Known {
         NONE,
         MINIMAL,
@@ -66,6 +67,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
      *   is unaware of.
      * - It was constructed with an arbitrary value using the [of] method.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Value {
         NONE,
         MINIMAL,
@@ -87,6 +89,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
      * Use the [known] method instead if you're certain the value is always known or if you want to
      * throw for the unknown case.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun value(): Value =
         when (this) {
             NONE -> Value.NONE
@@ -107,6 +110,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
      *
      * @throws OpenAIInvalidDataException if this class instance's value is a not a known member.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun known(): Known =
         when (this) {
             NONE -> Known.NONE

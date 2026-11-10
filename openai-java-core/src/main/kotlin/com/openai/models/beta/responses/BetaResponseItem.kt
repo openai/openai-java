@@ -3776,6 +3776,7 @@ private constructor(
                     }
 
                     /** An enum containing [Detail]'s known values. */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     enum class Known {
                         LOW,
                         HIGH,
@@ -3792,6 +3793,7 @@ private constructor(
                      *   respond with new members that the SDK is unaware of.
                      * - It was constructed with an arbitrary value using the [of] method.
                      */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     enum class Value {
                         LOW,
                         HIGH,
@@ -3811,6 +3813,7 @@ private constructor(
                      * Use the [known] method instead if you're certain the value is always known or
                      * if you want to throw for the unknown case.
                      */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     fun value(): Value =
                         when (this) {
                             LOW -> Value.LOW
@@ -3829,6 +3832,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException if this class instance's value is a not a
                      *   known member.
                      */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     fun known(): Known =
                         when (this) {
                             LOW -> Known.LOW
@@ -5078,6 +5082,7 @@ private constructor(
             }
 
             /** An enum containing [Action]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 SPAWN_AGENT,
                 INTERRUPT_AGENT,
@@ -5096,6 +5101,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 SPAWN_AGENT,
                 INTERRUPT_AGENT,
@@ -5116,6 +5122,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     SPAWN_AGENT -> Value.SPAWN_AGENT
@@ -5136,6 +5143,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     SPAWN_AGENT -> Known.SPAWN_AGENT
@@ -5843,6 +5851,7 @@ private constructor(
             }
 
             /** An enum containing [Action]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 SPAWN_AGENT,
                 INTERRUPT_AGENT,
@@ -5861,6 +5870,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 SPAWN_AGENT,
                 INTERRUPT_AGENT,
@@ -5881,6 +5891,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     SPAWN_AGENT -> Value.SPAWN_AGENT
@@ -5901,6 +5912,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     SPAWN_AGENT -> Known.SPAWN_AGENT
@@ -6690,6 +6702,7 @@ private constructor(
             }
 
             /** An enum containing [Role]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 UNKNOWN,
                 USER,
@@ -6710,6 +6723,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 UNKNOWN,
                 USER,
@@ -6730,6 +6744,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     UNKNOWN -> Value.UNKNOWN
@@ -6752,6 +6767,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     UNKNOWN -> Known.UNKNOWN
@@ -8023,6 +8039,7 @@ private constructor(
             }
 
             /** An enum containing [Status]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 COMPLETED,
                 INCOMPLETE,
@@ -8037,6 +8054,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 COMPLETED,
                 INCOMPLETE,
@@ -8053,6 +8071,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     COMPLETED -> Value.COMPLETED
@@ -8069,6 +8088,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     COMPLETED -> Known.COMPLETED
@@ -9066,6 +9086,7 @@ private constructor(
             }
 
             /** An enum containing [Status]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 IN_PROGRESS,
                 COMPLETED,
@@ -9082,6 +9103,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 IN_PROGRESS,
                 COMPLETED,
@@ -9100,6 +9122,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     IN_PROGRESS -> Value.IN_PROGRESS
@@ -9118,6 +9141,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     IN_PROGRESS -> Known.IN_PROGRESS
@@ -9216,6 +9240,7 @@ private constructor(
             }
 
             /** An enum containing [Action]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 GENERATE,
                 EDIT,
@@ -9231,6 +9256,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 GENERATE,
                 EDIT,
@@ -9248,6 +9274,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     GENERATE -> Value.GENERATE
@@ -9265,6 +9292,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     GENERATE -> Known.GENERATE
@@ -9563,6 +9591,7 @@ private constructor(
             }
 
             /** An enum containing [Background]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 TRANSPARENT,
                 OPAQUE,
@@ -9578,6 +9607,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 TRANSPARENT,
                 OPAQUE,
@@ -9596,6 +9626,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     TRANSPARENT -> Value.TRANSPARENT
@@ -9613,6 +9644,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     TRANSPARENT -> Known.TRANSPARENT
@@ -10302,6 +10334,7 @@ private constructor(
                     }
 
                     /** An enum containing [ModerationStage]'s known values. */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     enum class Known {
                         INPUT,
                         OUTPUT,
@@ -10319,6 +10352,7 @@ private constructor(
                      *   respond with new members that the SDK is unaware of.
                      * - It was constructed with an arbitrary value using the [of] method.
                      */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     enum class Value {
                         INPUT,
                         OUTPUT,
@@ -10337,6 +10371,7 @@ private constructor(
                      * Use the [known] method instead if you're certain the value is always known or
                      * if you want to throw for the unknown case.
                      */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     fun value(): Value =
                         when (this) {
                             INPUT -> Value.INPUT
@@ -10354,6 +10389,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException if this class instance's value is a not a
                      *   known member.
                      */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     fun known(): Known =
                         when (this) {
                             INPUT -> Known.INPUT
@@ -10503,6 +10539,7 @@ private constructor(
             }
 
             /** An enum containing [OutputFormat]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 PNG,
                 WEBP,
@@ -10520,6 +10557,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 PNG,
                 WEBP,
@@ -10540,6 +10578,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     PNG -> Value.PNG
@@ -10559,6 +10598,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     PNG -> Known.PNG
@@ -10668,6 +10708,7 @@ private constructor(
             }
 
             /** An enum containing [Quality]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 LOW,
                 MEDIUM,
@@ -10686,6 +10727,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 LOW,
                 MEDIUM,
@@ -10706,6 +10748,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     LOW -> Value.LOW
@@ -10726,6 +10769,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     LOW -> Known.LOW
@@ -10826,6 +10870,7 @@ private constructor(
             }
 
             /** An enum containing [Size]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 _1024X1024,
                 _1024X1536,
@@ -10841,6 +10886,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 _1024X1024,
                 _1024X1536,
@@ -10856,6 +10902,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     _1024X1024 -> Value._1024X1024
@@ -10873,6 +10920,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     _1024X1024 -> Known._1024X1024
@@ -12344,6 +12392,7 @@ private constructor(
             }
 
             /** An enum containing [Status]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 IN_PROGRESS,
                 COMPLETED,
@@ -12359,6 +12408,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 IN_PROGRESS,
                 COMPLETED,
@@ -12376,6 +12426,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     IN_PROGRESS -> Value.IN_PROGRESS
@@ -12393,6 +12444,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     IN_PROGRESS -> Known.IN_PROGRESS
@@ -13241,6 +13293,7 @@ private constructor(
             }
 
             /** An enum containing [Status]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 IN_PROGRESS,
                 COMPLETED,
@@ -13256,6 +13309,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 IN_PROGRESS,
                 COMPLETED,
@@ -13273,6 +13327,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     IN_PROGRESS -> Value.IN_PROGRESS
@@ -13290,6 +13345,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     IN_PROGRESS -> Known.IN_PROGRESS
@@ -16297,6 +16353,7 @@ private constructor(
             }
 
             /** An enum containing [Status]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 IN_PROGRESS,
                 COMPLETED,
@@ -16314,6 +16371,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 IN_PROGRESS,
                 COMPLETED,
@@ -16333,6 +16391,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     IN_PROGRESS -> Value.IN_PROGRESS
@@ -16352,6 +16411,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     IN_PROGRESS -> Known.IN_PROGRESS

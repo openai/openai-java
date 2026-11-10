@@ -60,6 +60,7 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
     }
 
     /** An enum containing [ImageModel]'s known values. */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Known {
         GPT_IMAGE_1_5,
         GPT_IMAGE_2,
@@ -91,6 +92,7 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
      *   is unaware of.
      * - It was constructed with an arbitrary value using the [of] method.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Value {
         GPT_IMAGE_1_5,
         GPT_IMAGE_2,
@@ -122,6 +124,7 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
      * Use the [known] method instead if you're certain the value is always known or if you want to
      * throw for the unknown case.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun value(): Value =
         when (this) {
             GPT_IMAGE_1_5 -> Value.GPT_IMAGE_1_5
@@ -149,6 +152,7 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
      *
      * @throws OpenAIInvalidDataException if this class instance's value is a not a known member.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun known(): Known =
         when (this) {
             GPT_IMAGE_1_5 -> Known.GPT_IMAGE_1_5

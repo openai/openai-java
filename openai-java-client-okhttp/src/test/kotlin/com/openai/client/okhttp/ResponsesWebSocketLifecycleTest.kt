@@ -427,28 +427,27 @@ class ResponsesWebSocketLifecycleTest {
 
     @Test
     fun `close can interrupt a transport send`() {
-        val entered = CountDownLatch(1)
+        val entered = CompletableFuture<Void>()
         val released = CountDownLatch(1)
-        val writer = Executors.newSingleThreadExecutor()
+        val closer = Executors.newSingleThreadExecutor()
         try {
             val transport =
                 CallbackTransport(
                     onSend = {
-                        entered.countDown()
+                        entered.complete(null)
                         check(released.await(5, TimeUnit.SECONDS))
                     },
                     onClose = { released.countDown() },
                 )
             connection(transport).use { connection ->
-                val sent = writer.submit { connection.send(command()) }
-                assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
-                connection.close()
-                sent.get(5, TimeUnit.SECONDS)
+                val closed = entered.thenRunAsync({ connection.close() }, closer)
+                connection.send(command())
+                closed.get(5, TimeUnit.SECONDS)
             }
         } finally {
             released.countDown()
-            writer.shutdownNow()
-            assertThat(writer.awaitTermination(5, TimeUnit.SECONDS)).isTrue()
+            closer.shutdownNow()
+            assertThat(closer.awaitTermination(5, TimeUnit.SECONDS)).isTrue()
         }
     }
 

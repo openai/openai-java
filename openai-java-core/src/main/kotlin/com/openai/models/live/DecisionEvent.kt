@@ -721,6 +721,7 @@ private constructor(
         }
 
         /** An enum containing [SourceEventType]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             SESSION_INPUT_TRANSCRIPT_DELTA,
             SESSION_OUTPUT_TRANSCRIPT_DELTA,
@@ -735,6 +736,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             SESSION_INPUT_TRANSCRIPT_DELTA,
             SESSION_OUTPUT_TRANSCRIPT_DELTA,
@@ -752,6 +754,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 SESSION_INPUT_TRANSCRIPT_DELTA -> Value.SESSION_INPUT_TRANSCRIPT_DELTA
@@ -768,6 +771,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 SESSION_INPUT_TRANSCRIPT_DELTA -> Known.SESSION_INPUT_TRANSCRIPT_DELTA
