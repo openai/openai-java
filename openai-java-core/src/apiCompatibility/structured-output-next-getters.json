@@ -1,0 +1,119 @@
+{
+  "com.openai.models.chat.completions.StructuredChatCompletion": {
+    "replaced": [
+      "_object_ ()Lcom/openai/core/JsonValue;",
+      "choices ()Ljava/util/List;",
+      "created ()J",
+      "id ()Ljava/lang/String;",
+      "model ()Ljava/lang/String;"
+    ],
+    "getters": {
+      "choices": "java.util.List<com.openai.models.chat.completions.StructuredChatCompletion$Choice<T>>",
+      "created": "long",
+      "id": "java.lang.String",
+      "metadata": "com.openai.models.chat.completions.ChatCompletion$Metadata",
+      "model": "java.lang.String",
+      "moderation": "com.openai.models.chat.completions.ChatCompletion$Moderation",
+      "object_": "com.openai.core.JsonValue",
+      "serviceTier": "com.openai.models.chat.completions.ChatCompletion$ServiceTier",
+      "systemFingerprint": "java.lang.String",
+      "usage": "com.openai.models.completions.CompletionUsage"
+    }
+  },
+  "com.openai.models.chat.completions.StructuredChatCompletion$Choice": {
+    "replaced": [
+      "finishReason ()Lcom/openai/models/chat/completions/ChatCompletion$Choice$FinishReason;",
+      "index ()J",
+      "message ()Lcom/openai/models/chat/completions/StructuredChatCompletionMessage;"
+    ],
+    "getters": {
+      "finishReason": "com.openai.models.chat.completions.ChatCompletion$Choice$FinishReason",
+      "index": "long",
+      "logprobs": "com.openai.models.chat.completions.ChatCompletion$Choice$Logprobs",
+      "message": "com.openai.models.chat.completions.StructuredChatCompletionMessage<T>"
+    }
+  },
+  "com.openai.models.chat.completions.StructuredChatCompletionMessage": {
+    "replaced": [
+      "_role ()Lcom/openai/core/JsonValue;"
+    ],
+    "getters": {
+      "annotations": "java.util.List<com.openai.models.chat.completions.ChatCompletionMessage$Annotation>",
+      "audio": "com.openai.models.chat.completions.ChatCompletionAudio",
+      "content": "T",
+      "functionCall": "com.openai.models.chat.completions.ChatCompletionMessage$FunctionCall",
+      "refusal": "java.lang.String",
+      "role": "com.openai.core.JsonValue",
+      "toolCalls": "java.util.List<com.openai.models.chat.completions.ChatCompletionMessageToolCall>"
+    }
+  },
+  "com.openai.models.responses.StructuredResponse": {
+    "replaced": [
+      "_object_ ()Lcom/openai/core/JsonValue;",
+      "createdAt ()D",
+      "id ()Ljava/lang/String;",
+      "model ()Lcom/openai/models/ResponsesModel;",
+      "output ()Ljava/util/List;",
+      "parallelToolCalls ()Z",
+      "toolChoice ()Lcom/openai/models/responses/Response$ToolChoice;",
+      "tools ()Ljava/util/List;"
+    ],
+    "getters": {
+      "accessPrograms": "com.openai.models.responses.Response$AccessPrograms",
+      "background": "boolean",
+      "completedAt": "double",
+      "conversation": "com.openai.models.responses.Response$Conversation",
+      "createdAt": "double",
+      "error": "com.openai.models.responses.ResponseError",
+      "id": "java.lang.String",
+      "image": "com.openai.models.responses.Response$Image",
+      "incompleteDetails": "com.openai.models.responses.Response$IncompleteDetails",
+      "instructions": "com.openai.models.responses.Response$Instructions",
+      "maxOutputTokens": "long",
+      "maxToolCalls": "long",
+      "metadata": "com.openai.models.responses.Response$Metadata",
+      "model": "com.openai.models.ResponsesModel",
+      "moderation": "com.openai.models.responses.Response$Moderation",
+      "object_": "com.openai.core.JsonValue",
+      "output": "java.util.List<com.openai.models.responses.StructuredResponseOutputItem<T>>",
+      "parallelToolCalls": "boolean",
+      "previousResponseId": "java.lang.String",
+      "prompt": "com.openai.models.responses.ResponsePrompt",
+      "promptCacheDiagnostics": "com.openai.models.responses.Response$PromptCacheDiagnostics",
+      "promptCacheKey": "java.lang.String",
+      "promptCacheOptions": "com.openai.models.responses.Response$PromptCacheOptions",
+      "promptCacheRetention": "com.openai.models.responses.Response$PromptCacheRetention",
+      "reasoning": "com.openai.models.Reasoning",
+      "safetyIdentifier": "java.lang.String",
+      "serviceTier": "com.openai.models.responses.Response$ServiceTier",
+      "status": "com.openai.models.responses.ResponseStatus",
+      "temperature": "double",
+      "text": "com.openai.models.responses.ResponseTextConfig",
+      "toolChoice": "com.openai.models.responses.Response$ToolChoice",
+      "toolUsage": "com.openai.models.responses.Response$ToolUsage",
+      "tools": "java.util.List<com.openai.models.responses.Tool>",
+      "topLogprobs": "long",
+      "topP": "double",
+      "truncation": "com.openai.models.responses.Response$Truncation",
+      "usage": "com.openai.models.responses.ResponseUsage",
+      "user": "java.lang.String"
+    }
+  },
+  "com.openai.models.responses.StructuredResponseOutputMessage": {
+    "replaced": [
+      "_role ()Lcom/openai/core/JsonValue;",
+      "_type ()Lcom/openai/core/JsonValue;",
+      "content ()Ljava/util/List;",
+      "id ()Ljava/lang/String;",
+      "status ()Lcom/openai/models/responses/ResponseOutputMessage$Status;"
+    ],
+    "getters": {
+      "content": "java.util.List<com.openai.models.responses.StructuredResponseOutputMessage$Content<T>>",
+      "id": "java.lang.String",
+      "phase": "com.openai.models.responses.ResponseOutputMessage$Phase",
+      "role": "com.openai.core.JsonValue",
+      "status": "com.openai.models.responses.ResponseOutputMessage$Status",
+      "type": "com.openai.core.JsonValue"
+    }
+  }
+}

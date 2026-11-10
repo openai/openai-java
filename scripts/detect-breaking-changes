@@ -423,6 +423,7 @@ validate_public_api_signatures() {
     local require_exact_match="$3"
     local classes_root
     local actual_signatures
+    local actual_declarations
     local classes
     local expected_signatures
     local missing_signatures
@@ -435,6 +436,7 @@ validate_public_api_signatures() {
     local extra
 
     classes_root="$(pwd)/openai-java-core/build/classes/kotlin/main"
+    actual_declarations="$(mktemp)"
     actual_signatures="$(mktemp)"
     classes="$(mktemp)"
     expected_signatures="$(mktemp)"
@@ -477,8 +479,9 @@ validate_public_api_signatures() {
 
     while IFS= read -r class_name; do
         if ! javap -classpath "${classes_root}" -public -s "${class_name}" |
-            awk -v class_name="${class_name}" '
+            awk -v class_name="${class_name}" -v declarations="${actual_declarations}" '
                 /^  public/ && /\(/ {
+                    public_declaration = substr($0, 3)
                     declaration = $0
                     sub(/\(.*/, "", declaration)
                     count = split(declaration, fields, /[[:space:]]+/)
@@ -487,6 +490,7 @@ validate_public_api_signatures() {
                 }
                 /descriptor:/ && method_name != "" {
                     if (method_name !~ /\$/ && method_name !~ /^com\.openai\./ && method_name != "equals" && method_name != "hashCode" && method_name != "toString") {
+                        print class_name "#" public_declaration " " $2 >> declarations
                         print class_name "#" method_name " " $2
                     }
                     method_name = ""
@@ -503,7 +507,8 @@ validate_public_api_signatures() {
         local next_reader_policy=scripts/compatibility/next_property_readers.py
         if [ "${policy_name}" = baseline ] && git cat-file -e "${BASE_COMMIT}:${next_reader_policy}" 2>/dev/null; then
             # Read the exception from the same trusted commit as the expected signatures.
-            git show "${BASE_COMMIT}:${next_reader_policy}" | python3 - "${missing_signatures}"
+            git show "${BASE_COMMIT}:${next_reader_policy}" | python3 -I - \
+                "${missing_signatures}" "${actual_declarations}" "${POLICY_ROOT}/structured-output-next-getters.json"
         else
             echo "${policy_name} structured-output API is missing:" >&2
             sed 's/^/  /' "${missing_signatures}" >&2
@@ -521,6 +526,7 @@ validate_public_api_signatures() {
     fi
 
     rm -f \
+        "${actual_declarations}" \
         "${actual_signatures}" \
         "${classes}" \
         "${expected_signatures}" \
