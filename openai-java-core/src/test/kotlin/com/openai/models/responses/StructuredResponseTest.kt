@@ -136,7 +136,6 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("image", Optional.of(IMAGE)),
                 DelegationReadTestCase("_image", JsonField.of(IMAGE)),
                 DelegationReadTestCase("_allProperties", MAP),
-                DelegationReadTestCase("_additionalProperties", MAP),
                 // `validate()` and `isValid()` (which calls `validate()`) are tested separately,
                 // as they require special handling.
             )

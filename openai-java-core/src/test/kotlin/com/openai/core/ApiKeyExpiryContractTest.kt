@@ -163,7 +163,7 @@ internal class ApiKeyExpiryContractTest {
             assertThat(copy).isEqualTo(body).hasSameHashCodeAs(body)
             assertThat(copy.toString()).isEqualTo(body.toString())
             assertThat(copy._expiresInSeconds()).isEqualTo(body._expiresInSeconds())
-            assertThat(copy._additionalProperties()).isEqualTo(body._additionalProperties())
+            assertThat(copy._allProperties()).isEqualTo(body._allProperties())
         }
     }
 

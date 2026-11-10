@@ -20,6 +20,7 @@ import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -177,9 +178,22 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /** Returns an immutable snapshot of all present JSON properties by wire name. */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "type" to _type(),
+            "content_index" to _contentIndex(),
+            "event_id" to _eventId(),
+            "item_id" to _itemId(),
+            "transcript" to _transcript(),
+            "usage" to _usage(),
+            "logprobs" to _logprobs(),
+        )
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
+    private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
         Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
@@ -788,9 +802,20 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /** Returns an immutable snapshot of all present JSON properties by wire name. */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "type" to _type(),
+                    "input_tokens" to _inputTokens(),
+                    "output_tokens" to _outputTokens(),
+                    "total_tokens" to _totalTokens(),
+                    "input_token_details" to _inputTokenDetails(),
+                )
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
+            private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
                 Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
@@ -1050,9 +1075,17 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /** Returns an immutable snapshot of all present JSON properties by wire name. */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "audio_tokens" to _audioTokens(),
+                        "text_tokens" to _textTokens(),
+                    )
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> =
+                private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
                     Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
@@ -1276,9 +1309,17 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /** Returns an immutable snapshot of all present JSON properties by wire name. */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "type" to _type(),
+                    "seconds" to _seconds(),
+                )
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
+            private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
                 Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
@@ -1502,9 +1543,18 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /** Returns an immutable snapshot of all present JSON properties by wire name. */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "token" to _token(),
+                "bytes" to _bytes(),
+                "logprob" to _logprob(),
+            )
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
+        private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
             Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
