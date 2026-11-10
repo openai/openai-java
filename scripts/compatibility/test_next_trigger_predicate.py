@@ -47,6 +47,28 @@ class NextTriggerPredicateTest(unittest.TestCase):
                     expected = MIGRATED if should_migrate and root != repo and relative != unlisted else CALL
                     self.assertEqual((root / relative).read_bytes(), expected)
 
+    def test_rejects_links_outside_the_staged_fixtures(self):
+        with tempfile.TemporaryDirectory() as directory:
+            repo = Path(directory)
+            copies = repo / "compiler-inputs"
+            fixture = copies / "proposed" / CURATED
+            tracked = repo / CURATED
+            tracked.parent.mkdir(parents=True)
+            tracked.write_bytes(CALL)
+            (repo / MODEL).parent.mkdir(parents=True)
+            (repo / MODEL).touch()
+            fixture.parent.parent.mkdir(parents=True)
+            fixture.parent.symlink_to(tracked.parent, target_is_directory=True)
+            result = subprocess.run(
+                [sys.executable, str(POLICY), str(copies)],
+                cwd=repo,
+                env=dict(os.environ, GITHUB_EVENT_NAME="pull_request", GITHUB_BASE_REF="next"),
+                capture_output=True,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn(b"Staged fixture contains a symlink", result.stderr)
+            self.assertEqual(tracked.read_bytes(), CALL)
+
     def test_only_next_with_the_shared_model_migrates(self):
         for event, pull, queue, model, expected in (
             ("pull_request", "next", "main", True, True),

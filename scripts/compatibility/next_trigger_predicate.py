@@ -48,11 +48,14 @@ def target_branch():
 def migrate(root):
     if target_branch() != "next" or not SHARED_MODEL.is_file():
         return
+    root = root.resolve(strict=True)
     for tree in (root, root / "proposed"):
         for suite, files in (("test", GENERATED), ("apiCompatibility", CURATED)):
             callers = tree / "openai-java-core/src" / suite / "kotlin/com/openai"
             for name in files:
                 fixture = callers / name
+                if fixture.resolve() != fixture:
+                    raise ValueError(f"Staged fixture contains a symlink: {fixture}")
                 if fixture.is_file():
                     source = fixture.read_bytes()
                     updated = PREDICATE.sub(b"com.openai.models.live.DecisionQuestion.Predicate", source)
