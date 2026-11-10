@@ -29,6 +29,45 @@ class ResponsesDelegationPolymorphismTest {
         JsonValue.from(mapOf("type" to "future_variant", "value" to "retained"))
 
     @Test
+    fun sessionUpdateSendsTypedToolsAndStringChoice() {
+        val responses =
+            ResponsesDelegationUpdateConfig.builder()
+                .addToolWebSearch()
+                .toolChoice(ResponsesDelegationUpdateConfig.ToolChoice.LiveToolChoiceEnum.AUTO)
+                .build()
+        val delegation =
+            SessionUpdateConfig.Delegation.Responses.builder().responses(responses).build()
+        val session = SessionUpdateConfig.builder().delegation(delegation).build()
+        val event =
+            ClientEvent.ofSessionUpdate(SessionUpdateEvent.builder().session(session).build())
+        val json = mapper.readTree(mapper.writeValueAsString(event.validate()))
+        assertThat(json["type"].asText()).isEqualTo("session.update")
+        val settings = json["session"]["delegation"]["responses"]
+        assertThat(settings["tool_choice"].asText()).isEqualTo("auto")
+        assertThat(settings["tools"][0]["type"].asText()).isEqualTo("web_search")
+    }
+
+    @Test
+    fun sessionUpdatedEventDecodesDelegationToolChoice() {
+        val event =
+            mapper.readValue(
+                """{"type":"session.updated","session":{"delegation":{"type":"responses","responses":$payload}}}""",
+                ServerEvent::class.java,
+            )
+        val config =
+            event
+                .asSessionUpdated()
+                .session()
+                .delegation()
+                .get()
+                .asResponses()
+                .responses()
+                .validate()
+        assertThat(config.toolChoice().get().isLiveSpecificFileSearchParam()).isTrue()
+        assertThat(config.tools().get().single().isShell()).isTrue()
+    }
+
+    @Test
     fun createDelegationDecodesAndDispatchesExpandedVariants() {
         val config = mapper.readValue(payload, ResponsesDelegationConfig::class.java).validate()
         val choice = config.toolChoice().get()

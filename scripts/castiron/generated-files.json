@@ -4927,11 +4927,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/ResponsesDelegationConfig.kt": {
       "mode": "100644",
-      "sha256": "5734d0d2798750ff09f2a79e498ab423311addd46c3c3d4e5b141a991bfe97ab"
+      "sha256": "1cec7667039c859c02888e7065aa58083f3cee3e4837f6346680e6f290a27912"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/ResponsesDelegationUpdateConfig.kt": {
       "mode": "100644",
-      "sha256": "df127428fb21bb60bbf9a76dadb86f1529a7799388c951ea65d9bcc16495031c"
+      "sha256": "5743be322e02b5e2a85c538ae5221acd1d06a0224ba15af95b6685b293d279a3"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/ServerEvent.kt": {
       "mode": "100644",

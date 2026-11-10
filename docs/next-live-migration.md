@@ -3,6 +3,55 @@
 This describes planned source changes for the next major version. It is not a
 release announcement and does not change the current stable release.
 
+## Responses delegation tools and tool choices
+
+The next major removes the nested `Visitor` interface and `accept(Visitor)` method from these types in `com.openai.models.live`:
+
+- `ResponsesDelegationConfig.Tool`
+- `ResponsesDelegationConfig.ToolChoice`
+- `ResponsesDelegationUpdateConfig.Tool`
+- `ResponsesDelegationUpdateConfig.ToolChoice`
+
+Replace each visitor with a handler and recompile callers that reference a removed symbol. A binary compiled against one of the removed interfaces or methods can fail to link on the next major. An existing handler can continue to use `match`.
+
+These examples use `com.openai.models.live.ResponsesDelegationConfig.Tool`. The old visitor also uses `com.openai.models.live.FunctionTool` and `com.openai.core.JsonValue`.
+
+**Before**
+
+```java
+static String kind(Tool tool) {
+    return tool.accept(new Tool.Visitor<String>() {
+        @Override public String visitFunction(FunctionTool function) { return "function"; }
+        @Override public String visitWebSearch(JsonValue webSearch) { return "web_search"; }
+        @Override public String unknown(JsonValue json) { return "other"; }
+    });
+}
+```
+
+**After**
+
+```java
+static String kind(Tool tool) {
+    return tool.match(Tool.Handler.<String>builder()
+            .onFunction(function -> "function")
+            .onWebSearch(webSearch -> "web_search")
+            .onDefault(value -> "other")
+            .build());
+}
+```
+
+`onDefault` receives the union for an unregistered or unknown variant. Without an applicable callback, `match` throws `OpenAIInvalidDataException`. For an unknown JSON payload, the fallback can inspect `value._json()`.
+
+Kotlin callers can register callbacks on the same builder. For a shell tool with a container reference:
+
+```kotlin
+val containerId = tool.match(
+    Tool.Handler.builder<String>()
+        .onShell { it.environment().get().asContainerReference().containerId() }
+        .build()
+)
+```
+
 ## Decision item messages
 
 `DecisionItemCreateEvent.Item` and `DecisionItemCreatedEvent.Item` become typed
