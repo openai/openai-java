@@ -85,6 +85,12 @@ if [ "${PROPOSED_TEST_PATHS}" -eq 0 ]; then
     exit 1
 fi
 
+# Run the base commit's migration only against its archived Realtime fixture.
+realtime_policy=scripts/compatibility/next_realtime_session_fixture.py
+if git cat-file -e "${BASE_COMMIT}:${realtime_policy}" 2>/dev/null; then
+    git show "${BASE_COMMIT}:${realtime_policy}" | python3 -I - "${BASE_COMMIT}"
+fi
+
 for PATHSPEC in "${SUPPORT_PATHS[@]}"; do
     if ! git cat-file -e "${BASE_COMMIT}:${PATHSPEC}" 2>/dev/null; then
         echo "Skipping support path absent from base commit: ${PATHSPEC}"
