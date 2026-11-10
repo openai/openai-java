@@ -2033,6 +2033,8 @@ internal class ErrorHandlingTest {
         assertThat(e).hasMessage("Error reading response")
     }
 
+    private fun java.util.Optional<Headers>.toMap(): Map<String, List<String>> = get().toMap()
+
     private fun Headers.toMap(): Map<String, List<String>> =
         mutableMapOf<String, List<String>>().also { map ->
             names().forEach { map[it] = values(it) }
