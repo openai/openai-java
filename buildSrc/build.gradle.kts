@@ -13,6 +13,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21")
     implementation("com.vanniktech:gradle-maven-publish-plugin:0.37.0")
 
+    // Resolve the compiler fixture's standard library before its offline TestKit invocation.
+    testRuntimeOnly("org.jetbrains.kotlin:kotlin-stdlib:2.2.21")
     testImplementation(gradleTestKit())
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")

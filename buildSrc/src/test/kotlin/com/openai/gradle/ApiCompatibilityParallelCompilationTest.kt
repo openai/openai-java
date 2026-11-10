@@ -25,11 +25,16 @@ class ApiCompatibilityParallelCompilationTest {
             "gradle.properties",
             "org.gradle.configuration-cache=true\nkotlin.compiler.execution.strategy=in-process\n",
         )
+        // Match buildSrc repositories so offline compiler resolution uses the same metadata.
+        write(
+            "build.gradle",
+            "allprojects { repositories { gradlePluginPortal(); mavenCentral() } }",
+        )
         write(
             "openai-java-core/build.gradle",
             """
             plugins { id 'org.jetbrains.kotlin.jvm' }
-            repositories { mavenCentral() }
+
             java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))
             java.sourceCompatibility = JavaVersion.VERSION_1_8
             java.targetCompatibility = JavaVersion.VERSION_1_8
