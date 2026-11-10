@@ -381,6 +381,97 @@ gradle.beforeProject { project ->
         }
     }
 }
+// Each policy retains its own sources, dependency classpath and mandatory fresh compilation.
+// Separate projects let Gradle schedule the independent compiler invocations concurrently.
+if (gradle.parent != null) return
+
+def policies = [
+    external: ':openai-java-core:compileExternalApiCompatibilityKotlin',
+    proposed: ':openai-java-core:compileProposedApiCompatibilityKotlin'
+].findAll { name, task -> task in gradle.startParameter.taskNames }
+def shardProjects = policies.collectMany { name, task ->
+    (1..<8).collect { index -> "api-compatibility-${name}-${index}".toString() }
+}
+def partitions = [:]
+gradle.startParameter.setTaskNames(gradle.startParameter.taskNames +
+    shardProjects.collect { ":${it}:compileKotlin".toString() })
+gradle.settingsEvaluated { settings ->
+    shardProjects.each { name ->
+        settings.include(":${name}")
+        def directory = new File(settings.settingsDir, ".gradle/api-compatibility-shards/${name}")
+        directory.mkdirs()
+        settings.project(":${name}").projectDir = directory
+    }
+}
+gradle.beforeProject { project ->
+    if (project.name in shardProjects) {
+        project.evaluationDependsOn(':openai-java-core')
+        project.pluginManager.apply(
+            project.project(':openai-java-core').plugins.getPlugin('org.jetbrains.kotlin.jvm').class)
+        project.repositories.mavenCentral()
+    }
+}
+gradle.afterProject { project, state ->
+    if (state.failure != null) return
+    if (project.path == ':openai-java-core') {
+        policies.each { name, path ->
+            def original = project.tasks.getByName(path.tokenize(':').last())
+            def sources = original.sources.files.toList().sort { it.path }
+            if (sources.isEmpty()) throw new GradleException('Empty compatibility source set')
+            def models = sources.findAll { it.path.replace(File.separatorChar, '/' as char).contains('/src/test/kotlin/com/openai/models/') }
+            // Services reference each other. Keep them together and share support fixtures.
+            def services = sources.findAll { it.path.replace(File.separatorChar, '/' as char).contains('/src/test/kotlin/com/openai/services/') }
+            def units = models.collect { [it] }
+            if (!services.isEmpty()) units.add(services)
+            def shared = sources - units.flatten()
+            def groups = (0..<8).collect { [] }
+            def sizes = (0..<8).collect { 0L }
+            units.sort { a, b ->
+                b.sum { it.length() } <=> a.sum { it.length() } ?: a[0].path <=> b[0].path
+            }.each { unit ->
+                def index = (0..<8).min { sizes[it] }
+                groups[index].addAll(unit)
+                sizes[index] += unit.sum { it.length() }
+            }
+            def assigned = (0..<8).collect { index ->
+                def files = groups[index]
+                files.isEmpty() && index != 0 ? [] : files + shared
+            }
+            if (assigned.flatten().toSet() != sources.toSet() ||
+                groups.flatten().size() != units.flatten().size()) {
+                throw new GradleException('Compatibility source partition coverage mismatch')
+            }
+            partitions[name] = [original: original, sources: assigned]
+            original.setSource(assigned[0])
+        }
+    } else if (project.name in shardProjects) {
+        def parts = project.name.tokenize('-')
+        def policy = partitions[parts[-2]]
+        def index = parts[-1].toInteger()
+        def original = policy.original
+        def core = project.project(':openai-java-core')
+        def java = project.extensions.getByName('java')
+        def coreJava = core.extensions.getByName('java')
+        java.toolchain.languageVersion.set(coreJava.toolchain.languageVersion)
+        java.sourceCompatibility = coreJava.sourceCompatibility
+        java.targetCompatibility = coreJava.targetCompatibility
+        def task = project.tasks.getByName('compileKotlin')
+        task.setSource(policy.sources[index])
+        task.libraries.setFrom(original.libraries)
+        task.friendPaths.setFrom(original.friendPaths)
+        task.incremental = false
+        task.compilerExecutionStrategy.set(original.compilerExecutionStrategy)
+        task.kotlinDaemonJvmArguments.set(original.kotlinDaemonJvmArguments)
+        ['languageVersion', 'apiVersion', 'jvmTarget', 'javaParameters', 'moduleName',
+         'allWarningsAsErrors', 'suppressWarnings', 'verbose', 'optIn', 'progressiveMode',
+         'noJdk', 'jvmDefault', 'freeCompilerArgs'].each { option ->
+            task.compilerOptions."${option}".set(original.compilerOptions."${option}")
+        }
+        task.outputs.upToDateWhen { false }
+        task.outputs.doNotCacheIf('API compatibility compilation must always execute') { true }
+    }
+}
+
 GRADLE
 
 GENERATED_TEST_SOURCE_ROOT="${GENERATED_TEST_SOURCE_ROOT}" \
