@@ -10,6 +10,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -84,9 +85,18 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /** Returns an immutable snapshot of all present JSON properties by wire name. */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "type" to _type(),
+            "conversation" to _conversation(),
+            "event_id" to _eventId(),
+        )
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
+    private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
         Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
@@ -286,9 +296,13 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /** Returns an immutable snapshot of all present JSON properties by wire name. */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "id" to _id(), "object" to _object_())
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
+        private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
             Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
@@ -417,6 +431,7 @@ private constructor(
             }
 
             /** An enum containing [Object]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 REALTIME_CONVERSATION
             }
@@ -430,6 +445,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 REALTIME_CONVERSATION,
                 /**
@@ -445,6 +461,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     REALTIME_CONVERSATION -> Value.REALTIME_CONVERSATION
@@ -460,6 +477,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     REALTIME_CONVERSATION -> Known.REALTIME_CONVERSATION

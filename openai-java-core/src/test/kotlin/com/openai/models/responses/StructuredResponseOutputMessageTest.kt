@@ -64,7 +64,6 @@ internal class StructuredResponseOutputMessageTest {
                 DelegationReadTestCase("_phase", JsonField.of(MESSAGE_PHASE)),
                 DelegationReadTestCase("_status", JSON_FIELD),
                 DelegationReadTestCase("_allProperties", MAP),
-                DelegationReadTestCase("_additionalProperties", MAP),
             )
 
         // The list order follows the declaration order in `ResponseOutputMessage.Content` for

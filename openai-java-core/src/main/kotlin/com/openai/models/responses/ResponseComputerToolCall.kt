@@ -202,17 +202,13 @@ private constructor(
             "actions" to this.actions,
         )
 
-    /**
-     * Returns the legacy additional-properties view.
-     *
-     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
-     *   accessor retains its legacy additional-properties behavior.
-     */
-    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+    @JvmSynthetic
+    internal fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
-        Collections.unmodifiableMap(additionalProperties)
+    private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
     fun toBuilder() = Builder().from(this)
 
@@ -672,17 +668,13 @@ private constructor(
                 "message" to this.message,
             )
 
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JvmSynthetic
+        internal fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
+        private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
 
@@ -887,6 +879,7 @@ private constructor(
         }
 
         /** An enum containing [Status]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             IN_PROGRESS,
             COMPLETED,
@@ -902,6 +895,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             IN_PROGRESS,
             COMPLETED,
@@ -917,6 +911,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 IN_PROGRESS -> Value.IN_PROGRESS
@@ -934,6 +929,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 IN_PROGRESS -> Known.IN_PROGRESS
@@ -1024,6 +1020,7 @@ private constructor(
         }
 
         /** An enum containing [Type]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             COMPUTER_CALL
         }
@@ -1037,6 +1034,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             COMPUTER_CALL,
             /** An enum member indicating that [Type] was instantiated with an unknown value. */
@@ -1050,6 +1048,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 COMPUTER_CALL -> Value.COMPUTER_CALL
@@ -1065,6 +1064,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 COMPUTER_CALL -> Known.COMPUTER_CALL
@@ -1731,19 +1731,13 @@ private constructor(
                     "keys" to this.keys,
                 )
 
-            /**
-             * Returns the legacy additional-properties view.
-             *
-             * @deprecated Use [_allProperties] to access both declared and additional JSON
-             *   properties. This accessor retains its legacy additional-properties behavior.
-             */
-            @Deprecated(
-                "Use _allProperties() to access both declared and additional JSON properties."
-            )
+            @JvmSynthetic
+            internal fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
+            private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
             fun toBuilder() = Builder().from(this)
 
@@ -1994,6 +1988,7 @@ private constructor(
                 }
 
                 /** An enum containing [Button]'s known values. */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Known {
                     LEFT,
                     RIGHT,
@@ -2011,6 +2006,7 @@ private constructor(
                  *   new members that the SDK is unaware of.
                  * - It was constructed with an arbitrary value using the [of] method.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Value {
                     LEFT,
                     RIGHT,
@@ -2031,6 +2027,7 @@ private constructor(
                  * Use the [known] method instead if you're certain the value is always known or if
                  * you want to throw for the unknown case.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun value(): Value =
                     when (this) {
                         LEFT -> Value.LEFT
@@ -2050,6 +2047,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if this class instance's value is a not a
                  *   known member.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun known(): Known =
                     when (this) {
                         LEFT -> Known.LEFT
@@ -2252,19 +2250,13 @@ private constructor(
                     "y" to this.y,
                 )
 
-            /**
-             * Returns the legacy additional-properties view.
-             *
-             * @deprecated Use [_allProperties] to access both declared and additional JSON
-             *   properties. This accessor retains its legacy additional-properties behavior.
-             */
-            @Deprecated(
-                "Use _allProperties() to access both declared and additional JSON properties."
-            )
+            @JvmSynthetic
+            internal fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
+            private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
             fun toBuilder() = Builder().from(this)
 
@@ -2580,19 +2572,13 @@ private constructor(
                     "keys" to this.keys,
                 )
 
-            /**
-             * Returns the legacy additional-properties view.
-             *
-             * @deprecated Use [_allProperties] to access both declared and additional JSON
-             *   properties. This accessor retains its legacy additional-properties behavior.
-             */
-            @Deprecated(
-                "Use _allProperties() to access both declared and additional JSON properties."
-            )
+            @JvmSynthetic
+            internal fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
+            private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
             fun toBuilder() = Builder().from(this)
 
@@ -2856,19 +2842,13 @@ private constructor(
                 fun _allProperties(): Map<String, JsonValue> =
                     collectAllProperties(additionalProperties, "x" to this.x, "y" to this.y)
 
-                /**
-                 * Returns the legacy additional-properties view.
-                 *
-                 * @deprecated Use [_allProperties] to access both declared and additional JSON
-                 *   properties. This accessor retains its legacy additional-properties behavior.
-                 */
-                @Deprecated(
-                    "Use _allProperties() to access both declared and additional JSON properties."
-                )
+                @JvmSynthetic
+                internal fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> =
-                    Collections.unmodifiableMap(additionalProperties)
+                private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
                 fun toBuilder() = Builder().from(this)
 
@@ -3112,19 +3092,13 @@ private constructor(
             fun _allProperties(): Map<String, JsonValue> =
                 collectAllProperties(additionalProperties, "keys" to this.keys, "type" to this.type)
 
-            /**
-             * Returns the legacy additional-properties view.
-             *
-             * @deprecated Use [_allProperties] to access both declared and additional JSON
-             *   properties. This accessor retains its legacy additional-properties behavior.
-             */
-            @Deprecated(
-                "Use _allProperties() to access both declared and additional JSON properties."
-            )
+            @JvmSynthetic
+            internal fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
+            private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
             fun toBuilder() = Builder().from(this)
 
@@ -3407,19 +3381,13 @@ private constructor(
                     "keys" to this.keys,
                 )
 
-            /**
-             * Returns the legacy additional-properties view.
-             *
-             * @deprecated Use [_allProperties] to access both declared and additional JSON
-             *   properties. This accessor retains its legacy additional-properties behavior.
-             */
-            @Deprecated(
-                "Use _allProperties() to access both declared and additional JSON properties."
-            )
+            @JvmSynthetic
+            internal fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
+            private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
             fun toBuilder() = Builder().from(this)
 
@@ -3784,19 +3752,13 @@ private constructor(
                     "keys" to this.keys,
                 )
 
-            /**
-             * Returns the legacy additional-properties view.
-             *
-             * @deprecated Use [_allProperties] to access both declared and additional JSON
-             *   properties. This accessor retains its legacy additional-properties behavior.
-             */
-            @Deprecated(
-                "Use _allProperties() to access both declared and additional JSON properties."
-            )
+            @JvmSynthetic
+            internal fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
+            private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
             fun toBuilder() = Builder().from(this)
 
@@ -4115,19 +4077,13 @@ private constructor(
             fun _allProperties(): Map<String, JsonValue> =
                 collectAllProperties(additionalProperties, "text" to this.text, "type" to this.type)
 
-            /**
-             * Returns the legacy additional-properties view.
-             *
-             * @deprecated Use [_allProperties] to access both declared and additional JSON
-             *   properties. This accessor retains its legacy additional-properties behavior.
-             */
-            @Deprecated(
-                "Use _allProperties() to access both declared and additional JSON properties."
-            )
+            @JvmSynthetic
+            internal fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
+            private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
             fun toBuilder() = Builder().from(this)
 

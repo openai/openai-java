@@ -85,10 +85,6 @@ class StructuredChatCompletion<T : Any>(
     /** @see ChatCompletion._allProperties */
     fun _allProperties(): Map<String, JsonValue> = rawChatCompletion._allProperties()
 
-    /** @see ChatCompletion._additionalProperties */
-    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
-    fun _additionalProperties(): Map<String, JsonValue> = rawChatCompletion._additionalProperties()
-
     class Choice<T : Any>
     internal constructor(
         @get:JvmName("responseType") val responseType: Class<T>,
@@ -124,10 +120,6 @@ class StructuredChatCompletion<T : Any>(
 
         /** @see ChatCompletion.Choice._allProperties */
         fun _allProperties(): Map<String, JsonValue> = rawChoice._allProperties()
-
-        /** @see ChatCompletion.Choice._additionalProperties */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
-        fun _additionalProperties(): Map<String, JsonValue> = rawChoice._additionalProperties()
 
         /** @see ChatCompletion.Choice.validate */
         fun validate(): Choice<T> = apply {

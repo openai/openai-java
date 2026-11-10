@@ -69,10 +69,6 @@ internal constructor(
     /** @see ChatCompletionMessage._allProperties */
     fun _allProperties(): Map<String, JsonValue> = rawMessage._allProperties()
 
-    /** @see ChatCompletionMessage._additionalProperties */
-    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
-    fun _additionalProperties(): Map<String, JsonValue> = rawMessage._additionalProperties()
-
     /** @see ChatCompletionMessage.validate */
     // `content()` is not included in the validation by the delegate method, so just call it.
     fun validate(): ChatCompletionMessage = rawMessage.validate()

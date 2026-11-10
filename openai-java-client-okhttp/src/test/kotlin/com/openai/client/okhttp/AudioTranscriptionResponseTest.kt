@@ -327,7 +327,7 @@ internal class AudioTranscriptionResponseTest {
         val response = jsonMapper().readValue(emptyVerbose, TranscriptionCreateResponse::class.java)
         assertThat(response.isDiarized()).isTrue()
         assertThat(response._json()).isPresent()
-        assertThat(response.asDiarized()._additionalProperties()).containsKey("language")
+        assertThat(response.asDiarized()._allProperties()).containsKey("language")
     }
 
     private fun assertParsed(response: TranscriptionCreateResponse, case: Case) {
@@ -336,12 +336,12 @@ internal class AudioTranscriptionResponseTest {
                 val model = response.asDiarized()
                 assertThat(model.text()).isEqualTo("hello")
                 assertThat(model.duration()).isEqualTo(1.0)
-                assertThat(model._additionalProperties())
+                assertThat(model._allProperties())
                     .containsEntry("future_field", JsonValue.from(mapOf("retained" to true)))
                 model.segments().forEach {
                     assertThat(it.id()).isEqualTo("seg_1")
                     assertThat(it.speaker()).isEqualTo("speaker_1")
-                    assertThat(it._additionalProperties())
+                    assertThat(it._allProperties())
                         .containsEntry("future_segment", JsonValue.from(true))
                 }
                 assertThat(model.segments()).hasSize(if (case.body == emptyDiarized) 0 else 1)
@@ -351,10 +351,10 @@ internal class AudioTranscriptionResponseTest {
                 val model = response.asVerbose()
                 assertThat(model.text()).isEqualTo("hello")
                 assertThat(model.language()).isEqualTo("english")
-                assertThat(model._additionalProperties()).containsKey("future_field")
+                assertThat(model._allProperties()).containsKey("future_field")
                 model.segments().get().forEach {
                     assertThat(it.id()).isEqualTo(7L)
-                    assertThat(it._additionalProperties())
+                    assertThat(it._allProperties())
                         .containsEntry("future_segment", JsonValue.from(true))
                 }
                 assertThat(model.segments().get()).hasSize(if (case.body == emptyVerbose) 0 else 1)
@@ -362,8 +362,7 @@ internal class AudioTranscriptionResponseTest {
             }
             "basic" -> {
                 assertThat(response.asTranscription().text()).isEqualTo("hello")
-                assertThat(response.asTranscription()._additionalProperties())
-                    .containsKey("future_field")
+                assertThat(response.asTranscription()._allProperties()).containsKey("future_field")
                 assertThat(response._json()).isPresent()
             }
             else -> assertThat(response.asTranscription().text()).isEqualTo(case.body)

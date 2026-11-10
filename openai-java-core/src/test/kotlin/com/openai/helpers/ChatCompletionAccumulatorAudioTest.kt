@@ -29,8 +29,7 @@ internal class ChatCompletionAccumulatorAudioTest {
         assertThat(audio.data()).isEqualTo("YWJj")
         assertThat(audio.transcript()).isEqualTo("hello world")
         assertThat(audio.expiresAt()).isEqualTo(456)
-        assertThat(audio._additionalProperties()["custom"]!!.asString().get())
-            .isEqualTo("preserved")
+        assertThat(audio._allProperties()["custom"]!!.asString().get()).isEqualTo("preserved")
         assertThat(completion.choices()[0].finishReason())
             .isEqualTo(ChatCompletion.Choice.FinishReason.STOP)
     }

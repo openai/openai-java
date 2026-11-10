@@ -2162,6 +2162,7 @@ private constructor(
                 }
 
                 /** An enum containing [Type]'s known values. */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Known {
                     SERVER_VAD
                 }
@@ -2175,6 +2176,7 @@ private constructor(
                  *   new members that the SDK is unaware of.
                  * - It was constructed with an arbitrary value using the [of] method.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Value {
                     SERVER_VAD,
                     /**
@@ -2190,6 +2192,7 @@ private constructor(
                  * Use the [known] method instead if you're certain the value is always known or if
                  * you want to throw for the unknown case.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun value(): Value =
                     when (this) {
                         SERVER_VAD -> Value.SERVER_VAD
@@ -2205,6 +2208,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if this class instance's value is a not a
                  *   known member.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun known(): Known =
                     when (this) {
                         SERVER_VAD -> Known.SERVER_VAD
@@ -2329,6 +2333,7 @@ private constructor(
         }
 
         /** An enum containing [TimestampGranularity]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             WORD,
             SEGMENT,
@@ -2344,6 +2349,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             WORD,
             SEGMENT,
@@ -2361,6 +2367,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 WORD -> Value.WORD
@@ -2377,6 +2384,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 WORD -> Known.WORD

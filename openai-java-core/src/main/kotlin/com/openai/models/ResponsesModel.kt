@@ -321,6 +321,7 @@ private constructor(
         }
 
         /** An enum containing [ResponsesOnlyModel]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             O1_PRO,
             O1_PRO_2025_03_19,
@@ -355,6 +356,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             O1_PRO,
             O1_PRO_2025_03_19,
@@ -392,6 +394,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 O1_PRO -> Value.O1_PRO
@@ -428,6 +431,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 O1_PRO -> Known.O1_PRO

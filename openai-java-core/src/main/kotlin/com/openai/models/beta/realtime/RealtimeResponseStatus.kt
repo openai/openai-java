@@ -9,7 +9,7 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.legacyAdditionalProperties
+import com.openai.core.collectAllProperties
 import com.openai.core.serializableAdditionalProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -88,9 +88,18 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /** Returns an immutable snapshot of all present JSON properties by wire name. */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "error" to _error(),
+            "reason" to _reason(),
+            "type" to _type(),
+        )
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
+    private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
         Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
@@ -291,9 +300,14 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
-        // Retain the legacy message lookup until _additionalProperties is removed.
-        fun _additionalProperties(): Map<String, JsonValue> =
-            legacyAdditionalProperties(additionalProperties, mapOf("message" to message))
+        /** Returns an immutable snapshot of all present JSON properties by wire name. */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "code" to _code(),
+                "message" to _message(),
+                "type" to _type(),
+            )
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -474,6 +488,7 @@ private constructor(
         }
 
         /** An enum containing [Reason]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             TURN_DETECTED,
             CLIENT_CANCELLED,
@@ -490,6 +505,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             TURN_DETECTED,
             CLIENT_CANCELLED,
@@ -506,6 +522,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 TURN_DETECTED -> Value.TURN_DETECTED
@@ -524,6 +541,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 TURN_DETECTED -> Known.TURN_DETECTED
@@ -615,6 +633,7 @@ private constructor(
         }
 
         /** An enum containing [Type]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             COMPLETED,
             CANCELLED,
@@ -631,6 +650,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             COMPLETED,
             CANCELLED,
@@ -647,6 +667,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 COMPLETED -> Value.COMPLETED
@@ -665,6 +686,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 COMPLETED -> Known.COMPLETED

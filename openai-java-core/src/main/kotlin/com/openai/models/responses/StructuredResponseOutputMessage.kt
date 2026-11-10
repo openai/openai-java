@@ -58,10 +58,6 @@ class StructuredResponseOutputMessage<T : Any>(
     /** @see ResponseOutputMessage._allProperties */
     fun _allProperties(): Map<String, JsonValue> = rawMessage._allProperties()
 
-    /** @see ResponseOutputMessage._additionalProperties */
-    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
-    fun _additionalProperties(): Map<String, JsonValue> = rawMessage._additionalProperties()
-
     /** @see ResponseOutputMessage.validate */
     fun validate(): StructuredResponseOutputMessage<T> = apply {
         // `content()` is a different type to that in the delegate class.

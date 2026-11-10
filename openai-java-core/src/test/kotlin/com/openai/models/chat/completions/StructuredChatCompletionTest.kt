@@ -72,7 +72,6 @@ internal class StructuredChatCompletionTest {
                 DelegationReadTestCase("_systemFingerprint", JSON_FIELD),
                 DelegationReadTestCase("_usage", JSON_FIELD),
                 DelegationReadTestCase("_allProperties", mapOf("key" to JSON_VALUE)),
-                DelegationReadTestCase("_additionalProperties", mapOf("key" to JSON_VALUE)),
                 // `validate()` and `isValid()` (which calls `validate()`) are tested separately,
                 // as they require special handling.
             )
@@ -89,7 +88,6 @@ internal class StructuredChatCompletionTest {
                 DelegationReadTestCase("_logprobs", JSON_FIELD),
                 // `_message()` is a special case and has its own test function.
                 DelegationReadTestCase("_allProperties", mapOf("key" to JSON_VALUE)),
-                DelegationReadTestCase("_additionalProperties", mapOf("key" to JSON_VALUE)),
                 // `validate()` and `isValid()` (which calls `validate()`) are tested separately,
                 // as they require special handling.
             )

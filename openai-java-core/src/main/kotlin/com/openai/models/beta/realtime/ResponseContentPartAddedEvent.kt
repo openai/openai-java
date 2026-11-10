@@ -10,6 +10,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -159,9 +160,22 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /** Returns an immutable snapshot of all present JSON properties by wire name. */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "type" to _type(),
+            "content_index" to _contentIndex(),
+            "event_id" to _eventId(),
+            "item_id" to _itemId(),
+            "output_index" to _outputIndex(),
+            "part" to _part(),
+            "response_id" to _responseId(),
+        )
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
+    private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
         Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
@@ -472,9 +486,19 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /** Returns an immutable snapshot of all present JSON properties by wire name. */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "audio" to _audio(),
+                "text" to _text(),
+                "transcript" to _transcript(),
+                "type" to _type(),
+            )
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
+        private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
             Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
@@ -637,6 +661,7 @@ private constructor(
             }
 
             /** An enum containing [Type]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 TEXT,
                 AUDIO,
@@ -651,6 +676,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 TEXT,
                 AUDIO,
@@ -665,6 +691,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     TEXT -> Value.TEXT
@@ -681,6 +708,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     TEXT -> Known.TEXT

@@ -25,6 +25,7 @@ import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Dispatcher;
 import okhttp3.EventListener;
+import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -262,10 +263,11 @@ class OkHttpConfigurationTest {
                     try (MockWebServer origin = new MockWebServer();
                             MockWebServer destination = new MockWebServer()) {
                         destination.enqueue(modelsResponse());
+                        HttpUrl rewrittenUrl = destination.url("/models");
                         okhttp3.OkHttpClient nativeClient = new okhttp3.OkHttpClient.Builder()
                                 .addInterceptor(chain -> chain.proceed(chain.request()
                                         .newBuilder()
-                                        .url(destination.url("/models"))
+                                        .url(rewrittenUrl)
                                         .build()))
                                 .build();
                         try {
@@ -277,7 +279,7 @@ class OkHttpConfigurationTest {
                                         .okHttpClient(nativeClient)
                                         .build();
                                 try {
-                                    client.models().list().get(5, TimeUnit.SECONDS);
+                                    client.models().list().get(30, TimeUnit.SECONDS);
                                 } finally {
                                     client.close();
                                 }

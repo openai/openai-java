@@ -257,6 +257,7 @@ private constructor(
         }
 
         /** An enum containing [Beta]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             RESPONSES_MULTI_AGENT_V1
         }
@@ -270,6 +271,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             RESPONSES_MULTI_AGENT_V1,
             /** An enum member indicating that [Beta] was instantiated with an unknown value. */
@@ -283,6 +285,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 RESPONSES_MULTI_AGENT_V1 -> Value.RESPONSES_MULTI_AGENT_V1
@@ -298,6 +301,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 RESPONSES_MULTI_AGENT_V1 -> Known.RESPONSES_MULTI_AGENT_V1

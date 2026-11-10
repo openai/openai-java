@@ -11,6 +11,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -157,9 +158,20 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /** Returns an immutable snapshot of all present JSON properties by wire name. */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "client_secret" to _clientSecret(),
+            "input_audio_format" to _inputAudioFormat(),
+            "input_audio_transcription" to _inputAudioTranscription(),
+            "modalities" to _modalities(),
+            "turn_detection" to _turnDetection(),
+        )
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
+    private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
         Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
@@ -425,9 +437,17 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /** Returns an immutable snapshot of all present JSON properties by wire name. */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "expires_at" to _expiresAt(),
+                "value" to _value(),
+            )
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
+        private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
             Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
@@ -653,9 +673,18 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /** Returns an immutable snapshot of all present JSON properties by wire name. */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "language" to _language(),
+                "model" to _model(),
+                "prompt" to _prompt(),
+            )
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
+        private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
             Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
@@ -825,6 +854,7 @@ private constructor(
             }
 
             /** An enum containing [Model]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 GPT_4O_TRANSCRIBE,
                 GPT_4O_MINI_TRANSCRIBE,
@@ -840,6 +870,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 GPT_4O_TRANSCRIBE,
                 GPT_4O_MINI_TRANSCRIBE,
@@ -857,6 +888,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     GPT_4O_TRANSCRIBE -> Value.GPT_4O_TRANSCRIBE
@@ -874,6 +906,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     GPT_4O_TRANSCRIBE -> Known.GPT_4O_TRANSCRIBE
@@ -980,6 +1013,7 @@ private constructor(
         }
 
         /** An enum containing [Modality]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             TEXT,
             AUDIO,
@@ -994,6 +1028,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             TEXT,
             AUDIO,
@@ -1008,6 +1043,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 TEXT -> Value.TEXT
@@ -1024,6 +1060,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 TEXT -> Known.TEXT
@@ -1188,9 +1225,19 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /** Returns an immutable snapshot of all present JSON properties by wire name. */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "prefix_padding_ms" to _prefixPaddingMs(),
+                "silence_duration_ms" to _silenceDurationMs(),
+                "threshold" to _threshold(),
+                "type" to _type(),
+            )
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
+        private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
             Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)

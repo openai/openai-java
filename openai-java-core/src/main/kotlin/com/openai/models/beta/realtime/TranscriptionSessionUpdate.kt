@@ -11,6 +11,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -82,9 +83,18 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /** Returns an immutable snapshot of all present JSON properties by wire name. */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "type" to _type(),
+            "session" to _session(),
+            "event_id" to _eventId(),
+        )
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
+    private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
         Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
@@ -424,9 +434,22 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /** Returns an immutable snapshot of all present JSON properties by wire name. */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "client_secret" to _clientSecret(),
+                "include" to _include(),
+                "input_audio_format" to _inputAudioFormat(),
+                "input_audio_noise_reduction" to _inputAudioNoiseReduction(),
+                "input_audio_transcription" to _inputAudioTranscription(),
+                "modalities" to _modalities(),
+                "turn_detection" to _turnDetection(),
+            )
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
+        private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
             Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
@@ -734,9 +757,13 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /** Returns an immutable snapshot of all present JSON properties by wire name. */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(additionalProperties, "expires_at" to _expiresAt())
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
+            private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
                 Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
@@ -889,9 +916,17 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /** Returns an immutable snapshot of all present JSON properties by wire name. */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "anchor" to _anchor(),
+                        "seconds" to _seconds(),
+                    )
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> =
+                private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
                     Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
@@ -1035,6 +1070,7 @@ private constructor(
                     }
 
                     /** An enum containing [Anchor]'s known values. */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     enum class Known {
                         CREATED_AT
                     }
@@ -1048,6 +1084,7 @@ private constructor(
                      *   respond with new members that the SDK is unaware of.
                      * - It was constructed with an arbitrary value using the [of] method.
                      */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     enum class Value {
                         CREATED_AT,
                         /**
@@ -1064,6 +1101,7 @@ private constructor(
                      * Use the [known] method instead if you're certain the value is always known or
                      * if you want to throw for the unknown case.
                      */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     fun value(): Value =
                         when (this) {
                             CREATED_AT -> Value.CREATED_AT
@@ -1079,6 +1117,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException if this class instance's value is a not a
                      *   known member.
                      */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     fun known(): Known =
                         when (this) {
                             CREATED_AT -> Known.CREATED_AT
@@ -1210,6 +1249,7 @@ private constructor(
             }
 
             /** An enum containing [InputAudioFormat]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 PCM16,
                 G711_ULAW,
@@ -1226,6 +1266,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 PCM16,
                 G711_ULAW,
@@ -1244,6 +1285,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     PCM16 -> Value.PCM16
@@ -1261,6 +1303,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     PCM16 -> Known.PCM16
@@ -1362,9 +1405,13 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /** Returns an immutable snapshot of all present JSON properties by wire name. */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(additionalProperties, "type" to _type())
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
+            private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
                 Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
@@ -1494,6 +1541,7 @@ private constructor(
                 }
 
                 /** An enum containing [Type]'s known values. */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Known {
                     NEAR_FIELD,
                     FAR_FIELD,
@@ -1508,6 +1556,7 @@ private constructor(
                  *   new members that the SDK is unaware of.
                  * - It was constructed with an arbitrary value using the [of] method.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Value {
                     NEAR_FIELD,
                     FAR_FIELD,
@@ -1524,6 +1573,7 @@ private constructor(
                  * Use the [known] method instead if you're certain the value is always known or if
                  * you want to throw for the unknown case.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun value(): Value =
                     when (this) {
                         NEAR_FIELD -> Value.NEAR_FIELD
@@ -1540,6 +1590,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if this class instance's value is a not a
                  *   known member.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun known(): Known =
                     when (this) {
                         NEAR_FIELD -> Known.NEAR_FIELD
@@ -1699,9 +1750,18 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /** Returns an immutable snapshot of all present JSON properties by wire name. */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "language" to _language(),
+                    "model" to _model(),
+                    "prompt" to _prompt(),
+                )
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
+            private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
                 Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
@@ -1879,6 +1939,7 @@ private constructor(
                 }
 
                 /** An enum containing [Model]'s known values. */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Known {
                     GPT_4O_TRANSCRIBE,
                     GPT_4O_MINI_TRANSCRIBE,
@@ -1894,6 +1955,7 @@ private constructor(
                  *   new members that the SDK is unaware of.
                  * - It was constructed with an arbitrary value using the [of] method.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Value {
                     GPT_4O_TRANSCRIBE,
                     GPT_4O_MINI_TRANSCRIBE,
@@ -1912,6 +1974,7 @@ private constructor(
                  * Use the [known] method instead if you're certain the value is always known or if
                  * you want to throw for the unknown case.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun value(): Value =
                     when (this) {
                         GPT_4O_TRANSCRIBE -> Value.GPT_4O_TRANSCRIBE
@@ -1929,6 +1992,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if this class instance's value is a not a
                  *   known member.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun known(): Known =
                     when (this) {
                         GPT_4O_TRANSCRIBE -> Known.GPT_4O_TRANSCRIBE
@@ -2036,6 +2100,7 @@ private constructor(
             }
 
             /** An enum containing [Modality]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Known {
                 TEXT,
                 AUDIO,
@@ -2050,6 +2115,7 @@ private constructor(
              *   members that the SDK is unaware of.
              * - It was constructed with an arbitrary value using the [of] method.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             enum class Value {
                 TEXT,
                 AUDIO,
@@ -2066,6 +2132,7 @@ private constructor(
              * Use the [known] method instead if you're certain the value is always known or if you
              * want to throw for the unknown case.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun value(): Value =
                 when (this) {
                     TEXT -> Value.TEXT
@@ -2082,6 +2149,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if this class instance's value is a not a known
              *   member.
              */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
             fun known(): Known =
                 when (this) {
                     TEXT -> Known.TEXT
@@ -2338,9 +2406,22 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /** Returns an immutable snapshot of all present JSON properties by wire name. */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "create_response" to _createResponse(),
+                    "eagerness" to _eagerness(),
+                    "interrupt_response" to _interruptResponse(),
+                    "prefix_padding_ms" to _prefixPaddingMs(),
+                    "silence_duration_ms" to _silenceDurationMs(),
+                    "threshold" to _threshold(),
+                    "type" to _type(),
+                )
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
+            private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
                 Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
@@ -2608,6 +2689,7 @@ private constructor(
                 }
 
                 /** An enum containing [Eagerness]'s known values. */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Known {
                     LOW,
                     MEDIUM,
@@ -2624,6 +2706,7 @@ private constructor(
                  *   new members that the SDK is unaware of.
                  * - It was constructed with an arbitrary value using the [of] method.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Value {
                     LOW,
                     MEDIUM,
@@ -2643,6 +2726,7 @@ private constructor(
                  * Use the [known] method instead if you're certain the value is always known or if
                  * you want to throw for the unknown case.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun value(): Value =
                     when (this) {
                         LOW -> Value.LOW
@@ -2661,6 +2745,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if this class instance's value is a not a
                  *   known member.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun known(): Known =
                     when (this) {
                         LOW -> Known.LOW
@@ -2748,6 +2833,7 @@ private constructor(
                 }
 
                 /** An enum containing [Type]'s known values. */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Known {
                     SERVER_VAD,
                     SEMANTIC_VAD,
@@ -2762,6 +2848,7 @@ private constructor(
                  *   new members that the SDK is unaware of.
                  * - It was constructed with an arbitrary value using the [of] method.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 enum class Value {
                     SERVER_VAD,
                     SEMANTIC_VAD,
@@ -2778,6 +2865,7 @@ private constructor(
                  * Use the [known] method instead if you're certain the value is always known or if
                  * you want to throw for the unknown case.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun value(): Value =
                     when (this) {
                         SERVER_VAD -> Value.SERVER_VAD
@@ -2794,6 +2882,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if this class instance's value is a not a
                  *   known member.
                  */
+                @Deprecated("Use asString() for string values or _value() for raw JSON.")
                 fun known(): Known =
                     when (this) {
                         SERVER_VAD -> Known.SERVER_VAD

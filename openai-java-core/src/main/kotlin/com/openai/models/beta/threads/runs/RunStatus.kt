@@ -46,6 +46,7 @@ class RunStatus @JsonCreator private constructor(private val value: JsonField<St
     }
 
     /** An enum containing [RunStatus]'s known values. */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Known {
         QUEUED,
         IN_PROGRESS,
@@ -67,6 +68,7 @@ class RunStatus @JsonCreator private constructor(private val value: JsonField<St
      *   is unaware of.
      * - It was constructed with an arbitrary value using the [of] method.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Value {
         QUEUED,
         IN_PROGRESS,
@@ -88,6 +90,7 @@ class RunStatus @JsonCreator private constructor(private val value: JsonField<St
      * Use the [known] method instead if you're certain the value is always known or if you want to
      * throw for the unknown case.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun value(): Value =
         when (this) {
             QUEUED -> Value.QUEUED
@@ -110,6 +113,7 @@ class RunStatus @JsonCreator private constructor(private val value: JsonField<St
      *
      * @throws OpenAIInvalidDataException if this class instance's value is a not a known member.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun known(): Known =
         when (this) {
             QUEUED -> Known.QUEUED

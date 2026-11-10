@@ -33,6 +33,7 @@ class ModerationModel @JsonCreator private constructor(private val value: JsonFi
     }
 
     /** An enum containing [ModerationModel]'s known values. */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Known {
         OMNI_MODERATION_LATEST,
         OMNI_MODERATION_2024_09_26,
@@ -49,6 +50,7 @@ class ModerationModel @JsonCreator private constructor(private val value: JsonFi
      *   is unaware of.
      * - It was constructed with an arbitrary value using the [of] method.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Value {
         OMNI_MODERATION_LATEST,
         OMNI_MODERATION_2024_09_26,
@@ -67,6 +69,7 @@ class ModerationModel @JsonCreator private constructor(private val value: JsonFi
      * Use the [known] method instead if you're certain the value is always known or if you want to
      * throw for the unknown case.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun value(): Value =
         when (this) {
             OMNI_MODERATION_LATEST -> Value.OMNI_MODERATION_LATEST
@@ -84,6 +87,7 @@ class ModerationModel @JsonCreator private constructor(private val value: JsonFi
      *
      * @throws OpenAIInvalidDataException if this class instance's value is a not a known member.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun known(): Known =
         when (this) {
             OMNI_MODERATION_LATEST -> Known.OMNI_MODERATION_LATEST

@@ -232,8 +232,6 @@ internal class PromptCacheBreakpointCompatibilityTest {
         if (!ttl.isMissing()) expected["ttl"] = ttl
         val properties = value.javaClass.getMethod("_allProperties").invoke(value)
         assertThat(properties).isEqualTo(expected)
-        val legacy = value.javaClass.getMethod("_additionalProperties").invoke(value)
-        assertThat(legacy).isEqualTo(expected.filterKeys { it != "mode" })
         val wire = mapper.writeValueAsString(value)
         assertThat(mapper.readTree(wire)).isEqualTo(mapper.valueToTree(expected))
         var ttlKeys = 0

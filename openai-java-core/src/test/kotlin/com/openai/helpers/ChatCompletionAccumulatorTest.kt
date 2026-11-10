@@ -23,11 +23,8 @@ internal class ChatCompletionAccumulatorTest {
 
         assertThat(functionCall.name()).isEqualTo("fc_fn_name")
         assertThat(functionCall.arguments()).isEqualTo("[arg1, arg2]")
-        assertThat(functionCall._additionalProperties()).isNotEmpty()
-        assertThat(functionCall._additionalProperties()["a"]!!.asString().get())
-            .isEqualTo("a-value")
-        assertThat(functionCall._additionalProperties()["b"]!!.asString().get())
-            .isEqualTo("b-value")
+        assertThat(functionCall._allProperties()["a"]!!.asString().get()).isEqualTo("a-value")
+        assertThat(functionCall._allProperties()["b"]!!.asString().get()).isEqualTo("b-value")
     }
 
     @Test
@@ -36,7 +33,8 @@ internal class ChatCompletionAccumulatorTest {
 
         assertThat(functionCall.name()).isEqualTo("fc_fn_name")
         assertThat(functionCall.arguments()).isEqualTo("[arg1, arg2]")
-        assertThat(functionCall._additionalProperties()).isEmpty()
+        assertThat(functionCall._allProperties().keys)
+            .containsExactlyInAnyOrder("name", "arguments")
     }
 
     @Test

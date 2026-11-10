@@ -418,219 +418,201 @@ private constructor(
         _json?.asObject()?.getOrNull()?.get("stream_id")
             ?: when {
                 responseAudioDelta != null ->
-                    responseAudioDelta._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseAudioDelta._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseAudioDone != null ->
-                    responseAudioDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseAudioDone._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseAudioTranscriptDelta != null ->
-                    responseAudioTranscriptDelta._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseAudioTranscriptDelta._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseAudioTranscriptDone != null ->
-                    responseAudioTranscriptDone._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseAudioTranscriptDone._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseCodeInterpreterCallCodeDelta != null ->
-                    responseCodeInterpreterCallCodeDelta._additionalProperties()["stream_id"]
+                    responseCodeInterpreterCallCodeDelta._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseCodeInterpreterCallCodeDone != null ->
-                    responseCodeInterpreterCallCodeDone._additionalProperties()["stream_id"]
+                    responseCodeInterpreterCallCodeDone._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseCodeInterpreterCallCompleted != null ->
-                    responseCodeInterpreterCallCompleted._additionalProperties()["stream_id"]
+                    responseCodeInterpreterCallCompleted._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseCodeInterpreterCallInProgress != null ->
-                    responseCodeInterpreterCallInProgress._additionalProperties()["stream_id"]
+                    responseCodeInterpreterCallInProgress._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseCodeInterpreterCallInterpreting != null ->
-                    responseCodeInterpreterCallInterpreting._additionalProperties()["stream_id"]
+                    responseCodeInterpreterCallInterpreting._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseCompactionCompacting != null ->
-                    responseCompactionCompacting._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseCompactionCompacting._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseCompleted != null ->
-                    responseCompleted._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseCompleted._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseContentPartAdded != null ->
-                    responseContentPartAdded._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseContentPartAdded._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseContentPartDone != null ->
-                    responseContentPartDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseContentPartDone._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseCreated != null ->
-                    responseCreated._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseCreated._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseFileSearchCallCompleted != null ->
-                    responseFileSearchCallCompleted._additionalProperties()["stream_id"]
+                    responseFileSearchCallCompleted._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseFileSearchCallInProgress != null ->
-                    responseFileSearchCallInProgress._additionalProperties()["stream_id"]
+                    responseFileSearchCallInProgress._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseFileSearchCallSearching != null ->
-                    responseFileSearchCallSearching._additionalProperties()["stream_id"]
+                    responseFileSearchCallSearching._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseFunctionCallArgumentsDelta != null ->
-                    responseFunctionCallArgumentsDelta._additionalProperties()["stream_id"]
+                    responseFunctionCallArgumentsDelta._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseFunctionCallArgumentsDone != null ->
-                    responseFunctionCallArgumentsDone._additionalProperties()["stream_id"]
+                    responseFunctionCallArgumentsDone._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseShellCallCommandAdded != null ->
-                    responseShellCallCommandAdded._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseShellCallCommandAdded._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseShellCallCommandDelta != null ->
-                    responseShellCallCommandDelta._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseShellCallCommandDelta._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseShellCallCommandDone != null ->
-                    responseShellCallCommandDone._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseShellCallCommandDone._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseShellCallOutputContentDelta != null ->
-                    responseShellCallOutputContentDelta._additionalProperties()["stream_id"]
+                    responseShellCallOutputContentDelta._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseShellCallOutputContentDone != null ->
-                    responseShellCallOutputContentDone._additionalProperties()["stream_id"]
+                    responseShellCallOutputContentDone._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseInProgress != null ->
-                    responseInProgress._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseInProgress._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseFailed != null ->
-                    responseFailed._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseFailed._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseIncomplete != null ->
-                    responseIncomplete._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseIncomplete._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseOutputItemAdded != null ->
-                    responseOutputItemAdded._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseOutputItemAdded._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseOutputItemDone != null ->
-                    responseOutputItemDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseOutputItemDone._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseReasoningSummaryPartAdded != null ->
-                    responseReasoningSummaryPartAdded._additionalProperties()["stream_id"]
+                    responseReasoningSummaryPartAdded._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseReasoningSummaryPartDone != null ->
-                    responseReasoningSummaryPartDone._additionalProperties()["stream_id"]
+                    responseReasoningSummaryPartDone._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseReasoningSummaryTextDelta != null ->
-                    responseReasoningSummaryTextDelta._additionalProperties()["stream_id"]
+                    responseReasoningSummaryTextDelta._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseReasoningSummaryTextDone != null ->
-                    responseReasoningSummaryTextDone._additionalProperties()["stream_id"]
+                    responseReasoningSummaryTextDone._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseReasoningTextDelta != null ->
-                    responseReasoningTextDelta._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseReasoningTextDelta._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseReasoningTextDone != null ->
-                    responseReasoningTextDone._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseReasoningTextDone._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseRefusalDelta != null ->
-                    responseRefusalDelta._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseRefusalDelta._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseRefusalDone != null ->
-                    responseRefusalDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseRefusalDone._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseOutputTextDelta != null ->
-                    responseOutputTextDelta._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseOutputTextDelta._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseOutputTextDone != null ->
-                    responseOutputTextDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseOutputTextDone._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseWebSearchCallCompleted != null ->
-                    responseWebSearchCallCompleted._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseWebSearchCallCompleted._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseWebSearchCallInProgress != null ->
-                    responseWebSearchCallInProgress._additionalProperties()["stream_id"]
+                    responseWebSearchCallInProgress._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseWebSearchCallSearching != null ->
-                    responseWebSearchCallSearching._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseWebSearchCallSearching._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseImageGenerationCallCompleted != null ->
-                    responseImageGenerationCallCompleted._additionalProperties()["stream_id"]
+                    responseImageGenerationCallCompleted._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseImageGenerationCallGenerating != null ->
-                    responseImageGenerationCallGenerating._additionalProperties()["stream_id"]
+                    responseImageGenerationCallGenerating._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseImageGenerationCallInProgress != null ->
-                    responseImageGenerationCallInProgress._additionalProperties()["stream_id"]
+                    responseImageGenerationCallInProgress._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseImageGenerationCallPartialImage != null ->
-                    responseImageGenerationCallPartialImage._additionalProperties()["stream_id"]
+                    responseImageGenerationCallPartialImage._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseMcpCallArgumentsDelta != null ->
-                    responseMcpCallArgumentsDelta._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseMcpCallArgumentsDelta._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseMcpCallArgumentsDone != null ->
-                    responseMcpCallArgumentsDone._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseMcpCallArgumentsDone._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseMcpCallCompleted != null ->
-                    responseMcpCallCompleted._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseMcpCallCompleted._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseMcpCallFailed != null ->
-                    responseMcpCallFailed._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseMcpCallFailed._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseMcpCallInProgress != null ->
-                    responseMcpCallInProgress._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseMcpCallInProgress._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseMcpListToolsCompleted != null ->
-                    responseMcpListToolsCompleted._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseMcpListToolsCompleted._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseMcpListToolsFailed != null ->
-                    responseMcpListToolsFailed._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseMcpListToolsFailed._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseMcpListToolsInProgress != null ->
-                    responseMcpListToolsInProgress._additionalProperties()["stream_id"]
-                        ?: JsonMissing.of()
+                    responseMcpListToolsInProgress._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseOutputTextAnnotationAdded != null ->
-                    responseOutputTextAnnotationAdded._additionalProperties()["stream_id"]
+                    responseOutputTextAnnotationAdded._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseQueued != null ->
-                    responseQueued._additionalProperties()["stream_id"] ?: JsonMissing.of()
+                    responseQueued._allProperties()["stream_id"] ?: JsonMissing.of()
 
                 responseCustomToolCallInputDelta != null ->
-                    responseCustomToolCallInputDelta._additionalProperties()["stream_id"]
+                    responseCustomToolCallInputDelta._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 responseCustomToolCallInputDone != null ->
-                    responseCustomToolCallInputDone._additionalProperties()["stream_id"]
+                    responseCustomToolCallInputDone._allProperties()["stream_id"]
                         ?: JsonMissing.of()
 
                 error != null -> error._streamId()
@@ -3865,17 +3847,13 @@ private constructor(
                 "stream_id" to this.streamId,
             )
 
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JvmSynthetic
+        internal fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
+        private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
         fun toBuilder() = Builder().from(this)
 
@@ -4217,19 +4195,13 @@ private constructor(
                     "misalignment" to this.misalignment,
                 )
 
-            /**
-             * Returns the legacy additional-properties view.
-             *
-             * @deprecated Use [_allProperties] to access both declared and additional JSON
-             *   properties. This accessor retains its legacy additional-properties behavior.
-             */
-            @Deprecated(
-                "Use _allProperties() to access both declared and additional JSON properties."
-            )
+            @JvmSynthetic
+            internal fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
+            private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
             fun toBuilder() = Builder().from(this)
 
@@ -4468,18 +4440,12 @@ private constructor(
                 fun _allProperties(): Map<String, JsonValue> =
                     collectAllProperties(additionalProperties)
 
-                /**
-                 * Returns the legacy additional-properties view.
-                 *
-                 * @deprecated Use [_allProperties] to access both declared and additional JSON
-                 *   properties. This accessor retains its legacy additional-properties behavior.
-                 */
-                @Deprecated(
-                    "Use _allProperties() to access both declared and additional JSON properties."
-                )
+                @JvmSynthetic
+                internal fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+                private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
                 fun toBuilder() = Builder().from(this)
 
@@ -4708,19 +4674,13 @@ private constructor(
                         "steer" to this.steer,
                     )
 
-                /**
-                 * Returns the legacy additional-properties view.
-                 *
-                 * @deprecated Use [_allProperties] to access both declared and additional JSON
-                 *   properties. This accessor retains its legacy additional-properties behavior.
-                 */
-                @Deprecated(
-                    "Use _allProperties() to access both declared and additional JSON properties."
-                )
+                @JvmSynthetic
+                internal fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> =
-                    Collections.unmodifiableMap(additionalProperties)
+                private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
 
                 fun toBuilder() = Builder().from(this)
 
@@ -4940,6 +4900,7 @@ private constructor(
                     }
 
                     /** An enum containing [ErrorType]'s known values. */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     enum class Known {
                         POTENTIALLY_UNINTENDED_DATA_TRANSFER,
                         POTENTIALLY_UNINTENDED_DATA_ACCESS,
@@ -4957,6 +4918,7 @@ private constructor(
                      *   respond with new members that the SDK is unaware of.
                      * - It was constructed with an arbitrary value using the [of] method.
                      */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     enum class Value {
                         POTENTIALLY_UNINTENDED_DATA_TRANSFER,
                         POTENTIALLY_UNINTENDED_DATA_ACCESS,
@@ -4976,6 +4938,7 @@ private constructor(
                      * Use the [known] method instead if you're certain the value is always known or
                      * if you want to throw for the unknown case.
                      */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     fun value(): Value =
                         when (this) {
                             POTENTIALLY_UNINTENDED_DATA_TRANSFER ->
@@ -4997,6 +4960,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException if this class instance's value is a not a
                      *   known member.
                      */
+                    @Deprecated("Use asString() for string values or _value() for raw JSON.")
                     fun known(): Known =
                         when (this) {
                             POTENTIALLY_UNINTENDED_DATA_TRANSFER ->
@@ -5124,20 +5088,14 @@ private constructor(
                     fun _allProperties(): Map<String, JsonValue> =
                         collectAllProperties(additionalProperties, "message" to this.message)
 
-                    /**
-                     * Returns the legacy additional-properties view.
-                     *
-                     * @deprecated Use [_allProperties] to access both declared and additional JSON
-                     *   properties. This accessor retains its legacy additional-properties
-                     *   behavior.
-                     */
-                    @Deprecated(
-                        "Use _allProperties() to access both declared and additional JSON properties."
-                    )
+                    @JvmSynthetic
+                    internal fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> =
-                        Collections.unmodifiableMap(additionalProperties)
+                    private fun additionalProperties(): Map<String, JsonValue> =
+                        additionalProperties
 
                     fun toBuilder() = Builder().from(this)
 
