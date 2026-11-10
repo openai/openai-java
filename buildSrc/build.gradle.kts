@@ -9,12 +9,17 @@ repositories {
     mavenCentral()
 }
 
+// Keep the fixture library independent of Gradle's newer embedded Kotlin runtime.
+val compatibilityTestDependencies by configurations.creating {
+    isCanBeConsumed = false
+}
+
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21")
     implementation("com.vanniktech:gradle-maven-publish-plugin:0.37.0")
 
     // Resolve the compiler fixture's standard library before its offline TestKit invocation.
-    testRuntimeOnly("org.jetbrains.kotlin:kotlin-stdlib:2.2.21")
+    compatibilityTestDependencies("org.jetbrains.kotlin:kotlin-stdlib:2.2.21")
     testImplementation(gradleTestKit())
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
@@ -24,6 +29,7 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    inputs.files(compatibilityTestDependencies).withPathSensitivity(PathSensitivity.NONE)
     // TestKit uses an isolated Gradle home. Reuse already-resolved build dependencies read-only
     // so its compiler fixture remains offline on fresh CI runners.
     environment(
