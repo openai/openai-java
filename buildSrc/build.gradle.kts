@@ -22,6 +22,14 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    // TestKit uses an isolated Gradle home. Reuse already-resolved build dependencies read-only
+    // so its compiler fixture remains offline on fresh CI runners.
+    environment(
+        "GRADLE_RO_DEP_CACHE",
+        providers.environmentVariable("GRADLE_RO_DEP_CACHE")
+            .orElse(gradle.gradleUserHomeDir.resolve("caches").absolutePath).get(),
+    )
+    testLogging { exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL }
     workingDir(layout.projectDirectory)
     inputs
         .file(layout.projectDirectory.file("../scripts/gradle"))

@@ -418,9 +418,9 @@ gradle.afterProject { project, state ->
             def original = project.tasks.getByName(path.tokenize(':').last())
             def sources = original.sources.files.toList().sort { it.path }
             if (sources.isEmpty()) throw new GradleException('Empty compatibility source set')
-            def models = sources.findAll { it.path.contains('/src/test/kotlin/com/openai/models/') }
+            def models = sources.findAll { it.path.replace(File.separatorChar, '/' as char).contains('/src/test/kotlin/com/openai/models/') }
             // Services reference each other. Keep them together and share support fixtures.
-            def services = sources.findAll { it.path.contains('/src/test/kotlin/com/openai/services/') }
+            def services = sources.findAll { it.path.replace(File.separatorChar, '/' as char).contains('/src/test/kotlin/com/openai/services/') }
             def units = models.collect { [it] }
             if (!services.isEmpty()) units.add(services)
             def shared = sources - units.flatten()
