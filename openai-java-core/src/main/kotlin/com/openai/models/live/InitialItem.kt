@@ -210,13 +210,13 @@ private constructor(
     interface Visitor<out T> {
 
         /** A developer message included in the initial text history of a Live session. */
-        fun visitDeveloper(developer: Developer): T
+        fun visitDeveloper(developer: Developer): T = unknown(JsonValue.from(developer))
 
         /** A user message included in the initial text history of a Live session. */
-        fun visitUser(user: User): T
+        fun visitUser(user: User): T = unknown(JsonValue.from(user))
 
         /** An assistant message included in the initial text history of a Live session. */
-        fun visitAssistant(assistant: Assistant): T
+        fun visitAssistant(assistant: Assistant): T = unknown(JsonValue.from(assistant))
 
         /**
          * Maps an unknown variant of [InitialItem] to a value of type [T].
@@ -224,6 +224,8 @@ private constructor(
          * An instance of [InitialItem] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
@@ -2863,13 +2865,13 @@ private constructor(
             interface Visitor<out T> {
 
                 /** Assistant text supplied as conversation history when starting a Live session. */
-                fun visitText(text: Text): T
+                fun visitText(text: Text): T = unknown(JsonValue.from(text))
 
                 /**
                  * Assistant output text supplied as conversation history when starting a Live
                  * session.
                  */
-                fun visitOutputText(outputText: OutputText): T
+                fun visitOutputText(outputText: OutputText): T = unknown(JsonValue.from(outputText))
 
                 /**
                  * Maps an unknown variant of [Content] to a value of type [T].
@@ -2878,6 +2880,8 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */

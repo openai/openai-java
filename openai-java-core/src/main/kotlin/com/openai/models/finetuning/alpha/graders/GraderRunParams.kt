@@ -870,22 +870,25 @@ private constructor(
              * A StringCheckGrader object that performs a string comparison between input and
              * reference using a specified operation.
              */
-            fun visitStringCheck(stringCheck: StringCheckGrader): T
+            fun visitStringCheck(stringCheck: StringCheckGrader): T =
+                unknown(JsonValue.from(stringCheck))
 
             /** A TextSimilarityGrader object which grades text based on similarity metrics. */
-            fun visitTextSimilarity(textSimilarity: TextSimilarityGrader): T
+            fun visitTextSimilarity(textSimilarity: TextSimilarityGrader): T =
+                unknown(JsonValue.from(textSimilarity))
 
             /** A PythonGrader object that runs a python script on the input. */
-            fun visitPython(python: PythonGrader): T
+            fun visitPython(python: PythonGrader): T = unknown(JsonValue.from(python))
 
             /** A ScoreModelGrader object that uses a model to assign a score to the input. */
-            fun visitScoreModel(scoreModel: ScoreModelGrader): T
+            fun visitScoreModel(scoreModel: ScoreModelGrader): T =
+                unknown(JsonValue.from(scoreModel))
 
             /**
              * A MultiGrader object combines the output of multiple graders to produce a single
              * score.
              */
-            fun visitMulti(multi: MultiGrader): T
+            fun visitMulti(multi: MultiGrader): T = unknown(JsonValue.from(multi))
 
             /**
              * Maps an unknown variant of [Grader] to a value of type [T].
@@ -894,6 +897,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

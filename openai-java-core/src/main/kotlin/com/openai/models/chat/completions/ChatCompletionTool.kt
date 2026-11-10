@@ -179,10 +179,11 @@ private constructor(
     interface Visitor<out T> {
 
         /** A function tool that can be used to generate a response. */
-        fun visitFunction(function: ChatCompletionFunctionTool): T
+        fun visitFunction(function: ChatCompletionFunctionTool): T =
+            unknown(JsonValue.from(function))
 
         /** A custom tool that processes input using a specified format. */
-        fun visitCustom(custom: ChatCompletionCustomTool): T
+        fun visitCustom(custom: ChatCompletionCustomTool): T = unknown(JsonValue.from(custom))
 
         /**
          * Maps an unknown variant of [ChatCompletionTool] to a value of type [T].
@@ -191,6 +192,8 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

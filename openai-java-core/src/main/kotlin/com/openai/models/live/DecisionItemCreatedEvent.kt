@@ -813,12 +813,12 @@ private constructor(
             interface Visitor<out T> {
 
                 /** The text input to the model. */
-                fun visitString(string: String): T
+                fun visitString(string: String): T = unknown(JsonValue.from(string))
 
                 fun visitDecisionItemCreatedEventItemContentItems(
                     decisionItemCreatedEventItemContentItems:
                         List<DecisionItemCreatedEventItemContentItem>
-                ): T
+                ): T = unknown(JsonValue.from(decisionItemCreatedEventItemContentItems))
 
                 /**
                  * Maps an unknown variant of [Content] to a value of type [T].
@@ -827,6 +827,8 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
@@ -1054,9 +1056,10 @@ private constructor(
                  */
                 interface Visitor<out T> {
 
-                    fun visitInputText(inputText: InputText): T
+                    fun visitInputText(inputText: InputText): T = unknown(JsonValue.from(inputText))
 
-                    fun visitInputImage(inputImage: InputImage): T
+                    fun visitInputImage(inputImage: InputImage): T =
+                        unknown(JsonValue.from(inputImage))
 
                     /**
                      * Maps an unknown variant of [DecisionItemCreatedEventItemContentItem] to a
@@ -1066,6 +1069,8 @@ private constructor(
                      * unknown variant if it was deserialized from data that doesn't match any known
                      * variant. For example, if the SDK is on an older version than the API, then
                      * the API may respond with new variants that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */

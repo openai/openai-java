@@ -2469,11 +2469,11 @@ private constructor(
         }
 
         /** An interface that defines how to map each variant of [Image] to a value of type [T]. */
-        interface Visitor<out T> {
+        interface Visitor<out T> : com.openai.core.BinaryUnionVisitor<T> {
 
-            fun visitInputStream(inputStream: InputStream): T
+            fun visitInputStream(inputStream: InputStream): T = unknown(inputStream)
 
-            fun visitInputStreams(inputStreams: List<InputStream>): T
+            fun visitInputStreams(inputStreams: List<InputStream>): T = unknown(inputStreams)
 
             /**
              * Maps an unknown variant of [Image] to a value of type [T].
@@ -2482,6 +2482,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

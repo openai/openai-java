@@ -3318,12 +3318,13 @@ private constructor(
         interface Visitor<out T> {
 
             /** A text input to the model, equivalent to a text input with the `developer` role. */
-            fun visitString(string: String): T
+            fun visitString(string: String): T = unknown(JsonValue.from(string))
 
             /**
              * A list of one or many input items to the model, containing different content types.
              */
-            fun visitInputItemList(inputItemList: List<ResponseInputItem>): T
+            fun visitInputItemList(inputItemList: List<ResponseInputItem>): T =
+                unknown(JsonValue.from(inputItemList))
 
             /**
              * Maps an unknown variant of [Instructions] to a value of type [T].
@@ -3332,6 +3333,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -3941,37 +3944,38 @@ private constructor(
              *
              * `required` means the model must call one or more tools.
              */
-            fun visitOptions(options: ToolChoiceOptions): T
+            fun visitOptions(options: ToolChoiceOptions): T = unknown(JsonValue.from(options))
 
             /** Constrains the tools available to the model to a pre-defined set. */
-            fun visitAllowed(allowed: ToolChoiceAllowed): T
+            fun visitAllowed(allowed: ToolChoiceAllowed): T = unknown(JsonValue.from(allowed))
 
             /**
              * Indicates that the model should use a built-in tool to generate a response.
              * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
              */
-            fun visitTypes(types: ToolChoiceTypes): T
+            fun visitTypes(types: ToolChoiceTypes): T = unknown(JsonValue.from(types))
 
             /** Use this option to force the model to call a specific function. */
-            fun visitFunction(function: ToolChoiceFunction): T
+            fun visitFunction(function: ToolChoiceFunction): T = unknown(JsonValue.from(function))
 
             /**
              * Use this option to force the model to call a specific tool on a remote MCP server.
              */
-            fun visitMcp(mcp: ToolChoiceMcp): T
+            fun visitMcp(mcp: ToolChoiceMcp): T = unknown(JsonValue.from(mcp))
 
             /** Use this option to force the model to call a specific custom tool. */
-            fun visitCustom(custom: ToolChoiceCustom): T
+            fun visitCustom(custom: ToolChoiceCustom): T = unknown(JsonValue.from(custom))
 
             fun visitSpecificProgrammaticToolCallingParam(
                 specificProgrammaticToolCallingParam: JsonValue
-            ): T
+            ): T = unknown(JsonValue.from(specificProgrammaticToolCallingParam))
 
             /** Forces the model to call the apply_patch tool when executing a tool call. */
-            fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch): T
+            fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch): T =
+                unknown(JsonValue.from(applyPatch))
 
             /** Forces the model to call the shell tool when a tool call is required. */
-            fun visitShell(shell: ToolChoiceShell): T
+            fun visitShell(shell: ToolChoiceShell): T = unknown(JsonValue.from(shell))
 
             /**
              * Maps an unknown variant of [ToolChoice] to a value of type [T].
@@ -3980,6 +3984,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -4994,12 +5000,13 @@ private constructor(
             interface Visitor<out T> {
 
                 /** A moderation result produced for the response input or output. */
-                fun visitModerationResult(moderationResult: ModerationResult): T
+                fun visitModerationResult(moderationResult: ModerationResult): T =
+                    unknown(JsonValue.from(moderationResult))
 
                 /**
                  * An error produced while attempting moderation for the response input or output.
                  */
-                fun visitError(error: Error): T
+                fun visitError(error: Error): T = unknown(JsonValue.from(error))
 
                 /**
                  * Maps an unknown variant of [Input] to a value of type [T].
@@ -5008,6 +5015,8 @@ private constructor(
                  * data that doesn't match any known variant. For example, if the SDK is on an older
                  * version than the API, then the API may respond with new variants that the SDK is
                  * unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
@@ -6397,12 +6406,13 @@ private constructor(
             interface Visitor<out T> {
 
                 /** A moderation result produced for the response input or output. */
-                fun visitModerationResult(moderationResult: ModerationResult): T
+                fun visitModerationResult(moderationResult: ModerationResult): T =
+                    unknown(JsonValue.from(moderationResult))
 
                 /**
                  * An error produced while attempting moderation for the response input or output.
                  */
-                fun visitError(error: Error): T
+                fun visitError(error: Error): T = unknown(JsonValue.from(error))
 
                 /**
                  * Maps an unknown variant of [Output] to a value of type [T].
@@ -6411,6 +6421,8 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
@@ -7903,13 +7915,14 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitCacheMiss(cacheMiss: CacheMiss): T
+            fun visitCacheMiss(cacheMiss: CacheMiss): T = unknown(JsonValue.from(cacheMiss))
 
-            fun visitCacheHit(cacheHit: JsonValue): T
+            fun visitCacheHit(cacheHit: JsonValue): T = unknown(JsonValue.from(cacheHit))
 
-            fun visitComparisonResponseNotFound(comparisonResponseNotFound: JsonValue): T
+            fun visitComparisonResponseNotFound(comparisonResponseNotFound: JsonValue): T =
+                unknown(JsonValue.from(comparisonResponseNotFound))
 
-            fun visitUnavailable(unavailable: JsonValue): T
+            fun visitUnavailable(unavailable: JsonValue): T = unknown(JsonValue.from(unavailable))
 
             /**
              * Maps an unknown variant of [PromptCacheDiagnostics] to a value of type [T].
@@ -7918,6 +7931,8 @@ private constructor(
              * deserialized from data that doesn't match any known variant. For example, if the SDK
              * is on an older version than the API, then the API may respond with new variants that
              * the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

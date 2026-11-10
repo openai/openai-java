@@ -188,10 +188,10 @@ private constructor(
     interface Visitor<out T> {
 
         /** Generates ordinary text without a structured-output constraint. */
-        fun visitText(text: JsonValue): T
+        fun visitText(text: JsonValue): T = unknown(JsonValue.from(text))
 
         /** Constrains generated text to a JSON Schema. */
-        fun visitJsonSchema(jsonSchema: JsonSchema): T
+        fun visitJsonSchema(jsonSchema: JsonSchema): T = unknown(JsonValue.from(jsonSchema))
 
         /**
          * Maps an unknown variant of [TextFormat] to a value of type [T].
@@ -199,6 +199,8 @@ private constructor(
          * An instance of [TextFormat] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

@@ -704,10 +704,10 @@ private constructor(
         interface Visitor<out T> {
 
             /** Text block that a user contributed to the thread. */
-            fun visitInputText(inputText: InputText): T
+            fun visitInputText(inputText: InputText): T = unknown(JsonValue.from(inputText))
 
             /** Quoted snippet that the user referenced in their message. */
-            fun visitQuotedText(quotedText: QuotedText): T
+            fun visitQuotedText(quotedText: QuotedText): T = unknown(JsonValue.from(quotedText))
 
             /**
              * Maps an unknown variant of [Content] to a value of type [T].
@@ -716,6 +716,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

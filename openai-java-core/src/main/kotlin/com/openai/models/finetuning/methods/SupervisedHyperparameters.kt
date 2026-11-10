@@ -460,9 +460,9 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitAuto(auto: JsonValue): T
+            fun visitAuto(auto: JsonValue): T = unknown(JsonValue.from(auto))
 
-            fun visitInteger(integer: Long): T
+            fun visitInteger(integer: Long): T = unknown(JsonValue.from(integer))
 
             /**
              * Maps an unknown variant of [BatchSize] to a value of type [T].
@@ -471,6 +471,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -683,9 +685,9 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitAuto(auto: JsonValue): T
+            fun visitAuto(auto: JsonValue): T = unknown(JsonValue.from(auto))
 
-            fun visitNumber(number: Double): T
+            fun visitNumber(number: Double): T = unknown(JsonValue.from(number))
 
             /**
              * Maps an unknown variant of [LearningRateMultiplier] to a value of type [T].
@@ -694,6 +696,8 @@ private constructor(
              * deserialized from data that doesn't match any known variant. For example, if the SDK
              * is on an older version than the API, then the API may respond with new variants that
              * the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -908,9 +912,9 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitAuto(auto: JsonValue): T
+            fun visitAuto(auto: JsonValue): T = unknown(JsonValue.from(auto))
 
-            fun visitInteger(integer: Long): T
+            fun visitInteger(integer: Long): T = unknown(JsonValue.from(integer))
 
             /**
              * Maps an unknown variant of [NEpochs] to a value of type [T].
@@ -919,6 +923,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

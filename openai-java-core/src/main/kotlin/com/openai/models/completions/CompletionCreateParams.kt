@@ -2543,13 +2543,16 @@ private constructor(
         /** An interface that defines how to map each variant of [Prompt] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitString(string: String): T
+            fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-            fun visitArrayOfStrings(arrayOfStrings: List<String>): T
+            fun visitArrayOfStrings(arrayOfStrings: List<String>): T =
+                unknown(JsonValue.from(arrayOfStrings))
 
-            fun visitArrayOfTokens(arrayOfTokens: List<Long>): T
+            fun visitArrayOfTokens(arrayOfTokens: List<Long>): T =
+                unknown(JsonValue.from(arrayOfTokens))
 
-            fun visitArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>): T
+            fun visitArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>): T =
+                unknown(JsonValue.from(arrayOfTokenArrays))
 
             /**
              * Maps an unknown variant of [Prompt] to a value of type [T].
@@ -2558,6 +2561,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -2911,9 +2916,9 @@ private constructor(
         /** An interface that defines how to map each variant of [Stop] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitString(string: String): T
+            fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-            fun visitStrings(strings: List<String>): T
+            fun visitStrings(strings: List<String>): T = unknown(JsonValue.from(strings))
 
             /**
              * Maps an unknown variant of [Stop] to a value of type [T].
@@ -2921,6 +2926,8 @@ private constructor(
              * An instance of [Stop] can contain an unknown variant if it was deserialized from data
              * that doesn't match any known variant. For example, if the SDK is on an older version
              * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

@@ -230,14 +230,16 @@ private constructor(
          * strategy. `disabled` will disable truncation and emit errors when the conversation
          * exceeds the input token limit.
          */
-        fun visitStrategy(strategy: RealtimeTruncationStrategy): T
+        fun visitStrategy(strategy: RealtimeTruncationStrategy): T =
+            unknown(JsonValue.from(strategy))
 
         /**
          * Retain a fraction of the conversation tokens when the conversation exceeds the input
          * token limit. This allows you to amortize truncations across multiple turns, which can
          * help improve cached token usage.
          */
-        fun visitRetentionRatio(retentionRatio: RealtimeTruncationRetentionRatio): T
+        fun visitRetentionRatio(retentionRatio: RealtimeTruncationRetentionRatio): T =
+            unknown(JsonValue.from(retentionRatio))
 
         /**
          * Maps an unknown variant of [RealtimeTruncation] to a value of type [T].
@@ -246,6 +248,8 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

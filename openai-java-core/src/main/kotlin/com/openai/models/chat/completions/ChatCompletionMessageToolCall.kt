@@ -181,10 +181,12 @@ private constructor(
     interface Visitor<out T> {
 
         /** A call to a function tool created by the model. */
-        fun visitFunction(function: ChatCompletionMessageFunctionToolCall): T
+        fun visitFunction(function: ChatCompletionMessageFunctionToolCall): T =
+            unknown(JsonValue.from(function))
 
         /** A call to a custom tool created by the model. */
-        fun visitCustom(custom: ChatCompletionMessageCustomToolCall): T
+        fun visitCustom(custom: ChatCompletionMessageCustomToolCall): T =
+            unknown(JsonValue.from(custom))
 
         /**
          * Maps an unknown variant of [ChatCompletionMessageToolCall] to a value of type [T].
@@ -193,6 +195,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

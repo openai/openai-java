@@ -214,13 +214,13 @@ private constructor(
     interface Visitor<out T> {
 
         /** The session talks to CCA without selecting or provisioning an execution environment. */
-        fun visitNone(none: JsonValue): T
+        fun visitNone(none: JsonValue): T = unknown(JsonValue.from(none))
 
         /** An environment hosted by OpenAI. */
-        fun visitOpenAIHosted(openaiHosted: OpenAIHosted): T
+        fun visitOpenAIHosted(openaiHosted: OpenAIHosted): T = unknown(JsonValue.from(openaiHosted))
 
         /** An environment hosted by the application. */
-        fun visitSelfHosted(selfHosted: SelfHosted): T
+        fun visitSelfHosted(selfHosted: SelfHosted): T = unknown(JsonValue.from(selfHosted))
 
         /**
          * Maps an unknown variant of [Environment] to a value of type [T].
@@ -228,6 +228,8 @@ private constructor(
          * An instance of [Environment] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

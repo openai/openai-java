@@ -390,9 +390,10 @@ private constructor(
         /** An interface that defines how to map each variant of [Data] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitUnionMember0(unionMember0: UnionMember0): T
+            fun visitUnionMember0(unionMember0: UnionMember0): T =
+                unknown(JsonValue.from(unionMember0))
 
-            fun visitMaps(maps: List<Map<String, JsonValue>>): T
+            fun visitMaps(maps: List<Map<String, JsonValue>>): T = unknown(JsonValue.from(maps))
 
             /**
              * Maps an unknown variant of [Data] to a value of type [T].
@@ -400,6 +401,8 @@ private constructor(
              * An instance of [Data] can contain an unknown variant if it was deserialized from data
              * that doesn't match any known variant. For example, if the SDK is on an older version
              * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

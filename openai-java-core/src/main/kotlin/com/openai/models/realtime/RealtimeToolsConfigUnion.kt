@@ -199,14 +199,14 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        fun visitFunction(function: RealtimeFunctionTool): T
+        fun visitFunction(function: RealtimeFunctionTool): T = unknown(JsonValue.from(function))
 
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
          * servers.
          * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          */
-        fun visitMcp(mcp: Mcp): T
+        fun visitMcp(mcp: Mcp): T = unknown(JsonValue.from(mcp))
 
         /**
          * Maps an unknown variant of [RealtimeToolsConfigUnion] to a value of type [T].
@@ -215,6 +215,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
@@ -1317,10 +1319,11 @@ private constructor(
             interface Visitor<out T> {
 
                 /** A string array of allowed tool names */
-                fun visitMcp(mcp: List<String>): T
+                fun visitMcp(mcp: List<String>): T = unknown(JsonValue.from(mcp))
 
                 /** A filter object to specify which tools are allowed. */
-                fun visitMcpToolFilter(mcpToolFilter: McpToolFilter): T
+                fun visitMcpToolFilter(mcpToolFilter: McpToolFilter): T =
+                    unknown(JsonValue.from(mcpToolFilter))
 
                 /**
                  * Maps an unknown variant of [AllowedTools] to a value of type [T].
@@ -1329,6 +1332,8 @@ private constructor(
                  * deserialized from data that doesn't match any known variant. For example, if the
                  * SDK is on an older version than the API, then the API may respond with new
                  * variants that the SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
@@ -2185,14 +2190,16 @@ private constructor(
                  * Specify which of the MCP server's tools require approval. Can be `always`,
                  * `never`, or a filter object associated with tools that require approval.
                  */
-                fun visitMcpToolApprovalFilter(mcpToolApprovalFilter: McpToolApprovalFilter): T
+                fun visitMcpToolApprovalFilter(mcpToolApprovalFilter: McpToolApprovalFilter): T =
+                    unknown(JsonValue.from(mcpToolApprovalFilter))
 
                 /**
                  * Specify a single approval policy for all tools. One of `always` or `never`. When
                  * set to `always`, all tools will require approval. When set to `never`, all tools
                  * will not require approval.
                  */
-                fun visitMcpToolApprovalSetting(mcpToolApprovalSetting: McpToolApprovalSetting): T
+                fun visitMcpToolApprovalSetting(mcpToolApprovalSetting: McpToolApprovalSetting): T =
+                    unknown(JsonValue.from(mcpToolApprovalSetting))
 
                 /**
                  * Maps an unknown variant of [RequireApproval] to a value of type [T].
@@ -2201,6 +2208,8 @@ private constructor(
                  * deserialized from data that doesn't match any known variant. For example, if the
                  * SDK is on an older version than the API, then the API may respond with new
                  * variants that the SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */

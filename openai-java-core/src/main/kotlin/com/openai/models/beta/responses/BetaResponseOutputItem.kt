@@ -1225,8 +1225,7 @@ private constructor(
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
          *
-         * Recognized variants also reach this method when their visit method is not overridden.
-         * This allows existing visitors to handle variants added by newer SDK versions.
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
@@ -2378,40 +2377,49 @@ private constructor(
             interface Visitor<out T> {
 
                 /** A text input to the model. */
-                fun visitInputText(inputText: BetaResponseInputText): T
+                fun visitInputText(inputText: BetaResponseInputText): T =
+                    unknown(JsonValue.from(inputText))
 
                 /** A text output from the model. */
-                fun visitOutputText(outputText: BetaResponseOutputText): T
+                fun visitOutputText(outputText: BetaResponseOutputText): T =
+                    unknown(JsonValue.from(outputText))
 
                 /** A text content. */
-                fun visitText(text: Text): T
+                fun visitText(text: Text): T = unknown(JsonValue.from(text))
 
                 /** A summary text from the model. */
-                fun visitSummaryText(summaryText: SummaryText): T
+                fun visitSummaryText(summaryText: SummaryText): T =
+                    unknown(JsonValue.from(summaryText))
 
                 /** Reasoning text from the model. */
-                fun visitReasoningText(reasoningText: ReasoningText): T
+                fun visitReasoningText(reasoningText: ReasoningText): T =
+                    unknown(JsonValue.from(reasoningText))
 
                 /** A refusal from the model. */
-                fun visitRefusal(refusal: BetaResponseOutputRefusal): T
+                fun visitRefusal(refusal: BetaResponseOutputRefusal): T =
+                    unknown(JsonValue.from(refusal))
 
                 /**
                  * An image input to the model. Learn about
                  * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
                  */
-                fun visitInputImage(inputImage: BetaResponseInputImage): T
+                fun visitInputImage(inputImage: BetaResponseInputImage): T =
+                    unknown(JsonValue.from(inputImage))
 
                 /** A screenshot of a computer. */
-                fun visitComputerScreenshot(computerScreenshot: ComputerScreenshot): T
+                fun visitComputerScreenshot(computerScreenshot: ComputerScreenshot): T =
+                    unknown(JsonValue.from(computerScreenshot))
 
                 /** A file input to the model. */
-                fun visitInputFile(inputFile: BetaResponseInputFile): T
+                fun visitInputFile(inputFile: BetaResponseInputFile): T =
+                    unknown(JsonValue.from(inputFile))
 
                 /**
                  * Opaque encrypted content that Responses API decrypts inside trusted model
                  * execution.
                  */
-                fun visitEncrypted(encrypted: EncryptedContent): T
+                fun visitEncrypted(encrypted: EncryptedContent): T =
+                    unknown(JsonValue.from(encrypted))
 
                 /**
                  * Maps an unknown variant of [Content] to a value of type [T].
@@ -2420,6 +2428,8 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */

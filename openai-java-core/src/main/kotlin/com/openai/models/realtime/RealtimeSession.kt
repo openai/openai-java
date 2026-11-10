@@ -1798,9 +1798,9 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitInteger(integer: Long): T
+            fun visitInteger(integer: Long): T = unknown(JsonValue.from(integer))
 
-            fun visitInf(inf: JsonValue): T
+            fun visitInf(inf: JsonValue): T = unknown(JsonValue.from(inf))
 
             /**
              * Maps an unknown variant of [MaxResponseOutputTokens] to a value of type [T].
@@ -1809,6 +1809,8 @@ private constructor(
              * deserialized from data that doesn't match any known variant. For example, if the SDK
              * is on an older version than the API, then the API may respond with new variants that
              * the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -2735,10 +2737,11 @@ private constructor(
         interface Visitor<out T> {
 
             /** Default tracing mode for the session. */
-            fun visitAuto(auto: JsonValue): T
+            fun visitAuto(auto: JsonValue): T = unknown(JsonValue.from(auto))
 
             /** Granular configuration for tracing. */
-            fun visitConfiguration(configuration: TracingConfiguration): T
+            fun visitConfiguration(configuration: TracingConfiguration): T =
+                unknown(JsonValue.from(configuration))
 
             /**
              * Maps an unknown variant of [Tracing] to a value of type [T].
@@ -2747,6 +2750,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -3264,13 +3269,13 @@ private constructor(
              * Server-side voice activity detection (VAD) which flips on when user speech is
              * detected and off after a period of silence.
              */
-            fun visitServerVad(serverVad: ServerVad): T
+            fun visitServerVad(serverVad: ServerVad): T = unknown(JsonValue.from(serverVad))
 
             /**
              * Server-side semantic turn detection which uses a model to determine when the user has
              * finished speaking.
              */
-            fun visitSemanticVad(semanticVad: SemanticVad): T
+            fun visitSemanticVad(semanticVad: SemanticVad): T = unknown(JsonValue.from(semanticVad))
 
             /**
              * Maps an unknown variant of [TurnDetection] to a value of type [T].
@@ -3279,6 +3284,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

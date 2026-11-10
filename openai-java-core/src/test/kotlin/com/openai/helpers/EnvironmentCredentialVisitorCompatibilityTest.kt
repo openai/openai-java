@@ -11,7 +11,6 @@ import com.openai.models.beta.agents.vaults.credentials.CredentialAuthRotatePara
 import java.io.File
 import java.io.StringWriter
 import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.Modifier
 import java.net.URLClassLoader
 import java.nio.file.Files
 import java.nio.file.Path
@@ -39,17 +38,11 @@ internal class EnvironmentCredentialVisitorCompatibilityTest {
                 CredentialAuthRotateParam::class.java,
             )[index]
         val visitor = union.declaredClasses.single { it.simpleName == "Visitor" }
+        // Compile the legacy consumer with the callbacks required by its original SDK.
+        val oldMethodNames =
+            listOf(if (index == 0) "visitMcpO" else "visitMcpOAuth", "visitStaticBearer")
         val oldMethods =
-            visitor.declaredMethods
-                .filter {
-                    Modifier.isAbstract(it.modifiers) && it.name != "visitEnvironmentVariable"
-                }
-                .sortedBy { it.name }
-        assertThat(oldMethods.map { it.name })
-            .containsExactlyInAnyOrder(
-                if (index == 0) "visitMcpO" else "visitMcpOAuth",
-                "visitStaticBearer",
-            )
+            oldMethodNames.map { name -> visitor.declaredMethods.single { it.name == name } }
         val jsonType = JsonValue::class.java.canonicalName
         val consumerName = "ExistingCredentialVisitor$case"
         val overrides =

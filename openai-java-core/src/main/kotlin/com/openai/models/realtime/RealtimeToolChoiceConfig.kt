@@ -252,13 +252,16 @@ private constructor(
          *
          * `required` means the model must call one or more tools.
          */
-        fun visitToolChoiceOptions(toolChoiceOptions: ToolChoiceOptions): T
+        fun visitToolChoiceOptions(toolChoiceOptions: ToolChoiceOptions): T =
+            unknown(JsonValue.from(toolChoiceOptions))
 
         /** Use this option to force the model to call a specific function. */
-        fun visitToolChoiceFunction(toolChoiceFunction: ToolChoiceFunction): T
+        fun visitToolChoiceFunction(toolChoiceFunction: ToolChoiceFunction): T =
+            unknown(JsonValue.from(toolChoiceFunction))
 
         /** Use this option to force the model to call a specific tool on a remote MCP server. */
-        fun visitToolChoiceMcp(toolChoiceMcp: ToolChoiceMcp): T
+        fun visitToolChoiceMcp(toolChoiceMcp: ToolChoiceMcp): T =
+            unknown(JsonValue.from(toolChoiceMcp))
 
         /**
          * Maps an unknown variant of [RealtimeToolChoiceConfig] to a value of type [T].
@@ -267,6 +270,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

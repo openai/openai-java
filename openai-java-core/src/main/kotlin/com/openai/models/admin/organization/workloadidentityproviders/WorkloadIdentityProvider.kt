@@ -1044,9 +1044,10 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitDiscovery(discovery: Discovery): T
+            fun visitDiscovery(discovery: Discovery): T = unknown(JsonValue.from(discovery))
 
-            fun visitUploadedJwks(uploadedJwks: UploadedJwks): T
+            fun visitUploadedJwks(uploadedJwks: UploadedJwks): T =
+                unknown(JsonValue.from(uploadedJwks))
 
             /**
              * Maps an unknown variant of [Verification] to a value of type [T].
@@ -1055,6 +1056,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

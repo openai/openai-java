@@ -218,19 +218,19 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        fun visitInputText(inputText: DecisionInputText): T
+        fun visitInputText(inputText: DecisionInputText): T = unknown(JsonValue.from(inputText))
 
         /**
          * An image provided as a base64 data URL or a publicly accessible HTTP(S) URL. File IDs are
          * not supported.
          */
-        fun visitInputImage(inputImage: DecisionInputImage): T
+        fun visitInputImage(inputImage: DecisionInputImage): T = unknown(JsonValue.from(inputImage))
 
         /**
          * A JSON object or an array of objects rendered as text. Nested values may be any JSON
          * value. Limited to 32 container levels, 10,000 values, and 256 KiB of compact UTF-8 JSON.
          */
-        fun visitInputJson(inputJson: DecisionInputJson): T
+        fun visitInputJson(inputJson: DecisionInputJson): T = unknown(JsonValue.from(inputJson))
 
         /**
          * Maps an unknown variant of [DecisionInputPart] to a value of type [T].
@@ -239,6 +239,8 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

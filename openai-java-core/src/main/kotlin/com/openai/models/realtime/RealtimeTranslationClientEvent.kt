@@ -296,7 +296,8 @@ private constructor(
          * support updates to `audio.output.language`, `audio.input.transcription`, and
          * `audio.input.noise_reduction`.
          */
-        fun visitSessionUpdate(sessionUpdate: RealtimeTranslationSessionUpdateEvent): T
+        fun visitSessionUpdate(sessionUpdate: RealtimeTranslationSessionUpdateEvent): T =
+            unknown(JsonValue.from(sessionUpdate))
 
         /**
          * Send this event to append audio bytes to the translation session input audio buffer.
@@ -316,13 +317,14 @@ private constructor(
          */
         fun visitSessionInputAudioBufferAppend(
             sessionInputAudioBufferAppend: RealtimeTranslationInputAudioBufferAppendEvent
-        ): T
+        ): T = unknown(JsonValue.from(sessionInputAudioBufferAppend))
 
         /**
          * Gracefully close the realtime translation session. The server flushes pending input audio
          * and emits any remaining translated output before closing the session.
          */
-        fun visitSessionClose(sessionClose: RealtimeTranslationSessionCloseEvent): T
+        fun visitSessionClose(sessionClose: RealtimeTranslationSessionCloseEvent): T =
+            unknown(JsonValue.from(sessionClose))
 
         /**
          * Maps an unknown variant of [RealtimeTranslationClientEvent] to a value of type [T].
@@ -331,6 +333,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

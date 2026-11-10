@@ -638,11 +638,13 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitContainerAuto(containerAuto: BetaContainerAuto): T
+            fun visitContainerAuto(containerAuto: BetaContainerAuto): T =
+                unknown(JsonValue.from(containerAuto))
 
-            fun visitLocal(local: BetaLocalEnvironment): T
+            fun visitLocal(local: BetaLocalEnvironment): T = unknown(JsonValue.from(local))
 
-            fun visitContainerReference(containerReference: BetaContainerReference): T
+            fun visitContainerReference(containerReference: BetaContainerReference): T =
+                unknown(JsonValue.from(containerReference))
 
             /**
              * Maps an unknown variant of [Environment] to a value of type [T].
@@ -651,6 +653,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

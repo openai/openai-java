@@ -178,9 +178,10 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        fun visitManual(manual: JsonValue): T
+        fun visitManual(manual: JsonValue): T = unknown(JsonValue.from(manual))
 
-        fun visitAutomation(automation: AutomationInvocationSourceAutomation): T
+        fun visitAutomation(automation: AutomationInvocationSourceAutomation): T =
+            unknown(JsonValue.from(automation))
 
         /**
          * Maps an unknown variant of [AutomationInvocationSource] to a value of type [T].
@@ -189,6 +190,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

@@ -742,16 +742,18 @@ private constructor(
         interface Visitor<out T> {
 
             /** A citation to a file. */
-            fun visitFileCitation(fileCitation: FileCitation): T
+            fun visitFileCitation(fileCitation: FileCitation): T =
+                unknown(JsonValue.from(fileCitation))
 
             /** A citation for a web resource used to generate a model response. */
-            fun visitUrlCitation(urlCitation: UrlCitation): T
+            fun visitUrlCitation(urlCitation: UrlCitation): T = unknown(JsonValue.from(urlCitation))
 
             /** A citation for a container file used to generate a model response. */
-            fun visitContainerFileCitation(containerFileCitation: ContainerFileCitation): T
+            fun visitContainerFileCitation(containerFileCitation: ContainerFileCitation): T =
+                unknown(JsonValue.from(containerFileCitation))
 
             /** A path to a file. */
-            fun visitFilePath(filePath: FilePath): T
+            fun visitFilePath(filePath: FilePath): T = unknown(JsonValue.from(filePath))
 
             /**
              * Maps an unknown variant of [Annotation] to a value of type [T].
@@ -760,6 +762,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

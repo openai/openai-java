@@ -631,22 +631,27 @@ private constructor(
              * A StringCheckGrader object that performs a string comparison between input and
              * reference using a specified operation.
              */
-            fun visitStringCheckGrader(stringCheckGrader: StringCheckGrader): T
+            fun visitStringCheckGrader(stringCheckGrader: StringCheckGrader): T =
+                unknown(JsonValue.from(stringCheckGrader))
 
             /** A TextSimilarityGrader object which grades text based on similarity metrics. */
-            fun visitTextSimilarityGrader(textSimilarityGrader: TextSimilarityGrader): T
+            fun visitTextSimilarityGrader(textSimilarityGrader: TextSimilarityGrader): T =
+                unknown(JsonValue.from(textSimilarityGrader))
 
             /** A PythonGrader object that runs a python script on the input. */
-            fun visitPythonGrader(pythonGrader: PythonGrader): T
+            fun visitPythonGrader(pythonGrader: PythonGrader): T =
+                unknown(JsonValue.from(pythonGrader))
 
             /** A ScoreModelGrader object that uses a model to assign a score to the input. */
-            fun visitScoreModelGrader(scoreModelGrader: ScoreModelGrader): T
+            fun visitScoreModelGrader(scoreModelGrader: ScoreModelGrader): T =
+                unknown(JsonValue.from(scoreModelGrader))
 
             /**
              * A LabelModelGrader object which uses a model to assign labels to each item in the
              * evaluation.
              */
-            fun visitLabelModelGrader(labelModelGrader: LabelModelGrader): T
+            fun visitLabelModelGrader(labelModelGrader: LabelModelGrader): T =
+                unknown(JsonValue.from(labelModelGrader))
 
             /**
              * Maps an unknown variant of [Graders] to a value of type [T].
@@ -655,6 +660,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

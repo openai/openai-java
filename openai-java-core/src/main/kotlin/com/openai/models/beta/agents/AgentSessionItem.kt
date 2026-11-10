@@ -650,59 +650,70 @@ private constructor(
     interface Visitor<out T> {
 
         /** A user or assistant message recorded in a session. */
-        fun visitMessage(message: AgentSessionMessage): T
+        fun visitMessage(message: AgentSessionMessage): T = unknown(JsonValue.from(message))
 
         /** A reasoning item produced by the agent. */
-        fun visitReasoning(reasoning: AgentReasoningItem): T
+        fun visitReasoning(reasoning: AgentReasoningItem): T = unknown(JsonValue.from(reasoning))
 
         /** A function call produced by the agent. */
-        fun visitFunctionCall(functionCall: AgentFunctionCallItem): T
+        fun visitFunctionCall(functionCall: AgentFunctionCallItem): T =
+            unknown(JsonValue.from(functionCall))
 
         /** The result supplied for a function call. */
-        fun visitFunctionCallOutput(functionCallOutput: FunctionCallOutput): T
+        fun visitFunctionCallOutput(functionCallOutput: FunctionCallOutput): T =
+            unknown(JsonValue.from(functionCallOutput))
 
         /** A message exchanged between agent threads. */
-        fun visitAgentMessage(agentMessage: AgentMessage): T
+        fun visitAgentMessage(agentMessage: AgentMessage): T = unknown(JsonValue.from(agentMessage))
 
         /** A call to a tool on an MCP server. */
-        fun visitMcpCall(mcpCall: AgentMcpCallItem): T
+        fun visitMcpCall(mcpCall: AgentMcpCallItem): T = unknown(JsonValue.from(mcpCall))
 
         /** One execution of the platform-provided computer-use capability. */
-        fun visitComputerUseCall(computerUseCall: ComputerUseCall): T
+        fun visitComputerUseCall(computerUseCall: ComputerUseCall): T =
+            unknown(JsonValue.from(computerUseCall))
 
         /** A credential-free history record of the emitted login request. */
         fun visitComputerUseApprovalRequest(
             computerUseApprovalRequest: ComputerUseApprovalRequest
-        ): T
+        ): T = unknown(JsonValue.from(computerUseApprovalRequest))
 
         /** A credential-free record of an admitted response, not proof of completion. */
         fun visitComputerUseApprovalRequestResult(
             computerUseApprovalRequestResult: ComputerUseApprovalRequestResult
-        ): T
+        ): T = unknown(JsonValue.from(computerUseApprovalRequestResult))
 
         /** A web search call produced by the agent. */
-        fun visitWebSearchCall(webSearchCall: AgentWebSearchCallItem): T
+        fun visitWebSearchCall(webSearchCall: AgentWebSearchCallItem): T =
+            unknown(JsonValue.from(webSearchCall))
 
         /** A command execution produced by the agent. */
-        fun visitCommandExecution(commandExecution: AgentCommandExecutionItem): T
+        fun visitCommandExecution(commandExecution: AgentCommandExecutionItem): T =
+            unknown(JsonValue.from(commandExecution))
 
         /** A request to spawn a subagent. */
-        fun visitCreateSubagentCall(createSubagentCall: AgentCreateSubagentCallItem): T
+        fun visitCreateSubagentCall(createSubagentCall: AgentCreateSubagentCallItem): T =
+            unknown(JsonValue.from(createSubagentCall))
 
         /** A request to send input to another agent. */
-        fun visitSendSubagentInputCall(sendSubagentInputCall: AgentSendSubagentInputCallItem): T
+        fun visitSendSubagentInputCall(sendSubagentInputCall: AgentSendSubagentInputCallItem): T =
+            unknown(JsonValue.from(sendSubagentInputCall))
 
         /** A request to resume a subagent. */
-        fun visitResumeSubagentCall(resumeSubagentCall: AgentResumeSubagentCallItem): T
+        fun visitResumeSubagentCall(resumeSubagentCall: AgentResumeSubagentCallItem): T =
+            unknown(JsonValue.from(resumeSubagentCall))
 
         /** A request to wait for one or more subagents. */
-        fun visitWaitForSubagentsCall(waitForSubagentsCall: AgentWaitForSubagentsCallItem): T
+        fun visitWaitForSubagentsCall(waitForSubagentsCall: AgentWaitForSubagentsCallItem): T =
+            unknown(JsonValue.from(waitForSubagentsCall))
 
         /** A request to interrupt a subagent's current turn. The subagent remains available. */
-        fun visitInterruptSubagentCall(interruptSubagentCall: AgentInterruptSubagentCallItem): T
+        fun visitInterruptSubagentCall(interruptSubagentCall: AgentInterruptSubagentCallItem): T =
+            unknown(JsonValue.from(interruptSubagentCall))
 
         /** A request to close a subagent. */
-        fun visitCloseSubagentCall(closeSubagentCall: AgentCloseSubagentCallItem): T
+        fun visitCloseSubagentCall(closeSubagentCall: AgentCloseSubagentCallItem): T =
+            unknown(JsonValue.from(closeSubagentCall))
 
         /**
          * Maps an unknown variant of [AgentSessionItem] to a value of type [T].
@@ -711,6 +722,8 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
@@ -4321,9 +4334,9 @@ private constructor(
              */
             interface Visitor<out T> {
 
-                fun visitSubmit(submit: Submit): T
+                fun visitSubmit(submit: Submit): T = unknown(JsonValue.from(submit))
 
-                fun visitCancel(cancel: JsonValue): T
+                fun visitCancel(cancel: JsonValue): T = unknown(JsonValue.from(cancel))
 
                 /**
                  * Maps an unknown variant of [Response] to a value of type [T].
@@ -4332,6 +4345,8 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */

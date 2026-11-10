@@ -241,16 +241,16 @@ private constructor(
     interface Visitor<out T> {
 
         /** A search query or group of search queries. */
-        fun visitSearch(search: Search): T
+        fun visitSearch(search: Search): T = unknown(JsonValue.from(search))
 
         /** Opens a web page. */
-        fun visitOpenPage(openPage: OpenPage): T
+        fun visitOpenPage(openPage: OpenPage): T = unknown(JsonValue.from(openPage))
 
         /** Finds text within a web page. */
-        fun visitFindInPage(findInPage: FindInPage): T
+        fun visitFindInPage(findInPage: FindInPage): T = unknown(JsonValue.from(findInPage))
 
         /** Another web search action. */
-        fun visitOther(other: JsonValue): T
+        fun visitOther(other: JsonValue): T = unknown(JsonValue.from(other))
 
         /**
          * Maps an unknown variant of [WebSearchAction] to a value of type [T].
@@ -259,6 +259,8 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

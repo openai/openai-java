@@ -378,11 +378,11 @@ private constructor(
         /** An interface that defines how to map each variant of [Body] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitAws(aws: Aws): T
+            fun visitAws(aws: Aws): T = unknown(JsonValue.from(aws))
 
-            fun visitGcp(gcp: Gcp): T
+            fun visitGcp(gcp: Gcp): T = unknown(JsonValue.from(gcp))
 
-            fun visitAzure(azure: Azure): T
+            fun visitAzure(azure: Azure): T = unknown(JsonValue.from(azure))
 
             /**
              * Maps an unknown variant of [Body] to a value of type [T].
@@ -390,6 +390,8 @@ private constructor(
              * An instance of [Body] can contain an unknown variant if it was deserialized from data
              * that doesn't match any known variant. For example, if the SDK is on an older version
              * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

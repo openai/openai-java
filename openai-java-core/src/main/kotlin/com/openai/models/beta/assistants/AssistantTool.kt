@@ -191,11 +191,12 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool): T
+        fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool): T =
+            unknown(JsonValue.from(codeInterpreter))
 
-        fun visitFileSearch(fileSearch: FileSearchTool): T
+        fun visitFileSearch(fileSearch: FileSearchTool): T = unknown(JsonValue.from(fileSearch))
 
-        fun visitFunction(function: FunctionTool): T
+        fun visitFunction(function: FunctionTool): T = unknown(JsonValue.from(function))
 
         /**
          * Maps an unknown variant of [AssistantTool] to a value of type [T].
@@ -203,6 +204,8 @@ private constructor(
          * An instance of [AssistantTool] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

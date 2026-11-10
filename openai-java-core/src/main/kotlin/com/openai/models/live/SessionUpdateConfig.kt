@@ -486,6 +486,8 @@ private constructor(
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
              *
+             * Unhandled known JSON variants reach this method as JSON values.
+             *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {

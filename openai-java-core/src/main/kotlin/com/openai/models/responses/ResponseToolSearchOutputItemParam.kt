@@ -1204,74 +1204,80 @@ private constructor(
              * Defines a function in your own code the model can choose to call. Learn more about
              * [function calling](https://developers.openai.com/api/docs/guides/function-calling).
              */
-            fun visitFunction(function: FunctionTool): T
+            fun visitFunction(function: FunctionTool): T = unknown(JsonValue.from(function))
 
             /**
              * A tool that searches for relevant content from uploaded files. Learn more about the
              * [file search tool](https://developers.openai.com/api/docs/guides/tools-file-search).
              */
-            fun visitFileSearch(fileSearch: FileSearchTool): T
+            fun visitFileSearch(fileSearch: FileSearchTool): T = unknown(JsonValue.from(fileSearch))
 
             /**
              * A tool that controls a virtual computer. Learn more about the
              * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
              */
-            fun visitComputer(computer: ComputerTool): T
+            fun visitComputer(computer: ComputerTool): T = unknown(JsonValue.from(computer))
 
             /**
              * A tool that controls a virtual computer. Learn more about the
              * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
              */
-            fun visitComputerUsePreview(computerUsePreview: ComputerUsePreviewTool): T
+            fun visitComputerUsePreview(computerUsePreview: ComputerUsePreviewTool): T =
+                unknown(JsonValue.from(computerUsePreview))
 
             /**
              * Search the Internet for sources related to the prompt. Learn more about the
              * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
              */
-            fun visitWebSearch(webSearch: WebSearchTool): T
+            fun visitWebSearch(webSearch: WebSearchTool): T = unknown(JsonValue.from(webSearch))
 
             /**
              * Give the model access to additional tools via remote Model Context Protocol (MCP)
              * servers.
              * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
              */
-            fun visitMcp(mcp: Mcp): T
+            fun visitMcp(mcp: Mcp): T = unknown(JsonValue.from(mcp))
 
             /** A tool that runs Python code to help generate a response to a prompt. */
-            fun visitCodeInterpreter(codeInterpreter: CodeInterpreter): T
+            fun visitCodeInterpreter(codeInterpreter: CodeInterpreter): T =
+                unknown(JsonValue.from(codeInterpreter))
 
-            fun visitProgrammaticToolCalling(programmaticToolCalling: JsonValue): T
+            fun visitProgrammaticToolCalling(programmaticToolCalling: JsonValue): T =
+                unknown(JsonValue.from(programmaticToolCalling))
 
             /** A tool that generates images using the GPT image models. */
-            fun visitImageGeneration(imageGeneration: ImageGeneration): T
+            fun visitImageGeneration(imageGeneration: ImageGeneration): T =
+                unknown(JsonValue.from(imageGeneration))
 
             /** A tool that allows the model to execute shell commands in a local environment. */
-            fun visitLocalShell(localShell: JsonValue): T
+            fun visitLocalShell(localShell: JsonValue): T = unknown(JsonValue.from(localShell))
 
             /** A tool that allows the model to execute shell commands. */
-            fun visitShell(shell: FunctionShellTool): T
+            fun visitShell(shell: FunctionShellTool): T = unknown(JsonValue.from(shell))
 
             /**
              * A custom tool that processes input using a specified format. Learn more about
              * [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools)
              */
-            fun visitCustom(custom: CustomTool): T
+            fun visitCustom(custom: CustomTool): T = unknown(JsonValue.from(custom))
 
             /** Groups function/custom tools under a shared namespace. */
-            fun visitNamespace(namespace: ToolSearchOutputNamespaceTool): T
+            fun visitNamespace(namespace: ToolSearchOutputNamespaceTool): T =
+                unknown(JsonValue.from(namespace))
 
             /** Hosted or BYOT tool search configuration for deferred tools. */
-            fun visitSearch(search: ToolSearchTool): T
+            fun visitSearch(search: ToolSearchTool): T = unknown(JsonValue.from(search))
 
             /**
              * This tool searches the web for relevant results to use in a response. Learn more
              * about the
              * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
              */
-            fun visitWebSearchPreview(webSearchPreview: WebSearchPreviewTool): T
+            fun visitWebSearchPreview(webSearchPreview: WebSearchPreviewTool): T =
+                unknown(JsonValue.from(webSearchPreview))
 
             /** Allows the assistant to create, delete, or update files using unified diffs. */
-            fun visitApplyPatch(applyPatch: ApplyPatchTool): T
+            fun visitApplyPatch(applyPatch: ApplyPatchTool): T = unknown(JsonValue.from(applyPatch))
 
             /**
              * Maps an unknown variant of [Tool] to a value of type [T].
@@ -1279,6 +1285,8 @@ private constructor(
              * An instance of [Tool] can contain an unknown variant if it was deserialized from data
              * that doesn't match any known variant. For example, if the SDK is on an older version
              * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -2506,10 +2514,11 @@ private constructor(
                 interface Visitor<out T> {
 
                     /** A string array of allowed tool names */
-                    fun visitMcp(mcp: List<String>): T
+                    fun visitMcp(mcp: List<String>): T = unknown(JsonValue.from(mcp))
 
                     /** A filter object to specify which tools are allowed. */
-                    fun visitMcpToolFilter(mcpToolFilter: McpToolFilter): T
+                    fun visitMcpToolFilter(mcpToolFilter: McpToolFilter): T =
+                        unknown(JsonValue.from(mcpToolFilter))
 
                     /**
                      * Maps an unknown variant of [AllowedTools] to a value of type [T].
@@ -2518,6 +2527,8 @@ private constructor(
                      * deserialized from data that doesn't match any known variant. For example, if
                      * the SDK is on an older version than the API, then the API may respond with
                      * new variants that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -3387,7 +3398,9 @@ private constructor(
                      * Specify which of the MCP server's tools require approval. Can be `always`,
                      * `never`, or a filter object associated with tools that require approval.
                      */
-                    fun visitMcpToolApprovalFilter(mcpToolApprovalFilter: McpToolApprovalFilter): T
+                    fun visitMcpToolApprovalFilter(
+                        mcpToolApprovalFilter: McpToolApprovalFilter
+                    ): T = unknown(JsonValue.from(mcpToolApprovalFilter))
 
                     /**
                      * Specify a single approval policy for all tools. One of `always` or `never`.
@@ -3396,7 +3409,7 @@ private constructor(
                      */
                     fun visitMcpToolApprovalSetting(
                         mcpToolApprovalSetting: McpToolApprovalSetting
-                    ): T
+                    ): T = unknown(JsonValue.from(mcpToolApprovalSetting))
 
                     /**
                      * Maps an unknown variant of [RequireApproval] to a value of type [T].
@@ -3405,6 +3418,8 @@ private constructor(
                      * deserialized from data that doesn't match any known variant. For example, if
                      * the SDK is on an older version than the API, then the API may respond with
                      * new variants that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -4928,7 +4943,7 @@ private constructor(
                 interface Visitor<out T> {
 
                     /** The container ID. */
-                    fun visitString(string: String): T
+                    fun visitString(string: String): T = unknown(JsonValue.from(string))
 
                     /**
                      * Configuration for a code interpreter container. Optionally specify the IDs of
@@ -4936,7 +4951,7 @@ private constructor(
                      */
                     fun visitCodeInterpreterToolAuto(
                         codeInterpreterToolAuto: CodeInterpreterToolAuto
-                    ): T
+                    ): T = unknown(JsonValue.from(codeInterpreterToolAuto))
 
                     /**
                      * Maps an unknown variant of [Container] to a value of type [T].
@@ -4945,6 +4960,8 @@ private constructor(
                      * deserialized from data that doesn't match any known variant. For example, if
                      * the SDK is on an older version than the API, then the API may respond with
                      * new variants that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -5691,9 +5708,11 @@ private constructor(
                          */
                         interface Visitor<out T> {
 
-                            fun visitDisabled(disabled: ContainerNetworkPolicyDisabled): T
+                            fun visitDisabled(disabled: ContainerNetworkPolicyDisabled): T =
+                                unknown(JsonValue.from(disabled))
 
-                            fun visitAllowlist(allowlist: ContainerNetworkPolicyAllowlist): T
+                            fun visitAllowlist(allowlist: ContainerNetworkPolicyAllowlist): T =
+                                unknown(JsonValue.from(allowlist))
 
                             /**
                              * Maps an unknown variant of [NetworkPolicy] to a value of type [T].
@@ -5702,6 +5721,8 @@ private constructor(
                              * was deserialized from data that doesn't match any known variant. For
                              * example, if the SDK is on an older version than the API, then the API
                              * may respond with new variants that the SDK is unaware of.
+                             *
+                             * Unhandled known JSON variants reach this method as JSON values.
                              *
                              * @throws OpenAIInvalidDataException in the default implementation.
                              */

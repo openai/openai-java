@@ -1324,11 +1324,11 @@ private constructor(
 
             fun visitDiscoveryVerificationParam(
                 discoveryVerificationParam: DiscoveryVerificationParam
-            ): T
+            ): T = unknown(JsonValue.from(discoveryVerificationParam))
 
             fun visitUploadedJwksVerificationParam(
                 uploadedJwksVerificationParam: UploadedJwksVerificationParam
-            ): T
+            ): T = unknown(JsonValue.from(uploadedJwksVerificationParam))
 
             /**
              * Maps an unknown variant of [Verification] to a value of type [T].
@@ -1337,6 +1337,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

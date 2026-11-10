@@ -887,34 +887,39 @@ private constructor(
         interface Visitor<out T> {
 
             /** A text input to the model. */
-            fun visitInputText(inputText: ResponseInputText): T
+            fun visitInputText(inputText: ResponseInputText): T = unknown(JsonValue.from(inputText))
 
             /** A text output from the model. */
-            fun visitOutputText(outputText: ResponseOutputText): T
+            fun visitOutputText(outputText: ResponseOutputText): T =
+                unknown(JsonValue.from(outputText))
 
             /** A text content. */
-            fun visitText(text: TextContent): T
+            fun visitText(text: TextContent): T = unknown(JsonValue.from(text))
 
             /** A summary text from the model. */
-            fun visitSummaryText(summaryText: SummaryTextContent): T
+            fun visitSummaryText(summaryText: SummaryTextContent): T =
+                unknown(JsonValue.from(summaryText))
 
             /** Reasoning text from the model. */
-            fun visitReasoningText(reasoningText: ReasoningText): T
+            fun visitReasoningText(reasoningText: ReasoningText): T =
+                unknown(JsonValue.from(reasoningText))
 
             /** A refusal from the model. */
-            fun visitRefusal(refusal: ResponseOutputRefusal): T
+            fun visitRefusal(refusal: ResponseOutputRefusal): T = unknown(JsonValue.from(refusal))
 
             /**
              * An image input to the model. Learn about
              * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
              */
-            fun visitInputImage(inputImage: ResponseInputImage): T
+            fun visitInputImage(inputImage: ResponseInputImage): T =
+                unknown(JsonValue.from(inputImage))
 
             /** A screenshot of a computer. */
-            fun visitComputerScreenshot(computerScreenshot: ComputerScreenshotContent): T
+            fun visitComputerScreenshot(computerScreenshot: ComputerScreenshotContent): T =
+                unknown(JsonValue.from(computerScreenshot))
 
             /** A file input to the model. */
-            fun visitInputFile(inputFile: ResponseInputFile): T
+            fun visitInputFile(inputFile: ResponseInputFile): T = unknown(JsonValue.from(inputFile))
 
             /**
              * Maps an unknown variant of [Content] to a value of type [T].
@@ -923,6 +928,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

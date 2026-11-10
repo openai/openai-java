@@ -1720,10 +1720,12 @@ private constructor(
         interface Visitor<out T> {
 
             /** Details of the message creation by the run step. */
-            fun visitMessageCreation(messageCreation: MessageCreationStepDetails): T
+            fun visitMessageCreation(messageCreation: MessageCreationStepDetails): T =
+                unknown(JsonValue.from(messageCreation))
 
             /** Details of the tool call. */
-            fun visitToolCalls(toolCalls: ToolCallsStepDetails): T
+            fun visitToolCalls(toolCalls: ToolCallsStepDetails): T =
+                unknown(JsonValue.from(toolCalls))
 
             /**
              * Maps an unknown variant of [StepDetails] to a value of type [T].
@@ -1732,6 +1734,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

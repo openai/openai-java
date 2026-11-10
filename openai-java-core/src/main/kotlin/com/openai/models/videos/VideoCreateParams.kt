@@ -916,16 +916,18 @@ private constructor(
          * An interface that defines how to map each variant of [InputReference] to a value of type
          * [T].
          */
-        interface Visitor<out T> {
+        interface Visitor<out T> : com.openai.core.BinaryUnionVisitor<T> {
 
             /** Optional reference asset upload or reference object that guides generation. */
-            fun visitStream(stream: InputStream): T
+            fun visitStream(stream: InputStream): T = unknown(stream)
 
             /**
              * Optional reference asset upload or reference object that guides generation. Provide
              * exactly one of `image_url` or `file_id` when using an object.
              */
-            fun visitImageInputReferenceParam(imageInputReferenceParam: ImageInputReferenceParam): T
+            fun visitImageInputReferenceParam(
+                imageInputReferenceParam: ImageInputReferenceParam
+            ): T = unknown(JsonValue.from(imageInputReferenceParam))
 
             /**
              * Maps an unknown variant of [InputReference] to a value of type [T].
@@ -934,6 +936,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

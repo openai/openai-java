@@ -942,9 +942,9 @@ private constructor(
         /** An interface that defines how to map each variant of [Query] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitString(string: String): T
+            fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-            fun visitStrings(strings: List<String>): T
+            fun visitStrings(strings: List<String>): T = unknown(JsonValue.from(strings))
 
             /**
              * Maps an unknown variant of [Query] to a value of type [T].
@@ -953,6 +953,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -1184,10 +1186,12 @@ private constructor(
              * A filter used to compare a specified attribute key to a given value using a defined
              * comparison operation.
              */
-            fun visitComparisonFilter(comparisonFilter: ComparisonFilter): T
+            fun visitComparisonFilter(comparisonFilter: ComparisonFilter): T =
+                unknown(JsonValue.from(comparisonFilter))
 
             /** Combine multiple filters using `and` or `or`. */
-            fun visitCompoundFilter(compoundFilter: CompoundFilter): T
+            fun visitCompoundFilter(compoundFilter: CompoundFilter): T =
+                unknown(JsonValue.from(compoundFilter))
 
             /**
              * Maps an unknown variant of [Filters] to a value of type [T].
@@ -1196,6 +1200,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

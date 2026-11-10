@@ -240,16 +240,16 @@ private constructor(
          * References an image [File](https://developers.openai.com/api/reference/resources/files)
          * in the content of a message.
          */
-        fun visitImageFile(imageFile: ImageFileDeltaBlock): T
+        fun visitImageFile(imageFile: ImageFileDeltaBlock): T = unknown(JsonValue.from(imageFile))
 
         /** The text content that is part of a message. */
-        fun visitText(text: TextDeltaBlock): T
+        fun visitText(text: TextDeltaBlock): T = unknown(JsonValue.from(text))
 
         /** The refusal content that is part of a message. */
-        fun visitRefusal(refusal: RefusalDeltaBlock): T
+        fun visitRefusal(refusal: RefusalDeltaBlock): T = unknown(JsonValue.from(refusal))
 
         /** References an image URL in the content of a message. */
-        fun visitImageUrl(imageUrl: ImageUrlDeltaBlock): T
+        fun visitImageUrl(imageUrl: ImageUrlDeltaBlock): T = unknown(JsonValue.from(imageUrl))
 
         /**
          * Maps an unknown variant of [MessageContentDelta] to a value of type [T].
@@ -258,6 +258,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

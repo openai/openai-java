@@ -177,9 +177,10 @@ private constructor(
     interface Visitor<out T> {
 
         /** Whether a vault or credential is active or archived. */
-        fun visitVaultStatus(vaultStatus: VaultStatus): T
+        fun visitVaultStatus(vaultStatus: VaultStatus): T = unknown(JsonValue.from(vaultStatus))
 
-        fun visitVaultStatuses(vaultStatuses: List<VaultStatus>): T
+        fun visitVaultStatuses(vaultStatuses: List<VaultStatus>): T =
+            unknown(JsonValue.from(vaultStatuses))
 
         /**
          * Maps an unknown variant of [VaultStatusFilter] to a value of type [T].
@@ -188,6 +189,8 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

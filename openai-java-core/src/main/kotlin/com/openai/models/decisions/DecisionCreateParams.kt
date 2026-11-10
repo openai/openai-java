@@ -1205,9 +1205,10 @@ private constructor(
         /** An interface that defines how to map each variant of [Input] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitString(string: String): T
+            fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-            fun visitDecisionInputItems(decisionInputItems: List<DecisionInputItem>): T
+            fun visitDecisionInputItems(decisionInputItems: List<DecisionInputItem>): T =
+                unknown(JsonValue.from(decisionInputItems))
 
             /**
              * Maps an unknown variant of [Input] to a value of type [T].
@@ -1216,6 +1217,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -1451,13 +1454,13 @@ private constructor(
         interface Visitor<out T> {
 
             /** Estimate how likely it is that a statement about the input is true. */
-            fun visitPredicate(predicate: Predicate): T
+            fun visitPredicate(predicate: Predicate): T = unknown(JsonValue.from(predicate))
 
             /** Choose from the supplied options based on the input. */
-            fun visitChoice(choice: Choice): T
+            fun visitChoice(choice: Choice): T = unknown(JsonValue.from(choice))
 
             /** Rate the input against the supplied ordered levels. */
-            fun visitScore(score: Score): T
+            fun visitScore(score: Score): T = unknown(JsonValue.from(score))
 
             /**
              * Maps an unknown variant of [Question] to a value of type [T].
@@ -1466,6 +1469,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -1957,11 +1962,11 @@ private constructor(
                  */
                 interface Visitor<out T> {
 
-                    fun visitString(string: String): T
+                    fun visitString(string: String): T = unknown(JsonValue.from(string))
 
                     fun visitDecisionQuestionInputParts(
                         decisionQuestionInputParts: List<DecisionQuestionInputPart>
-                    ): T
+                    ): T = unknown(JsonValue.from(decisionQuestionInputParts))
 
                     /**
                      * Maps an unknown variant of [Instructions] to a value of type [T].
@@ -1970,6 +1975,8 @@ private constructor(
                      * deserialized from data that doesn't match any known variant. For example, if
                      * the SDK is on an older version than the API, then the API may respond with
                      * new variants that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -2550,11 +2557,11 @@ private constructor(
                  */
                 interface Visitor<out T> {
 
-                    fun visitString(string: String): T
+                    fun visitString(string: String): T = unknown(JsonValue.from(string))
 
                     fun visitDecisionQuestionInputParts(
                         decisionQuestionInputParts: List<DecisionQuestionInputPart>
-                    ): T
+                    ): T = unknown(JsonValue.from(decisionQuestionInputParts))
 
                     /**
                      * Maps an unknown variant of [Instructions] to a value of type [T].
@@ -2563,6 +2570,8 @@ private constructor(
                      * deserialized from data that doesn't match any known variant. For example, if
                      * the SDK is on an older version than the API, then the API may respond with
                      * new variants that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -3139,11 +3148,11 @@ private constructor(
                  */
                 interface Visitor<out T> {
 
-                    fun visitString(string: String): T
+                    fun visitString(string: String): T = unknown(JsonValue.from(string))
 
                     fun visitDecisionQuestionInputParts(
                         decisionQuestionInputParts: List<DecisionQuestionInputPart>
-                    ): T
+                    ): T = unknown(JsonValue.from(decisionQuestionInputParts))
 
                     /**
                      * Maps an unknown variant of [Instructions] to a value of type [T].
@@ -3152,6 +3161,8 @@ private constructor(
                      * deserialized from data that doesn't match any known variant. For example, if
                      * the SDK is on an older version than the API, then the API may respond with
                      * new variants that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */

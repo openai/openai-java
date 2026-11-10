@@ -1068,16 +1068,19 @@ private constructor(
         interface Visitor<out T> {
 
             /** The string that will be turned into an embedding. */
-            fun visitString(string: String): T
+            fun visitString(string: String): T = unknown(JsonValue.from(string))
 
             /** The array of strings that will be turned into an embedding. */
-            fun visitArrayOfStrings(arrayOfStrings: List<String>): T
+            fun visitArrayOfStrings(arrayOfStrings: List<String>): T =
+                unknown(JsonValue.from(arrayOfStrings))
 
             /** The array of integers that will be turned into an embedding. */
-            fun visitArrayOfTokens(arrayOfTokens: List<Long>): T
+            fun visitArrayOfTokens(arrayOfTokens: List<Long>): T =
+                unknown(JsonValue.from(arrayOfTokens))
 
             /** The array of arrays containing integers that will be turned into an embedding. */
-            fun visitArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>): T
+            fun visitArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>): T =
+                unknown(JsonValue.from(arrayOfTokenArrays))
 
             /**
              * Maps an unknown variant of [Input] to a value of type [T].
@@ -1086,6 +1089,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

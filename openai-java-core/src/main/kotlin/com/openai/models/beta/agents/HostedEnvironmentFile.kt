@@ -185,10 +185,10 @@ private constructor(
     interface Visitor<out T> {
 
         /** A file copied from the OpenAI Files API. */
-        fun visitFileId(fileId: HostedEnvironmentFileId): T
+        fun visitFileId(fileId: HostedEnvironmentFileId): T = unknown(JsonValue.from(fileId))
 
         /** A file supplied inline when the session was created. */
-        fun visitInline(inline: Inline): T
+        fun visitInline(inline: Inline): T = unknown(JsonValue.from(inline))
 
         /**
          * Maps an unknown variant of [HostedEnvironmentFile] to a value of type [T].
@@ -197,6 +197,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

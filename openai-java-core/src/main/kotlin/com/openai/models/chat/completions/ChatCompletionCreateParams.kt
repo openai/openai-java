@@ -5015,13 +5015,14 @@ private constructor(
              * `none` means the model will not call a function and instead generates a message.
              * `auto` means the model can pick between generating a message or calling a function.
              */
-            fun visitMode(mode: FunctionCallMode): T
+            fun visitMode(mode: FunctionCallMode): T = unknown(JsonValue.from(mode))
 
             /**
              * Specifying a particular function via `{"name": "my_function"}` forces the model to
              * call that function.
              */
-            fun visitFunctionCallOption(functionCallOption: ChatCompletionFunctionCallOption): T
+            fun visitFunctionCallOption(functionCallOption: ChatCompletionFunctionCallOption): T =
+                unknown(JsonValue.from(functionCallOption))
 
             /**
              * Maps an unknown variant of [FunctionCall] to a value of type [T].
@@ -5030,6 +5031,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -7943,21 +7946,23 @@ private constructor(
         interface Visitor<out T> {
 
             /** Default response format. Used to generate text responses. */
-            fun visitText(text: ResponseFormatText): T
+            fun visitText(text: ResponseFormatText): T = unknown(JsonValue.from(text))
 
             /**
              * JSON Schema response format. Used to generate structured JSON responses. Learn more
              * about
              * [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
              */
-            fun visitJsonSchema(jsonSchema: ResponseFormatJsonSchema): T
+            fun visitJsonSchema(jsonSchema: ResponseFormatJsonSchema): T =
+                unknown(JsonValue.from(jsonSchema))
 
             /**
              * JSON object response format. An older method of generating JSON responses. Using
              * `json_schema` is recommended for models that support it. Note that the model will not
              * generate JSON without a system or user message instructing it to do so.
              */
-            fun visitJsonObject(jsonObject: ResponseFormatJsonObject): T
+            fun visitJsonObject(jsonObject: ResponseFormatJsonObject): T =
+                unknown(JsonValue.from(jsonObject))
 
             /**
              * Maps an unknown variant of [ResponseFormat] to a value of type [T].
@@ -7966,6 +7971,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -8349,9 +8356,9 @@ private constructor(
         /** An interface that defines how to map each variant of [Stop] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitString(string: String): T
+            fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-            fun visitStrings(strings: List<String>): T
+            fun visitStrings(strings: List<String>): T = unknown(JsonValue.from(strings))
 
             /**
              * Maps an unknown variant of [Stop] to a value of type [T].
@@ -8359,6 +8366,8 @@ private constructor(
              * An instance of [Stop] can contain an unknown variant if it was deserialized from data
              * that doesn't match any known variant. For example, if the SDK is on an older version
              * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

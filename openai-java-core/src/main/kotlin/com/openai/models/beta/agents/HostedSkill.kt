@@ -187,10 +187,11 @@ private constructor(
     interface Visitor<out T> {
 
         /** A skill installed from the Skills API. */
-        fun visitSkillReference(skillReference: HostedSkillReference): T
+        fun visitSkillReference(skillReference: HostedSkillReference): T =
+            unknown(JsonValue.from(skillReference))
 
         /** A skill installed from an inline ZIP archive. */
-        fun visitInline(inline: Inline): T
+        fun visitInline(inline: Inline): T = unknown(JsonValue.from(inline))
 
         /**
          * Maps an unknown variant of [HostedSkill] to a value of type [T].
@@ -198,6 +199,8 @@ private constructor(
          * An instance of [HostedSkill] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

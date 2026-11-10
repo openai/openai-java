@@ -433,9 +433,9 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitAll(all: JsonValue): T
+            fun visitAll(all: JsonValue): T = unknown(JsonValue.from(all))
 
-            fun visitStrings(strings: List<String>): T
+            fun visitStrings(strings: List<String>): T = unknown(JsonValue.from(strings))
 
             /**
              * Maps an unknown variant of [AllowedClientEvents] to a value of type [T].
@@ -444,6 +444,8 @@ private constructor(
              * deserialized from data that doesn't match any known variant. For example, if the SDK
              * is on an older version than the API, then the API may respond with new variants that
              * the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -667,9 +669,10 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitAll(all: JsonValue): T
+            fun visitAll(all: JsonValue): T = unknown(JsonValue.from(all))
 
-            fun visitEventSelectors(eventSelectors: List<ServerEventSelector>): T
+            fun visitEventSelectors(eventSelectors: List<ServerEventSelector>): T =
+                unknown(JsonValue.from(eventSelectors))
 
             /**
              * Maps an unknown variant of [AllowedServerEvents] to a value of type [T].
@@ -678,6 +681,8 @@ private constructor(
              * deserialized from data that doesn't match any known variant. For example, if the SDK
              * is on an older version than the API, then the API may respond with new variants that
              * the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

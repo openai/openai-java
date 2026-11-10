@@ -937,9 +937,10 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitServiceAccountDefault(serviceAccountDefault: JsonValue): T
+            fun visitServiceAccountDefault(serviceAccountDefault: JsonValue): T =
+                unknown(JsonValue.from(serviceAccountDefault))
 
-            fun visitRestricted(restricted: Restricted): T
+            fun visitRestricted(restricted: Restricted): T = unknown(JsonValue.from(restricted))
 
             /**
              * Maps an unknown variant of [Permissions] to a value of type [T].
@@ -948,6 +949,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

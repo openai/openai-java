@@ -198,10 +198,11 @@ private constructor(
     interface Visitor<out T> {
 
         /** Create a session for each invocation. */
-        fun visitNewSession(newSession: NewSession): T
+        fun visitNewSession(newSession: NewSession): T = unknown(JsonValue.from(newSession))
 
         /** Deliver instructions to an existing session. */
-        fun visitExistingSession(existingSession: ExistingSession): T
+        fun visitExistingSession(existingSession: ExistingSession): T =
+            unknown(JsonValue.from(existingSession))
 
         /**
          * Maps an unknown variant of [AutomationTargetParam] to a value of type [T].
@@ -210,6 +211,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

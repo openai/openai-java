@@ -183,13 +183,14 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        fun visitStatic(static_: StaticFileChunkingStrategyObject): T
+        fun visitStatic(static_: StaticFileChunkingStrategyObject): T =
+            unknown(JsonValue.from(static_))
 
         /**
          * This is returned when the chunking strategy is unknown. Typically, this is because the
          * file was indexed before the `chunking_strategy` concept was introduced in the API.
          */
-        fun visitOther(other: OtherFileChunkingStrategyObject): T
+        fun visitOther(other: OtherFileChunkingStrategyObject): T = unknown(JsonValue.from(other))
 
         /**
          * Maps an unknown variant of [FileChunkingStrategy] to a value of type [T].
@@ -198,6 +199,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

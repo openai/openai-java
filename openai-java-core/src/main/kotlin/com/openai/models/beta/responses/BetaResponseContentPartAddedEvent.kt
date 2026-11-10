@@ -652,13 +652,16 @@ private constructor(
         interface Visitor<out T> {
 
             /** A text output from the model. */
-            fun visitOutputText(outputText: BetaResponseOutputText): T
+            fun visitOutputText(outputText: BetaResponseOutputText): T =
+                unknown(JsonValue.from(outputText))
 
             /** A refusal from the model. */
-            fun visitRefusal(refusal: BetaResponseOutputRefusal): T
+            fun visitRefusal(refusal: BetaResponseOutputRefusal): T =
+                unknown(JsonValue.from(refusal))
 
             /** Reasoning text from the model. */
-            fun visitReasoningText(reasoningText: ReasoningText): T
+            fun visitReasoningText(reasoningText: ReasoningText): T =
+                unknown(JsonValue.from(reasoningText))
 
             /**
              * Maps an unknown variant of [Part] to a value of type [T].
@@ -666,6 +669,8 @@ private constructor(
              * An instance of [Part] can contain an unknown variant if it was deserialized from data
              * that doesn't match any known variant. For example, if the SDK is on an older version
              * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

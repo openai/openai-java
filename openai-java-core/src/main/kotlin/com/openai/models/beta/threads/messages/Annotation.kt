@@ -204,13 +204,14 @@ private constructor(
          * associated with the assistant or the message. Generated when the assistant uses the
          * "file_search" tool to search files.
          */
-        fun visitFileCitation(fileCitation: FileCitationAnnotation): T
+        fun visitFileCitation(fileCitation: FileCitationAnnotation): T =
+            unknown(JsonValue.from(fileCitation))
 
         /**
          * A URL for the file that's generated when the assistant used the `code_interpreter` tool
          * to generate a file.
          */
-        fun visitFilePath(filePath: FilePathAnnotation): T
+        fun visitFilePath(filePath: FilePathAnnotation): T = unknown(JsonValue.from(filePath))
 
         /**
          * Maps an unknown variant of [Annotation] to a value of type [T].
@@ -218,6 +219,8 @@ private constructor(
          * An instance of [Annotation] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

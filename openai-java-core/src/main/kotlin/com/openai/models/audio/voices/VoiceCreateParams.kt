@@ -405,19 +405,19 @@ private constructor(
         }
 
         /** An interface that defines how to map each variant of [Body] to a value of type [T]. */
-        interface Visitor<out T> {
+        interface Visitor<out T> : com.openai.core.BinaryUnionVisitor<T> {
 
             /**
              * Creates a voice from a consent recording and an audio sample. Requires
              * multipart/form-data.
              */
-            fun visitAudioSample(audioSample: AudioSample): T
+            fun visitAudioSample(audioSample: AudioSample): T = unknown(audioSample)
 
             /**
              * Creates a synthetic voice from a text description. Supports application/json or
              * multipart/form-data.
              */
-            fun visitPrompt(prompt: Prompt): T
+            fun visitPrompt(prompt: Prompt): T = unknown(JsonValue.from(prompt))
 
             /**
              * Maps an unknown variant of [Body] to a value of type [T].
@@ -425,6 +425,8 @@ private constructor(
              * An instance of [Body] can contain an unknown variant if it was deserialized from data
              * that doesn't match any known variant. For example, if the SDK is on an older version
              * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

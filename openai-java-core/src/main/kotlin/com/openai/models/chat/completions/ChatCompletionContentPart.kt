@@ -252,21 +252,23 @@ private constructor(
     interface Visitor<out T> {
 
         /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
-        fun visitText(text: ChatCompletionContentPartText): T
+        fun visitText(text: ChatCompletionContentPartText): T = unknown(JsonValue.from(text))
 
         /**
          * Learn about [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
          */
-        fun visitImageUrl(imageUrl: ChatCompletionContentPartImage): T
+        fun visitImageUrl(imageUrl: ChatCompletionContentPartImage): T =
+            unknown(JsonValue.from(imageUrl))
 
         /** Learn about [audio inputs](https://developers.openai.com/api/docs/guides/audio). */
-        fun visitInputAudio(inputAudio: ChatCompletionContentPartInputAudio): T
+        fun visitInputAudio(inputAudio: ChatCompletionContentPartInputAudio): T =
+            unknown(JsonValue.from(inputAudio))
 
         /**
          * Learn about [file inputs](https://developers.openai.com/api/docs/guides/text) for text
          * generation.
          */
-        fun visitFile(file: File): T
+        fun visitFile(file: File): T = unknown(JsonValue.from(file))
 
         /**
          * Maps an unknown variant of [ChatCompletionContentPart] to a value of type [T].
@@ -275,6 +277,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
