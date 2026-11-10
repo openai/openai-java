@@ -70,12 +70,13 @@ internal class AgentEnvironmentFilesTest {
         t: Transport,
         async: Boolean,
         files: Map<String, Path>,
+        timeoutSeconds: Long = 5,
     ): PreparedAgentFiles {
         val client = t.client()
         return try {
             if (async)
                 AgentEnvironmentFiles.prepare(client.async(), files, options)
-                    .get(5, TimeUnit.SECONDS)
+                    .get(timeoutSeconds, TimeUnit.SECONDS)
             else AgentEnvironmentFiles.prepare(client, files, options)
         } catch (error: Exception) {
             throw unwrapFileTestError(error)
@@ -774,7 +775,13 @@ internal class AgentEnvironmentFilesTest {
                 discardUploadBody = true
             }
         val error = catchThrowable {
-            prepare(t, true, (1..51).associate { "/workspace/files/$it.txt" to source })
+            // The transport serializes the full 50 MiB upload before returning the API error.
+            prepare(
+                t,
+                true,
+                (1..51).associate { "/workspace/files/$it.txt" to source },
+                timeoutSeconds = 30,
+            )
         }
         assertThat(error).isInstanceOf(AgentFilePreparationException::class.java)
         assertThat(error.cause).isInstanceOf(com.openai.errors.InternalServerException::class.java)
