@@ -3050,7 +3050,7 @@ private constructor(
                 interface Visitor<out T> {
 
                     /** The text contents of the message. */
-                    fun visitText(text: String): T
+                    fun visitText(text: String): T = unknown(JsonValue.from(text))
 
                     /**
                      * An array of content parts with a defined type, each can be of type `text` or
@@ -3060,7 +3060,7 @@ private constructor(
                      */
                     fun visitArrayOfContentParts(
                         arrayOfContentParts: List<MessageContentPartParam>
-                    ): T
+                    ): T = unknown(JsonValue.from(arrayOfContentParts))
 
                     /**
                      * Maps an unknown variant of [Content] to a value of type [T].
@@ -3069,6 +3069,8 @@ private constructor(
                      * deserialized from data that doesn't match any known variant. For example, if
                      * the SDK is on an older version than the API, then the API may respond with
                      * new variants that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -3677,9 +3679,11 @@ private constructor(
                      */
                     interface Visitor<out T> {
 
-                        fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool): T
+                        fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool): T =
+                            unknown(JsonValue.from(codeInterpreter))
 
-                        fun visitFileSearch(fileSearch: JsonValue): T
+                        fun visitFileSearch(fileSearch: JsonValue): T =
+                            unknown(JsonValue.from(fileSearch))
 
                         /**
                          * Maps an unknown variant of [Tool] to a value of type [T].
@@ -3688,6 +3692,8 @@ private constructor(
                          * deserialized from data that doesn't match any known variant. For example,
                          * if the SDK is on an older version than the API, then the API may respond
                          * with new variants that the SDK is unaware of.
+                         *
+                         * Unhandled known JSON variants reach this method as JSON values.
                          *
                          * @throws OpenAIInvalidDataException in the default implementation.
                          */
@@ -5269,9 +5275,9 @@ private constructor(
                              * The default strategy. This strategy currently uses a
                              * `max_chunk_size_tokens` of `800` and `chunk_overlap_tokens` of `400`.
                              */
-                            fun visitAuto(auto: JsonValue): T
+                            fun visitAuto(auto: JsonValue): T = unknown(JsonValue.from(auto))
 
-                            fun visitStatic(static_: Static): T
+                            fun visitStatic(static_: Static): T = unknown(JsonValue.from(static_))
 
                             /**
                              * Maps an unknown variant of [ChunkingStrategy] to a value of type [T].
@@ -5280,6 +5286,8 @@ private constructor(
                              * it was deserialized from data that doesn't match any known variant.
                              * For example, if the SDK is on an older version than the API, then the
                              * API may respond with new variants that the SDK is unaware of.
+                             *
+                             * Unhandled known JSON variants reach this method as JSON values.
                              *
                              * @throws OpenAIInvalidDataException in the default implementation.
                              */

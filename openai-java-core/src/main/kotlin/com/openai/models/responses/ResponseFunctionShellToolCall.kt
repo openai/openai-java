@@ -984,10 +984,11 @@ private constructor(
         interface Visitor<out T> {
 
             /** Represents the use of a local environment to perform shell actions. */
-            fun visitLocal(local: ResponseLocalEnvironment): T
+            fun visitLocal(local: ResponseLocalEnvironment): T = unknown(JsonValue.from(local))
 
             /** Represents a container created with /v1/containers. */
-            fun visitContainerReference(containerReference: ResponseContainerReference): T
+            fun visitContainerReference(containerReference: ResponseContainerReference): T =
+                unknown(JsonValue.from(containerReference))
 
             /**
              * Maps an unknown variant of [Environment] to a value of type [T].
@@ -996,6 +997,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -1342,9 +1345,9 @@ private constructor(
         /** An interface that defines how to map each variant of [Caller] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitDirect(direct: JsonValue): T
+            fun visitDirect(direct: JsonValue): T = unknown(JsonValue.from(direct))
 
-            fun visitProgram(program: Program): T
+            fun visitProgram(program: Program): T = unknown(JsonValue.from(program))
 
             /**
              * Maps an unknown variant of [Caller] to a value of type [T].
@@ -1353,6 +1356,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

@@ -185,10 +185,10 @@ private constructor(
     interface Visitor<out T> {
 
         /** A text content part produced by the agent. */
-        fun visitOutputText(outputText: OutputText): T
+        fun visitOutputText(outputText: OutputText): T = unknown(JsonValue.from(outputText))
 
         /** Encrypted content exchanged between agents. */
-        fun visitEncrypted(encrypted: EncryptedContent): T
+        fun visitEncrypted(encrypted: EncryptedContent): T = unknown(JsonValue.from(encrypted))
 
         /**
          * Maps an unknown variant of [AgentContent] to a value of type [T].
@@ -196,6 +196,8 @@ private constructor(
          * An instance of [AgentContent] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

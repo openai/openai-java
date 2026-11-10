@@ -517,13 +517,13 @@ private constructor(
         /** An interface that defines how to map each variant of [Tool] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitFunction(function: Function): T
+            fun visitFunction(function: Function): T = unknown(JsonValue.from(function))
 
             /**
              * A custom tool that processes input using a specified format. Learn more about
              * [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools)
              */
-            fun visitCustom(custom: CustomTool): T
+            fun visitCustom(custom: CustomTool): T = unknown(JsonValue.from(custom))
 
             /**
              * Maps an unknown variant of [Tool] to a value of type [T].
@@ -531,6 +531,8 @@ private constructor(
              * An instance of [Tool] can contain an unknown variant if it was deserialized from data
              * that doesn't match any known variant. For example, if the SDK is on an older version
              * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

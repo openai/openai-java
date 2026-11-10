@@ -306,23 +306,26 @@ private constructor(
     interface Visitor<out T> {
 
         /** `auto` is the default value */
-        fun visitAuto(auto: JsonValue): T
+        fun visitAuto(auto: JsonValue): T = unknown(JsonValue.from(auto))
 
         /** Default response format. Used to generate text responses. */
-        fun visitResponseFormatText(responseFormatText: ResponseFormatText): T
+        fun visitResponseFormatText(responseFormatText: ResponseFormatText): T =
+            unknown(JsonValue.from(responseFormatText))
 
         /**
          * JSON object response format. An older method of generating JSON responses. Using
          * `json_schema` is recommended for models that support it. Note that the model will not
          * generate JSON without a system or user message instructing it to do so.
          */
-        fun visitResponseFormatJsonObject(responseFormatJsonObject: ResponseFormatJsonObject): T
+        fun visitResponseFormatJsonObject(responseFormatJsonObject: ResponseFormatJsonObject): T =
+            unknown(JsonValue.from(responseFormatJsonObject))
 
         /**
          * JSON Schema response format. Used to generate structured JSON responses. Learn more about
          * [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
          */
-        fun visitResponseFormatJsonSchema(responseFormatJsonSchema: ResponseFormatJsonSchema): T
+        fun visitResponseFormatJsonSchema(responseFormatJsonSchema: ResponseFormatJsonSchema): T =
+            unknown(JsonValue.from(responseFormatJsonSchema))
 
         /**
          * Maps an unknown variant of [AssistantResponseFormatOption] to a value of type [T].
@@ -331,6 +334,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

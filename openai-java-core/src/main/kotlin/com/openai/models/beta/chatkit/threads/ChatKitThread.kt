@@ -607,13 +607,13 @@ private constructor(
         interface Visitor<out T> {
 
             /** Indicates that a thread is active. */
-            fun visitActive(active: JsonValue): T
+            fun visitActive(active: JsonValue): T = unknown(JsonValue.from(active))
 
             /** Indicates that a thread is locked and cannot accept new input. */
-            fun visitLocked(locked: Locked): T
+            fun visitLocked(locked: Locked): T = unknown(JsonValue.from(locked))
 
             /** Indicates that a thread has been closed. */
-            fun visitClosed(closed: Closed): T
+            fun visitClosed(closed: Closed): T = unknown(JsonValue.from(closed))
 
             /**
              * Maps an unknown variant of [Status] to a value of type [T].
@@ -622,6 +622,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

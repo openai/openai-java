@@ -722,9 +722,11 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitDisabled(disabled: ContainerNetworkPolicyDisabled): T
+            fun visitDisabled(disabled: ContainerNetworkPolicyDisabled): T =
+                unknown(JsonValue.from(disabled))
 
-            fun visitAllowlist(allowlist: ContainerNetworkPolicyAllowlist): T
+            fun visitAllowlist(allowlist: ContainerNetworkPolicyAllowlist): T =
+                unknown(JsonValue.from(allowlist))
 
             /**
              * Maps an unknown variant of [NetworkPolicy] to a value of type [T].
@@ -733,6 +735,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -935,9 +939,9 @@ private constructor(
         /** An interface that defines how to map each variant of [Skill] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitReference(reference: SkillReference): T
+            fun visitReference(reference: SkillReference): T = unknown(JsonValue.from(reference))
 
-            fun visitInline(inline: InlineSkill): T
+            fun visitInline(inline: InlineSkill): T = unknown(JsonValue.from(inline))
 
             /**
              * Maps an unknown variant of [Skill] to a value of type [T].
@@ -946,6 +950,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

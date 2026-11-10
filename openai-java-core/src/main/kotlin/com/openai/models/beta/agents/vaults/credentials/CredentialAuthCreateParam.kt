@@ -251,10 +251,10 @@ private constructor(
     interface Visitor<out T> {
 
         /** An OAuth credential for an HTTPS MCP destination. */
-        fun visitMcpOAuth(mcpOauth: McpOAuth): T
+        fun visitMcpOAuth(mcpOauth: McpOAuth): T = unknown(JsonValue.from(mcpOauth))
 
         /** A bearer token for an MCP server, without automatic OAuth refresh. */
-        fun visitStaticBearer(staticBearer: StaticBearer): T
+        fun visitStaticBearer(staticBearer: StaticBearer): T = unknown(JsonValue.from(staticBearer))
 
         /**
          * An HTTP credential for OpenAI-hosted environments only. The sandbox receives an
@@ -273,6 +273,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

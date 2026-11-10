@@ -221,19 +221,20 @@ private constructor(
     interface Visitor<out T> {
 
         /** Represents a transcription response returned by model, based on the provided input. */
-        fun visitTranscription(transcription: Transcription): T
+        fun visitTranscription(transcription: Transcription): T =
+            unknown(JsonValue.from(transcription))
 
         /**
          * Represents a diarized transcription response returned by the model, including the
          * combined transcript and speaker-segment annotations.
          */
-        fun visitDiarized(diarized: TranscriptionDiarized): T
+        fun visitDiarized(diarized: TranscriptionDiarized): T = unknown(JsonValue.from(diarized))
 
         /**
          * Represents a verbose json transcription response returned by model, based on the provided
          * input.
          */
-        fun visitVerbose(verbose: TranscriptionVerbose): T
+        fun visitVerbose(verbose: TranscriptionVerbose): T = unknown(JsonValue.from(verbose))
 
         /**
          * Maps an unknown variant of [TranscriptionCreateResponse] to a value of type [T].
@@ -242,6 +243,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

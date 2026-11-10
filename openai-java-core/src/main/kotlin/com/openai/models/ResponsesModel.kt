@@ -185,11 +185,11 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        fun visitString(string: String): T
+        fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-        fun visitChat(chat: ChatModel): T
+        fun visitChat(chat: ChatModel): T = unknown(JsonValue.from(chat))
 
-        fun visitOnly(only: ResponsesOnlyModel): T
+        fun visitOnly(only: ResponsesOnlyModel): T = unknown(JsonValue.from(only))
 
         /**
          * Maps an unknown variant of [ResponsesModel] to a value of type [T].
@@ -198,6 +198,8 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

@@ -3485,12 +3485,13 @@ private constructor(
         interface Visitor<out T> {
 
             /** A text input to the model, equivalent to a text input with the `user` role. */
-            fun visitString(string: String): T
+            fun visitString(string: String): T = unknown(JsonValue.from(string))
 
             /**
              * A list of one or many input items to the model, containing different content types.
              */
-            fun visitResponseInputItems(responseInputItems: List<ResponseInputItem>): T
+            fun visitResponseInputItems(responseInputItems: List<ResponseInputItem>): T =
+                unknown(JsonValue.from(responseInputItems))
 
             /**
              * Maps an unknown variant of [Input] to a value of type [T].
@@ -3499,6 +3500,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

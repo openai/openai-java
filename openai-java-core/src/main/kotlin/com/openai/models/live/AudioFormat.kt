@@ -209,13 +209,13 @@ private constructor(
     interface Visitor<out T> {
 
         /** Raw, mono 16-bit little-endian PCM audio for a Live WebSocket connection. */
-        fun visitAudioPcm(audioPcm: AudioPcm): T
+        fun visitAudioPcm(audioPcm: AudioPcm): T = unknown(JsonValue.from(audioPcm))
 
         /** Raw, mono G.711 μ-law audio for a Live WebSocket connection. */
-        fun visitAudioPcmu(audioPcmu: AudioPcmu): T
+        fun visitAudioPcmu(audioPcmu: AudioPcmu): T = unknown(JsonValue.from(audioPcmu))
 
         /** Raw, mono G.711 A-law audio for a Live WebSocket connection. */
-        fun visitAudioPcma(audioPcma: AudioPcma): T
+        fun visitAudioPcma(audioPcma: AudioPcma): T = unknown(JsonValue.from(audioPcma))
 
         /**
          * Maps an unknown variant of [AudioFormat] to a value of type [T].
@@ -223,6 +223,8 @@ private constructor(
          * An instance of [AudioFormat] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

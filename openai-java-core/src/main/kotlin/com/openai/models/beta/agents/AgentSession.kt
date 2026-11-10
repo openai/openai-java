@@ -2414,13 +2414,15 @@ private constructor(
             /** Respond to a computer-use request. */
             fun visitComputerUseApprovalRequest(
                 computerUseApprovalRequest: ComputerUseApprovalRequest
-            ): T
+            ): T = unknown(JsonValue.from(computerUseApprovalRequest))
 
             /** Run a function tool and submit its result. */
-            fun visitFunctionCall(functionCall: FunctionCall): T
+            fun visitFunctionCall(functionCall: FunctionCall): T =
+                unknown(JsonValue.from(functionCall))
 
             /** Reconnect a session environment. */
-            fun visitEnvironmentConnection(environmentConnection: EnvironmentConnection): T
+            fun visitEnvironmentConnection(environmentConnection: EnvironmentConnection): T =
+                unknown(JsonValue.from(environmentConnection))
 
             /**
              * Maps an unknown variant of [RequiredAction] to a value of type [T].
@@ -2429,6 +2431,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -2989,10 +2993,13 @@ private constructor(
                 interface Visitor<out T> {
 
                     /** A registered form awaiting the application's response. */
-                    fun visitBrowserAuthentication(browserAuthentication: BrowserAuthentication): T
+                    fun visitBrowserAuthentication(
+                        browserAuthentication: BrowserAuthentication
+                    ): T = unknown(JsonValue.from(browserAuthentication))
 
                     /** A browser origin awaiting the application's approval decision. */
-                    fun visitBrowserOriginAccess(browserOriginAccess: BrowserOriginAccess): T
+                    fun visitBrowserOriginAccess(browserOriginAccess: BrowserOriginAccess): T =
+                        unknown(JsonValue.from(browserOriginAccess))
 
                     /**
                      * Maps an unknown variant of [Request] to a value of type [T].
@@ -3001,6 +3008,8 @@ private constructor(
                      * deserialized from data that doesn't match any known variant. For example, if
                      * the SDK is on an older version than the API, then the API may respond with
                      * new variants that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */

@@ -196,8 +196,7 @@ private constructor(
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
          *
-         * Recognized variants also reach this method when their visit method is not overridden.
-         * This allows existing visitors to handle variants added by newer SDK versions.
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

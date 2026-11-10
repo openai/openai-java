@@ -465,14 +465,15 @@ private constructor(
         interface Visitor<out T> {
 
             /** The text contents of the message. */
-            fun visitText(text: String): T
+            fun visitText(text: String): T = unknown(JsonValue.from(text))
 
             /**
              * An array of content parts with a defined type. Supported options differ based on the
              * [model](https://developers.openai.com/api/docs/models) being used to generate the
              * response. Can contain text, image, or audio inputs.
              */
-            fun visitArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPart>): T
+            fun visitArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPart>): T =
+                unknown(JsonValue.from(arrayOfContentParts))
 
             /**
              * Maps an unknown variant of [Content] to a value of type [T].
@@ -481,6 +482,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

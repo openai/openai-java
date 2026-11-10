@@ -234,13 +234,15 @@ private constructor(
     interface Visitor<out T> {
 
         /** Sends the client ID without a client secret. */
-        fun visitNone(none: JsonValue): T
+        fun visitNone(none: JsonValue): T = unknown(JsonValue.from(none))
 
         /** Sends the client ID and secret using HTTP Basic authentication. */
-        fun visitClientSecretBasic(clientSecretBasic: JsonValue): T
+        fun visitClientSecretBasic(clientSecretBasic: JsonValue): T =
+            unknown(JsonValue.from(clientSecretBasic))
 
         /** Sends the client ID and secret in the token request body. */
-        fun visitClientSecretPost(clientSecretPost: JsonValue): T
+        fun visitClientSecretPost(clientSecretPost: JsonValue): T =
+            unknown(JsonValue.from(clientSecretPost))
 
         /**
          * Maps an unknown variant of [McpOAuthTokenEndpointAuth] to a value of type [T].
@@ -249,6 +251,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

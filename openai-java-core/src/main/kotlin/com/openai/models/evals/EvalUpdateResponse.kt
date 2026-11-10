@@ -807,7 +807,7 @@ private constructor(
              * - Used to define your testing criteria and
              * - What data is required when creating a run
              */
-            fun visitCustom(custom: EvalCustomDataSourceConfig): T
+            fun visitCustom(custom: EvalCustomDataSourceConfig): T = unknown(JsonValue.from(custom))
 
             /**
              * A LogsDataSourceConfig which specifies the metadata property of your logs query. This
@@ -816,11 +816,13 @@ private constructor(
              * in your evals. `item` and `sample` are both defined when using this data source
              * config.
              */
-            fun visitLogs(logs: Logs): T
+            fun visitLogs(logs: Logs): T = unknown(JsonValue.from(logs))
 
             /** Deprecated in favor of LogsDataSourceConfig. */
             @Deprecated("deprecated")
-            fun visitStoredCompletions(storedCompletions: EvalStoredCompletionsDataSourceConfig): T
+            fun visitStoredCompletions(
+                storedCompletions: EvalStoredCompletionsDataSourceConfig
+            ): T = unknown(JsonValue.from(storedCompletions))
 
             /**
              * Maps an unknown variant of [DataSourceConfig] to a value of type [T].
@@ -829,6 +831,8 @@ private constructor(
              * deserialized from data that doesn't match any known variant. For example, if the SDK
              * is on an older version than the API, then the API may respond with new variants that
              * the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -1914,22 +1918,28 @@ private constructor(
              * A LabelModelGrader object which uses a model to assign labels to each item in the
              * evaluation.
              */
-            fun visitLabelModelGrader(labelModelGrader: LabelModelGrader): T
+            fun visitLabelModelGrader(labelModelGrader: LabelModelGrader): T =
+                unknown(JsonValue.from(labelModelGrader))
 
             /**
              * A StringCheckGrader object that performs a string comparison between input and
              * reference using a specified operation.
              */
-            fun visitStringCheckGrader(stringCheckGrader: StringCheckGrader): T
+            fun visitStringCheckGrader(stringCheckGrader: StringCheckGrader): T =
+                unknown(JsonValue.from(stringCheckGrader))
 
             /** A TextSimilarityGrader object which grades text based on similarity metrics. */
-            fun visitEvalGraderTextSimilarity(evalGraderTextSimilarity: EvalGraderTextSimilarity): T
+            fun visitEvalGraderTextSimilarity(
+                evalGraderTextSimilarity: EvalGraderTextSimilarity
+            ): T = unknown(JsonValue.from(evalGraderTextSimilarity))
 
             /** A PythonGrader object that runs a python script on the input. */
-            fun visitEvalGraderPython(evalGraderPython: EvalGraderPython): T
+            fun visitEvalGraderPython(evalGraderPython: EvalGraderPython): T =
+                unknown(JsonValue.from(evalGraderPython))
 
             /** A ScoreModelGrader object that uses a model to assign a score to the input. */
-            fun visitEvalGraderScoreModel(evalGraderScoreModel: EvalGraderScoreModel): T
+            fun visitEvalGraderScoreModel(evalGraderScoreModel: EvalGraderScoreModel): T =
+                unknown(JsonValue.from(evalGraderScoreModel))
 
             /**
              * Maps an unknown variant of [TestingCriterion] to a value of type [T].
@@ -1938,6 +1948,8 @@ private constructor(
              * deserialized from data that doesn't match any known variant. For example, if the SDK
              * is on an older version than the API, then the API may respond with new variants that
              * the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

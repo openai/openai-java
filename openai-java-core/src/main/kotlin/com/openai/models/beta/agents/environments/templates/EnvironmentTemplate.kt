@@ -854,10 +854,10 @@ private constructor(
         interface Visitor<out T> {
 
             /** A project-scoped Files API reference resolved separately for each session. */
-            fun visitId(id: FileId): T
+            fun visitId(id: FileId): T = unknown(JsonValue.from(id))
 
             /** Metadata for confidential inline file contents. */
-            fun visitInline(inline: Inline): T
+            fun visitInline(inline: Inline): T = unknown(JsonValue.from(inline))
 
             /**
              * Maps an unknown variant of [File] to a value of type [T].
@@ -865,6 +865,8 @@ private constructor(
              * An instance of [File] can contain an unknown variant if it was deserialized from data
              * that doesn't match any known variant. For example, if the SDK is on an older version
              * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -2359,10 +2361,10 @@ private constructor(
         interface Visitor<out T> {
 
             /** A skill resolved afresh from the Skills API whenever a session starts. */
-            fun visitReference(reference: SkillReference): T
+            fun visitReference(reference: SkillReference): T = unknown(JsonValue.from(reference))
 
             /** Safe metadata for an inline skill archive. */
-            fun visitInline(inline: Inline): T
+            fun visitInline(inline: Inline): T = unknown(JsonValue.from(inline))
 
             /**
              * Maps an unknown variant of [Skill] to a value of type [T].
@@ -2371,6 +2373,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

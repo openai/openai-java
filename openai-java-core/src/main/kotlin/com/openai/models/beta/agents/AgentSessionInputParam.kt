@@ -317,18 +317,20 @@ private constructor(
         fun visitAgentSessionInputComputerUseApprovalRequestResult(
             agentSessionInputComputerUseApprovalRequestResult:
                 AgentSessionInputComputerUseApprovalRequestResult
-        ): T
+        ): T = unknown(JsonValue.from(agentSessionInputComputerUseApprovalRequestResult))
 
         /** Adds one or more user messages and starts a turn. */
-        fun visitAgentSessionInputMessage(agentSessionInputMessage: AgentSessionInputMessage): T
+        fun visitAgentSessionInputMessage(agentSessionInputMessage: AgentSessionInputMessage): T =
+            unknown(JsonValue.from(agentSessionInputMessage))
 
         /** Cancels the session's active turn. */
-        fun visitAgentSessionInputCancel(agentSessionInputCancel: JsonValue): T
+        fun visitAgentSessionInputCancel(agentSessionInputCancel: JsonValue): T =
+            unknown(JsonValue.from(agentSessionInputCancel))
 
         /** Submits the result of a function call. */
         fun visitAgentSessionInputToolResult(
             agentSessionInputToolResult: AgentSessionInputToolResult
-        ): T
+        ): T = unknown(JsonValue.from(agentSessionInputToolResult))
 
         /**
          * Maps an unknown variant of [AgentSessionInputParam] to a value of type [T].
@@ -337,6 +339,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
@@ -988,13 +992,15 @@ private constructor(
 
                 fun visitAgentBrowserAuthenticationSubmitParam(
                     agentBrowserAuthenticationSubmitParam: AgentBrowserAuthenticationSubmitParam
-                ): T
+                ): T = unknown(JsonValue.from(agentBrowserAuthenticationSubmitParam))
 
                 fun visitAgentBrowserAuthenticationCancelParam(
                     agentBrowserAuthenticationCancelParam: AgentBrowserAuthenticationCancelParam
-                ): T
+                ): T = unknown(JsonValue.from(agentBrowserAuthenticationCancelParam))
 
-                fun visitBrowserOriginAccess(browserOriginAccess: AgentBrowserOriginAccessParam): T
+                fun visitBrowserOriginAccess(
+                    browserOriginAccess: AgentBrowserOriginAccessParam
+                ): T = unknown(JsonValue.from(browserOriginAccess))
 
                 /**
                  * Maps an unknown variant of [Response] to a value of type [T].
@@ -1003,6 +1009,8 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */

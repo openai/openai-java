@@ -230,13 +230,13 @@ private constructor(
          * Server-side voice activity detection (VAD) which flips on when user speech is detected
          * and off after a period of silence.
          */
-        fun visitServerVad(serverVad: ServerVad): T
+        fun visitServerVad(serverVad: ServerVad): T = unknown(JsonValue.from(serverVad))
 
         /**
          * Server-side semantic turn detection which uses a model to determine when the user has
          * finished speaking.
          */
-        fun visitSemanticVad(semanticVad: SemanticVad): T
+        fun visitSemanticVad(semanticVad: SemanticVad): T = unknown(JsonValue.from(semanticVad))
 
         /**
          * Maps an unknown variant of [RealtimeTranscriptionSessionAudioInputTurnDetection] to a
@@ -246,6 +246,8 @@ private constructor(
          * unknown variant if it was deserialized from data that doesn't match any known variant.
          * For example, if the SDK is on an older version than the API, then the API may respond
          * with new variants that the SDK is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

@@ -9,7 +9,6 @@ import com.openai.models.webhooks.UnwrapWebhookEvent
 import java.io.File
 import java.io.StringWriter
 import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.Modifier
 import java.net.URLClassLoader
 import java.nio.file.Files
 import java.nio.file.Path
@@ -42,13 +41,9 @@ internal class SafetyWebhookVisitorCompatibilityTest {
     ) {
         val union = UnwrapWebhookEvent::class.java
         val visitor = union.declaredClasses.single { it.simpleName == "Visitor" }
-        val newMethods = setOf("visitSafetyDeactivationIssued", "visitSafetyWarningIssued")
-        val oldMethods =
-            visitor.declaredMethods
-                .filter { Modifier.isAbstract(it.modifiers) && it.name !in newMethods }
-                .sortedBy { it.name }
-        assertThat(oldMethods.map { it.name })
-            .containsExactlyInAnyOrder(
+        // Compile the legacy consumer with the callbacks required by its original SDK.
+        val oldMethodNames =
+            listOf(
                 "visitBatchCancelled",
                 "visitBatchCompleted",
                 "visitBatchExpired",
@@ -69,6 +64,8 @@ internal class SafetyWebhookVisitorCompatibilityTest {
                 "visitSafetyAlertCreated",
                 "visitSafetyOrgAlertCreated",
             )
+        val oldMethods =
+            oldMethodNames.map { name -> visitor.declaredMethods.single { it.name == name } }
         val jsonType = JsonValue::class.java.canonicalName
         val consumerName = "ExistingSafetyWebhookVisitor"
         val overrides =

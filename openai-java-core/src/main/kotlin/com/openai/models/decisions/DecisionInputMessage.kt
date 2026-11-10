@@ -237,16 +237,16 @@ private constructor(
     interface Visitor<out T> {
 
         /** A user message containing input text, images, or JSON. */
-        fun visitUser(user: User): T
+        fun visitUser(user: User): T = unknown(JsonValue.from(user))
 
         /** A developer message containing input text. */
-        fun visitDeveloper(developer: Developer): T
+        fun visitDeveloper(developer: Developer): T = unknown(JsonValue.from(developer))
 
         /** A system message containing input text. */
-        fun visitSystem(system: System): T
+        fun visitSystem(system: System): T = unknown(JsonValue.from(system))
 
         /** An assistant message containing output text or refusals. */
-        fun visitAssistant(assistant: Assistant): T
+        fun visitAssistant(assistant: Assistant): T = unknown(JsonValue.from(assistant))
 
         /**
          * Maps an unknown variant of [DecisionInputMessage] to a value of type [T].
@@ -255,6 +255,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
@@ -718,9 +720,9 @@ private constructor(
              */
             interface Visitor<out T> {
 
-                fun visitString(string: String): T
+                fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-                fun visitParts(parts: List<DecisionInputPart>): T
+                fun visitParts(parts: List<DecisionInputPart>): T = unknown(JsonValue.from(parts))
 
                 /**
                  * Maps an unknown variant of [Content] to a value of type [T].
@@ -729,6 +731,8 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
@@ -1339,9 +1343,9 @@ private constructor(
              */
             interface Visitor<out T> {
 
-                fun visitString(string: String): T
+                fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-                fun visitParts(parts: List<DecisionInputText>): T
+                fun visitParts(parts: List<DecisionInputText>): T = unknown(JsonValue.from(parts))
 
                 /**
                  * Maps an unknown variant of [Content] to a value of type [T].
@@ -1350,6 +1354,8 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
@@ -1960,9 +1966,9 @@ private constructor(
              */
             interface Visitor<out T> {
 
-                fun visitString(string: String): T
+                fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-                fun visitParts(parts: List<DecisionInputText>): T
+                fun visitParts(parts: List<DecisionInputText>): T = unknown(JsonValue.from(parts))
 
                 /**
                  * Maps an unknown variant of [Content] to a value of type [T].
@@ -1971,6 +1977,8 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
@@ -2621,9 +2629,10 @@ private constructor(
              */
             interface Visitor<out T> {
 
-                fun visitString(string: String): T
+                fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-                fun visitParts(parts: List<UnnamedSchemaWithArrayParent0>): T
+                fun visitParts(parts: List<UnnamedSchemaWithArrayParent0>): T =
+                    unknown(JsonValue.from(parts))
 
                 /**
                  * Maps an unknown variant of [Content] to a value of type [T].
@@ -2632,6 +2641,8 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
@@ -2847,9 +2858,10 @@ private constructor(
                  */
                 interface Visitor<out T> {
 
-                    fun visitOutputText(outputText: OutputText): T
+                    fun visitOutputText(outputText: OutputText): T =
+                        unknown(JsonValue.from(outputText))
 
-                    fun visitRefusal(refusal: Refusal): T
+                    fun visitRefusal(refusal: Refusal): T = unknown(JsonValue.from(refusal))
 
                     /**
                      * Maps an unknown variant of [UnnamedSchemaWithArrayParent0] to a value of type
@@ -2859,6 +2871,8 @@ private constructor(
                      * if it was deserialized from data that doesn't match any known variant. For
                      * example, if the SDK is on an older version than the API, then the API may
                      * respond with new variants that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */

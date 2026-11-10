@@ -191,10 +191,10 @@ private constructor(
     interface Visitor<out T> {
 
         /** Unconstrained free-form text. */
-        fun visitText(text: JsonValue): T
+        fun visitText(text: JsonValue): T = unknown(JsonValue.from(text))
 
         /** A grammar defined by the user. */
-        fun visitGrammar(grammar: Grammar): T
+        fun visitGrammar(grammar: Grammar): T = unknown(JsonValue.from(grammar))
 
         /**
          * Maps an unknown variant of [CustomToolInputFormat] to a value of type [T].
@@ -203,6 +203,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

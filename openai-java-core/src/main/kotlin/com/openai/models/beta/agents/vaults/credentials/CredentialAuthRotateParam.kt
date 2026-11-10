@@ -245,10 +245,10 @@ private constructor(
     interface Visitor<out T> {
 
         /** Rotate an OAuth credential for an HTTPS MCP destination. */
-        fun visitMcpOAuth(mcpOauth: McpOAuth): T
+        fun visitMcpOAuth(mcpOauth: McpOAuth): T = unknown(JsonValue.from(mcpOauth))
 
         /** Replace the bearer token for the credential's MCP server. */
-        fun visitStaticBearer(staticBearer: StaticBearer): T
+        fun visitStaticBearer(staticBearer: StaticBearer): T = unknown(JsonValue.from(staticBearer))
 
         /**
          * Replace the secret for an OpenAI-hosted environment credential. The environment variable
@@ -264,6 +264,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

@@ -280,15 +280,19 @@ private constructor(
     interface Visitor<out T> {
 
         /** A user message containing input text, images, or JSON. */
-        fun visitDecisionInputMessage(decisionInputMessage: DecisionInputMessage): T
+        fun visitDecisionInputMessage(decisionInputMessage: DecisionInputMessage): T =
+            unknown(JsonValue.from(decisionInputMessage))
 
-        fun visitFunctionCall(functionCall: FunctionCall): T
+        fun visitFunctionCall(functionCall: FunctionCall): T = unknown(JsonValue.from(functionCall))
 
-        fun visitFunctionCallOutput(functionCallOutput: FunctionCallOutput): T
+        fun visitFunctionCallOutput(functionCallOutput: FunctionCallOutput): T =
+            unknown(JsonValue.from(functionCallOutput))
 
-        fun visitCustomToolCall(customToolCall: CustomToolCall): T
+        fun visitCustomToolCall(customToolCall: CustomToolCall): T =
+            unknown(JsonValue.from(customToolCall))
 
-        fun visitCustomToolCallOutput(customToolCallOutput: CustomToolCallOutput): T
+        fun visitCustomToolCallOutput(customToolCallOutput: CustomToolCallOutput): T =
+            unknown(JsonValue.from(customToolCallOutput))
 
         /**
          * Maps an unknown variant of [DecisionInputItem] to a value of type [T].
@@ -297,6 +301,8 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
@@ -1409,11 +1415,11 @@ private constructor(
              */
             interface Visitor<out T> {
 
-                fun visitString(string: String): T
+                fun visitString(string: String): T = unknown(JsonValue.from(string))
 
                 fun visitUnnamedSchemaWithArrayParent1s(
                     unnamedSchemaWithArrayParent1s: List<UnnamedSchemaWithArrayParent1>
-                ): T
+                ): T = unknown(JsonValue.from(unnamedSchemaWithArrayParent1s))
 
                 /**
                  * Maps an unknown variant of [Output] to a value of type [T].
@@ -1422,6 +1428,8 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
@@ -1657,13 +1665,15 @@ private constructor(
                  */
                 interface Visitor<out T> {
 
-                    fun visitInputText(inputText: DecisionInputText): T
+                    fun visitInputText(inputText: DecisionInputText): T =
+                        unknown(JsonValue.from(inputText))
 
                     /**
                      * An image provided as a base64 data URL or a publicly accessible HTTP(S) URL.
                      * File IDs are not supported.
                      */
-                    fun visitInputImage(inputImage: DecisionInputImage): T
+                    fun visitInputImage(inputImage: DecisionInputImage): T =
+                        unknown(JsonValue.from(inputImage))
 
                     /**
                      * Maps an unknown variant of [UnnamedSchemaWithArrayParent1] to a value of type
@@ -1673,6 +1683,8 @@ private constructor(
                      * if it was deserialized from data that doesn't match any known variant. For
                      * example, if the SDK is on an older version than the API, then the API may
                      * respond with new variants that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -2948,11 +2960,11 @@ private constructor(
              */
             interface Visitor<out T> {
 
-                fun visitString(string: String): T
+                fun visitString(string: String): T = unknown(JsonValue.from(string))
 
                 fun visitUnnamedSchemaWithArrayParent2s(
                     unnamedSchemaWithArrayParent2s: List<UnnamedSchemaWithArrayParent2>
-                ): T
+                ): T = unknown(JsonValue.from(unnamedSchemaWithArrayParent2s))
 
                 /**
                  * Maps an unknown variant of [Output] to a value of type [T].
@@ -2961,6 +2973,8 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
@@ -3196,13 +3210,15 @@ private constructor(
                  */
                 interface Visitor<out T> {
 
-                    fun visitInputText(inputText: DecisionInputText): T
+                    fun visitInputText(inputText: DecisionInputText): T =
+                        unknown(JsonValue.from(inputText))
 
                     /**
                      * An image provided as a base64 data URL or a publicly accessible HTTP(S) URL.
                      * File IDs are not supported.
                      */
-                    fun visitInputImage(inputImage: DecisionInputImage): T
+                    fun visitInputImage(inputImage: DecisionInputImage): T =
+                        unknown(JsonValue.from(inputImage))
 
                     /**
                      * Maps an unknown variant of [UnnamedSchemaWithArrayParent2] to a value of type
@@ -3212,6 +3228,8 @@ private constructor(
                      * if it was deserialized from data that doesn't match any known variant. For
                      * example, if the SDK is on an older version than the API, then the API may
                      * respond with new variants that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */

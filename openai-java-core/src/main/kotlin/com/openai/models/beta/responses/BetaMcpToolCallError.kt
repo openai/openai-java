@@ -205,11 +205,13 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        fun visitMcpProtocol(mcpProtocol: McpProtocolError): T
+        fun visitMcpProtocol(mcpProtocol: McpProtocolError): T =
+            unknown(JsonValue.from(mcpProtocol))
 
-        fun visitMcpToolExecution(mcpToolExecution: McpToolExecutionError): T
+        fun visitMcpToolExecution(mcpToolExecution: McpToolExecutionError): T =
+            unknown(JsonValue.from(mcpToolExecution))
 
-        fun visitHttp(http: HttpError): T
+        fun visitHttp(http: HttpError): T = unknown(JsonValue.from(http))
 
         /**
          * Maps an unknown variant of [BetaMcpToolCallError] to a value of type [T].
@@ -218,6 +220,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

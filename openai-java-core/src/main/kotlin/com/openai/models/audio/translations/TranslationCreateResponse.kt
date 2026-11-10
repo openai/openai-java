@@ -170,9 +170,9 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        fun visitTranslation(translation: Translation): T
+        fun visitTranslation(translation: Translation): T = unknown(JsonValue.from(translation))
 
-        fun visitVerbose(verbose: TranslationVerbose): T
+        fun visitVerbose(verbose: TranslationVerbose): T = unknown(JsonValue.from(verbose))
 
         /**
          * Maps an unknown variant of [TranslationCreateResponse] to a value of type [T].
@@ -181,6 +181,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

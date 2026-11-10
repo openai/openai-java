@@ -643,10 +643,10 @@ private constructor(
         interface Visitor<out T> {
 
             /** The logs output from the code interpreter. */
-            fun visitLogs(logs: Logs): T
+            fun visitLogs(logs: Logs): T = unknown(JsonValue.from(logs))
 
             /** The image output from the code interpreter. */
-            fun visitImage(image: Image): T
+            fun visitImage(image: Image): T = unknown(JsonValue.from(image))
 
             /**
              * Maps an unknown variant of [Output] to a value of type [T].
@@ -655,6 +655,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

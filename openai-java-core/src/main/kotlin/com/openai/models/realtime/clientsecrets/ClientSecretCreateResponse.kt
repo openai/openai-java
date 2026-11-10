@@ -457,10 +457,12 @@ private constructor(
         interface Visitor<out T> {
 
             /** A Realtime session configuration object. */
-            fun visitRealtime(realtime: RealtimeSessionCreateResponse): T
+            fun visitRealtime(realtime: RealtimeSessionCreateResponse): T =
+                unknown(JsonValue.from(realtime))
 
             /** A Realtime transcription session configuration object. */
-            fun visitTranscription(transcription: RealtimeTranscriptionSessionCreateResponse): T
+            fun visitTranscription(transcription: RealtimeTranscriptionSessionCreateResponse): T =
+                unknown(JsonValue.from(transcription))
 
             /**
              * Maps an unknown variant of [Session] to a value of type [T].
@@ -469,6 +471,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

@@ -690,24 +690,28 @@ private constructor(
         interface Visitor<out T> {
 
             /** User-authored messages within a thread. */
-            fun visitChatKitUserMessage(chatkitUserMessage: ChatKitThreadUserMessageItem): T
+            fun visitChatKitUserMessage(chatkitUserMessage: ChatKitThreadUserMessageItem): T =
+                unknown(JsonValue.from(chatkitUserMessage))
 
             /** Assistant-authored message within a thread. */
             fun visitChatKitAssistantMessage(
                 chatkitAssistantMessage: ChatKitThreadAssistantMessageItem
-            ): T
+            ): T = unknown(JsonValue.from(chatkitAssistantMessage))
 
             /** Thread item that renders a widget payload. */
-            fun visitChatKitWidget(chatkitWidget: ChatKitWidgetItem): T
+            fun visitChatKitWidget(chatkitWidget: ChatKitWidgetItem): T =
+                unknown(JsonValue.from(chatkitWidget))
 
             /** Record of a client side tool invocation initiated by the assistant. */
-            fun visitChatKitClientToolCall(chatkitClientToolCall: ChatKitClientToolCall): T
+            fun visitChatKitClientToolCall(chatkitClientToolCall: ChatKitClientToolCall): T =
+                unknown(JsonValue.from(chatkitClientToolCall))
 
             /** Task emitted by the workflow to show progress and status updates. */
-            fun visitChatKitTask(chatkitTask: ChatKitTask): T
+            fun visitChatKitTask(chatkitTask: ChatKitTask): T = unknown(JsonValue.from(chatkitTask))
 
             /** Collection of workflow tasks grouped together in the thread. */
-            fun visitChatKitTaskGroup(chatkitTaskGroup: ChatKitTaskGroup): T
+            fun visitChatKitTaskGroup(chatkitTaskGroup: ChatKitTaskGroup): T =
+                unknown(JsonValue.from(chatkitTaskGroup))
 
             /**
              * Maps an unknown variant of [Data] to a value of type [T].
@@ -715,6 +719,8 @@ private constructor(
              * An instance of [Data] can contain an unknown variant if it was deserialized from data
              * that doesn't match any known variant. For example, if the SDK is on an older version
              * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

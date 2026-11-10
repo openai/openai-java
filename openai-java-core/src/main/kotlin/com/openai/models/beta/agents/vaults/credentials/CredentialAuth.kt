@@ -249,10 +249,10 @@ private constructor(
         /**
          * Public metadata for an OAuth credential; tokens and client secrets are never returned.
          */
-        fun visitMcpO(mcpO: McpOAuth): T
+        fun visitMcpO(mcpO: McpOAuth): T = unknown(JsonValue.from(mcpO))
 
         /** Metadata for a bearer-token credential, without automatic OAuth refresh. */
-        fun visitStaticBearer(staticBearer: StaticBearer): T
+        fun visitStaticBearer(staticBearer: StaticBearer): T = unknown(JsonValue.from(staticBearer))
 
         /**
          * Metadata for an HTTP credential used only in OpenAI-hosted environments. Sandbox code
@@ -270,6 +270,8 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

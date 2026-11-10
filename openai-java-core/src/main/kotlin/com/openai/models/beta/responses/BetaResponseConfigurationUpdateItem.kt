@@ -1260,14 +1260,15 @@ private constructor(
             interface Visitor<out T> {
 
                 /** Default response format. Used to generate text responses. */
-                fun visitText(text: JsonValue): T
+                fun visitText(text: JsonValue): T = unknown(JsonValue.from(text))
 
                 /**
                  * JSON Schema response format. Used to generate structured JSON responses. Learn
                  * more about
                  * [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
                  */
-                fun visitJsonSchema(jsonSchema: BetaResponseFormatTextJsonSchemaConfig): T
+                fun visitJsonSchema(jsonSchema: BetaResponseFormatTextJsonSchemaConfig): T =
+                    unknown(JsonValue.from(jsonSchema))
 
                 /**
                  * Maps an unknown variant of [Format] to a value of type [T].
@@ -1276,6 +1277,8 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */

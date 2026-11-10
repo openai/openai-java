@@ -648,13 +648,13 @@ private constructor(
         interface Visitor<out T> {
 
             /** Instruction describing how to create a file via the apply_patch tool. */
-            fun visitCreateFile(createFile: CreateFile): T
+            fun visitCreateFile(createFile: CreateFile): T = unknown(JsonValue.from(createFile))
 
             /** Instruction describing how to delete a file via the apply_patch tool. */
-            fun visitDeleteFile(deleteFile: DeleteFile): T
+            fun visitDeleteFile(deleteFile: DeleteFile): T = unknown(JsonValue.from(deleteFile))
 
             /** Instruction describing how to update a file via the apply_patch tool. */
-            fun visitUpdateFile(updateFile: UpdateFile): T
+            fun visitUpdateFile(updateFile: UpdateFile): T = unknown(JsonValue.from(updateFile))
 
             /**
              * Maps an unknown variant of [Operation] to a value of type [T].
@@ -663,6 +663,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -1803,9 +1805,9 @@ private constructor(
         /** An interface that defines how to map each variant of [Caller] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitDirect(direct: JsonValue): T
+            fun visitDirect(direct: JsonValue): T = unknown(JsonValue.from(direct))
 
-            fun visitProgram(program: Program): T
+            fun visitProgram(program: Program): T = unknown(JsonValue.from(program))
 
             /**
              * Maps an unknown variant of [Caller] to a value of type [T].
@@ -1814,6 +1816,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

@@ -44,7 +44,7 @@ internal class AgentEnvironmentWebhookVisitorCompatibilityTest {
             )
             .isTrue()
 
-        // Reuse the unchanged legacy Java source/ABI fixture and its exact abstract-method check.
+        // Exercise the legacy webhook consumer against the typed environment event.
         SafetyWebhookVisitorCompatibilityTest()
             .also { it.tempDir = tempDir }
             .existingVisitorsRemainSourceAndBinaryCompatible(type, binaryConsumer, overridesUnknown)

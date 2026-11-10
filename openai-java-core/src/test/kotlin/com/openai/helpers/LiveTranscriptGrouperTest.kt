@@ -48,8 +48,12 @@ internal class LiveTranscriptGrouperTest {
             }
         }
 
-        fun grouper(events: MutableList<Update>) =
+        fun grouper(
+            events: MutableList<Update>,
+            configure: LiveTranscriptGrouper.Builder.() -> Unit = {},
+        ) =
             LiveTranscriptGrouper.builder { events.add(it) }
+                .apply(configure)
                 .build(scheduler, LongSupplier { nanos })
 
         fun advanceAndRunTimer(millis: Long) {
@@ -556,21 +560,24 @@ internal class LiveTranscriptGrouperTest {
 
     @Test
     fun queuedTimerDeliveryCoalescesUntilCallerExecutorRunsIt() {
+        val time = ManualTime()
         val queued = ConcurrentLinkedQueue<Runnable>()
         val submitted = CountDownLatch(1)
         val events = updates()
-        LiveTranscriptGrouper.builder { events.add(it) }
-            .assistantSilence(Duration.ofMillis(300))
-            .asyncCallbackExecutor {
-                queued.add(it)
-                submitted.countDown()
+        time
+            .grouper(events) {
+                assistantSilence(Duration.ofMillis(300))
+                asyncCallbackExecutor {
+                    queued.add(it)
+                    submitted.countDown()
+                }
             }
-            .build()
             .use { grouper ->
                 grouper.push(output("a", "answer", 0, 100))
+                time.advanceAndRunTimer(time.nextDelayMillis)
                 assertThat(submitted.await(2, TimeUnit.SECONDS)).isTrue()
-                // Allow the silence deadline to expire while the caller executor has not run.
-                Thread.sleep(550)
+                // Fire the inactivity timer while the caller's drain is still queued.
+                time.advanceAndRunTimer(time.nextDelayMillis)
                 assertThat(events).isEmpty()
                 assertThat(queued).hasSize(1)
                 queued.remove().run()

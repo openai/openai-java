@@ -352,22 +352,23 @@ private constructor(
     interface Visitor<out T> {
 
         /** A function defined by the application. */
-        fun visitFunction(function: Function): T
+        fun visitFunction(function: Function): T = unknown(JsonValue.from(function))
 
         /** Discovers deferred function tools and loads them into the model context. */
-        fun visitToolSearch(toolSearch: JsonValue): T
+        fun visitToolSearch(toolSearch: JsonValue): T = unknown(JsonValue.from(toolSearch))
 
         /** Enables calling tools from model-generated code. */
-        fun visitProgrammaticToolCalling(programmaticToolCalling: ProgrammaticToolCalling): T
+        fun visitProgrammaticToolCalling(programmaticToolCalling: ProgrammaticToolCalling): T =
+            unknown(JsonValue.from(programmaticToolCalling))
 
         /** Tools provided by a remote MCP server without stored credentials. */
-        fun visitMcp(mcp: Mcp): T
+        fun visitMcp(mcp: Mcp): T = unknown(JsonValue.from(mcp))
 
         /** Web search. */
-        fun visitWebSearch(webSearch: WebSearch): T
+        fun visitWebSearch(webSearch: WebSearch): T = unknown(JsonValue.from(webSearch))
 
         /** Browser use in an OpenAI-hosted session. */
-        fun visitComputerUse(computerUse: ComputerUse): T
+        fun visitComputerUse(computerUse: ComputerUse): T = unknown(JsonValue.from(computerUse))
 
         /** Lets the agent manage its own scheduled wakeups. */
         fun visitAutomations(automations: JsonValue): T = unknown(JsonValue.from(automations))
@@ -379,6 +380,8 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

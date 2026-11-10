@@ -193,10 +193,11 @@ private constructor(
          * The default strategy. This strategy currently uses a `max_chunk_size_tokens` of `800` and
          * `chunk_overlap_tokens` of `400`.
          */
-        fun visitAuto(auto: AutoFileChunkingStrategyParam): T
+        fun visitAuto(auto: AutoFileChunkingStrategyParam): T = unknown(JsonValue.from(auto))
 
         /** Customize your own chunking strategy by setting chunk size and chunk overlap. */
-        fun visitStatic(static_: StaticFileChunkingStrategyObjectParam): T
+        fun visitStatic(static_: StaticFileChunkingStrategyObjectParam): T =
+            unknown(JsonValue.from(static_))
 
         /**
          * Maps an unknown variant of [FileChunkingStrategyParam] to a value of type [T].
@@ -205,6 +206,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

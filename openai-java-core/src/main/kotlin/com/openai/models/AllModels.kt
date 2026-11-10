@@ -190,11 +190,12 @@ private constructor(
     /** An interface that defines how to map each variant of [AllModels] to a value of type [T]. */
     interface Visitor<out T> {
 
-        fun visitString(string: String): T
+        fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-        fun visitChatModel(chatModel: ChatModel): T
+        fun visitChatModel(chatModel: ChatModel): T = unknown(JsonValue.from(chatModel))
 
-        fun visitResponsesOnlyModel(responsesOnlyModel: ResponsesOnlyModel): T
+        fun visitResponsesOnlyModel(responsesOnlyModel: ResponsesOnlyModel): T =
+            unknown(JsonValue.from(responsesOnlyModel))
 
         /**
          * Maps an unknown variant of [AllModels] to a value of type [T].
@@ -202,6 +203,8 @@ private constructor(
          * An instance of [AllModels] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

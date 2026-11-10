@@ -211,13 +211,13 @@ private constructor(
     interface Visitor<out T> {
 
         /** Text supplied by the user. */
-        fun visitInputText(inputText: InputText): T
+        fun visitInputText(inputText: InputText): T = unknown(JsonValue.from(inputText))
 
         /** An image supplied by the user. */
-        fun visitInputImage(inputImage: InputImage): T
+        fun visitInputImage(inputImage: InputImage): T = unknown(JsonValue.from(inputImage))
 
         /** Text produced by the assistant. */
-        fun visitOutputText(outputText: OutputText): T
+        fun visitOutputText(outputText: OutputText): T = unknown(JsonValue.from(outputText))
 
         /**
          * Maps an unknown variant of [AgentSessionMessageContent] to a value of type [T].
@@ -226,6 +226,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

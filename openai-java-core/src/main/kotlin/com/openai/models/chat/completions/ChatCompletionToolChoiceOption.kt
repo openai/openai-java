@@ -293,16 +293,18 @@ private constructor(
          * means the model can pick between generating a message or calling one or more tools.
          * `required` means the model must call one or more tools.
          */
-        fun visitAuto(auto: Auto): T
+        fun visitAuto(auto: Auto): T = unknown(JsonValue.from(auto))
 
         /** Constrains the tools available to the model to a pre-defined set. */
-        fun visitAllowedToolChoice(allowedToolChoice: ChatCompletionAllowedToolChoice): T
+        fun visitAllowedToolChoice(allowedToolChoice: ChatCompletionAllowedToolChoice): T =
+            unknown(JsonValue.from(allowedToolChoice))
 
         /**
          * Specifies a tool the model should use. Use to force the model to call a specific
          * function.
          */
-        fun visitNamedToolChoice(namedToolChoice: ChatCompletionNamedToolChoice): T
+        fun visitNamedToolChoice(namedToolChoice: ChatCompletionNamedToolChoice): T =
+            unknown(JsonValue.from(namedToolChoice))
 
         /**
          * Specifies a tool the model should use. Use to force the model to call a specific custom
@@ -310,7 +312,7 @@ private constructor(
          */
         fun visitNamedToolChoiceCustom(
             namedToolChoiceCustom: ChatCompletionNamedToolChoiceCustom
-        ): T
+        ): T = unknown(JsonValue.from(namedToolChoiceCustom))
 
         /**
          * Maps an unknown variant of [ChatCompletionToolChoiceOption] to a value of type [T].
@@ -319,6 +321,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

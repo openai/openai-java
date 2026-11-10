@@ -206,10 +206,11 @@ private constructor(
         /**
          * Enables tracing and sets default values for tracing configuration options. Always `auto`.
          */
-        fun visitAuto(auto: JsonValue): T
+        fun visitAuto(auto: JsonValue): T = unknown(JsonValue.from(auto))
 
         /** Granular configuration for tracing. */
-        fun visitTracingConfiguration(tracingConfiguration: TracingConfiguration): T
+        fun visitTracingConfiguration(tracingConfiguration: TracingConfiguration): T =
+            unknown(JsonValue.from(tracingConfiguration))
 
         /**
          * Maps an unknown variant of [RealtimeTracingConfig] to a value of type [T].
@@ -218,6 +219,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

@@ -4476,31 +4476,37 @@ private constructor(
                  */
                 interface Visitor<out T> {
 
-                    fun visitFunction(function: Function): T
+                    fun visitFunction(function: Function): T = unknown(JsonValue.from(function))
 
-                    fun visitMcp(mcp: Mcp): T
+                    fun visitMcp(mcp: Mcp): T = unknown(JsonValue.from(mcp))
 
-                    fun visitFileSearch(fileSearch: JsonValue): T
+                    fun visitFileSearch(fileSearch: JsonValue): T =
+                        unknown(JsonValue.from(fileSearch))
 
-                    fun visitWebSearch(webSearch: JsonValue): T
+                    fun visitWebSearch(webSearch: JsonValue): T = unknown(JsonValue.from(webSearch))
 
-                    fun visitWebSearchPreview(webSearchPreview: JsonValue): T
+                    fun visitWebSearchPreview(webSearchPreview: JsonValue): T =
+                        unknown(JsonValue.from(webSearchPreview))
 
-                    fun visitImageGeneration(imageGeneration: JsonValue): T
+                    fun visitImageGeneration(imageGeneration: JsonValue): T =
+                        unknown(JsonValue.from(imageGeneration))
 
-                    fun visitComputer(computer: JsonValue): T
+                    fun visitComputer(computer: JsonValue): T = unknown(JsonValue.from(computer))
 
-                    fun visitCodeInterpreter(codeInterpreter: JsonValue): T
+                    fun visitCodeInterpreter(codeInterpreter: JsonValue): T =
+                        unknown(JsonValue.from(codeInterpreter))
 
-                    fun visitProgrammaticToolCalling(programmaticToolCalling: JsonValue): T
+                    fun visitProgrammaticToolCalling(programmaticToolCalling: JsonValue): T =
+                        unknown(JsonValue.from(programmaticToolCalling))
 
                     /** Forces the model to call the shell tool when a tool call is required. */
-                    fun visitShell(shell: JsonValue): T
+                    fun visitShell(shell: JsonValue): T = unknown(JsonValue.from(shell))
 
-                    fun visitCustom(custom: Custom): T
+                    fun visitCustom(custom: Custom): T = unknown(JsonValue.from(custom))
 
                     /** Forces the model to call the apply_patch tool when executing a tool call. */
-                    fun visitApplyPatch(applyPatch: JsonValue): T
+                    fun visitApplyPatch(applyPatch: JsonValue): T =
+                        unknown(JsonValue.from(applyPatch))
 
                     /**
                      * Maps an unknown variant of [Tool] to a value of type [T].
@@ -4509,6 +4515,8 @@ private constructor(
                      * from data that doesn't match any known variant. For example, if the SDK is on
                      * an older version than the API, then the API may respond with new variants
                      * that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -6770,11 +6778,13 @@ private constructor(
                  */
                 interface Visitor<out T> {
 
-                    fun visitContainerAuto(containerAuto: ContainerAuto): T
+                    fun visitContainerAuto(containerAuto: ContainerAuto): T =
+                        unknown(JsonValue.from(containerAuto))
 
-                    fun visitContainerReference(containerReference: ContainerReference): T
+                    fun visitContainerReference(containerReference: ContainerReference): T =
+                        unknown(JsonValue.from(containerReference))
 
-                    fun visitLocal(local: Local): T
+                    fun visitLocal(local: Local): T = unknown(JsonValue.from(local))
 
                     /**
                      * Maps an unknown variant of [Environment] to a value of type [T].
@@ -6783,6 +6793,8 @@ private constructor(
                      * deserialized from data that doesn't match any known variant. For example, if
                      * the SDK is on an older version than the API, then the API may respond with
                      * new variants that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -7604,9 +7616,11 @@ private constructor(
                          */
                         interface Visitor<out T> {
 
-                            fun visitDisabled(disabled: JsonValue): T
+                            fun visitDisabled(disabled: JsonValue): T =
+                                unknown(JsonValue.from(disabled))
 
-                            fun visitAllowlist(allowlist: Allowlist): T
+                            fun visitAllowlist(allowlist: Allowlist): T =
+                                unknown(JsonValue.from(allowlist))
 
                             /**
                              * Maps an unknown variant of [NetworkPolicy] to a value of type [T].
@@ -7615,6 +7629,8 @@ private constructor(
                              * was deserialized from data that doesn't match any known variant. For
                              * example, if the SDK is on an older version than the API, then the API
                              * may respond with new variants that the SDK is unaware of.
+                             *
+                             * Unhandled known JSON variants reach this method as JSON values.
                              *
                              * @throws OpenAIInvalidDataException in the default implementation.
                              */
@@ -8108,9 +8124,10 @@ private constructor(
                          */
                         interface Visitor<out T> {
 
-                            fun visitReference(reference: SkillReference): T
+                            fun visitReference(reference: SkillReference): T =
+                                unknown(JsonValue.from(reference))
 
-                            fun visitInline(inline: Inline): T
+                            fun visitInline(inline: Inline): T = unknown(JsonValue.from(inline))
 
                             /**
                              * Maps an unknown variant of [Skill] to a value of type [T].
@@ -8119,6 +8136,8 @@ private constructor(
                              * deserialized from data that doesn't match any known variant. For
                              * example, if the SDK is on an older version than the API, then the API
                              * may respond with new variants that the SDK is unaware of.
+                             *
+                             * Unhandled known JSON variants reach this method as JSON values.
                              *
                              * @throws OpenAIInvalidDataException in the default implementation.
                              */

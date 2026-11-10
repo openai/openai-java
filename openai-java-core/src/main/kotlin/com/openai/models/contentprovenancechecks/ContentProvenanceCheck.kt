@@ -576,9 +576,9 @@ private constructor(
         /** An interface that defines how to map each variant of [Result] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitC2pa(c2pa: C2pa): T
+            fun visitC2pa(c2pa: C2pa): T = unknown(JsonValue.from(c2pa))
 
-            fun visitSynthID(synthID: SynthID): T
+            fun visitSynthID(synthID: SynthID): T = unknown(JsonValue.from(synthID))
 
             /**
              * Maps an unknown variant of [Result] to a value of type [T].
@@ -587,6 +587,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

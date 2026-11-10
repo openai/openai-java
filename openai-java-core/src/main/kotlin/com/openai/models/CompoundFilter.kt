@@ -426,9 +426,10 @@ private constructor(
              * A filter used to compare a specified attribute key to a given value using a defined
              * comparison operation.
              */
-            fun visitComparison(comparison: ComparisonFilter): T
+            fun visitComparison(comparison: ComparisonFilter): T =
+                unknown(JsonValue.from(comparison))
 
-            fun visitJsonValue(jsonValue: JsonValue): T
+            fun visitJsonValue(jsonValue: JsonValue): T = unknown(JsonValue.from(jsonValue))
 
             /**
              * Maps an unknown variant of [Filter] to a value of type [T].
@@ -437,6 +438,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

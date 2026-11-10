@@ -572,10 +572,12 @@ private constructor(
              * A filter used to compare a specified attribute key to a given value using a defined
              * comparison operation.
              */
-            fun visitComparisonFilter(comparisonFilter: ComparisonFilter): T
+            fun visitComparisonFilter(comparisonFilter: ComparisonFilter): T =
+                unknown(JsonValue.from(comparisonFilter))
 
             /** Combine multiple filters using `and` or `or`. */
-            fun visitCompoundFilter(compoundFilter: CompoundFilter): T
+            fun visitCompoundFilter(compoundFilter: CompoundFilter): T =
+                unknown(JsonValue.from(compoundFilter))
 
             /**
              * Maps an unknown variant of [Filters] to a value of type [T].
@@ -584,6 +586,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -1333,15 +1337,15 @@ private constructor(
                  */
                 interface Visitor<out T> {
 
-                    fun visitString(string: String): T
+                    fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-                    fun visitNumber(number: Double): T
+                    fun visitNumber(number: Double): T = unknown(JsonValue.from(number))
 
-                    fun visitBool(bool: Boolean): T
+                    fun visitBool(bool: Boolean): T = unknown(JsonValue.from(bool))
 
                     fun visitComparisonFilterValueItems(
                         comparisonFilterValueItems: List<ComparisonFilterValueItem>
-                    ): T
+                    ): T = unknown(JsonValue.from(comparisonFilterValueItems))
 
                     /**
                      * Maps an unknown variant of [Value] to a value of type [T].
@@ -1350,6 +1354,8 @@ private constructor(
                      * from data that doesn't match any known variant. For example, if the SDK is on
                      * an older version than the API, then the API may respond with new variants
                      * that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -1570,9 +1576,9 @@ private constructor(
                      */
                     interface Visitor<out T> {
 
-                        fun visitString(string: String): T
+                        fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-                        fun visitNumber(number: Double): T
+                        fun visitNumber(number: Double): T = unknown(JsonValue.from(number))
 
                         /**
                          * Maps an unknown variant of [ComparisonFilterValueItem] to a value of type
@@ -1582,6 +1588,8 @@ private constructor(
                          * if it was deserialized from data that doesn't match any known variant.
                          * For example, if the SDK is on an older version than the API, then the API
                          * may respond with new variants that the SDK is unaware of.
+                         *
+                         * Unhandled known JSON variants reach this method as JSON values.
                          *
                          * @throws OpenAIInvalidDataException in the default implementation.
                          */
@@ -2090,9 +2098,10 @@ private constructor(
                      * A filter used to compare a specified attribute key to a given value using a
                      * defined comparison operation.
                      */
-                    fun visitComparison(comparison: ComparisonFilter): T
+                    fun visitComparison(comparison: ComparisonFilter): T =
+                        unknown(JsonValue.from(comparison))
 
-                    fun visitJsonValue(jsonValue: JsonValue): T
+                    fun visitJsonValue(jsonValue: JsonValue): T = unknown(JsonValue.from(jsonValue))
 
                     /**
                      * Maps an unknown variant of [Filter] to a value of type [T].
@@ -2101,6 +2110,8 @@ private constructor(
                      * from data that doesn't match any known variant. For example, if the SDK is on
                      * an older version than the API, then the API may respond with new variants
                      * that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -2880,15 +2891,15 @@ private constructor(
                          */
                         interface Visitor<out T> {
 
-                            fun visitString(string: String): T
+                            fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-                            fun visitNumber(number: Double): T
+                            fun visitNumber(number: Double): T = unknown(JsonValue.from(number))
 
-                            fun visitBool(bool: Boolean): T
+                            fun visitBool(bool: Boolean): T = unknown(JsonValue.from(bool))
 
                             fun visitComparisonFilterValueItems(
                                 comparisonFilterValueItems: List<ComparisonFilterValueItem>
-                            ): T
+                            ): T = unknown(JsonValue.from(comparisonFilterValueItems))
 
                             /**
                              * Maps an unknown variant of [Value] to a value of type [T].
@@ -2897,6 +2908,8 @@ private constructor(
                              * deserialized from data that doesn't match any known variant. For
                              * example, if the SDK is on an older version than the API, then the API
                              * may respond with new variants that the SDK is unaware of.
+                             *
+                             * Unhandled known JSON variants reach this method as JSON values.
                              *
                              * @throws OpenAIInvalidDataException in the default implementation.
                              */
@@ -3129,9 +3142,9 @@ private constructor(
                              */
                             interface Visitor<out T> {
 
-                                fun visitString(string: String): T
+                                fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-                                fun visitNumber(number: Double): T
+                                fun visitNumber(number: Double): T = unknown(JsonValue.from(number))
 
                                 /**
                                  * Maps an unknown variant of [ComparisonFilterValueItem] to a value
@@ -3142,6 +3155,8 @@ private constructor(
                                  * known variant. For example, if the SDK is on an older version
                                  * than the API, then the API may respond with new variants that the
                                  * SDK is unaware of.
+                                 *
+                                 * Unhandled known JSON variants reach this method as JSON values.
                                  *
                                  * @throws OpenAIInvalidDataException in the default implementation.
                                  */

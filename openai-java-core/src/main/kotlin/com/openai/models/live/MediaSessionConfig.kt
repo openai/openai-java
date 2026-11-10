@@ -1274,12 +1274,12 @@ private constructor(
                  */
                 interface Visitor<out T> {
 
-                    fun visitString(string: String): T
+                    fun visitString(string: String): T = unknown(JsonValue.from(string))
 
                     /** A built-in voice available for Live speech. */
-                    fun visitBuiltIn(builtIn: BuiltInVoice): T
+                    fun visitBuiltIn(builtIn: BuiltInVoice): T = unknown(JsonValue.from(builtIn))
 
-                    fun visitCustom(custom: CustomVoice): T
+                    fun visitCustom(custom: CustomVoice): T = unknown(JsonValue.from(custom))
 
                     /**
                      * Maps an unknown variant of [Voice] to a value of type [T].
@@ -1288,6 +1288,8 @@ private constructor(
                      * from data that doesn't match any known variant. For example, if the SDK is on
                      * an older version than the API, then the API may respond with new variants
                      * that the SDK is unaware of.
+                     *
+                     * Unhandled known JSON variants reach this method as JSON values.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -1589,6 +1591,8 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

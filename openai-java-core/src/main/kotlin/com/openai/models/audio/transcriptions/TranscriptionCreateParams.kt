@@ -1835,9 +1835,9 @@ private constructor(
             /**
              * Automatically set chunking parameters based on the audio. Must be set to `"auto"`.
              */
-            fun visitAuto(auto: JsonValue): T
+            fun visitAuto(auto: JsonValue): T = unknown(JsonValue.from(auto))
 
-            fun visitVadConfig(vadConfig: VadConfig): T
+            fun visitVadConfig(vadConfig: VadConfig): T = unknown(JsonValue.from(vadConfig))
 
             /**
              * Maps an unknown variant of [ChunkingStrategy] to a value of type [T].
@@ -1846,6 +1846,8 @@ private constructor(
              * deserialized from data that doesn't match any known variant. For example, if the SDK
              * is on an older version than the API, then the API may respond with new variants that
              * the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

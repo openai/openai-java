@@ -192,10 +192,12 @@ private constructor(
     interface Visitor<out T> {
 
         /** Updates credentials sent using HTTP Basic authentication. */
-        fun visitClientSecretBasic(clientSecretBasic: ClientSecretBasic): T
+        fun visitClientSecretBasic(clientSecretBasic: ClientSecretBasic): T =
+            unknown(JsonValue.from(clientSecretBasic))
 
         /** Updates credentials sent in the token request body. */
-        fun visitClientSecretPost(clientSecretPost: ClientSecretPost): T
+        fun visitClientSecretPost(clientSecretPost: ClientSecretPost): T =
+            unknown(JsonValue.from(clientSecretPost))
 
         /**
          * Maps an unknown variant of [McpOAuthTokenEndpointAuthRotateParam] to a value of type [T].
@@ -204,6 +206,8 @@ private constructor(
          * it was deserialized from data that doesn't match any known variant. For example, if the
          * SDK is on an older version than the API, then the API may respond with new variants that
          * the SDK is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

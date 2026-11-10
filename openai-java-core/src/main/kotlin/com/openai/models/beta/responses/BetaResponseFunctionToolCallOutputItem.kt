@@ -737,10 +737,11 @@ private constructor(
         interface Visitor<out T> {
 
             /** A string of the output of the function call. */
-            fun visitString(string: String): T
+            fun visitString(string: String): T = unknown(JsonValue.from(string))
 
             /** Text, image, or file output of the function call. */
-            fun visitContentList(contentList: List<BetaFunctionAndCustomToolCallOutput>): T
+            fun visitContentList(contentList: List<BetaFunctionAndCustomToolCallOutput>): T =
+                unknown(JsonValue.from(contentList))
 
             /**
              * Maps an unknown variant of [Output] to a value of type [T].
@@ -749,6 +750,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -1011,16 +1014,19 @@ private constructor(
             interface Visitor<out T> {
 
                 /** A text input to the model. */
-                fun visitInputText(inputText: BetaResponseInputText): T
+                fun visitInputText(inputText: BetaResponseInputText): T =
+                    unknown(JsonValue.from(inputText))
 
                 /**
                  * An image input to the model. Learn about
                  * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
                  */
-                fun visitInputImage(inputImage: BetaResponseInputImage): T
+                fun visitInputImage(inputImage: BetaResponseInputImage): T =
+                    unknown(JsonValue.from(inputImage))
 
                 /** A file input to the model. */
-                fun visitInputFile(inputFile: BetaResponseInputFile): T
+                fun visitInputFile(inputFile: BetaResponseInputFile): T =
+                    unknown(JsonValue.from(inputFile))
 
                 /**
                  * Maps an unknown variant of [BetaFunctionAndCustomToolCallOutput] to a value of
@@ -1030,6 +1036,8 @@ private constructor(
                  * variant if it was deserialized from data that doesn't match any known variant.
                  * For example, if the SDK is on an older version than the API, then the API may
                  * respond with new variants that the SDK is unaware of.
+                 *
+                 * Unhandled known JSON variants reach this method as JSON values.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
@@ -1594,9 +1602,9 @@ private constructor(
         /** An interface that defines how to map each variant of [Caller] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitDirect(direct: JsonValue): T
+            fun visitDirect(direct: JsonValue): T = unknown(JsonValue.from(direct))
 
-            fun visitProgram(program: Program): T
+            fun visitProgram(program: Program): T = unknown(JsonValue.from(program))
 
             /**
              * Maps an unknown variant of [Caller] to a value of type [T].
@@ -1605,6 +1613,8 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

@@ -163,9 +163,9 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        fun visitString(string: String): T
+        fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-        fun visitBool(bool: Boolean): T
+        fun visitBool(bool: Boolean): T = unknown(JsonValue.from(bool))
 
         /**
          * Maps an unknown variant of [DecisionChoiceValue] to a value of type [T].
@@ -174,6 +174,8 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Unhandled known JSON variants reach this method as JSON values.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
