@@ -91,31 +91,6 @@ internal class ErrorDiagnosticsTransportTest {
                                 error.message(),
                             )
                         }
-                        Route.VIDEO_BLOCKING -> {
-                            val error = client.videos().retrieve("video_synthetic").error().get()
-                            listOf(
-                                error.type().orElse(null),
-                                error.param().orElse(null),
-                                error.code().toString(),
-                                error.message(),
-                            )
-                        }
-                        Route.VIDEO_ASYNC -> {
-                            val error =
-                                client
-                                    .async()
-                                    .videos()
-                                    .retrieve("video_synthetic")
-                                    .join()
-                                    .error()
-                                    .get()
-                            listOf(
-                                error.type().orElse(null),
-                                error.param().orElse(null),
-                                error.code().toString(),
-                                error.message(),
-                            )
-                        }
                     }
                 assertThat(actual)
                     .isEqualTo(
@@ -127,15 +102,11 @@ internal class ErrorDiagnosticsTransportTest {
                         )
                     )
                 assertThat(transport.requests).hasSize(1)
-                val path =
-                    if (route == Route.VIDEO_BLOCKING || route == Route.VIDEO_ASYNC)
-                        "videos/video_synthetic"
-                    else "responses/resp_synthetic"
                 val query =
                     if (route == Route.BETA_BLOCKING || route == Route.BETA_ASYNC) "?beta=true"
                     else ""
                 assertThat(transport.requests.single().url())
-                    .isEqualTo("https://example.test/v1/$path$query")
+                    .isEqualTo("https://example.test/v1/responses/resp_synthetic$query")
             } finally {
                 options.close()
             }
@@ -173,7 +144,5 @@ internal class ErrorDiagnosticsTransportTest {
         ASYNC,
         BETA_BLOCKING,
         BETA_ASYNC,
-        VIDEO_BLOCKING,
-        VIDEO_ASYNC,
     }
 }

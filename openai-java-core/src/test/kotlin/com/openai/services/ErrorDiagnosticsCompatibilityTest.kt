@@ -5,7 +5,6 @@ import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.beta.responses.BetaResponseError
 import com.openai.models.responses.ResponseError
-import com.openai.models.videos.VideoCreateError
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -28,19 +27,6 @@ internal class ErrorDiagnosticsCompatibilityTest {
     fun betaResponse() =
         verify(
             BetaResponseError::class.java,
-            { it._allProperties() },
-            {
-                it.toBuilder()
-                    .putAdditionalProperty("type", JsonValue.from("legacy"))
-                    .putAdditionalProperty("param", JsonValue.from("legacy"))
-                    .build()
-            },
-        )
-
-    @Test
-    fun video() =
-        verify(
-            VideoCreateError::class.java,
             { it._allProperties() },
             {
                 it.toBuilder()

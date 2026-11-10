@@ -42,3 +42,21 @@ openai-java-core/src/test/kotlin/com/openai/models/live/forks/ForkClientEventTes
 openai-java-core/src/test/kotlin/com/openai/models/live/forks/ForkServerEventTest.kt
 openai-java-core/src/test/kotlin/com/openai/models/live/sideband/SidebandClientEventTest.kt
 openai-java-core/src/test/kotlin/com/openai/models/live/sideband/SidebandServerEventTest.kt
+
+# Java v5 retires the Videos service. Its dedicated compile fixtures use removed types.
+openai-java-core/src/test/kotlin/com/openai/models/videos/ImageInputReferenceParamTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoCreateCharacterResponseTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoCreateErrorTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoDeleteParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoDeleteResponseTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoDownloadContentParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoGetCharacterParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoGetCharacterResponseTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoListPageResponseTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoListParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoRetrieveParamsTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/videos/VideoTest.kt
+openai-java-core/src/test/kotlin/com/openai/services/async/VideoServiceAsyncPaginationContractTest.kt
+openai-java-core/src/test/kotlin/com/openai/services/async/VideoServiceAsyncTest.kt
+openai-java-core/src/test/kotlin/com/openai/services/blocking/VideoServicePaginationContractTest.kt
+openai-java-core/src/test/kotlin/com/openai/services/blocking/VideoServiceTest.kt

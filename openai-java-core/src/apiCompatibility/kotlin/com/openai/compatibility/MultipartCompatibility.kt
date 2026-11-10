@@ -11,12 +11,6 @@ import com.openai.models.images.ImageEditParams
 import com.openai.models.skills.SkillCreateParams
 import com.openai.models.skills.versions.VersionCreateParams
 import com.openai.models.uploads.parts.PartCreateParams
-import com.openai.models.videos.VideoCreateCharacterParams
-import com.openai.models.videos.VideoCreateParams
-import com.openai.models.videos.VideoEditParams
-import com.openai.models.videos.VideoExtendParams
-import com.openai.models.videos.VideoRemixParams
-import com.openai.models.videos.VideoSeconds
 import java.io.InputStream
 
 internal object MultipartCompatibility {
@@ -65,28 +59,4 @@ internal object MultipartCompatibility {
 
     fun uploadPart(stream: InputStream): PartCreateParams =
         PartCreateParams.builder().uploadId("upload").data(stream).build()
-
-    fun videoCharacter(stream: InputStream): VideoCreateCharacterParams =
-        VideoCreateCharacterParams.builder().name("name").video(stream).build()
-
-    fun videoCreate(stream: InputStream): VideoCreateParams =
-        VideoCreateParams.builder().prompt("prompt").inputReference(stream).build()
-
-    fun videoCreateUnion(stream: InputStream): VideoCreateParams.InputReference =
-        VideoCreateParams.InputReference.ofStream(stream)
-
-    fun videoEdit(stream: InputStream): VideoEditParams =
-        VideoEditParams.builder().prompt("prompt").video(stream).build()
-
-    fun videoEditUnion(stream: InputStream): VideoEditParams.Video =
-        VideoEditParams.Video.ofInputStream(stream)
-
-    fun videoExtend(stream: InputStream): VideoExtendParams =
-        VideoExtendParams.builder().prompt("prompt").seconds(VideoSeconds._4).video(stream).build()
-
-    fun videoExtendUnion(stream: InputStream): VideoExtendParams.Video =
-        VideoExtendParams.Video.ofInputStream(stream)
-
-    fun videoRemix(): VideoRemixParams =
-        VideoRemixParams.builder().videoId("video").prompt("prompt").build()
 }
