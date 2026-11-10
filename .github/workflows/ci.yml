@@ -111,6 +111,9 @@ jobs:
           cache-provider: basic
           cache-read-only: true
 
+      - name: Test trigger compatibility fixture migration
+        run: python3 -m unittest discover -s scripts/compatibility -p test_next_trigger_predicate.py
+
       - name: Test build logic
         run: ./scripts/gradle :buildSrc:test
 

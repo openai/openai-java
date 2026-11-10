@@ -284,6 +284,18 @@ normalize_multipart_assertions \
     "${PROPOSED_COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin" \
     proposed
 
+# Stage the proposed curated callers alongside the proposed generated callers. Any
+# baseline-approved migration must operate on compiler inputs only.
+proposed_fixture_copy="${PROPOSED_COMPATIBILITY_ROOT}/${POLICY_PATH}/kotlin"
+mkdir -p "$(dirname "${proposed_fixture_copy}")"
+cp -R "${PROPOSED_FIXTURE_PATH}" "${proposed_fixture_copy}"
+PROPOSED_FIXTURE_PATH="${proposed_fixture_copy}"
+
+trigger_policy=scripts/compatibility/next_trigger_predicate.py
+if git cat-file -e "${BASE_COMMIT}:${trigger_policy}" 2>/dev/null; then
+    git show "${BASE_COMMIT}:${trigger_policy}" | python3 - "${COMPATIBILITY_ROOT}"
+fi
+
 # Keep the compatibility compilation policy in this detector rather than in the proposed build
 # file. CI also runs the detector from the base commit, so a PR cannot bypass that baseline policy
 # by weakening a source set or task in openai-java-core/build.gradle.kts.
