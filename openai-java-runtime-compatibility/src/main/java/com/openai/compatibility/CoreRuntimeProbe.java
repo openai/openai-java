@@ -8,6 +8,7 @@ import com.openai.core.http.HttpRequest;
 import com.openai.core.http.HttpResponse;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.StructuredChatCompletionCreateParams;
+import com.openai.models.live.ResponsesDelegationConfig.Tool;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -31,6 +32,15 @@ public final class CoreRuntimeProbe {
                 .build();
         if (!params.rawParams().responseFormat().isPresent()) {
             throw new IllegalStateException("Core structured-output schema generation failed");
+        }
+
+        Tool.Handler<String> handler = Tool.Handler.<String>builder()
+                .onWebSearch(value -> "web_search")
+                .onDefault(value -> "other")
+                .build();
+        if (!"web_search".equals(Tool.ofWebSearch().match(handler))
+                || !"other".equals(Tool.ofFileSearch().match(handler))) {
+            throw new IllegalStateException("Live delegation tool handler dispatch failed");
         }
 
         verifyClientCleanup();

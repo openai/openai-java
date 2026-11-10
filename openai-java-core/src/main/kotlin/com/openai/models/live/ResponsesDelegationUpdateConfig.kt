@@ -2097,46 +2097,6 @@ private constructor(
                 else -> visitor.unknown(_json)
             }
 
-        /**
-         * Maps this instance's current variant to a value of type [T] using the given [visitor].
-         *
-         * Note that this method is _not_ forwards compatible with new variants from the API, unless
-         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
-         * the SDK gracefully, consider overriding [Visitor.unknown]:
-         * ```java
-         * import com.openai.core.JsonValue;
-         * import java.util.Optional;
-         *
-         * Optional<String> result = toolChoice.accept(new ToolChoice.Visitor<Optional<String>>() {
-         *     @Override
-         *     public Optional<String> visitLiveFunctionToolChoiceParam(LiveFunctionToolChoiceParam liveFunctionToolChoiceParam) {
-         *         return Optional.of(liveFunctionToolChoiceParam.toString());
-         *     }
-         *
-         *     // ...
-         *
-         *     @Override
-         *     public Optional<String> unknown(JsonValue json) {
-         *         // Or inspect the `json`.
-         *         return Optional.empty();
-         *     }
-         * });
-         * ```
-         *
-         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
-         */
-        @Deprecated("Use match with Handler.builder(); removed in 5.0")
-        fun <T> accept(visitor: Visitor<T>): T =
-            when {
-                liveFunctionToolChoiceParam != null ->
-                    visitor.visitLiveFunctionToolChoiceParam(liveFunctionToolChoiceParam)
-                liveMcpToolChoiceParam != null ->
-                    visitor.visitLiveMcpToolChoiceParam(liveMcpToolChoiceParam)
-                liveToolChoiceEnum != null -> visitor.visitLiveToolChoiceEnum(liveToolChoiceEnum)
-                else -> visitor.unknown(_json ?: JsonValue.from(this))
-            }
-
         private var validated: Boolean = false
 
         /**
@@ -2578,35 +2538,6 @@ private constructor(
             fun ofLiveAllowedToolsChoiceParam(
                 liveAllowedToolsChoiceParam: LiveAllowedToolsChoiceParam
             ) = ToolChoice(liveAllowedToolsChoiceParam = liveAllowedToolsChoiceParam)
-        }
-
-        /**
-         * An interface that defines how to map each variant of [ToolChoice] to a value of type [T].
-         */
-        @Deprecated("Use Handler.builder(); removed in 5.0")
-        interface Visitor<out T> {
-
-            fun visitLiveToolChoiceEnum(liveToolChoiceEnum: LiveToolChoiceEnum): T
-
-            fun visitLiveFunctionToolChoiceParam(
-                liveFunctionToolChoiceParam: LiveFunctionToolChoiceParam
-            ): T
-
-            fun visitLiveMcpToolChoiceParam(liveMcpToolChoiceParam: LiveMcpToolChoiceParam): T
-
-            /**
-             * Maps an unknown variant of [ToolChoice] to a value of type [T].
-             *
-             * An instance of [ToolChoice] can contain an unknown variant if it was deserialized
-             * from data that doesn't match any known variant. For example, if the SDK is on an
-             * older version than the API, then the API may respond with new variants that the SDK
-             * is unaware of.
-             *
-             * @throws OpenAIInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown ToolChoice")
-            }
         }
 
         /**
@@ -5892,43 +5823,6 @@ private constructor(
                 else -> visitor.unknown(_json)
             }
 
-        /**
-         * Maps this instance's current variant to a value of type [T] using the given [visitor].
-         *
-         * Note that this method is _not_ forwards compatible with new variants from the API, unless
-         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
-         * the SDK gracefully, consider overriding [Visitor.unknown]:
-         * ```java
-         * import com.openai.core.JsonValue;
-         * import java.util.Optional;
-         *
-         * Optional<String> result = tool.accept(new Tool.Visitor<Optional<String>>() {
-         *     @Override
-         *     public Optional<String> visitFunction(FunctionTool function) {
-         *         return Optional.of(function.toString());
-         *     }
-         *
-         *     // ...
-         *
-         *     @Override
-         *     public Optional<String> unknown(JsonValue json) {
-         *         // Or inspect the `json`.
-         *         return Optional.empty();
-         *     }
-         * });
-         * ```
-         *
-         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
-         */
-        @Deprecated("Use match with Handler.builder(); removed in 5.0")
-        fun <T> accept(visitor: Visitor<T>): T =
-            when {
-                function != null -> visitor.visitFunction(function)
-                webSearch != null -> visitor.visitWebSearch(webSearch)
-                else -> visitor.unknown(_json ?: JsonValue.from(this))
-            }
-
         private var validated: Boolean = false
 
         /**
@@ -6288,33 +6182,6 @@ private constructor(
 
             @JvmStatic
             fun ofApplyPatch() = Tool(applyPatch = JsonValue.from(mapOf("type" to "apply_patch")))
-        }
-
-        /** An interface that defines how to map each variant of [Tool] to a value of type [T]. */
-        @Deprecated("Use Handler.builder(); removed in 5.0")
-        interface Visitor<out T> {
-
-            /**
-             * A function tool available to the Responses backend when the Live model delegates a
-             * task.
-             */
-            fun visitFunction(function: com.openai.models.live.FunctionTool): T
-
-            /** A web search tool available to the Live session’s Responses backend. */
-            fun visitWebSearch(webSearch: JsonValue): T
-
-            /**
-             * Maps an unknown variant of [Tool] to a value of type [T].
-             *
-             * An instance of [Tool] can contain an unknown variant if it was deserialized from data
-             * that doesn't match any known variant. For example, if the SDK is on an older version
-             * than the API, then the API may respond with new variants that the SDK is unaware of.
-             *
-             * @throws OpenAIInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Tool")
-            }
         }
 
         /** An interface that defines how to map each variant of [Tool] to a value of type [T]. */
