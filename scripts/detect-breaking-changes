@@ -62,6 +62,12 @@ if [ "${RESTORED_TEST_PATHS}" -eq 0 ]; then
     exit 1
 fi
 
+# Only the target commit can authorize a migration of its archived test sources.
+compaction_policy=scripts/compatibility/next_compaction_fixtures.py
+if git cat-file -e "${BASE_COMMIT}:${compaction_policy}" 2>/dev/null; then
+    git show "${BASE_COMMIT}:${compaction_policy}" | python3 -I - "${BASE_COMMIT}"
+fi
+
 PROPOSED_TEST_PATHS=0
 for PATHSPEC in "${TEST_PATHS[@]}"; do
     if [ ! -d "${PATHSPEC}" ]; then
