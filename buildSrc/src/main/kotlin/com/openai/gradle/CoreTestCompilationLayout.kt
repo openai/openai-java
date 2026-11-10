@@ -47,7 +47,10 @@ class CoreTestCompilationLayout(sources: Collection<File>) {
     }
 }
 
-class ClaimedCoreTestSourceSpec(private val files: Set<File>) :
-    Spec<FileTreeElement>, Serializable {
-    override fun isSatisfiedBy(element: FileTreeElement): Boolean = element.file in files
+class ClaimedCoreTestSourceSpec(
+    private val files: Set<File>,
+    private val includeDirectories: Boolean = false,
+) : Spec<FileTreeElement>, Serializable {
+    override fun isSatisfiedBy(element: FileTreeElement): Boolean =
+        (includeDirectories && element.isDirectory) || element.file in files
 }

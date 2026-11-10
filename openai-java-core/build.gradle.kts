@@ -1,5 +1,6 @@
 import com.openai.gradle.ClaimedCoreTestSourceSpec
 import com.openai.gradle.CoreTestCompilationLayout
+import com.openai.gradle.VerifyCoreTestSourceSets
 import com.openai.gradle.CoreCompilationClaimedSourceSpec
 import com.openai.gradle.CoreCompilationDependencies
 import com.openai.gradle.CoreCompilationShards
@@ -81,16 +82,23 @@ mainClassesDirectories.builtBy(assembleCoreClasses)
 tasks.named("classes") { dependsOn(assembleCoreClasses) }
 
 // Compile generated tests in balanced groups without changing their files or discovery.
-val testLayout = CoreTestCompilationLayout(kotlin.sourceSets.getByName("test").kotlin.files)
+val originalCoreTestSources = kotlin.sourceSets.getByName("test").kotlin.files
+val testLayout = CoreTestCompilationLayout(originalCoreTestSources)
+val coreTestSourceSetNames = mutableListOf("test")
 val coreTestSourceSet = sourceSets.test.get()
 val coreTestClassesDirectories = coreTestSourceSet.output.classesDirs as ConfigurableFileCollection
 kotlin.sourceSets.named("test") { kotlin.exclude(ClaimedCoreTestSourceSpec(testLayout.moved)) }
 
 fun registerTestCompilation(name: String, files: List<File>) = run {
     val testSources = sourceSets.create(name)
+    coreTestSourceSetNames.add(name)
     testSources.compileClasspath = coreTestSourceSet.compileClasspath
+    kotlin.sourceSets.named(name) {
+        kotlin.setSrcDirs(listOf(layout.projectDirectory.dir("src/test/kotlin")))
+        // Includes must admit directories so Gradle can traverse to the selected files.
+        kotlin.include(ClaimedCoreTestSourceSpec(files.toSet(), includeDirectories = true))
+    }
     val compileTests = tasks.named<KotlinCompile>(testSources.getCompileTaskName("kotlin")) {
-        setSource(files)
         friendPaths.setFrom(sourceSets.main.map { it.output.classesDirs })
     }
     coreTestClassesDirectories.from(compileTests.flatMap { it.destinationDirectory })
@@ -110,6 +118,16 @@ val serviceCompilations = testLayout.services.mapIndexed { index, files ->
         friendPaths.from(compileServerFixture.flatMap { it.destinationDirectory })
     }
 }
+
+val verifyCoreTestSourceSets = tasks.register<VerifyCoreTestSourceSets>("verifyCoreTestSourceSets") {
+    group = "verification"
+    originalSources.set(originalCoreTestSources.map { relativePath(it) })
+    memberships.set(coreTestSourceSetNames.associateWith { name ->
+        kotlin.sourceSets.getByName(name).kotlin.files.map { relativePath(it) }
+    })
+}
+tasks.named("testClasses") { dependsOn(verifyCoreTestSourceSets) }
+tasks.withType<Test>().configureEach { dependsOn(verifyCoreTestSourceSets) }
 
 val coreJar = tasks.named<Jar>("jar") {
     // The Kotlin plugin captures compileKotlin's destination before it is relocated above. Publish
