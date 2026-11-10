@@ -162,7 +162,8 @@ internal class CredentialAuthCreateParamRedactionTest {
                 )
         }
         assertThat(environmentVariable.secretValue()).isEqualTo(secret)
-        assertThat(environmentVariable._additionalProperties()["secret_value"]).isEqualTo(raw)
+        assertThat(environmentVariable._allProperties()["secret_value"])
+            .isEqualTo(JsonValue.from(secret))
         assertThat(params._body().auth().asEnvironmentVariable()).isEqualTo(environmentVariable)
         assertThat(mapper.writeValueAsString(auth)).isEqualTo(serialized)
         assertThat(serialized).contains(secret, "fake-additional-secret")
