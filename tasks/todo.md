@@ -219,10 +219,8 @@ proposed reduction as landed merely because its compiler change exists or CI is
 green. Publish follow-up bundles only within the separately reserved public SDK and compiler limits.
 
 On 2026-10-19 Conductor verified this chat owns Java PRs 1234–1237 and registered
-routing. One combined root `#sdk-reviews` post is edited in place as heads and
-review states change; the initial SDK review requests are complete, and the post
-records their distinct post-merge states plus the required C1 compiler review. Pending approval is a normal wait; rely on Conductor
-notifications rather than polling or duplicating review posts. No merge or queue
+routing. Pending approval is a normal wait; rely on Conductor
+notifications rather than polling. No merge or queue
 enrollment is implied by green CI.
 
 ## Consolidation checkpoint (2026-10-19)
