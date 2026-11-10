@@ -580,6 +580,7 @@ private constructor(
         }
 
         /** An enum containing [ErrorType]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             POTENTIALLY_UNINTENDED_DATA_TRANSFER,
             POTENTIALLY_UNINTENDED_DATA_ACCESS,
@@ -596,6 +597,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             POTENTIALLY_UNINTENDED_DATA_TRANSFER,
             POTENTIALLY_UNINTENDED_DATA_ACCESS,
@@ -614,6 +616,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 POTENTIALLY_UNINTENDED_DATA_TRANSFER -> Value.POTENTIALLY_UNINTENDED_DATA_TRANSFER
@@ -633,6 +636,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 POTENTIALLY_UNINTENDED_DATA_TRANSFER -> Known.POTENTIALLY_UNINTENDED_DATA_TRANSFER

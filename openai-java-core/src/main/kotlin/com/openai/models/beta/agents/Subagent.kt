@@ -596,6 +596,7 @@ private constructor(
         }
 
         /** An enum containing [Object]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             AGENT_SESSION_SUBAGENT
         }
@@ -609,6 +610,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             AGENT_SESSION_SUBAGENT,
             /** An enum member indicating that [Object] was instantiated with an unknown value. */
@@ -622,6 +624,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 AGENT_SESSION_SUBAGENT -> Value.AGENT_SESSION_SUBAGENT
@@ -637,6 +640,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 AGENT_SESSION_SUBAGENT -> Known.AGENT_SESSION_SUBAGENT
@@ -729,6 +733,7 @@ private constructor(
         }
 
         /** An enum containing [Status]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Known {
             /** The subagent remains available, including while idle between turns. */
             ACTIVE,
@@ -745,6 +750,7 @@ private constructor(
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         enum class Value {
             /** The subagent remains available, including while idle between turns. */
             ACTIVE,
@@ -761,6 +767,7 @@ private constructor(
          * Use the [known] method instead if you're certain the value is always known or if you want
          * to throw for the unknown case.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun value(): Value =
             when (this) {
                 ACTIVE -> Value.ACTIVE
@@ -777,6 +784,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if this class instance's value is a not a known
          *   member.
          */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
         fun known(): Known =
             when (this) {
                 ACTIVE -> Known.ACTIVE

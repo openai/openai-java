@@ -6183,6 +6183,9 @@ private constructor(
                                 }
 
                                 /** An enum containing [Role]'s known values. */
+                                @Deprecated(
+                                    "Use asString() for string values or _value() for raw JSON."
+                                )
                                 enum class Known {
                                     USER,
                                     ASSISTANT,
@@ -6203,6 +6206,9 @@ private constructor(
                                  * - It was constructed with an arbitrary value using the [of]
                                  *   method.
                                  */
+                                @Deprecated(
+                                    "Use asString() for string values or _value() for raw JSON."
+                                )
                                 enum class Value {
                                     USER,
                                     ASSISTANT,
@@ -6223,6 +6229,9 @@ private constructor(
                                  * Use the [known] method instead if you're certain the value is
                                  * always known or if you want to throw for the unknown case.
                                  */
+                                @Deprecated(
+                                    "Use asString() for string values or _value() for raw JSON."
+                                )
                                 fun value(): Value =
                                     when (this) {
                                         USER -> Value.USER
@@ -6242,6 +6251,9 @@ private constructor(
                                  * @throws OpenAIInvalidDataException if this class instance's value
                                  *   is a not a known member.
                                  */
+                                @Deprecated(
+                                    "Use asString() for string values or _value() for raw JSON."
+                                )
                                 fun known(): Known =
                                     when (this) {
                                         USER -> Known.USER
@@ -6343,6 +6355,9 @@ private constructor(
                                 }
 
                                 /** An enum containing [Type]'s known values. */
+                                @Deprecated(
+                                    "Use asString() for string values or _value() for raw JSON."
+                                )
                                 enum class Known {
                                     MESSAGE
                                 }
@@ -6360,6 +6375,9 @@ private constructor(
                                  * - It was constructed with an arbitrary value using the [of]
                                  *   method.
                                  */
+                                @Deprecated(
+                                    "Use asString() for string values or _value() for raw JSON."
+                                )
                                 enum class Value {
                                     MESSAGE,
                                     /**
@@ -6377,6 +6395,9 @@ private constructor(
                                  * Use the [known] method instead if you're certain the value is
                                  * always known or if you want to throw for the unknown case.
                                  */
+                                @Deprecated(
+                                    "Use asString() for string values or _value() for raw JSON."
+                                )
                                 fun value(): Value =
                                     when (this) {
                                         MESSAGE -> Value.MESSAGE
@@ -6393,6 +6414,9 @@ private constructor(
                                  * @throws OpenAIInvalidDataException if this class instance's value
                                  *   is a not a known member.
                                  */
+                                @Deprecated(
+                                    "Use asString() for string values or _value() for raw JSON."
+                                )
                                 fun known(): Known =
                                     when (this) {
                                         MESSAGE -> Known.MESSAGE

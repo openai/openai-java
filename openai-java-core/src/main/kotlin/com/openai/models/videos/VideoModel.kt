@@ -34,6 +34,7 @@ class VideoModel @JsonCreator private constructor(private val value: JsonField<S
     }
 
     /** An enum containing [VideoModel]'s known values. */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Known {
         SORA_2,
         SORA_2_PRO,
@@ -51,6 +52,7 @@ class VideoModel @JsonCreator private constructor(private val value: JsonField<S
      *   is unaware of.
      * - It was constructed with an arbitrary value using the [of] method.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Value {
         SORA_2,
         SORA_2_PRO,
@@ -68,6 +70,7 @@ class VideoModel @JsonCreator private constructor(private val value: JsonField<S
      * Use the [known] method instead if you're certain the value is always known or if you want to
      * throw for the unknown case.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun value(): Value =
         when (this) {
             SORA_2 -> Value.SORA_2
@@ -86,6 +89,7 @@ class VideoModel @JsonCreator private constructor(private val value: JsonField<S
      *
      * @throws OpenAIInvalidDataException if this class instance's value is a not a known member.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun known(): Known =
         when (this) {
             SORA_2 -> Known.SORA_2

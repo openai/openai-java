@@ -45,6 +45,7 @@ class CostQuantityUnit @JsonCreator private constructor(private val value: JsonF
     }
 
     /** An enum containing [CostQuantityUnit]'s known values. */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Known {
         TOKENS,
         _1000_TOKENS,
@@ -65,6 +66,7 @@ class CostQuantityUnit @JsonCreator private constructor(private val value: JsonF
      *   is unaware of.
      * - It was constructed with an arbitrary value using the [of] method.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Value {
         TOKENS,
         _1000_TOKENS,
@@ -87,6 +89,7 @@ class CostQuantityUnit @JsonCreator private constructor(private val value: JsonF
      * Use the [known] method instead if you're certain the value is always known or if you want to
      * throw for the unknown case.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun value(): Value =
         when (this) {
             TOKENS -> Value.TOKENS
@@ -108,6 +111,7 @@ class CostQuantityUnit @JsonCreator private constructor(private val value: JsonF
      *
      * @throws OpenAIInvalidDataException if this class instance's value is a not a known member.
      */
+    @Deprecated("Use asString() for string values or _value() for raw JSON.")
     fun known(): Known =
         when (this) {
             TOKENS -> Known.TOKENS
