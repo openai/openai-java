@@ -87,12 +87,13 @@ val testLayout = CoreTestCompilationLayout(originalCoreTestSources)
 val coreTestSourceSetNames = mutableListOf("test")
 val coreTestSourceSet = sourceSets.test.get()
 val coreTestClassesDirectories = coreTestSourceSet.output.classesDirs as ConfigurableFileCollection
+val coreTestCompileClasspath = coreTestSourceSet.compileClasspath
 kotlin.sourceSets.named("test") { kotlin.exclude(ClaimedCoreTestSourceSpec(testLayout.moved)) }
 
 fun registerTestCompilation(name: String, files: List<File>) = run {
     val testSources = sourceSets.create(name)
     coreTestSourceSetNames.add(name)
-    testSources.compileClasspath = coreTestSourceSet.compileClasspath
+    testSources.compileClasspath = coreTestCompileClasspath
     kotlin.sourceSets.named(name) {
         kotlin.setSrcDirs(listOf(layout.projectDirectory.dir("src/test/kotlin")))
         // Includes must admit directories so Gradle can traverse to the selected files.
@@ -103,25 +104,31 @@ fun registerTestCompilation(name: String, files: List<File>) = run {
     }
     coreTestClassesDirectories.from(compileTests.flatMap { it.destinationDirectory })
     tasks.named("testClasses") { dependsOn(testSources.classesTaskName) }
-    compileTests
+    testSources
 }
 
 // Compile the singleton server fixture once so every test group shares its process-wide lock.
-val compileServerFixture = registerTestCompilation("sharedFixtureTest", listOf(testLayout.fixture))
+val serverFixture = registerTestCompilation("sharedFixtureTest", listOf(testLayout.fixture))
 testLayout.models.forEachIndexed { index, files -> registerTestCompilation("modelGroup${index}Test", files) }
-val serviceCompilations = testLayout.services.mapIndexed { index, files ->
+val serviceSourceSets = testLayout.services.mapIndexed { index, files ->
     registerTestCompilation("serviceGroup${index}Test", files)
 }
-(serviceCompilations + tasks.named<KotlinCompile>("compileTestKotlin")).forEach { compilation ->
-    compilation.configure {
-        libraries.from(compileServerFixture.flatMap { it.destinationDirectory })
-        friendPaths.from(compileServerFixture.flatMap { it.destinationDirectory })
+val fixtureConsumerSourceSets = serviceSourceSets + coreTestSourceSet
+fixtureConsumerSourceSets.forEach { testSources ->
+    testSources.compileClasspath += serverFixture.output
+    tasks.named<KotlinCompile>(testSources.getCompileTaskName("kotlin")) {
+        friendPaths.from(serverFixture.output.classesDirs)
     }
 }
 
 val verifyCoreTestSourceSets = tasks.register<VerifyCoreTestSourceSets>("verifyCoreTestSourceSets") {
     group = "verification"
     originalSources.set(originalCoreTestSources.map { relativePath(it) })
+    fixtureConsumers.set(fixtureConsumerSourceSets.map { it.name })
+    fixtureClasses.set(serverFixture.output.classesDirs.files.map { it.absolutePath })
+    coreTestSourceSetNames.forEach { name ->
+        compileClasspaths.put(name, sourceSets.getByName(name).compileClasspath.files.map { it.absolutePath })
+    }
     memberships.set(coreTestSourceSetNames.associateWith { name ->
         kotlin.sourceSets.getByName(name).kotlin.files.map { relativePath(it) }
     })
