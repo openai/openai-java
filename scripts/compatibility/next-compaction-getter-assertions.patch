@@ -1,0 +1,35 @@
+--- a/openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaCompactedResponseTest.kt
++++ b/openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaCompactedResponseTest.kt
+@@ -5,2 +5,3 @@
+ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
++import com.openai.core.JsonValue
+ import com.openai.core.jsonMapper
+@@ -89,5 +90,5 @@
+         assertThat(betaCompactedResponse.createdAt()).contains(0L)
+-        assertThat(betaCompactedResponse.output().getOrNull())
++        assertThat(betaCompactedResponse.outputOrThrow().map { JsonValue.from(it) })
+             .containsExactly(
+-                BetaResponseOutputItem.ofMessage(
++                JsonValue.from(
+                     BetaResponseOutputMessage.builder()
+--- a/openai-java-core/src/test/kotlin/com/openai/models/responses/CompactedResponseTest.kt
++++ b/openai-java-core/src/test/kotlin/com/openai/models/responses/CompactedResponseTest.kt
+@@ -5,2 +5,3 @@
+ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
++import com.openai.core.JsonValue
+ import com.openai.core.jsonMapper
+@@ -82,5 +83,5 @@
+         assertThat(compactedResponse.createdAt()).contains(0L)
+-        assertThat(compactedResponse.output().getOrNull())
++        assertThat(compactedResponse.outputOrThrow().map { JsonValue.from(it) })
+             .containsExactly(
+-                ResponseOutputItem.ofMessage(
++                JsonValue.from(
+                     ResponseOutputMessage.builder()
+--- a/openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseInputItemTest.kt
++++ b/openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseInputItemTest.kt
+@@ -2526,3 +2526,3 @@
+         assertThat(responseInputItem.customToolCall()).isEmpty
+-        assertThat(responseInputItem.compactionTrigger())
++        assertThat(responseInputItem.compactionTrigger().map { JsonValue.from(it) })
+             .contains(JsonValue.from(mapOf("type" to "compaction_trigger")))
