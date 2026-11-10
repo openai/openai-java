@@ -92,6 +92,7 @@ class ApiCompatibilityParallelCompilationTest {
         fun runner(vararg tasks: String) =
             GradleRunner.create()
                 .withProjectDir(directory.toFile())
+                .withTestKitDir(directory.resolve("gradle-home").toFile())
                 .withPluginClasspath()
                 .withEnvironment(environment)
                 .withArguments(
