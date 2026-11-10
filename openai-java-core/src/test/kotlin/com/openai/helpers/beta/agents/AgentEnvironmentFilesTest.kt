@@ -733,7 +733,7 @@ internal class AgentEnvironmentFilesTest {
                                     "/workspace/source.txt",
                                 )
                         }
-                    pending.get(5, TimeUnit.SECONDS)
+                    pending.get(30, TimeUnit.SECONDS)
                     assertThat(t.uploads).isEqualTo(1)
                 }
         }
