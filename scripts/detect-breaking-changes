@@ -284,57 +284,16 @@ normalize_multipart_assertions \
     "${PROPOSED_COMPATIBILITY_ROOT}/openai-java-core/src/test/kotlin" \
     proposed
 
-# Java next moves the trigger predicate to a shared public model. Keep compiling each
-# historical caller, including its builder arguments, against the equivalent public type.
-# Baselines before the move still compile the original expressions.
-target_branch=${GITHUB_BASE_REF:-}
-if [ "${GITHUB_EVENT_NAME:-}" = merge_group ]; then
-    target_branch=$(jq -er '.merge_group.base_ref | sub("^refs/heads/"; "")' "${GITHUB_EVENT_PATH}")
-fi
-if [[ "${target_branch}" = next && -f openai-java-core/src/main/kotlin/com/openai/models/live/DecisionQuestion.kt ]]; then
-    proposed_fixture_copy="${PROPOSED_COMPATIBILITY_ROOT}/${POLICY_PATH}/kotlin"
-    mkdir -p "$(dirname "${proposed_fixture_copy}")"
-    cp -R "${PROPOSED_FIXTURE_PATH}" "${proposed_fixture_copy}"
-    PROPOSED_FIXTURE_PATH="${proposed_fixture_copy}"
+# Stage the proposed curated callers alongside the proposed generated callers. Any
+# baseline-approved migration must operate on compiler inputs only.
+proposed_fixture_copy="${PROPOSED_COMPATIBILITY_ROOT}/${POLICY_PATH}/kotlin"
+mkdir -p "$(dirname "${proposed_fixture_copy}")"
+cp -R "${PROPOSED_FIXTURE_PATH}" "${proposed_fixture_copy}"
+PROPOSED_FIXTURE_PATH="${proposed_fixture_copy}"
 
-    migrate_trigger_fixtures() {
-        local root="$1"
-        shift
-        local path
-        for path in "$@"; do
-            local fixture="${root}/com/openai/${path}"
-            if [ -f "${fixture}" ]; then
-                perl -pi -e 's/(?<![\w.])DecisionTrigger\.Decisions\.Question\.Predicate\b/com.openai.models.live.DecisionQuestion.Predicate/g' "${fixture}"
-            fi
-        done
-    }
-    for root in "${COMPATIBILITY_ROOT}" "${PROPOSED_COMPATIBILITY_ROOT}"; do
-        migrate_trigger_fixtures "${root}/openai-java-core/src/test/kotlin" \
-            models/live/LiveCreateParamsTest.kt \
-            models/live/MediaSessionConfigTest.kt \
-            models/live/SessionClosedEventTest.kt \
-            models/live/SessionConfigTest.kt \
-            models/live/SessionResourceTest.kt \
-            models/live/SessionStartEventTest.kt \
-            models/live/SessionStartedEventTest.kt \
-            models/live/SessionUpdateConfigTest.kt \
-            models/live/SessionUpdateEventTest.kt \
-            models/live/SessionUpdatedEventTest.kt \
-            models/live/sessions/SessionAcceptParamsTest.kt \
-            services/async/LiveServiceAsyncTest.kt \
-            services/async/live/SessionServiceAsyncTest.kt \
-            services/blocking/LiveServiceTest.kt \
-            services/blocking/live/SessionServiceTest.kt
-    done
-    for root in "${BASELINE_FIXTURE_PATH}" "${PROPOSED_FIXTURE_PATH}"; do
-        migrate_trigger_fixtures "${root}" \
-            models/live/ClientEventCompatibility.kt \
-            models/live/ServerEventCompatibility.kt \
-            models/live/forks/ForkClientEventCompatibility.kt \
-            models/live/forks/ForkServerEventCompatibility.kt \
-            models/live/sideband/SidebandClientEventCompatibility.kt \
-            models/live/sideband/SidebandServerEventCompatibility.kt
-    done
+trigger_policy=scripts/compatibility/next_trigger_predicate.py
+if git cat-file -e "${BASE_COMMIT}:${trigger_policy}" 2>/dev/null; then
+    git show "${BASE_COMMIT}:${trigger_policy}" | python3 - "${COMPATIBILITY_ROOT}"
 fi
 
 # Keep the compatibility compilation policy in this detector rather than in the proposed build
