@@ -466,6 +466,7 @@ private constructor(
         private val name: JsonField<String>,
         private val parameters: JsonField<Parameters>,
         private val type: JsonValue,
+        private val async: JsonField<Boolean>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -482,7 +483,8 @@ private constructor(
             @ExcludeMissing
             parameters: JsonField<Parameters> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-        ) : this(deferLoading, description, name, parameters, type, mutableMapOf())
+            @JsonProperty("async") @ExcludeMissing async: JsonField<Boolean> = JsonMissing.of(),
+        ) : this(deferLoading, description, name, parameters, type, async, mutableMapOf())
 
         /**
          * Whether the function is deferred and discovered through tool search.
@@ -530,6 +532,14 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
+         * Whether the agent continues without waiting for the function result.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun async(): Optional<Boolean> = async.getOptional("async")
+
+        /**
          * Returns the raw JSON value of [deferLoading].
          *
          * Unlike [deferLoading], this method doesn't throw if the JSON field has an unexpected
@@ -564,6 +574,13 @@ private constructor(
         @ExcludeMissing
         fun _parameters(): JsonField<Parameters> = parameters
 
+        /**
+         * Returns the raw JSON value of [async].
+         *
+         * Unlike [async], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("async") @ExcludeMissing fun _async(): JsonField<Boolean> = async
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -585,6 +602,7 @@ private constructor(
                 "name" to this.name,
                 "parameters" to this.parameters,
                 "type" to this.type,
+                "async" to this.async,
             )
 
         /**
@@ -625,6 +643,7 @@ private constructor(
             private var name: JsonField<String>? = null
             private var parameters: JsonField<Parameters>? = null
             private var type: JsonValue = JsonValue.from("function")
+            private var async: JsonField<Boolean> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -634,6 +653,7 @@ private constructor(
                 name = function.name
                 parameters = function.parameters
                 type = function.type
+                async = function.async
                 additionalProperties = function.additionalProperties.toMutableMap()
             }
 
@@ -705,6 +725,18 @@ private constructor(
              */
             fun type(type: JsonValue) = apply { this.type = type }
 
+            /** Whether the agent continues without waiting for the function result. */
+            fun async(async: Boolean) = async(JsonField.of(async))
+
+            /**
+             * Sets [Builder.async] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.async] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun async(async: JsonField<Boolean>) = apply { this.async = async }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -746,6 +778,7 @@ private constructor(
                     checkRequired("name", name),
                     checkRequired("parameters", parameters),
                     type,
+                    async,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -775,6 +808,7 @@ private constructor(
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
                 }
             }
+            async()
             validated = true
         }
 
@@ -798,7 +832,8 @@ private constructor(
                 (if (description.asKnown().isPresent) 1 else 0) +
                 (if (name.asKnown().isPresent) 1 else 0) +
                 (parameters.asKnown().getOrNull()?.validity() ?: 0) +
-                type.let { if (it == JsonValue.from("function")) 1 else 0 }
+                type.let { if (it == JsonValue.from("function")) 1 else 0 } +
+                (if (async.asKnown().isPresent) 1 else 0)
 
         /** A JSON Schema object describing the function's arguments. */
         class Parameters
@@ -944,17 +979,26 @@ private constructor(
                 name == other.name &&
                 parameters == other.parameters &&
                 type == other.type &&
+                async == other.async &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(deferLoading, description, name, parameters, type, additionalProperties)
+            Objects.hash(
+                deferLoading,
+                description,
+                name,
+                parameters,
+                type,
+                async,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Function{deferLoading=$deferLoading, description=$description, name=$name, parameters=$parameters, type=$type, additionalProperties=$additionalProperties}"
+            "Function{deferLoading=$deferLoading, description=$description, name=$name, parameters=$parameters, type=$type, async=$async, additionalProperties=$additionalProperties}"
     }
 
     /** Enables calling tools from model-generated code. */

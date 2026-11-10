@@ -1,5 +1,25 @@
 # Changelog
 
+## [4.103.0](https://github.com/openai/openai-java/compare/v4.102.0...v4.103.0) (2026-11-10)
+
+
+### Features
+
+* **api:** typed async fields for Managed Agents function tools ([#1354](https://github.com/openai/openai-java/issues/1354)) ([142ee3d](https://github.com/openai/openai-java/commit/142ee3da0d63002ebf053aa62b71bc71bf892c58))
+
+## [4.102.0](https://github.com/openai/openai-java/compare/v4.101.0...v4.102.0) (2026-11-09)
+
+
+### Features
+
+* **api:** add agent scheduling APIs ([#1345](https://github.com/openai/openai-java/issues/1345)) ([4a9af28](https://github.com/openai/openai-java/commit/4a9af287c99d541aab453acbbf1347d3e7cb7eda))
+* **api:** recognize gpt-6-rosalind in beta Responses ([#1346](https://github.com/openai/openai-java/issues/1346)) ([6570e26](https://github.com/openai/openai-java/commit/6570e2624359d86a9e82c1d81c8b55f6f7834646))
+
+
+### Documentation
+
+* consolidate AGENTS.md guidance ([#1343](https://github.com/openai/openai-java/issues/1343)) ([0e0697b](https://github.com/openai/openai-java/commit/0e0697bc7eadac50a72c3704235be8a335af29e3))
+
 ## [4.101.0](https://github.com/openai/openai-java/compare/v4.100.0...v4.101.0) (2026-11-05)
 
 

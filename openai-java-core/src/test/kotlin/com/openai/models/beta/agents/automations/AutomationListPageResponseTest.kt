@@ -69,6 +69,7 @@ internal class AutomationListPageResponseTest {
                                                         )
                                                         .build()
                                                 )
+                                                .async(true)
                                                 .build()
                                         )
                                         .compaction(
@@ -159,6 +160,7 @@ internal class AutomationListPageResponseTest {
                                                         )
                                                         .build()
                                                 )
+                                                .async(true)
                                                 .build()
                                         )
                                         .compaction(

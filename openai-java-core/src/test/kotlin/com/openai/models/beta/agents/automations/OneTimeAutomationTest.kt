@@ -64,6 +64,7 @@ internal class OneTimeAutomationTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .async(true)
                                         .build()
                                 )
                                 .compaction(
@@ -142,6 +143,7 @@ internal class OneTimeAutomationTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .async(true)
                                         .build()
                                 )
                                 .compaction(
