@@ -43,6 +43,55 @@ index b2c14648e714382afecfbfbe2bad47c1710fab14..f25e531057dec94c739ddc45cfdd58d0
 -        val content = message.content().first()
 +        val content = message.contentOrThrow().first()
          content.validate()
+diff --git a/openai-java-core/src/apiCompatibility/kotlin/com/openai/models/beta/agents/vaults/credentials/CredentialAuthRotateCompatibility.kt b/openai-java-core/src/apiCompatibility/kotlin/com/openai/models/beta/agents/vaults/credentials/CredentialAuthRotateCompatibility.kt
+index d4952d27ccf2fa60741916b9aeb76cb9fc35f57a..a7223b864e3c7281fa345b3909ab8e2e5afcfa4f 100644
+--- a/openai-java-core/src/apiCompatibility/kotlin/com/openai/models/beta/agents/vaults/credentials/CredentialAuthRotateCompatibility.kt
++++ b/openai-java-core/src/apiCompatibility/kotlin/com/openai/models/beta/agents/vaults/credentials/CredentialAuthRotateCompatibility.kt
+@@ -44,3 +44,3 @@
+             val accessorError =
+-                assertThrows<OpenAIInvalidDataException> { environmentVariable.secretValue() }
++                assertThrows<OpenAIInvalidDataException> { environmentVariable.secretValueOrThrow() }
+             val validationError =
+@@ -76,3 +76,3 @@
+ 
+-        assertThat(assertThrows<OpenAIInvalidDataException> { environmentVariable.secretValue() })
++        assertThat(assertThrows<OpenAIInvalidDataException> { environmentVariable.secretValueOrThrow() })
+             .hasMessage(expected)
+@@ -161,3 +161,3 @@
+         }
+-        assertThat(environmentVariable.secretValue()).isEqualTo(secret)
++        assertThat(environmentVariable.secretValueOrThrow()).isEqualTo(secret)
+         assertThat(environmentVariable._allProperties()["secret_value"])
+@@ -187,3 +187,3 @@
+         }
+-        assertThat(environmentVariable.secretValue()).isEqualTo(secret)
++        assertThat(environmentVariable.secretValueOrThrow()).isEqualTo(secret)
+         val mapper = jsonMapper()
+@@ -191,3 +191,3 @@
+             .isEqualTo(secret)
+-        assertThat(auth.asEnvironmentVariable().secretValue()).isEqualTo(secret)
++        assertThat(auth.asEnvironmentVariable().secretValueOrThrow()).isEqualTo(secret)
+     }
+diff --git a/openai-java-core/src/apiCompatibility/kotlin/com/openai/models/live/DecisionItemCreateEventCompatibility.kt b/openai-java-core/src/apiCompatibility/kotlin/com/openai/models/live/DecisionItemCreateEventCompatibility.kt
+index d6016db93080d42b750b30ffd9b209bafb85154b..16dafb9605e4461a789f8be19a9dc39918c0cb5c 100644
+--- a/openai-java-core/src/apiCompatibility/kotlin/com/openai/models/live/DecisionItemCreateEventCompatibility.kt
++++ b/openai-java-core/src/apiCompatibility/kotlin/com/openai/models/live/DecisionItemCreateEventCompatibility.kt
+@@ -28,3 +28,3 @@
+ 
+-        assertThat(decisionItemCreateEvent.item())
++        assertThat(decisionItemCreateEvent.itemOrThrow())
+             .isEqualTo(
+diff --git a/openai-java-core/src/apiCompatibility/kotlin/com/openai/models/live/DecisionItemCreatedEventCompatibility.kt b/openai-java-core/src/apiCompatibility/kotlin/com/openai/models/live/DecisionItemCreatedEventCompatibility.kt
+index 9b5c6ea0a066ad4b74e736f92f126bad2e1abe85..bb93a5e7a3981c4ba811a46b287965ab3d9e6c16 100644
+--- a/openai-java-core/src/apiCompatibility/kotlin/com/openai/models/live/DecisionItemCreatedEventCompatibility.kt
++++ b/openai-java-core/src/apiCompatibility/kotlin/com/openai/models/live/DecisionItemCreatedEventCompatibility.kt
+@@ -29,4 +29,4 @@
+ 
+-        assertThat(decisionItemCreatedEvent.eventId()).isEqualTo("evt_item_1")
+-        assertThat(decisionItemCreatedEvent.item())
++        assertThat(decisionItemCreatedEvent.eventIdOrThrow()).isEqualTo("evt_item_1")
++        assertThat(decisionItemCreatedEvent.itemOrThrow())
+             .isEqualTo(
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/ComparisonFilterTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/ComparisonFilterTest.kt
 index dcdf579fd6b5710c0da6193a5148660612a0c19f..893f0a8419dd81896d44fb53ef029fe2715cf327 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/ComparisonFilterTest.kt
