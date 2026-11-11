@@ -14,6 +14,15 @@ that apply this policy.
 - The framework-neutral core evolves independently from optional integrations. An integration may
   require a newer JVM only when it uses a separate, generation-specific artifact.
 
+## Kotlin callers on the next major
+
+Kotlin callers need compiler **2.3.0 or later**. Java-only applications can use the SDK on Java 8.
+The SDK build uses JDK 21 and the Kotlin 2.4.21 compiler and Gradle plugin. It compiles SDK
+sources at language and API level 2.0 and publishes JVM 8 bytecode with Kotlin metadata 2.0.0.
+The published dependencies request Kotlin stdlib and reflection 2.4.21.
+
+See the [Kotlin migration guide](next-kotlin-migration.md) for consumer build changes and tested versions.
+
 ## Admission and retirement
 
 - Do not add support for a runtime, framework, or major dependency generation with fewer than
@@ -65,7 +74,8 @@ that apply this policy.
 
 | Surface | Decision | Next action |
 | --- | --- | --- |
-| Framework-neutral artifacts | Keep Java 8 through SDK v4. | Raise the floor only in an SDK major; first prefer replacing or isolating a constraining dependency. |
+| Framework-neutral artifacts | Keep Java 8 through SDK v5. | Raise the floor only in an SDK major; first prefer replacing or isolating a constraining dependency. |
+| Default HTTP transport | Use OkHttp 4.12.1 and its Okio 3.6.0 dependency on Java 8 and newer. | Recheck JVM artifact resolution and Kotlin consumer compatibility before moving to OkHttp 5. See [the transport decision](okhttp-dependencies.md). |
 | Retired Spring Boot 2 starter | OpenAI EOL as of 2026-07-27; 4.45.0 is the final supported and published release, and its source is no longer in the active build. | Keep the final artifact and tagged source available; follow the [Spring Boot 2 EOL decision](spring-boot-2-eol.md); publish no later versions. |
 | Potential Spring Boot 4 integration | Candidate Java 17 integration using a new generation-specific artifact. | Pass the admission gate and Spring ADR before implementation. |
 
@@ -73,6 +83,43 @@ Do not publish an OpenAI Java BOM until independently versioned artifacts or dem
 resolution failures create a real alignment need. Add an optional integration only when it passes
 the lifecycle gate, solves substantial repeated work for SDK users, and has a named owner and funded
 compatibility matrix.
+
+## Jackson in v5
+
+The SDK uses Jackson 2 for request bodies, response models, and streamed events.
+The default is Jackson 2.21.8 LTS. FasterXML plans to maintain the 2.21 line
+through January 31, 2028. The SDK also tests behavior with older Jackson 2
+versions. Upstream maintenance dates apply to each Jackson release line.
+[Jackson 2.21 support window](https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.21#status)
+
+Keep the SDK's transitive Jackson 2 dependencies when your application uses Jackson 3.
+The application can continue to use its own mapper. To pass a generated model between
+mappers, exchange JSON bytes. For example, an application using Jackson 3 can read an
+SDK content part as follows:
+
+```java
+byte[] json = ObjectMappers.jsonMapper().writeValueAsBytes(contentPart);
+tools.jackson.databind.JsonNode tree = applicationMapper.readTree(json);
+```
+
+Use `ObjectMappers.jsonMapper().readValue(bytes, ChatCompletionContentPart.class)`
+for the reverse conversion. Generated union deserializers use Jackson 2 APIs. Direct
+binding of SDK models with an application's Jackson 3 mapper is unsupported.
+Migrating core to Jackson 3 would require Java 17 and change public Jackson 2 types.
+[Jackson 3 requirements and API changes](https://github.com/FasterXML/jackson/wiki/Jackson-Release-3.0)
+
+Structured Outputs use Victools 4.38.0. Applications may supply either
+`swagger-annotations` or `swagger-annotations-jakarta` when they need Swagger schema
+constraints. On Java 8 or 11, use a 2.x annotation JAR. Both 2.2.31 variants
+work on Java 8. The standard 3.0.0 annotation JAR requires Java 17.
+Models using Jackson annotations alone need neither provider. Victools
+5 uses Jackson 3 and would require a separate schema integration.
+[Victools 5.0.0 dependency versions](https://repo.maven.apache.org/maven2/com/github/victools/jsonschema-generator-parent/5.0.0/jsonschema-generator-parent-5.0.0.pom)
+
+The installed-core check exercises the Spring Boot 3.5.16 BOM with Jackson 2.21.4
+and the 4.1.2 BOM with Jackson 2.21.7 alongside application Jackson 3.1.7.
+These are dependency-management configurations. The SDK exposes no Spring starter
+for either generation.
 
 ## Supporting rationale
 

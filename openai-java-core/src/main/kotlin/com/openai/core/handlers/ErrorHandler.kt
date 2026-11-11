@@ -29,7 +29,9 @@ internal fun errorBodyHandler(jsonMapper: JsonMapper): Handler<JsonField<ErrorOb
             try {
                 val node = handler.handle(response)
                 node.get("error")?.let {
-                    jsonMapper.readerFor(jacksonTypeRef<JsonField<ErrorObject>>()).readValue(it)
+                    jsonMapper
+                        .readerFor(jacksonTypeRef<JsonField<ErrorObject>>())
+                        .readValue<JsonField<ErrorObject>>(it)
                 } ?: JsonValue.fromJsonNode(node)
             } catch (e: Exception) {
                 JsonMissing.of()

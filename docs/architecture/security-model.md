@@ -125,16 +125,10 @@ not exposed to the attestation action.
   governance, CODEOWNERS/rulesets, verified release selection, and protected
   environments—not an imagined sandbox around checked-in source.
 
-### Gradle cache accepted risk and assumptions
+### Gradle cache assumptions
 
-The Kotlin Gradle plugin used by this repository is affected by
-[CVE-2026-53914](https://github.com/advisories/GHSA-r937-wjx7-w2jp), a
-build-tooling issue not published as an SDK runtime dependency. The first
-upstream fix is Kotlin 2.4.20-Beta1; production must not move to that beta
-solely for this alert. Once a stable Kotlin release at or above 2.4.20 is
-available, upgrade both Kotlin plugin declarations in buildSrc and rerun
-publishing, Jackson compatibility, and Java 8 consumer/runtime compatibility
-coverage before removing this temporary risk acceptance.
+The build uses Kotlin Gradle plugin 2.4.21, which includes the fix for
+[CVE-2026-53914](https://github.com/advisories/GHSA-r937-wjx7-w2jp).
 
 The relevant boundary is GitHub's server-enforced cache scope: pull-request
 writes are confined to `refs/pull/<number>/merge`. They cannot write to the default-branch cache scope

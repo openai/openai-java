@@ -1,0 +1,27 @@
+plugins { id 'java' }
+
+repositories {
+    exclusiveContent {
+        forRepository { maven { url = uri(candidateRepo); metadataSources { gradleMetadata() } } }
+        filter { includeGroup 'com.openai' }
+    }
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies { implementation "com.openai:openai-java:${candidateVersion}" }
+
+tasks.register('resolve') {
+    def compile = configurations.compileClasspath
+    def runtime = configurations.runtimeClasspath
+    def compileOutput = file('compile.cp')
+    def runtimeOutput = file('runtime.cp')
+    doLast {
+        compileOutput.text = compile.asPath
+        runtimeOutput.text = runtime.asPath
+    }
+}

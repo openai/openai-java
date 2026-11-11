@@ -14,7 +14,19 @@ public class Consumer {
         if (providers != (annotated ? 1 : 0)) {
             throw new AssertionError("Unexpected number of Swagger providers: " + providers);
         }
+        if (!ObjectMappers.jsonMapper().version().toString().equals(args[1])) {
+            throw new AssertionError(
+                    "Unexpected SDK mapper: " + ObjectMappers.jsonMapper().version());
+        }
+        ClientDecoding.check();
         checkSchemas(Class.forName(annotated ? "Annotated" : "Plain"), annotated);
+    }
+
+    private static boolean hasText(JsonNode array, String value) {
+        for (JsonNode element : array) {
+            if (value.equals(element.textValue())) return true;
+        }
+        return false;
     }
 
     private static <T> void checkSchemas(Class<T> model, boolean annotated) {
@@ -45,7 +57,12 @@ public class Consumer {
             if (!root.path("additionalProperties").isBoolean()
                     || root.path("additionalProperties").booleanValue()
                     || !"string".equals(code.path("type").textValue())
-                    || properties.size() != (annotated ? 2 : 1)
+                    || !properties.path("region").path("type").isArray()
+                    || !hasText(properties.path("region").path("type"), "null")
+                    || !hasText(properties.path("region").path("type"), "string")
+                    || !hasText(root.path("required"), "region")
+                    || properties.has("ignored")
+                    || properties.size() != (annotated ? 3 : 2)
                     || (annotated
                             && (!"[A-Z]{2}".equals(code.path("pattern").textValue())
                                     || properties

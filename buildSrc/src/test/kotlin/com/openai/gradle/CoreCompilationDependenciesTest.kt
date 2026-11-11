@@ -17,7 +17,8 @@ class CoreCompilationDependenciesTest {
             publishedDependencies.filter { it.startsWith("com.fasterxml.jackson.") }
 
         assertEquals(6, jacksonDependencies.size)
-        assertTrue(jacksonDependencies.all { it.endsWith(":$jacksonPublishedVersion") })
+        assertTrue("com.fasterxml.jackson.core:jackson-annotations:2.21" in jacksonDependencies)
+        assertEquals(5, jacksonDependencies.count { it.endsWith(":$jacksonPublishedVersion") })
         assertEquals(
             publishedDependencies + CoreCompilationDependencies.SWAGGER_ANNOTATIONS,
             CoreCompilationDependencies.compilerClasspathDependencies(jacksonPublishedVersion),

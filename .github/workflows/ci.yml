@@ -48,7 +48,7 @@ jobs:
             21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
           cache-provider: basic
           cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
@@ -106,7 +106,7 @@ jobs:
             21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
           cache-provider: basic
           cache-read-only: true
@@ -138,7 +138,7 @@ jobs:
             21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
           cache-provider: basic
           cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
@@ -227,7 +227,7 @@ jobs:
             21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
           cache-provider: basic
           cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
@@ -244,6 +244,14 @@ jobs:
         env:
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
         run: ./scripts/gradle :openai-java-core:testJacksonCompatibility
+
+      - name: Test the installed core with Maven and Gradle
+        run: |
+          ./scripts/gradle -PpublishLocal :openai-java-core:publishMavenPublicationToLocalFileSystemRepository -x dokkaJavadoc
+          repo="$PWD/build/local-maven-repo"
+          versions=("$repo"/com/openai/openai-java-core/*/)
+          test "${#versions[@]}" -eq 1
+          python3 scripts/compatibility/swagger/check.py "$repo" "$(basename "${versions[0]}")" "$JAVA_HOME_8_X64" "$JAVA_HOME_21_X64"
 
   test:
     name: CI / tests / ${{ matrix.suite }}
@@ -273,7 +281,7 @@ jobs:
             21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
           cache-provider: basic
           cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
@@ -331,7 +339,7 @@ jobs:
             21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
           cache-provider: basic
           cache-read-only: true
@@ -388,7 +396,7 @@ jobs:
           java-version: 21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
           cache-provider: basic
           cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
@@ -422,6 +430,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up consumer Java
+        id: consumer-java
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
@@ -434,7 +443,7 @@ jobs:
           java-version: 21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
           cache-provider: basic
           cache-read-only: true
@@ -455,6 +464,20 @@ jobs:
           ./scripts/gradle
           :openai-java-runtime-compatibility:runRuntimeCompatibility
           -PruntimeJavaVersion="$RUNTIME_JAVA_VERSION"
+
+      - name: Check installed SDK with Kotlin consumers
+        if: matrix.java == 8
+        env:
+          JAVA8_HOME: ${{ steps.consumer-java.outputs.path }}
+        run: |
+          ./scripts/gradle -PpublishLocal -x dokkaJavadoc \
+            :openai-java-core:publishAllPublicationsToLocalFileSystemRepository \
+            :openai-java-client-okhttp:publishAllPublicationsToLocalFileSystemRepository \
+            :openai-java:publishAllPublicationsToLocalFileSystemRepository
+          repo=build/local-maven-repo
+          versions=("$repo"/com/openai/openai-java/*/)
+          test "${#versions[@]}" -eq 1
+          python3 scripts/compatibility/kotlin/check.py "$repo" "$(basename "${versions[0]}")" "$RUNNER_TEMP/kotlin-consumer" "$JAVA8_HOME"
 
   required:
     name: CI / required

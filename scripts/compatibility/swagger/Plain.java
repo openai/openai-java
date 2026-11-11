@@ -5,6 +5,8 @@ public class Plain {
     @JsonProperty("country_code")
     public String countryCode;
 
+    public java.util.Optional<String> region;
+
     @JsonIgnore
     public String ignored;
 }
