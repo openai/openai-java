@@ -1,4 +1,5 @@
 import os
+import next_realtime_session_fixture as realtime
 from pathlib import Path
 import subprocess
 import tempfile
@@ -57,3 +58,38 @@ class ArchivedGetterTest(unittest.TestCase):
             with patch.dict(os.environ, GITHUB_EVENT_NAME="pull_request", GITHUB_BASE_REF="next"):
                 with self.assertRaisesRegex(ValueError, "Unexpected archived getter fixture"):
                     migrate(base)
+
+    def test_realtime_factory_and_required_getter_migrations_compose(self):
+        root = Path(__file__).resolve().parents[2]
+        original = (root / realtime.FIXTURE).read_bytes()
+        if realtime.OLD_CALL not in original:
+            # Retrieve the exact fixture covered by this historical transition.
+            original = subprocess.check_output(
+                ["git", "-C", str(root), "cat-file", "blob", "98470dd1c7398d82494f52944db8e066909ed022"]
+            )
+        full_patch = (root / PATCH).read_bytes()
+        sections = full_patch.split(b"diff --git ")
+        header = f"a/{realtime.FIXTURE} b/{realtime.FIXTURE}\n".encode()
+        fixture_patch = b"diff --git " + next(section for section in sections if section.startswith(header))
+        with tempfile.TemporaryDirectory() as directory:
+            previous = Path.cwd()
+            os.chdir(directory)
+            self.addCleanup(os.chdir, previous)
+            subprocess.run(["git", "init", "-q"], check=True)
+            for path, data in [(MODEL, OLD.encode()), (realtime.MODEL, realtime.OLD_FACTORY),
+                               (realtime.FIXTURE, original), (Path(PATCH), fixture_patch)]:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(data)
+            subprocess.run(["git", "add", "."], check=True)
+            base = subprocess.check_output(["git", "write-tree"], text=True).strip()
+            MODEL.write_text(NEW)
+            realtime.MODEL.write_bytes(realtime.NEW_FACTORY)
+            realtime.STAGED.parent.mkdir(parents=True)
+            realtime.STAGED.write_bytes(original)
+            with patch.dict(os.environ, GITHUB_EVENT_NAME="pull_request", GITHUB_BASE_REF="next"):
+                realtime.migrate(base)
+                migrate(base)
+            expected = original.replace(realtime.OLD_CALL, realtime.NEW_CALL).replace(
+                b"assertThat(sessionUpdateEvent.session())", b"assertThat(sessionUpdateEvent.sessionOrThrow())"
+            )
+            self.assertEqual(realtime.STAGED.read_bytes(), expected)

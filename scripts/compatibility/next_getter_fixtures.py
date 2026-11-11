@@ -16,6 +16,12 @@ OLD = 'fun id(): String = id.getRequired("id")'
 NEW = 'fun idOrThrow(): String = id.getRequired("id")'
 
 
+# This exact alternate pair includes the preceding archived Realtime factory rename.
+REALTIME_FIXTURE = CORE / "src/test/kotlin/com/openai/models/realtime/SessionUpdateEventTest.kt"
+REALTIME_RENAMED = "7e77acab7057c073da87cf5b2aa1e17c6643cf09"
+REALTIME_RENAMED_GETTER = "b9385d69159a8762f4b437dd6f615a2d3b3eb271"
+
+
 def targets_next():
     event = os.environ.get("GITHUB_EVENT_NAME")
     if event == "pull_request":
@@ -47,8 +53,12 @@ def migrate(base):
         if line.startswith("diff --git "):
             path = STAGED / line.split()[2][2:]
             old, new = lines[i + 1].split()[1].split("..")
-            if (path.resolve(strict=True) != Path.cwd() / path or path.stat().st_nlink != 1
-                    or blob_id(path.read_bytes()) != old):
+            if path.resolve(strict=True) != Path.cwd() / path or path.stat().st_nlink != 1:
+                raise ValueError(f"Unexpected archived getter fixture: {path}")
+            actual = blob_id(path.read_bytes())
+            if path == STAGED / REALTIME_FIXTURE and actual == REALTIME_RENAMED:
+                new = REALTIME_RENAMED_GETTER
+            elif actual != old:
                 raise ValueError(f"Unexpected archived getter fixture: {path}")
             outputs[path] = new
     subprocess.run(["git", "apply", f"--directory={STAGED}", "-"], input=patch, check=True)
