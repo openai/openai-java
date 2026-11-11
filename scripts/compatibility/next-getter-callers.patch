@@ -3339,7 +3339,7 @@ index 93918a8d772819159ecb29cb417800810245ed02..34c3fed5bc857c00a10c943adf280153
 +        assertThat(agentSessionInProgressEvent.sessionOrThrow())
              .isEqualTo(
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionInputMessageParamTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionInputMessageParamTest.kt
-index a804396815df3eefab6b4227058c6500ce06da81..517d4e6a1d80bc313f9643ff863c7ac0c7b8f39f 100644
+index a804396815df3eefab6b4227058c6500ce06da81..7c0d719db41a454806e7922f5f688dfe203d51d1 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionInputMessageParamTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionInputMessageParamTest.kt
 @@ -19,3 +19,3 @@
@@ -3350,7 +3350,7 @@ index a804396815df3eefab6b4227058c6500ce06da81..517d4e6a1d80bc313f9643ff863c7ac0
 @@ -26,3 +26,3 @@
          assertThat(agentSessionInputMessageParam.type())
 -            .contains(AgentSessionInputMessageParam.Type.MESSAGE)
-+            .contains(com.openai.core.JsonValue.from(AgentSessionInputMessageParam.Type.MESSAGE))
++            .contains(com.openai.core.JsonValue.from("message"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionMessageTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionMessageTest.kt
 index 595884c295f66ec8796c79bab17cc98507e7a82d..4eb2aa62f636dccf2acab22fed914c31c1c7e4fd 100644
@@ -3676,7 +3676,7 @@ index 948b33d4d1df07f0eecdf99415303fd563537689..1afecfa822808ca6adc759575687c5a2
 +        assertThat(agentSessionTurnReasoningSummaryPartAddedEvent.summaryIndexOrThrow()).isEqualTo(0L)
          assertThat(agentSessionTurnReasoningSummaryPartAddedEvent.turnId()).contains("turn_id")
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionTurnReasoningSummaryPartDoneEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionTurnReasoningSummaryPartDoneEventTest.kt
-index 49e04326ae50ca5b8126cb9ee2418915dfc5cba9..c99faf74d5c62a6d0ea0f9cf11bb998f54426c66 100644
+index 49e04326ae50ca5b8126cb9ee2418915dfc5cba9..ab02012a432ea860d1dbd25fdc62ef70874432e8 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionTurnReasoningSummaryPartDoneEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionTurnReasoningSummaryPartDoneEventTest.kt
 @@ -25,12 +25,12 @@
@@ -3696,7 +3696,7 @@ index 49e04326ae50ca5b8126cb9ee2418915dfc5cba9..c99faf74d5c62a6d0ea0f9cf11bb998f
          assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.status())
 -            .contains(AgentSessionTurnReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
 -        assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.summaryIndex()).isEqualTo(0L)
-+            .contains(com.openai.core.JsonValue.from(AgentSessionTurnReasoningSummaryPartDoneEvent.Status.INCOMPLETE))
++            .contains(com.openai.core.JsonValue.from("incomplete"))
 +        assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.summaryIndexOrThrow()).isEqualTo(0L)
          assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.turnId()).contains("turn_id")
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionTurnReasoningSummaryTextDeltaEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionTurnReasoningSummaryTextDeltaEventTest.kt
@@ -3947,7 +3947,7 @@ index 361d0047131ce3130db752c39f93b0ade4a7ab95..3d80f94b8a0a05c8d31331db1c0addc4
 +        assertThat(setupCommandParam.commandOrThrow()).isEqualTo("command")
          assertThat(setupCommandParam.cwd()).contains("cwd")
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/SubagentTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/SubagentTest.kt
-index d7808b50677a0a01c52f49ddfc71ca91c9ea43a3..ffe68bedf9c58216fbc1fd15c80f05c353147941 100644
+index d7808b50677a0a01c52f49ddfc71ca91c9ea43a3..163729e1ac1d1bc9bf37d74283bb84e42a843b09 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/SubagentTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/SubagentTest.kt
 @@ -27,3 +27,3 @@
@@ -3962,7 +3962,7 @@ index d7808b50677a0a01c52f49ddfc71ca91c9ea43a3..ffe68bedf9c58216fbc1fd15c80f05c3
 -        assertThat(subagent.parentAgentId()).isEqualTo("parent_agent_id")
 -        assertThat(subagent.sessionId()).isEqualTo("session_id")
 -        assertThat(subagent.status()).isEqualTo(Subagent.Status.ACTIVE)
-+        assertThat(subagent.object_OrThrow()).isEqualTo(com.openai.core.JsonValue.from(Subagent.Object.AGENT_SESSION_SUBAGENT))
++        assertThat(subagent.object_OrThrow()).isEqualTo(com.openai.core.JsonValue.from("agent.session.subagent"))
 +        assertThat(subagent.openedAtOrThrow()).isEqualTo(0L)
 +        assertThat(subagent.parentAgentIdOrThrow()).isEqualTo("parent_agent_id")
 +        assertThat(subagent.sessionIdOrThrow()).isEqualTo("session_id")
@@ -4113,7 +4113,7 @@ index f6f3959104fa7ace3c66df1227c85fac3a8b5f06..dd50a2dda2800b00fbd3a3fd92e94697
 +        assertThat(automationInvocationSourceAutomation.automationOrThrow())
              .isEqualTo(
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/automations/invocations/AutomationInvocationTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/automations/invocations/AutomationInvocationTest.kt
-index b18d98b02d847c1f541fd0fe729558e92af8302c..5579aa8bab17e19f5a99711334b0337f997ad5a5 100644
+index b18d98b02d847c1f541fd0fe729558e92af8302c..08ad831240877265899106b00b4d150e450adc37 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/automations/invocations/AutomationInvocationTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/automations/invocations/AutomationInvocationTest.kt
 @@ -26,5 +26,5 @@
@@ -4130,7 +4130,7 @@ index b18d98b02d847c1f541fd0fe729558e92af8302c..5579aa8bab17e19f5a99711334b0337f
 -            .contains(AutomationInvocation.SkipReason.PENDING_DELIVERY)
 -        assertThat(automationInvocation.source()).isEqualTo(AutomationInvocationSource.ofManual())
 -        assertThat(automationInvocation.status()).isEqualTo(AutomationInvocation.Status.QUEUED)
-+            .contains(com.openai.core.JsonValue.from(AutomationInvocation.SkipReason.PENDING_DELIVERY))
++            .contains(com.openai.core.JsonValue.from("pending_delivery"))
 +        assertThat(automationInvocation.sourceOrThrow()).isEqualTo(AutomationInvocationSource.ofManual())
 +        assertThat(automationInvocation.statusOrThrow()).isEqualTo(AutomationInvocation.Status.QUEUED)
  
@@ -4500,7 +4500,7 @@ index c214f7d1f066daf2dfc79520ca4bcf8f6430b6d6..7d1a8db5844e3a5bc6622db2050a0d87
 +        assertThat(turnListPageResponse.hasMoreOrThrow()).isEqualTo(true)
          assertThat(turnListPageResponse.lastId()).contains("last_id")
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/sessions/turns/TurnTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/sessions/turns/TurnTest.kt
-index a4062af36cd26b104b27538d018e932006489b2c..d29f84eb9425343c6502337cfc3e8356d5161522 100644
+index a4062af36cd26b104b27538d018e932006489b2c..aca4b9bd1ab0aec749a6cf08ad6ef126125b8940 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/sessions/turns/TurnTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/beta/agents/sessions/turns/TurnTest.kt
 @@ -47,6 +47,6 @@
@@ -4517,7 +4517,7 @@ index a4062af36cd26b104b27538d018e932006489b2c..d29f84eb9425343c6502337cfc3e8356
              )
 -        assertThat(turn.object_()).isEqualTo(Turn.Object.AGENT_SESSION_TURN)
 -        assertThat(turn.sessionId()).isEqualTo("session_id")
-+        assertThat(turn.object_OrThrow()).isEqualTo(com.openai.core.JsonValue.from(Turn.Object.AGENT_SESSION_TURN))
++        assertThat(turn.object_OrThrow()).isEqualTo(com.openai.core.JsonValue.from("agent.session.turn"))
 +        assertThat(turn.sessionIdOrThrow()).isEqualTo("session_id")
          assertThat(turn.startedAt()).contains(0L)
 -        assertThat(turn.status()).isEqualTo(Turn.Status.QUEUED)
@@ -5075,7 +5075,7 @@ index 30bc31ddf3bc7bbf6db42cd03e179599e57c7e6b..f11b91d1611fbefb87c10a7443299137
 +        assertThat(betaCustomTool.nameOrThrow()).isEqualTo("name")
          assertThat(betaCustomTool.allowedCallers().getOrNull())
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaEasyInputMessageTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaEasyInputMessageTest.kt
-index 3702239a3823469fc50570cc89664377975bab20..fb36663be0283b427757882a7b9b56652f6e3df7 100644
+index 3702239a3823469fc50570cc89664377975bab20..476bb6c267c64469a4360648a808bbeb2f7cab5c 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaEasyInputMessageTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaEasyInputMessageTest.kt
 @@ -21,7 +21,7 @@
@@ -5087,7 +5087,7 @@ index 3702239a3823469fc50570cc89664377975bab20..fb36663be0283b427757882a7b9b5665
 +        assertThat(betaEasyInputMessage.roleOrThrow()).isEqualTo(BetaEasyInputMessage.Role.USER)
          assertThat(betaEasyInputMessage.phase()).contains(BetaEasyInputMessage.Phase.COMMENTARY)
 -        assertThat(betaEasyInputMessage.type()).contains(BetaEasyInputMessage.Type.MESSAGE)
-+        assertThat(betaEasyInputMessage.type()).contains(com.openai.core.JsonValue.from(BetaEasyInputMessage.Type.MESSAGE))
++        assertThat(betaEasyInputMessage.type()).contains(com.openai.core.JsonValue.from("message"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaFileSearchToolTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaFileSearchToolTest.kt
 index e06dd6f97d76a4089d525320f2568dae9d8038a8..92c9c07a8cfa56cf3f86ca38555ec7e0209ac907 100644
@@ -9531,13 +9531,13 @@ index 6e21ea61d0610a88c1e39c1c15593851c9ba0699..1349731606520d29cfc9b1265c3c5e20
 +        assertThat(conversationItemTruncatedEvent.itemIdOrThrow()).isEqualTo("item_id")
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/ConversationItemWithReferenceTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/ConversationItemWithReferenceTest.kt
-index fa9a22aac58a69640af2c8a685e950e6e63c3214..345223fc028bc5c13e4dce9c155897436719ff02 100644
+index fa9a22aac58a69640af2c8a685e950e6e63c3214..bcf8ef0898bb7484255b078779a87f8146529f42 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/realtime/ConversationItemWithReferenceTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/realtime/ConversationItemWithReferenceTest.kt
 @@ -51,3 +51,3 @@
          assertThat(conversationItemWithReference.object_())
 -            .contains(ConversationItemWithReference.Object.REALTIME_ITEM)
-+            .contains(com.openai.core.JsonValue.from(ConversationItemWithReference.Object.REALTIME_ITEM))
++            .contains(com.openai.core.JsonValue.from("realtime.item"))
          assertThat(conversationItemWithReference.output()).contains("output")
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/InputAudioBufferAppendEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/InputAudioBufferAppendEventTest.kt
 index 29dc8b01bfcc1f1b556e8af9d0f0fba5e371e8f8..1ee1c40aa0bdbbfb53292a4256396142476dbb2b 100644
@@ -9678,7 +9678,7 @@ index ea093c5af45fb849d8e1e6c7632c6a125bb1584a..b52e82e0f7e6a972ea7f7f70e8a09b6e
 +        assertThat(rateLimitsUpdatedEvent.rateLimitsOrThrow())
              .containsExactly(
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemAssistantMessageTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemAssistantMessageTest.kt
-index 029c2b0b98df3183ad5e9a8fcf2e8cea1fd6b17b..467cdc959dac1fbdea1157262489f2a6ef8afcac 100644
+index 029c2b0b98df3183ad5e9a8fcf2e8cea1fd6b17b..19842c9c9f7a6212000cf7c54386e5bbab55e204 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemAssistantMessageTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemAssistantMessageTest.kt
 @@ -28,3 +28,3 @@
@@ -9689,10 +9689,10 @@ index 029c2b0b98df3183ad5e9a8fcf2e8cea1fd6b17b..467cdc959dac1fbdea1157262489f2a6
 @@ -39,3 +39,3 @@
          assertThat(realtimeConversationItemAssistantMessage.object_())
 -            .contains(RealtimeConversationItemAssistantMessage.Object.REALTIME_ITEM)
-+            .contains(com.openai.core.JsonValue.from(RealtimeConversationItemAssistantMessage.Object.REALTIME_ITEM))
++            .contains(com.openai.core.JsonValue.from("realtime.item"))
          assertThat(realtimeConversationItemAssistantMessage.status())
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemFunctionCallOutputTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemFunctionCallOutputTest.kt
-index 113c05c1ad7de32adc601826f36c30a93e35004e..c3ceebdc8a93d071d62396aa5efca779ed39d93d 100644
+index 113c05c1ad7de32adc601826f36c30a93e35004e..d29b5a836dcae524ef795f5ff106ab6b7080ec3c 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemFunctionCallOutputTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemFunctionCallOutputTest.kt
 @@ -22,7 +22,7 @@
@@ -9704,10 +9704,10 @@ index 113c05c1ad7de32adc601826f36c30a93e35004e..c3ceebdc8a93d071d62396aa5efca779
          assertThat(realtimeConversationItemFunctionCallOutput.id()).contains("id")
          assertThat(realtimeConversationItemFunctionCallOutput.object_())
 -            .contains(RealtimeConversationItemFunctionCallOutput.Object.REALTIME_ITEM)
-+            .contains(com.openai.core.JsonValue.from(RealtimeConversationItemFunctionCallOutput.Object.REALTIME_ITEM))
++            .contains(com.openai.core.JsonValue.from("realtime.item"))
          assertThat(realtimeConversationItemFunctionCallOutput.status())
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemFunctionCallTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemFunctionCallTest.kt
-index ed94a66827ce7d8f78d28112439521a495894514..810a056a43fe13e220a31268e053116a1415d619 100644
+index ed94a66827ce7d8f78d28112439521a495894514..707fdfc638302aca23f78e7160d7781766dd9741 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemFunctionCallTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemFunctionCallTest.kt
 @@ -23,4 +23,4 @@
@@ -9720,10 +9720,10 @@ index ed94a66827ce7d8f78d28112439521a495894514..810a056a43fe13e220a31268e053116a
 @@ -28,3 +28,3 @@
          assertThat(realtimeConversationItemFunctionCall.object_())
 -            .contains(RealtimeConversationItemFunctionCall.Object.REALTIME_ITEM)
-+            .contains(com.openai.core.JsonValue.from(RealtimeConversationItemFunctionCall.Object.REALTIME_ITEM))
++            .contains(com.openai.core.JsonValue.from("realtime.item"))
          assertThat(realtimeConversationItemFunctionCall.status())
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemSystemMessageTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemSystemMessageTest.kt
-index 1e3aa40db537737a1fa8e082ffadd644b346c3a5..4f65a07f64bfd101e66b44a6b03662f67b995334 100644
+index 1e3aa40db537737a1fa8e082ffadd644b346c3a5..7d9c873f47e9a4a61a2809ee0d06e0b20b1f34ad 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemSystemMessageTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemSystemMessageTest.kt
 @@ -26,3 +26,3 @@
@@ -9734,10 +9734,10 @@ index 1e3aa40db537737a1fa8e082ffadd644b346c3a5..4f65a07f64bfd101e66b44a6b03662f6
 @@ -35,3 +35,3 @@
          assertThat(realtimeConversationItemSystemMessage.object_())
 -            .contains(RealtimeConversationItemSystemMessage.Object.REALTIME_ITEM)
-+            .contains(com.openai.core.JsonValue.from(RealtimeConversationItemSystemMessage.Object.REALTIME_ITEM))
++            .contains(com.openai.core.JsonValue.from("realtime.item"))
          assertThat(realtimeConversationItemSystemMessage.status())
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemUserMessageTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemUserMessageTest.kt
-index 0e07764cc19e76bdc510876505acbddb16f7fd48..8551f94bb2243e29ff9f8f5d9c6a766a0d751540 100644
+index 0e07764cc19e76bdc510876505acbddb16f7fd48..cd38f47b6420fd390fdbefc62890fca36b7b5afc 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemUserMessageTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeConversationItemUserMessageTest.kt
 @@ -30,3 +30,3 @@
@@ -9748,7 +9748,7 @@ index 0e07764cc19e76bdc510876505acbddb16f7fd48..8551f94bb2243e29ff9f8f5d9c6a766a
 @@ -43,3 +43,3 @@
          assertThat(realtimeConversationItemUserMessage.object_())
 -            .contains(RealtimeConversationItemUserMessage.Object.REALTIME_ITEM)
-+            .contains(com.openai.core.JsonValue.from(RealtimeConversationItemUserMessage.Object.REALTIME_ITEM))
++            .contains(com.openai.core.JsonValue.from("realtime.item"))
          assertThat(realtimeConversationItemUserMessage.status())
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeErrorEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeErrorEventTest.kt
 index b43ba539919f29e945280b3fb55c19beb202085c..1d0b22116deca2044721455174a492898f57935a 100644
@@ -9776,13 +9776,13 @@ index 4cd068a1d7e10926d9d9690ced7189351224fef0..e112b55296324787d6dbdcfd7e91e05e
 +        assertThat(realtimeError.typeOrThrow()).isEqualTo("type")
          assertThat(realtimeError.code()).contains("code")
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeFunctionToolTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeFunctionToolTest.kt
-index b3496ba09839a2a243fb9c39e04b9150cb7c61e4..ad85838e133e61ef2a2e36729b8f3465eab2c5f3 100644
+index b3496ba09839a2a243fb9c39e04b9150cb7c61e4..b8ff42711ead2d9a2e52a9cd3f66f584c4893751 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeFunctionToolTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeFunctionToolTest.kt
 @@ -26,3 +26,3 @@
              .isEqualTo(JsonValue.from(mapOf<String, Any>()))
 -        assertThat(realtimeFunctionTool.type()).contains(RealtimeFunctionTool.Type.FUNCTION)
-+        assertThat(realtimeFunctionTool.type()).contains(com.openai.core.JsonValue.from(RealtimeFunctionTool.Type.FUNCTION))
++        assertThat(realtimeFunctionTool.type()).contains(com.openai.core.JsonValue.from("function"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeMcpApprovalRequestTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeMcpApprovalRequestTest.kt
 index 9ccd6329c64c89ac3a236ed52bd022aebde2f7e5..a47feb17985a0955de671a809ab61b859c247749 100644
@@ -9879,13 +9879,13 @@ index f19ca776a2360dd01b5c1814e18c25b6647b2008..b978d40b429c596bd371bb1c5e6bbd71
 +        assertThat(realtimeResponseCreateMcpTool.serverLabelOrThrow()).isEqualTo("server_label")
          assertThat(realtimeResponseCreateMcpTool.allowedCallers().getOrNull())
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeResponseTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeResponseTest.kt
-index 7715d39ad372d2eba12797901e4d59eeb2eadfb2..b89bb9c68d92c842ae772a09c8bef936bf914460 100644
+index 7715d39ad372d2eba12797901e4d59eeb2eadfb2..8e36bc045ac2bd573dc870d4b33c6f93d27a17c4 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeResponseTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeResponseTest.kt
 @@ -126,3 +126,3 @@
              )
 -        assertThat(realtimeResponse.object_()).contains(RealtimeResponse.Object.REALTIME_RESPONSE)
-+        assertThat(realtimeResponse.object_()).contains(com.openai.core.JsonValue.from(RealtimeResponse.Object.REALTIME_RESPONSE))
++        assertThat(realtimeResponse.object_()).contains(com.openai.core.JsonValue.from("realtime.response"))
          assertThat(realtimeResponse.output().getOrNull())
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeTranslationClientSecretCreateRequestTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeTranslationClientSecretCreateRequestTest.kt
 index e2737d957a2a890d95e4f2e02c32fc1aa7a3b165..2c1c48d8de72ddf4a30c0533ebc0f9e3d052c8c1 100644
@@ -9933,7 +9933,7 @@ index e05a8c75ccbd7d0b99113b33bcdeb04f57761e6a..46958aa219a646c42d8727f7068e5dbe
 +        assertThat(realtimeTranslationInputTranscriptDeltaEvent.eventIdOrThrow()).isEqualTo("event_id")
          assertThat(realtimeTranslationInputTranscriptDeltaEvent.elapsedMs()).contains(0L)
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeTranslationOutputAudioDeltaEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeTranslationOutputAudioDeltaEventTest.kt
-index f66175b343d8adb26d62578f584da51c39dd6e0b..9780bc115a924e2bb1c5ecf950badf88355d48e0 100644
+index f66175b343d8adb26d62578f584da51c39dd6e0b..655da03cd005a12b4d14649cad0384595b551a02 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeTranslationOutputAudioDeltaEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeTranslationOutputAudioDeltaEventTest.kt
 @@ -23,4 +23,4 @@
@@ -9946,7 +9946,7 @@ index f66175b343d8adb26d62578f584da51c39dd6e0b..9780bc115a924e2bb1c5ecf950badf88
 @@ -28,3 +28,3 @@
          assertThat(realtimeTranslationOutputAudioDeltaEvent.format())
 -            .contains(RealtimeTranslationOutputAudioDeltaEvent.Format.PCM16)
-+            .contains(com.openai.core.JsonValue.from(RealtimeTranslationOutputAudioDeltaEvent.Format.PCM16))
++            .contains(com.openai.core.JsonValue.from("pcm16"))
          assertThat(realtimeTranslationOutputAudioDeltaEvent.sampleRate()).contains(0L)
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeTranslationOutputTranscriptDeltaEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/realtime/RealtimeTranslationOutputTranscriptDeltaEventTest.kt
 index 0769a0525827eb2dde86f463ae1acf439b3a9de3..5d51c838fc41dbd744c11b4429861c560679ac7a 100644
@@ -10530,7 +10530,7 @@ index 0c74292b0b297d8b8ccc275ba145a6c45f0888e9..741a8f09d7b375eed7db35481d382ef0
 +        assertThat(customTool.nameOrThrow()).isEqualTo("name")
          assertThat(customTool.allowedCallers().getOrNull())
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/responses/EasyInputMessageTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/responses/EasyInputMessageTest.kt
-index 2997aefda8e7f34e9f9ff544aba0a2cfd33a6261..04080062633d2e0fa121bf338b2a18bdecb7ffd5 100644
+index 2997aefda8e7f34e9f9ff544aba0a2cfd33a6261..b214c632a370ad5b79db1225fe41f4506106f6e5 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/responses/EasyInputMessageTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/responses/EasyInputMessageTest.kt
 @@ -21,7 +21,7 @@
@@ -10542,7 +10542,7 @@ index 2997aefda8e7f34e9f9ff544aba0a2cfd33a6261..04080062633d2e0fa121bf338b2a18bd
 +        assertThat(easyInputMessage.roleOrThrow()).isEqualTo(EasyInputMessage.Role.USER)
          assertThat(easyInputMessage.phase()).contains(EasyInputMessage.Phase.COMMENTARY)
 -        assertThat(easyInputMessage.type()).contains(EasyInputMessage.Type.MESSAGE)
-+        assertThat(easyInputMessage.type()).contains(com.openai.core.JsonValue.from(EasyInputMessage.Type.MESSAGE))
++        assertThat(easyInputMessage.type()).contains(com.openai.core.JsonValue.from("message"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/responses/FileSearchToolTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/responses/FileSearchToolTest.kt
 index ff8a03235aad2a2d2a0b82a828e03d8404e2c685..b18edfb1c8fb9f70d11ab063b44636ebcf9b0870 100644
@@ -12829,7 +12829,7 @@ index d1aa5f53dd63968cd9f44b91908d29d1444056ae..42f6ad10959425f3f826c3bdd460349a
 +        assertThat(agentSessionInProgressWebhookEvent.dataOrThrow())
              .isEqualTo(
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchCancelledWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchCancelledWebhookEventTest.kt
-index d1f4e020dbc24eb48d26c007ac2df72b210996b8..9c2df91bb045003e6c140f4fa34edd277beec19d 100644
+index d1f4e020dbc24eb48d26c007ac2df72b210996b8..253dd7abd196684af749da454587ace872f2ed54 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchCancelledWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchCancelledWebhookEventTest.kt
 @@ -21,8 +21,8 @@
@@ -12843,10 +12843,10 @@ index d1f4e020dbc24eb48d26c007ac2df72b210996b8..9c2df91bb045003e6c140f4fa34edd27
              .isEqualTo(BatchCancelledWebhookEvent.Data.builder().id("id").build())
          assertThat(batchCancelledWebhookEvent.object_())
 -            .contains(BatchCancelledWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(BatchCancelledWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchCompletedWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchCompletedWebhookEventTest.kt
-index 683ba42e362e4bf8783fd0a0131ad7af63916108..da217c0d8e5f83b64dd8f46e2895a1b6fcc033e4 100644
+index 683ba42e362e4bf8783fd0a0131ad7af63916108..1b3bcdaef615e26de79a8c250988260df61a860a 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchCompletedWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchCompletedWebhookEventTest.kt
 @@ -21,8 +21,8 @@
@@ -12860,10 +12860,10 @@ index 683ba42e362e4bf8783fd0a0131ad7af63916108..da217c0d8e5f83b64dd8f46e2895a1b6
              .isEqualTo(BatchCompletedWebhookEvent.Data.builder().id("id").build())
          assertThat(batchCompletedWebhookEvent.object_())
 -            .contains(BatchCompletedWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(BatchCompletedWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchExpiredWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchExpiredWebhookEventTest.kt
-index 7a51b414f6d140337cb1d4ee1c595f50cfd224df..37e4c2cd8293eaf1a1b5f987b32cc33b6be93021 100644
+index 7a51b414f6d140337cb1d4ee1c595f50cfd224df..6301399c41973a979febc650eb2844975e252b51 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchExpiredWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchExpiredWebhookEventTest.kt
 @@ -21,8 +21,8 @@
@@ -12877,10 +12877,10 @@ index 7a51b414f6d140337cb1d4ee1c595f50cfd224df..37e4c2cd8293eaf1a1b5f987b32cc33b
              .isEqualTo(BatchExpiredWebhookEvent.Data.builder().id("id").build())
          assertThat(batchExpiredWebhookEvent.object_())
 -            .contains(BatchExpiredWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(BatchExpiredWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchFailedWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchFailedWebhookEventTest.kt
-index 5b37a9cf01b2644973be7ff4e3748c6c865bbfd1..b9f2075d6cb21f68195e805e2637a797509efc5f 100644
+index 5b37a9cf01b2644973be7ff4e3748c6c865bbfd1..6a29adf8882e76b8cb515afbf39ca4af83e4b1bf 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchFailedWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/BatchFailedWebhookEventTest.kt
 @@ -21,7 +21,7 @@
@@ -12893,7 +12893,7 @@ index 5b37a9cf01b2644973be7ff4e3748c6c865bbfd1..b9f2075d6cb21f68195e805e2637a797
 +        assertThat(batchFailedWebhookEvent.dataOrThrow())
              .isEqualTo(BatchFailedWebhookEvent.Data.builder().id("id").build())
 -        assertThat(batchFailedWebhookEvent.object_()).contains(BatchFailedWebhookEvent.Object.EVENT)
-+        assertThat(batchFailedWebhookEvent.object_()).contains(com.openai.core.JsonValue.from(BatchFailedWebhookEvent.Object.EVENT))
++        assertThat(batchFailedWebhookEvent.object_()).contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/DeletedWebhookEndpointTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/DeletedWebhookEndpointTest.kt
 index ecbf4e9886b561e557094eb00c6510a1d480f838..93c3d0f68a7768b5bff935df3f2fa7042676b8c8 100644
@@ -12907,7 +12907,7 @@ index ecbf4e9886b561e557094eb00c6510a1d480f838..93c3d0f68a7768b5bff935df3f2fa704
 +        assertThat(deletedWebhookEndpoint.deletedOrThrow()).isEqualTo(true)
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/EvalRunCanceledWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/EvalRunCanceledWebhookEventTest.kt
-index 7ef0604f31cb37817cefab3e188c48c1c3b5cbec..6af34e57f5bb12fe108d90c3b4a36f8778b682ce 100644
+index 7ef0604f31cb37817cefab3e188c48c1c3b5cbec..274ba35448a505d433846edf3d81831c59fb1b78 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/EvalRunCanceledWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/EvalRunCanceledWebhookEventTest.kt
 @@ -21,8 +21,8 @@
@@ -12921,10 +12921,10 @@ index 7ef0604f31cb37817cefab3e188c48c1c3b5cbec..6af34e57f5bb12fe108d90c3b4a36f87
              .isEqualTo(EvalRunCanceledWebhookEvent.Data.builder().id("id").build())
          assertThat(evalRunCanceledWebhookEvent.object_())
 -            .contains(EvalRunCanceledWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(EvalRunCanceledWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/EvalRunFailedWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/EvalRunFailedWebhookEventTest.kt
-index e6f7bcec3d7d2750a04614995e833aec4b297898..d345833e260229c8be15254a2e0d9c687cfe5be9 100644
+index e6f7bcec3d7d2750a04614995e833aec4b297898..86879a66a742b2e86b31d06d3f856574e1e10556 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/EvalRunFailedWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/EvalRunFailedWebhookEventTest.kt
 @@ -21,8 +21,8 @@
@@ -12938,10 +12938,10 @@ index e6f7bcec3d7d2750a04614995e833aec4b297898..d345833e260229c8be15254a2e0d9c68
              .isEqualTo(EvalRunFailedWebhookEvent.Data.builder().id("id").build())
          assertThat(evalRunFailedWebhookEvent.object_())
 -            .contains(EvalRunFailedWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(EvalRunFailedWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/EvalRunSucceededWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/EvalRunSucceededWebhookEventTest.kt
-index 137e63595f29f583be142b25faa614030253c85b..0e9bd9ba49b9a84e13e29598f0cd9974b3b3075f 100644
+index 137e63595f29f583be142b25faa614030253c85b..9cffd66bb93d340fa584223a238b2cb7c3d241fe 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/EvalRunSucceededWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/EvalRunSucceededWebhookEventTest.kt
 @@ -21,8 +21,8 @@
@@ -12955,10 +12955,10 @@ index 137e63595f29f583be142b25faa614030253c85b..0e9bd9ba49b9a84e13e29598f0cd9974
              .isEqualTo(EvalRunSucceededWebhookEvent.Data.builder().id("id").build())
          assertThat(evalRunSucceededWebhookEvent.object_())
 -            .contains(EvalRunSucceededWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(EvalRunSucceededWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/FineTuningJobCancelledWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/FineTuningJobCancelledWebhookEventTest.kt
-index 12d9969a66d5c49b8b889f24af8da2e9d4959c55..e77e3de300950a561a92dbf7056522051b8fc5a0 100644
+index 12d9969a66d5c49b8b889f24af8da2e9d4959c55..0aeee335d82681f6c83e1d4b9f97331c70b27067 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/FineTuningJobCancelledWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/FineTuningJobCancelledWebhookEventTest.kt
 @@ -21,8 +21,8 @@
@@ -12972,10 +12972,10 @@ index 12d9969a66d5c49b8b889f24af8da2e9d4959c55..e77e3de300950a561a92dbf705652205
              .isEqualTo(FineTuningJobCancelledWebhookEvent.Data.builder().id("id").build())
          assertThat(fineTuningJobCancelledWebhookEvent.object_())
 -            .contains(FineTuningJobCancelledWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(FineTuningJobCancelledWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/FineTuningJobFailedWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/FineTuningJobFailedWebhookEventTest.kt
-index f8dcc799fe371f6067256b0dd5a4d9e45567624b..ff68fa85360d38baffc4049c3d97c5d212bca93c 100644
+index f8dcc799fe371f6067256b0dd5a4d9e45567624b..8e8fd552f875f206524f7f1d7ff516d50802cf01 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/FineTuningJobFailedWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/FineTuningJobFailedWebhookEventTest.kt
 @@ -21,8 +21,8 @@
@@ -12989,10 +12989,10 @@ index f8dcc799fe371f6067256b0dd5a4d9e45567624b..ff68fa85360d38baffc4049c3d97c5d2
              .isEqualTo(FineTuningJobFailedWebhookEvent.Data.builder().id("id").build())
          assertThat(fineTuningJobFailedWebhookEvent.object_())
 -            .contains(FineTuningJobFailedWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(FineTuningJobFailedWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/FineTuningJobSucceededWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/FineTuningJobSucceededWebhookEventTest.kt
-index 944d7c6a12423852accec7354d21c0dcc85583ee..e7cdb1741c10d37665efc23029fc83a4f10feca1 100644
+index 944d7c6a12423852accec7354d21c0dcc85583ee..210ca5ca2bd0d4bed76b8295508b11720368ad07 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/FineTuningJobSucceededWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/FineTuningJobSucceededWebhookEventTest.kt
 @@ -21,8 +21,8 @@
@@ -13006,10 +13006,10 @@ index 944d7c6a12423852accec7354d21c0dcc85583ee..e7cdb1741c10d37665efc23029fc83a4
              .isEqualTo(FineTuningJobSucceededWebhookEvent.Data.builder().id("id").build())
          assertThat(fineTuningJobSucceededWebhookEvent.object_())
 -            .contains(FineTuningJobSucceededWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(FineTuningJobSucceededWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/LiveCallIncomingWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/LiveCallIncomingWebhookEventTest.kt
-index 2f5c35426a954ff90beb8a55ac801ea27a375073..285bd669f2dc7c1cec0b3e0403cded33e3a133d6 100644
+index 2f5c35426a954ff90beb8a55ac801ea27a375073..5696c3b40f1ff6fb41f1c0d05da3ab280c69a1d4 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/LiveCallIncomingWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/LiveCallIncomingWebhookEventTest.kt
 @@ -32,5 +32,5 @@
@@ -13024,10 +13024,10 @@ index 2f5c35426a954ff90beb8a55ac801ea27a375073..285bd669f2dc7c1cec0b3e0403cded33
 @@ -48,3 +48,3 @@
          assertThat(liveCallIncomingWebhookEvent.object_())
 -            .contains(LiveCallIncomingWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(LiveCallIncomingWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/LiveTransportIncomingWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/LiveTransportIncomingWebhookEventTest.kt
-index 554858658b24ae551c093c102f7300298d37cb0f..74bd65cc02a1f105e29a225932253d132e2eae26 100644
+index 554858658b24ae551c093c102f7300298d37cb0f..8153ba11d547c5b1dc3d6cc5b562604f4eab8c42 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/LiveTransportIncomingWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/LiveTransportIncomingWebhookEventTest.kt
 @@ -34,5 +34,5 @@
@@ -13042,10 +13042,10 @@ index 554858658b24ae551c093c102f7300298d37cb0f..74bd65cc02a1f105e29a225932253d13
 @@ -50,3 +50,3 @@
          assertThat(liveTransportIncomingWebhookEvent.object_())
 -            .contains(LiveTransportIncomingWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(LiveTransportIncomingWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/RealtimeCallIncomingWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/RealtimeCallIncomingWebhookEventTest.kt
-index 4237f337f329657b7ce729e330b14397967d14b4..b4acf973b8e1dcb43ebb13facc66c6b425481ff9 100644
+index 4237f337f329657b7ce729e330b14397967d14b4..ff3da16ca390bb50076b038d7efe47528b2aecec 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/RealtimeCallIncomingWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/RealtimeCallIncomingWebhookEventTest.kt
 @@ -34,5 +34,5 @@
@@ -13060,10 +13060,10 @@ index 4237f337f329657b7ce729e330b14397967d14b4..b4acf973b8e1dcb43ebb13facc66c6b4
 @@ -50,3 +50,3 @@
          assertThat(realtimeCallIncomingWebhookEvent.object_())
 -            .contains(RealtimeCallIncomingWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(RealtimeCallIncomingWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseCancelledWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseCancelledWebhookEventTest.kt
-index 9558d00cc36b6d52baa0b13bbf10e64125201cae..a336befa2b8874583c9830f6e4e7ac10db8964ba 100644
+index 9558d00cc36b6d52baa0b13bbf10e64125201cae..48f0073b168b497186848fd0d27073833d063f54 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseCancelledWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseCancelledWebhookEventTest.kt
 @@ -21,8 +21,8 @@
@@ -13077,10 +13077,10 @@ index 9558d00cc36b6d52baa0b13bbf10e64125201cae..a336befa2b8874583c9830f6e4e7ac10
              .isEqualTo(ResponseCancelledWebhookEvent.Data.builder().id("id").build())
          assertThat(responseCancelledWebhookEvent.object_())
 -            .contains(ResponseCancelledWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(ResponseCancelledWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseCompletedWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseCompletedWebhookEventTest.kt
-index f84a84e446db918ce31225d13660887768028c31..16c6a9a4fcb7397a28be42f5ad23ac1c2257bc4c 100644
+index f84a84e446db918ce31225d13660887768028c31..6af6ffb82b967d06465ecd3f1a496e76f63cc3ef 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseCompletedWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseCompletedWebhookEventTest.kt
 @@ -21,8 +21,8 @@
@@ -13094,10 +13094,10 @@ index f84a84e446db918ce31225d13660887768028c31..16c6a9a4fcb7397a28be42f5ad23ac1c
              .isEqualTo(ResponseCompletedWebhookEvent.Data.builder().id("id").build())
          assertThat(responseCompletedWebhookEvent.object_())
 -            .contains(ResponseCompletedWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(ResponseCompletedWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseFailedWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseFailedWebhookEventTest.kt
-index ef20765747e1e2bd60dc835da2cdb953dd83dc5a..97983b3d0e95121a0f27aa35f503137f554cfacf 100644
+index ef20765747e1e2bd60dc835da2cdb953dd83dc5a..f1fbd9a065ec29306a944bb7b1e27643c5ff9105 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseFailedWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseFailedWebhookEventTest.kt
 @@ -21,8 +21,8 @@
@@ -13111,10 +13111,10 @@ index ef20765747e1e2bd60dc835da2cdb953dd83dc5a..97983b3d0e95121a0f27aa35f503137f
              .isEqualTo(ResponseFailedWebhookEvent.Data.builder().id("id").build())
          assertThat(responseFailedWebhookEvent.object_())
 -            .contains(ResponseFailedWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(ResponseFailedWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseIncompleteWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseIncompleteWebhookEventTest.kt
-index 370a9bf727676684397ea9830800f85ae3014518..00e2d4a219b987c0fcaa34b75164bb8f88ec1b58 100644
+index 370a9bf727676684397ea9830800f85ae3014518..c799bdef47b45976530eb89266dfaf9c00df3023 100644
 --- a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseIncompleteWebhookEventTest.kt
 +++ b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/ResponseIncompleteWebhookEventTest.kt
 @@ -21,8 +21,8 @@
@@ -13128,7 +13128,7 @@ index 370a9bf727676684397ea9830800f85ae3014518..00e2d4a219b987c0fcaa34b75164bb8f
              .isEqualTo(ResponseIncompleteWebhookEvent.Data.builder().id("id").build())
          assertThat(responseIncompleteWebhookEvent.object_())
 -            .contains(ResponseIncompleteWebhookEvent.Object.EVENT)
-+            .contains(com.openai.core.JsonValue.from(ResponseIncompleteWebhookEvent.Object.EVENT))
++            .contains(com.openai.core.JsonValue.from("event"))
  
 diff --git a/openai-java-core/src/test/kotlin/com/openai/models/webhooks/SafetyAlertCreatedWebhookEventTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/webhooks/SafetyAlertCreatedWebhookEventTest.kt
 index 6fd2d99b63aef00dca875fa142fa28ba310862ca..ff85ec74a3566916404780ae6181abd12f6b436f 100644
