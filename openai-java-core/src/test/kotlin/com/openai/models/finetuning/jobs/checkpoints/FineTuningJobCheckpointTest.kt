@@ -31,13 +31,13 @@ internal class FineTuningJobCheckpointTest {
                 .stepNumber(0L)
                 .build()
 
-        assertThat(fineTuningJobCheckpoint.id()).isEqualTo("id")
-        assertThat(fineTuningJobCheckpoint.createdAt()).isEqualTo(0L)
+        assertThat(fineTuningJobCheckpoint.id()).contains("id")
+        assertThat(fineTuningJobCheckpoint.createdAt()).contains(0L)
         assertThat(fineTuningJobCheckpoint.fineTunedModelCheckpoint())
-            .isEqualTo("fine_tuned_model_checkpoint")
-        assertThat(fineTuningJobCheckpoint.fineTuningJobId()).isEqualTo("fine_tuning_job_id")
+            .contains("fine_tuned_model_checkpoint")
+        assertThat(fineTuningJobCheckpoint.fineTuningJobId()).contains("fine_tuning_job_id")
         assertThat(fineTuningJobCheckpoint.metrics())
-            .isEqualTo(
+            .contains(
                 FineTuningJobCheckpoint.Metrics.builder()
                     .fullValidLoss(0.0)
                     .fullValidMeanTokenAccuracy(0.0)
@@ -48,7 +48,7 @@ internal class FineTuningJobCheckpointTest {
                     .validMeanTokenAccuracy(0.0)
                     .build()
             )
-        assertThat(fineTuningJobCheckpoint.stepNumber()).isEqualTo(0L)
+        assertThat(fineTuningJobCheckpoint.stepNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

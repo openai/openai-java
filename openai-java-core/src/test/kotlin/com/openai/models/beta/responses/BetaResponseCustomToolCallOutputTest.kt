@@ -22,9 +22,9 @@ internal class BetaResponseCustomToolCallOutputTest {
                 .callerDirect()
                 .build()
 
-        assertThat(betaResponseCustomToolCallOutput.callId()).isEqualTo("call_id")
+        assertThat(betaResponseCustomToolCallOutput.callId()).contains("call_id")
         assertThat(betaResponseCustomToolCallOutput.output())
-            .isEqualTo(BetaResponseCustomToolCallOutput.Output.ofString("string"))
+            .contains(BetaResponseCustomToolCallOutput.Output.ofString("string"))
         assertThat(betaResponseCustomToolCallOutput.id()).contains("id")
         assertThat(betaResponseCustomToolCallOutput.agent())
             .contains(

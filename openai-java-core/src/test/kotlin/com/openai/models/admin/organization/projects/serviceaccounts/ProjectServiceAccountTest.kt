@@ -19,10 +19,10 @@ internal class ProjectServiceAccountTest {
                 .role(ProjectServiceAccount.Role.OWNER)
                 .build()
 
-        assertThat(projectServiceAccount.id()).isEqualTo("id")
-        assertThat(projectServiceAccount.createdAt()).isEqualTo(0L)
-        assertThat(projectServiceAccount.name()).isEqualTo("name")
-        assertThat(projectServiceAccount.role()).isEqualTo(ProjectServiceAccount.Role.OWNER)
+        assertThat(projectServiceAccount.id()).contains("id")
+        assertThat(projectServiceAccount.createdAt()).contains(0L)
+        assertThat(projectServiceAccount.name()).contains("name")
+        assertThat(projectServiceAccount.role()).contains(ProjectServiceAccount.Role.OWNER)
 
         val jsonMapper = jsonMapper()
 

@@ -40,39 +40,29 @@ private constructor(
 
     fun sessionId(): Optional<String> = Optional.ofNullable(sessionId)
 
-    /**
-     * Agent settings to update on this session. Omitted fields stay unchanged.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun agent(): Optional<Agent> = body.agent()
+    /** @see Body.agent */
+    fun agent(): java.util.Optional<Agent> = body.agent()
 
-    /**
-     * Replaces all metadata. Omit to leave unchanged, or pass null or {} to clear it. Up to 16
-     * string key-value pairs, with keys up to 64 and values up to 512 characters.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun metadata(): Optional<Metadata> = body.metadata()
+    /** @see Body.agentOrThrow */
+    fun agentOrThrow(): Agent = body.agentOrThrow()
 
-    /**
-     * Default action review for new root turns. Existing turns and their subagents keep their
-     * review mode.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun review(): Optional<Review> = body.review()
+    /** @see Body.metadata */
+    fun metadata(): java.util.Optional<Metadata> = body.metadata()
 
-    /**
-     * Omit to retain the limit; null or a null limit removes it without resetting spend.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun spendControl(): Optional<SpendControl> = body.spendControl()
+    /** @see Body.metadataOrThrow */
+    fun metadataOrThrow(): Metadata = body.metadataOrThrow()
+
+    /** @see Body.review */
+    fun review(): java.util.Optional<Review> = body.review()
+
+    /** @see Body.reviewOrThrow */
+    fun reviewOrThrow(): Review = body.reviewOrThrow()
+
+    /** @see Body.spendControl */
+    fun spendControl(): java.util.Optional<SpendControl> = body.spendControl()
+
+    /** @see Body.spendControlOrThrow */
+    fun spendControlOrThrow(): SpendControl = body.spendControlOrThrow()
 
     /**
      * Returns the raw JSON value of [agent].
@@ -381,38 +371,62 @@ private constructor(
         ) : this(agent, metadata, review, spendControl, mutableMapOf())
 
         /**
-         * Agent settings to update on this session. Omitted fields stay unchanged.
+         * Agent settings to update on this session. Omitted fields stay unchanged. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun agent(): Optional<Agent> = agent.getOptional("agent")
+        fun agent(): java.util.Optional<Agent> = agent.getOptional("agent")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun agentOrThrow(): Agent = agent.getRequired("agent")
 
         /**
          * Replaces all metadata. Omit to leave unchanged, or pass null or {} to clear it. Up to 16
-         * string key-value pairs, with keys up to 64 and values up to 512 characters.
+         * string key-value pairs, with keys up to 64 and values up to 512 characters. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+        fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
 
         /**
          * Default action review for new root turns. Existing turns and their subagents keep their
-         * review mode.
+         * review mode. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun review(): Optional<Review> = review.getOptional("review")
+        fun review(): java.util.Optional<Review> = review.getOptional("review")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun reviewOrThrow(): Review = review.getRequired("review")
 
         /**
          * Omit to retain the limit; null or a null limit removes it without resetting spend.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun spendControl(): Optional<SpendControl> = spendControl.getOptional("spend_control")
+        fun spendControl(): java.util.Optional<SpendControl> =
+            spendControl.getOptional("spend_control")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun spendControlOrThrow(): SpendControl = spendControl.getRequired("spend_control")
 
         /**
          * Returns the raw JSON value of [agent].
@@ -688,38 +702,61 @@ private constructor(
         ) : this(model, reasoning, serviceTier, tools, mutableMapOf())
 
         /**
-         * The model for subsequent turns. Omit to keep the current model.
+         * The model for subsequent turns. Omit to keep the current model. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun model(): Optional<String> = model.getOptional("model")
+        fun model(): java.util.Optional<String> = model.getOptional("model")
 
         /**
-         * Reasoning settings to update. Omit to keep the current effort.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun reasoning(): Optional<Reasoning> = reasoning.getOptional("reasoning")
+        fun modelOrThrow(): String = model.getRequired("model")
 
         /**
-         * Omit to keep the current tier. Null resets it to auto.
+         * Reasoning settings to update. Omit to keep the current effort. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun serviceTier(): Optional<ServiceTier> = serviceTier.getOptional("service_tier")
+        fun reasoning(): java.util.Optional<Reasoning> = reasoning.getOptional("reasoning")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun reasoningOrThrow(): Reasoning = reasoning.getRequired("reasoning")
+
+        /**
+         * Omit to keep the current tier. Null resets it to auto. Returns empty if the JSON property
+         * is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun serviceTier(): java.util.Optional<ServiceTier> = serviceTier.getOptional("service_tier")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun serviceTierOrThrow(): ServiceTier = serviceTier.getRequired("service_tier")
 
         /**
          * Replaces the session tools. Functions and MCP servers change on the next model call.
          * Built-in tools change by the next turn. Omit to keep the current tools, or pass null or
-         * an empty array to clear them.
+         * an empty array to clear them. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun tools(): Optional<List<AgentToolParam>> = tools.getOptional("tools")
+        fun tools(): java.util.Optional<List<AgentToolParam>> = tools.getOptional("tools")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun toolsOrThrow(): List<AgentToolParam> = tools.getRequired("tools")
 
         /**
          * Returns the raw JSON value of [model].
@@ -1005,12 +1042,18 @@ private constructor(
             ) : this(effort, mutableMapOf())
 
             /**
-             * Omit to keep the current effort. Null selects the model's default effort.
+             * Omit to keep the current effort. Null selects the model's default effort. Returns
+             * empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun effort(): Optional<Effort> = effort.getOptional("effort")
+            fun effort(): java.util.Optional<Effort> = effort.getOptional("effort")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun effortOrThrow(): Effort = effort.getRequired("effort")
 
             /**
              * Returns the raw JSON value of [effort].
@@ -1843,12 +1886,18 @@ private constructor(
         ) : this(limit, mutableMapOf())
 
         /**
-         * Positive USD cents, or null to remove the limit.
+         * Positive USD cents, or null to remove the limit. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun limit(): Optional<Long> = limit.getOptional("limit")
+        fun limit(): java.util.Optional<Long> = limit.getOptional("limit")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun limitOrThrow(): Long = limit.getRequired("limit")
 
         /**
          * Returns the raw JSON value of [limit].

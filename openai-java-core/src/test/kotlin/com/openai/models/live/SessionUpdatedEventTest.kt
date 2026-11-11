@@ -103,9 +103,9 @@ internal class SessionUpdatedEventTest {
                 .clientEventId("evt_update_001")
                 .build()
 
-        assertThat(sessionUpdatedEvent.eventId()).isEqualTo("evt_updated_001")
+        assertThat(sessionUpdatedEvent.eventId()).contains("evt_updated_001")
         assertThat(sessionUpdatedEvent.session())
-            .isEqualTo(
+            .contains(
                 SessionResource.builder()
                     .id("live_def456")
                     .expiresAt(1788555600L)

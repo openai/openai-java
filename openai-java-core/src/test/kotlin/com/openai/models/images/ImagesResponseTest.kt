@@ -57,7 +57,7 @@ internal class ImagesResponseTest {
                 )
                 .build()
 
-        assertThat(imagesResponse.created()).isEqualTo(0L)
+        assertThat(imagesResponse.created()).contains(0L)
         assertThat(imagesResponse.background()).contains(ImagesResponse.Background.TRANSPARENT)
         assertThat(imagesResponse.data().getOrNull())
             .containsExactly(

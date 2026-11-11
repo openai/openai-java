@@ -43,9 +43,9 @@ internal class ResponseComputerToolCallTest {
                 )
                 .build()
 
-        assertThat(responseComputerToolCall.id()).isEqualTo("id")
-        assertThat(responseComputerToolCall.callId()).isEqualTo("call_id")
-        assertThat(responseComputerToolCall.pendingSafetyChecks())
+        assertThat(responseComputerToolCall.id()).contains("id")
+        assertThat(responseComputerToolCall.callId()).contains("call_id")
+        assertThat(responseComputerToolCall.pendingSafetyChecks().getOrNull())
             .containsExactly(
                 ResponseComputerToolCall.PendingSafetyCheck.builder()
                     .id("id")
@@ -54,9 +54,9 @@ internal class ResponseComputerToolCallTest {
                     .build()
             )
         assertThat(responseComputerToolCall.status())
-            .isEqualTo(ResponseComputerToolCall.Status.IN_PROGRESS)
+            .contains(ResponseComputerToolCall.Status.IN_PROGRESS)
         assertThat(responseComputerToolCall.type())
-            .isEqualTo(ResponseComputerToolCall.Type.COMPUTER_CALL)
+            .contains(ResponseComputerToolCall.Type.COMPUTER_CALL)
         assertThat(responseComputerToolCall.action())
             .contains(
                 ResponseComputerToolCall.Action.ofClick(

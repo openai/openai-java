@@ -49,8 +49,8 @@ private constructor(private val type: Class<T>, private val format: TextFormatPa
         try {
             var first: T? = null
             for (message in result.messages()) {
-                for (content in message.content()) {
-                    val text = content.outputText().orElse(null)?.text() ?: continue
+                for (content in message.contentOrThrow()) {
+                    val text = content.outputText().orElse(null)?.textOrThrow() ?: continue
                     jsonMapper().factory.createParser(text).use { parser ->
                         require(parser.nextToken() != null) {
                             "Agents structured output must contain a JSON document"

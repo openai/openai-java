@@ -4,6 +4,7 @@ package com.openai.models.skills
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -28,7 +29,7 @@ internal class SkillListTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(skillList.data())
+        assertThat(skillList.data().getOrNull())
             .containsExactly(
                 Skill.builder()
                     .id("id")
@@ -40,7 +41,7 @@ internal class SkillListTest {
                     .build()
             )
         assertThat(skillList.firstId()).contains("first_id")
-        assertThat(skillList.hasMore()).isEqualTo(true)
+        assertThat(skillList.hasMore()).contains(true)
         assertThat(skillList.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

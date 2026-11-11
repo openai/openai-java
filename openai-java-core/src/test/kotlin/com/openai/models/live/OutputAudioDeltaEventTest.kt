@@ -18,7 +18,7 @@ internal class OutputAudioDeltaEventTest {
                 .startMs(1000L)
                 .build()
 
-        assertThat(outputAudioDeltaEvent.delta()).isEqualTo("AACAAIAAAIAAAP9/AIAAgA==")
+        assertThat(outputAudioDeltaEvent.delta()).contains("AACAAIAAAIAAAP9/AIAAgA==")
         assertThat(outputAudioDeltaEvent.endMs()).contains(1200L)
         assertThat(outputAudioDeltaEvent.startMs()).contains(1000L)
 

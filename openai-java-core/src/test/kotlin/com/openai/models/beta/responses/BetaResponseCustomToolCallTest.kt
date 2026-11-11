@@ -23,9 +23,9 @@ internal class BetaResponseCustomToolCallTest {
                 .namespace("namespace")
                 .build()
 
-        assertThat(betaResponseCustomToolCall.callId()).isEqualTo("call_id")
-        assertThat(betaResponseCustomToolCall.input()).isEqualTo("input")
-        assertThat(betaResponseCustomToolCall.name()).isEqualTo("name")
+        assertThat(betaResponseCustomToolCall.callId()).contains("call_id")
+        assertThat(betaResponseCustomToolCall.input()).contains("input")
+        assertThat(betaResponseCustomToolCall.name()).contains("name")
         assertThat(betaResponseCustomToolCall.id()).contains("id")
         assertThat(betaResponseCustomToolCall.agent())
             .contains(BetaResponseCustomToolCall.Agent.builder().agentName("agent_name").build())

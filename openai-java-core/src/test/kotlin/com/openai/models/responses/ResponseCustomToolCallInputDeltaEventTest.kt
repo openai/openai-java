@@ -19,10 +19,10 @@ internal class ResponseCustomToolCallInputDeltaEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseCustomToolCallInputDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(responseCustomToolCallInputDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseCustomToolCallInputDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseCustomToolCallInputDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseCustomToolCallInputDeltaEvent.delta()).contains("delta")
+        assertThat(responseCustomToolCallInputDeltaEvent.itemId()).contains("item_id")
+        assertThat(responseCustomToolCallInputDeltaEvent.outputIndex()).contains(0L)
+        assertThat(responseCustomToolCallInputDeltaEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

@@ -9,6 +9,7 @@ import com.openai.models.beta.agents.HostedEnvironmentFileId
 import com.openai.models.beta.agents.HostedPlugin
 import com.openai.models.beta.agents.HostedSkill
 import com.openai.models.beta.agents.HostedSkillReference
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -40,8 +41,8 @@ internal class EnvironmentInfoTest {
                 .type(EnvironmentInfo.Type.OPENAI_HOSTED)
                 .build()
 
-        assertThat(environmentInfo.id()).isEqualTo("id")
-        assertThat(environmentInfo.files())
+        assertThat(environmentInfo.id()).contains("id")
+        assertThat(environmentInfo.files().getOrNull())
             .containsExactly(
                 HostedEnvironmentFile.ofFileId(
                     HostedEnvironmentFileId.builder()
@@ -52,9 +53,9 @@ internal class EnvironmentInfoTest {
                         .build()
                 )
             )
-        assertThat(environmentInfo.plugins())
+        assertThat(environmentInfo.plugins().getOrNull())
             .containsExactly(HostedPlugin.builder().description("description").name("name").build())
-        assertThat(environmentInfo.skills())
+        assertThat(environmentInfo.skills().getOrNull())
             .containsExactly(
                 HostedSkill.ofSkillReference(
                     HostedSkillReference.builder()
@@ -65,8 +66,8 @@ internal class EnvironmentInfoTest {
                         .build()
                 )
             )
-        assertThat(environmentInfo.status()).isEqualTo(EnvironmentInfo.Status.PENDING)
-        assertThat(environmentInfo.type()).isEqualTo(EnvironmentInfo.Type.OPENAI_HOSTED)
+        assertThat(environmentInfo.status()).contains(EnvironmentInfo.Status.PENDING)
+        assertThat(environmentInfo.type()).contains(EnvironmentInfo.Type.OPENAI_HOSTED)
 
         val jsonMapper = jsonMapper()
 

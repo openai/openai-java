@@ -18,8 +18,8 @@ internal class BetaResponseAudioDeltaEventTest {
                 .agent(BetaResponseAudioDeltaEvent.Agent.builder().agentName("agent_name").build())
                 .build()
 
-        assertThat(betaResponseAudioDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(betaResponseAudioDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseAudioDeltaEvent.delta()).contains("delta")
+        assertThat(betaResponseAudioDeltaEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseAudioDeltaEvent.agent())
             .contains(BetaResponseAudioDeltaEvent.Agent.builder().agentName("agent_name").build())
 

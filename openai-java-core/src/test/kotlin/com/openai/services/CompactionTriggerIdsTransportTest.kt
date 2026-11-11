@@ -53,7 +53,7 @@ internal class CompactionTriggerIdsTransportTest {
                 assertThat(trigger.id().orElse(null)).isEqualTo(expected)
                 assertThat(trigger._id().isMissing()).isEqualTo(wire == null)
                 assertThat(trigger._id().isNull()).isEqualTo(wire == "null")
-                assertThat(trigger.agent().get().agentName()).isEqualTo("assistant")
+                assertThat(trigger.agent().get().agentNameOrThrow()).isEqualTo("assistant")
                 assertThat(transport.requests).hasSize(1)
                 assertThat(transport.requests.single().url())
                     .isEqualTo("https://example.invalid/v1/responses/resp_compat?beta=true")

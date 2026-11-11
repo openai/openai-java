@@ -26,8 +26,8 @@ public final class CompletionsStreamingExample {
         try (StreamResponse<ChatCompletionChunk> streamResponse =
                 client.chat().completions().createStreaming(createParams)) {
             streamResponse.stream()
-                    .flatMap(completion -> completion.choices().stream())
-                    .flatMap(choice -> choice.delta().content().stream())
+                    .flatMap(completion -> completion.choicesOrThrow().stream())
+                    .flatMap(choice -> choice.deltaOrThrow().content().stream())
                     .forEach(System.out::print);
         }
     }

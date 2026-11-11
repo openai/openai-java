@@ -35,8 +35,8 @@ internal class ExternalStorageCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.projectId()).isEqualTo("proj_123")
-        assertThat(body.provider())
+        assertThat(body.projectIdOrThrow()).isEqualTo("proj_123")
+        assertThat(body.providerOrThrow())
             .isEqualTo(
                 ExternalStorageCreateParams.Provider.ofAws(
                     ExternalStorageCreateParams.Provider.Aws.builder()

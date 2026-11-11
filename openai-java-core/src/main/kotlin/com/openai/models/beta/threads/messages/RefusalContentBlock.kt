@@ -32,23 +32,39 @@ private constructor(
     ) : this(refusal, type, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun refusal(): String = refusal.getRequired("refusal")
+    fun refusal(): java.util.Optional<String> = refusal.getOptional("refusal")
 
     /**
-     * Always `refusal`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("refusal")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun refusalOrThrow(): String = refusal.getRequired("refusal")
+
+    /**
+     * Always `refusal`. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("refusal")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [refusal].
@@ -188,12 +204,8 @@ private constructor(
             return@apply
         }
 
-        refusal()
-        _type().let {
-            if (it != JsonValue.from("refusal")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        refusalOrThrow()
+        typeOrThrow()
         validated = true
     }
 

@@ -75,94 +75,162 @@ private constructor(
     )
 
     /**
-     * The ID of the turn.
+     * The ID of the turn. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The ID of the agent that ran the turn.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun agentId(): String = agentId.getRequired("agent_id")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The Unix timestamp, in seconds, when the turn reached a terminal state.
+     * The ID of the agent that ran the turn. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun completedAt(): Optional<Long> = completedAt.getOptional("completed_at")
+    fun agentId(): java.util.Optional<String> = agentId.getOptional("agent_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun agentIdOrThrow(): String = agentId.getRequired("agent_id")
+
+    /**
+     * The Unix timestamp, in seconds, when the turn reached a terminal state. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun completedAt(): java.util.Optional<Long> = completedAt.getOptional("completed_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun completedAtOrThrow(): Long = completedAt.getRequired("completed_at")
 
     /**
      * The Unix timestamp, in seconds, used to order the turn by creation time. Subagent turns use
      * their start time, falling back to completion time or the subagent opening time when the
-     * preceding timestamps are unavailable.
+     * preceding timestamps are unavailable. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * A customer-safe error. Non-null only for a failed turn.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun error(): Optional<SessionTurnError> = error.getOptional("error")
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
     /**
-     * The object type. Always `agent.session.turn`.
+     * A customer-safe error. Non-null only for a failed turn. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun object_(): Object = object_.getRequired("object")
+    fun error(): java.util.Optional<SessionTurnError> = error.getOptional("error")
 
     /**
-     * The ID of the session that owns the turn.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun sessionId(): String = sessionId.getRequired("session_id")
+    fun errorOrThrow(): SessionTurnError = error.getRequired("error")
 
     /**
-     * The Unix timestamp, in seconds, when the turn started.
+     * The object type. Always `agent.session.turn`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun startedAt(): Optional<Long> = startedAt.getOptional("started_at")
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = JsonValue.from(object_)
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("agent.session.turn")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The current status of the turn.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun status(): Status = status.getRequired("status")
+    fun object_OrThrow(): JsonValue =
+        object_().orElseGet { JsonValue.from(object_).getRequired("object") }
+
+    @JsonProperty("object")
+    @ExcludeMissing
+    fun _object_(): JsonField<JsonValue> = JsonValue.from(object_)
 
     /**
-     * The ID of the subagent that ran the turn, if applicable.
+     * The ID of the session that owns the turn. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun subagentId(): Optional<String> = subagentId.getOptional("subagent_id")
+    fun sessionId(): java.util.Optional<String> = sessionId.getOptional("session_id")
 
     /**
-     * Best-effort token usage for the turn, or null if unknown. Recorded usage may change.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun usage(): Optional<TokenUsage> = usage.getOptional("usage")
+    fun sessionIdOrThrow(): String = sessionId.getRequired("session_id")
+
+    /**
+     * The Unix timestamp, in seconds, when the turn started. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun startedAt(): java.util.Optional<Long> = startedAt.getOptional("started_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun startedAtOrThrow(): Long = startedAt.getRequired("started_at")
+
+    /**
+     * The current status of the turn. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): Status = status.getRequired("status")
+
+    /**
+     * The ID of the subagent that ran the turn, if applicable. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun subagentId(): java.util.Optional<String> = subagentId.getOptional("subagent_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun subagentIdOrThrow(): String = subagentId.getRequired("subagent_id")
+
+    /**
+     * Best-effort token usage for the turn, or null if unknown. Recorded usage may change. The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun usage(): java.util.Optional<TokenUsage> = usage.getOptional("usage")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun usageOrThrow(): TokenUsage = usage.getRequired("usage")
 
     /**
      * Returns the raw JSON value of [id].
@@ -198,13 +266,6 @@ private constructor(
      * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<SessionTurnError> = error
-
-    /**
-     * Returns the raw JSON value of [object_].
-     *
-     * Unlike [object_], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * Returns the raw JSON value of [sessionId].
@@ -555,15 +616,15 @@ private constructor(
             return@apply
         }
 
-        id()
-        agentId()
+        idOrThrow()
+        agentIdOrThrow()
         completedAt()
-        createdAt()
+        createdAtOrThrow()
         error().ifPresent { it.validate() }
-        object_().validate()
-        sessionId()
+        object_OrThrow()
+        sessionIdOrThrow()
         startedAt()
-        status().validate()
+        statusOrThrow().validate()
         subagentId()
         usage().ifPresent { it.validate() }
         validated = true

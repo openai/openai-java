@@ -35,7 +35,7 @@ public final class CompletionsFileExample {
 
         ChatCompletionContentPart.File logoFile = ChatCompletionContentPart.File.builder()
                 .file(ChatCompletionContentPart.File.FileObject.builder()
-                        .fileId(logoFileObject.id())
+                        .fileId(logoFileObject.idOrThrow())
                         .build())
                 .build();
         ChatCompletionContentPart logoContentPart = ChatCompletionContentPart.ofFile(logoFile);
@@ -50,8 +50,8 @@ public final class CompletionsFileExample {
                 .addUserMessageOfArrayOfContentParts(List.of(questionContentPart, logoContentPart))
                 .build();
 
-        client.chat().completions().create(createParams).choices().stream()
-                .flatMap(choice -> choice.message().content().stream())
+        client.chat().completions().create(createParams).choicesOrThrow().stream()
+                .flatMap(choice -> choice.messageOrThrow().content().stream())
                 .forEach(System.out::println);
     }
 }

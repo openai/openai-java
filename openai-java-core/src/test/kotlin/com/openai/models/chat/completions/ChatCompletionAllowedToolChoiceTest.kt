@@ -27,7 +27,7 @@ internal class ChatCompletionAllowedToolChoiceTest {
                 .build()
 
         assertThat(chatCompletionAllowedToolChoice.allowedTools())
-            .isEqualTo(
+            .contains(
                 ChatCompletionAllowedTools.builder()
                     .mode(ChatCompletionAllowedTools.Mode.AUTO)
                     .addTool(

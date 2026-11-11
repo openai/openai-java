@@ -22,26 +22,42 @@ class StructuredResponseOutputMessage<T : Any>(
     @get:JvmName("rawMessage") val rawMessage: ResponseOutputMessage,
 ) {
     /** @see ResponseOutputMessage.id */
-    fun id(): String = rawMessage.id()
+    fun id(): Optional<String> = rawMessage.id()
+
+    fun idOrThrow(): String = rawMessage.idOrThrow()
 
     private val content by lazy {
         rawMessage._content().map { contents -> contents.map { Content<T>(responseType, it) } }
     }
 
     /** @see ResponseOutputMessage.content */
-    fun content(): List<Content<T>> = content.getRequired("content")
+    fun content(): Optional<List<Content<T>>> = content.getOptional("content")
+
+    fun contentOrThrow(): List<Content<T>> = content.getRequired("content")
 
     /** @see ResponseOutputMessage._role */
-    fun _role(): JsonValue = rawMessage._role()
+    fun _role(): JsonField<JsonValue> = rawMessage._role()
+
+    fun role(): Optional<JsonValue> = rawMessage.role()
+
+    fun roleOrThrow(): JsonValue = rawMessage.roleOrThrow()
 
     /** @see ResponseOutputMessage.phase */
     fun phase(): Optional<ResponseOutputMessage.Phase> = rawMessage.phase()
 
+    fun phaseOrThrow(): ResponseOutputMessage.Phase = rawMessage.phaseOrThrow()
+
     /** @see ResponseOutputMessage.status */
-    fun status(): ResponseOutputMessage.Status = rawMessage.status()
+    fun status(): Optional<ResponseOutputMessage.Status> = rawMessage.status()
+
+    fun statusOrThrow(): ResponseOutputMessage.Status = rawMessage.statusOrThrow()
 
     /** @see ResponseOutputMessage._type */
-    fun _type(): JsonValue = rawMessage._type()
+    fun _type(): JsonField<JsonValue> = rawMessage._type()
+
+    fun type(): Optional<JsonValue> = rawMessage.type()
+
+    fun typeOrThrow(): JsonValue = rawMessage.typeOrThrow()
 
     /** @see ResponseOutputMessage._id */
     fun _id(): JsonField<String> = rawMessage._id()
@@ -61,7 +77,7 @@ class StructuredResponseOutputMessage<T : Any>(
     /** @see ResponseOutputMessage.validate */
     fun validate(): StructuredResponseOutputMessage<T> = apply {
         // `content()` is a different type to that in the delegate class.
-        content().forEach { it.validate() }
+        contentOrThrow().forEach { it.validate() }
         rawMessage.validate()
     }
 
@@ -80,7 +96,7 @@ class StructuredResponseOutputMessage<T : Any>(
         @get:JvmName("rawContent") val rawContent: ResponseOutputMessage.Content,
     ) {
         private val outputText by lazy {
-            rawContent.outputText().map { responseTypeFromJson(it.text(), responseType) }
+            rawContent.outputText().map { responseTypeFromJson(it.textOrThrow(), responseType) }
         }
 
         /**

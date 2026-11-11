@@ -40,38 +40,73 @@ private constructor(
 
     /**
      * The description of the function, including guidance on when and how to call it, and guidance
-     * about what to tell the user when calling (if anything).
+     * about what to tell the user when calling (if anything). Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun description(): Optional<String> = description.getOptional("description")
+    fun description(): java.util.Optional<String> = description.getOptional("description")
 
     /**
-     * The name of the function.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): Optional<String> = name.getOptional("name")
+    fun descriptionOrThrow(): String = description.getRequired("description")
 
     /**
-     * Parameters of the function in JSON Schema.
+     * The name of the function. Returns empty if the JSON property is missing or null.
      *
-     * This arbitrary value can be deserialized into a custom type using the `convert` method:
-     * ```java
-     * MyClass myObject = realtimeFunctionTool.parameters().convert(MyClass.class);
-     * ```
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("parameters") @ExcludeMissing fun _parameters(): JsonValue = parameters
+    fun name(): java.util.Optional<String> = name.getOptional("name")
 
     /**
-     * The type of the tool, i.e. `function`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun type(): Optional<Type> = type.getOptional("type")
+    fun nameOrThrow(): String = name.getRequired("name")
+
+    /**
+     * Parameters of the function in JSON Schema. Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun parameters(): java.util.Optional<JsonValue> {
+        val raw = parameters
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun parametersOrThrow(): JsonValue =
+        parameters().orElseGet { parameters.getRequired("parameters") }
+
+    @JsonProperty("parameters") @ExcludeMissing fun _parameters(): JsonField<JsonValue> = parameters
+
+    /**
+     * The type of the tool, i.e. `function`. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = JsonValue.from(type)
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("function")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { JsonValue.from(type).getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = JsonValue.from(type)
 
     /**
      * Returns the raw JSON value of [description].
@@ -86,13 +121,6 @@ private constructor(
      * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
-
-    /**
-     * Returns the raw JSON value of [type].
-     *
-     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -241,7 +269,7 @@ private constructor(
 
         description()
         name()
-        type().ifPresent { it.validate() }
+        type()
         validated = true
     }
 

@@ -41,8 +41,8 @@ internal class VectorStoreFileTest {
                 )
                 .build()
 
-        assertThat(vectorStoreFile.id()).isEqualTo("id")
-        assertThat(vectorStoreFile.createdAt()).isEqualTo(0L)
+        assertThat(vectorStoreFile.id()).contains("id")
+        assertThat(vectorStoreFile.createdAt()).contains(0L)
         assertThat(vectorStoreFile.lastError())
             .contains(
                 VectorStoreFile.LastError.builder()
@@ -50,9 +50,9 @@ internal class VectorStoreFileTest {
                     .message("message")
                     .build()
             )
-        assertThat(vectorStoreFile.status()).isEqualTo(VectorStoreFile.Status.IN_PROGRESS)
-        assertThat(vectorStoreFile.usageBytes()).isEqualTo(0L)
-        assertThat(vectorStoreFile.vectorStoreId()).isEqualTo("vector_store_id")
+        assertThat(vectorStoreFile.status()).contains(VectorStoreFile.Status.IN_PROGRESS)
+        assertThat(vectorStoreFile.usageBytes()).contains(0L)
+        assertThat(vectorStoreFile.vectorStoreId()).contains("vector_store_id")
         assertThat(vectorStoreFile.attributes())
             .contains(
                 VectorStoreFile.Attributes.builder()

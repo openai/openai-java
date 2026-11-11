@@ -5,6 +5,7 @@ package com.openai.models.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -41,13 +42,13 @@ internal class ResponseToolSearchOutputItemTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(responseToolSearchOutputItem.id()).isEqualTo("id")
+        assertThat(responseToolSearchOutputItem.id()).contains("id")
         assertThat(responseToolSearchOutputItem.callId()).contains("call_id")
         assertThat(responseToolSearchOutputItem.execution())
-            .isEqualTo(ResponseToolSearchOutputItem.Execution.SERVER)
+            .contains(ResponseToolSearchOutputItem.Execution.SERVER)
         assertThat(responseToolSearchOutputItem.status())
-            .isEqualTo(ResponseToolSearchOutputItem.Status.IN_PROGRESS)
-        assertThat(responseToolSearchOutputItem.tools())
+            .contains(ResponseToolSearchOutputItem.Status.IN_PROGRESS)
+        assertThat(responseToolSearchOutputItem.tools().getOrNull())
             .containsExactly(
                 Tool.ofFunction(
                     FunctionTool.builder()

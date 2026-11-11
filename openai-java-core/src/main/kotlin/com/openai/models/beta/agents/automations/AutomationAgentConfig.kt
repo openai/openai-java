@@ -79,76 +79,121 @@ private constructor(
     )
 
     /**
-     * Custom instructions, or null when absent.
+     * Custom instructions, or null when absent. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun instructions(): Optional<String> = instructions.getOptional("instructions")
+    fun instructions(): java.util.Optional<String> = instructions.getOptional("instructions")
 
     /**
-     * The requested model name.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun model(): String = model.getRequired("model")
+    fun instructionsOrThrow(): String = instructions.getRequired("instructions")
 
     /**
-     * The configuration for creating and coordinating subagents.
+     * The requested model name. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun multiAgent(): MultiAgentConfig = multiAgent.getRequired("multi_agent")
+    fun model(): java.util.Optional<String> = model.getOptional("model")
 
     /**
-     * The configured reasoning policy.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun reasoning(): AgentReasoning = reasoning.getRequired("reasoning")
+    fun modelOrThrow(): String = model.getRequired("model")
 
     /**
-     * The configured service-tier policy.
+     * The configuration for creating and coordinating subagents. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun serviceTier(): ServiceTier = serviceTier.getRequired("service_tier")
+    fun multiAgent(): java.util.Optional<MultiAgentConfig> = multiAgent.getOptional("multi_agent")
 
     /**
-     * The configured output format and verbosity.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun text(): AgentText = text.getRequired("text")
+    fun multiAgentOrThrow(): MultiAgentConfig = multiAgent.getRequired("multi_agent")
 
     /**
-     * Configured tools, excluding confidential credentials.
+     * The configured reasoning policy. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun tools(): List<AgentTool> = tools.getRequired("tools")
+    fun reasoning(): java.util.Optional<AgentReasoning> = reasoning.getOptional("reasoning")
 
     /**
-     * The effective context compaction settings.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun compaction(): Optional<Compaction> = compaction.getOptional("compaction")
+    fun reasoningOrThrow(): AgentReasoning = reasoning.getRequired("reasoning")
 
     /**
-     * The effective experimental settings for the agent.
+     * The configured service-tier policy. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun experimental(): Optional<Experimental> = experimental.getOptional("experimental")
+    fun serviceTier(): java.util.Optional<ServiceTier> = serviceTier.getOptional("service_tier")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun serviceTierOrThrow(): ServiceTier = serviceTier.getRequired("service_tier")
+
+    /**
+     * The configured output format and verbosity. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun text(): java.util.Optional<AgentText> = text.getOptional("text")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun textOrThrow(): AgentText = text.getRequired("text")
+
+    /**
+     * Configured tools, excluding confidential credentials. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun tools(): java.util.Optional<List<AgentTool>> = tools.getOptional("tools")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun toolsOrThrow(): List<AgentTool> = tools.getRequired("tools")
+
+    /**
+     * The effective context compaction settings. Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun compaction(): java.util.Optional<Compaction> = compaction.getOptional("compaction")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun compactionOrThrow(): Compaction = compaction.getRequired("compaction")
+
+    /**
+     * The effective experimental settings for the agent. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun experimental(): java.util.Optional<Experimental> = experimental.getOptional("experimental")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun experimentalOrThrow(): Experimental = experimental.getRequired("experimental")
 
     /**
      * Returns the raw JSON value of [instructions].
@@ -549,12 +594,12 @@ private constructor(
         }
 
         instructions()
-        model()
-        multiAgent().validate()
-        reasoning().validate()
-        serviceTier().validate()
-        text().validate()
-        tools().forEach { it.validate() }
+        modelOrThrow()
+        multiAgentOrThrow().validate()
+        reasoningOrThrow().validate()
+        serviceTierOrThrow().validate()
+        textOrThrow().validate()
+        toolsOrThrow().forEach { it.validate() }
         compaction().ifPresent { it.validate() }
         experimental().ifPresent { it.validate() }
         validated = true
@@ -765,12 +810,18 @@ private constructor(
         ) : this(async, mutableMapOf())
 
         /**
-         * Whether context is compacted in the background. Defaults to true.
+         * Whether context is compacted in the background. Defaults to true. The schema requires
+         * this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun async(): Boolean = async.getRequired("async")
+        fun async(): java.util.Optional<Boolean> = async.getOptional("async")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun asyncOrThrow(): Boolean = async.getRequired("async")
 
         /**
          * Returns the raw JSON value of [async].
@@ -893,7 +944,7 @@ private constructor(
                 return@apply
             }
 
-            async()
+            asyncOrThrow()
             validated = true
         }
 
@@ -947,12 +998,19 @@ private constructor(
         ) : this(timeAwareness, mutableMapOf())
 
         /**
-         * Whether the model receives periodic current-time reminders.
+         * Whether the model receives periodic current-time reminders. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun timeAwareness(): Boolean = timeAwareness.getRequired("time_awareness")
+        fun timeAwareness(): java.util.Optional<Boolean> =
+            timeAwareness.getOptional("time_awareness")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun timeAwarenessOrThrow(): Boolean = timeAwareness.getRequired("time_awareness")
 
         /**
          * Returns the raw JSON value of [timeAwareness].
@@ -1083,7 +1141,7 @@ private constructor(
                 return@apply
             }
 
-            timeAwareness()
+            timeAwarenessOrThrow()
             validated = true
         }
 

@@ -7,7 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.admin.organization.projects.ServiceAccountService
 import java.util.Objects
-import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** @see ServiceAccountService.list */
@@ -18,29 +17,30 @@ private constructor(
     private val response: ServiceAccountListPageResponse,
 ) : Page<ProjectServiceAccount> {
 
-    /**
-     * Delegates to [ServiceAccountListPageResponse], but gracefully handles missing data.
-     *
-     * @see ServiceAccountListPageResponse.data
-     */
-    fun data(): List<ProjectServiceAccount> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see ServiceAccountListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [ServiceAccountListPageResponse], but gracefully handles missing data.
-     *
-     * @see ServiceAccountListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<ProjectServiceAccount> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    /**
-     * Delegates to [ServiceAccountListPageResponse], but gracefully handles missing data.
-     *
-     * @see ServiceAccountListPageResponse.lastId
-     */
-    fun lastId(): Optional<String> = response._lastId().getOptional("last_id")
+    fun _data() = response._data()
 
-    override fun items(): List<ProjectServiceAccount> = data()
+    /** @see ServiceAccountListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    /** @see ServiceAccountListPageResponse.lastId */
+    fun lastId() = response.lastId()
+
+    fun lastIdOrThrow(): String = lastId().orElseGet { response._lastId().getRequired("last_id") }
+
+    fun _lastId() = response._lastId()
+
+    override fun items(): List<ProjectServiceAccount> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean =
         hasMore().orElse(true) && items().isNotEmpty() && lastId().isPresent

@@ -53,9 +53,9 @@ internal class ChatSessionTest {
                 )
                 .build()
 
-        assertThat(chatSession.id()).isEqualTo("cksess_123")
+        assertThat(chatSession.id()).contains("cksess_123")
         assertThat(chatSession.chatkitConfiguration())
-            .isEqualTo(
+            .contains(
                 ChatSessionChatKitConfiguration.builder()
                     .automaticThreadTitling(
                         ChatSessionAutomaticThreadTitling.builder().enabled(true).build()
@@ -70,15 +70,15 @@ internal class ChatSessionTest {
                     .history(ChatSessionHistory.builder().enabled(true).recentThreads(10L).build())
                     .build()
             )
-        assertThat(chatSession.clientSecret()).isEqualTo("ek_token_123")
-        assertThat(chatSession.expiresAt()).isEqualTo(1712349876L)
-        assertThat(chatSession.maxRequestsPer1Minute()).isEqualTo(60L)
+        assertThat(chatSession.clientSecret()).contains("ek_token_123")
+        assertThat(chatSession.expiresAt()).contains(1712349876L)
+        assertThat(chatSession.maxRequestsPer1Minute()).contains(60L)
         assertThat(chatSession.rateLimits())
-            .isEqualTo(ChatSessionRateLimits.builder().maxRequestsPer1Minute(60L).build())
-        assertThat(chatSession.status()).isEqualTo(ChatSessionStatus.ACTIVE)
-        assertThat(chatSession.user()).isEqualTo("user_789")
+            .contains(ChatSessionRateLimits.builder().maxRequestsPer1Minute(60L).build())
+        assertThat(chatSession.status()).contains(ChatSessionStatus.ACTIVE)
+        assertThat(chatSession.user()).contains("user_789")
         assertThat(chatSession.workflow())
-            .isEqualTo(
+            .contains(
                 ChatKitWorkflow.builder()
                     .id("workflow_alpha")
                     .stateVariables(

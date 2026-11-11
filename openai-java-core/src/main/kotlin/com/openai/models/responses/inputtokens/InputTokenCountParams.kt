@@ -73,122 +73,77 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * The conversation that this response belongs to. Items from this conversation are prepended to
-     * `input_items` for this response request. Input items and output items from this response are
-     * automatically added to this conversation after this response completes.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun conversation(): Optional<Conversation> = body.conversation()
+    /** @see Body.conversation */
+    fun conversation(): java.util.Optional<Conversation> = body.conversation()
 
-    /**
-     * Text, image, or file inputs to the model, used to generate a response
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun input(): Optional<Input> = body.input()
+    /** @see Body.conversationOrThrow */
+    fun conversationOrThrow(): Conversation = body.conversationOrThrow()
 
-    /**
-     * A system (or developer) message inserted into the model's context. When used along with
-     * `previous_response_id`, the instructions from a previous response will not be carried over to
-     * the next response. This makes it simple to swap out system (or developer) messages in new
-     * responses.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun instructions(): Optional<String> = body.instructions()
+    /** @see Body.input */
+    fun input(): java.util.Optional<Input> = body.input()
 
-    /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
-     * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
-     * available models.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun model(): Optional<String> = body.model()
+    /** @see Body.inputOrThrow */
+    fun inputOrThrow(): Input = body.inputOrThrow()
 
-    /**
-     * Whether to allow the model to run tool calls in parallel.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun parallelToolCalls(): Optional<Boolean> = body.parallelToolCalls()
+    /** @see Body.instructions */
+    fun instructions(): java.util.Optional<String> = body.instructions()
 
-    /**
-     * A model-owned style preset to apply to this request. Omit this parameter to use the model's
-     * default style. Supported values may expand over time. Values must be at most 64 characters.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun personality(): Optional<Personality> = body.personality()
+    /** @see Body.instructionsOrThrow */
+    fun instructionsOrThrow(): String = body.instructionsOrThrow()
 
-    /**
-     * The unique ID of the previous response to the model. Use this to create multi-turn
-     * conversations. Learn more about
-     * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
-     * Cannot be used in conjunction with `conversation`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun previousResponseId(): Optional<String> = body.previousResponseId()
+    /** @see Body.model */
+    fun model(): java.util.Optional<String> = body.model()
 
-    /**
-     * **gpt-5 and o-series models only** Configuration options for
-     * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun reasoning(): Optional<Reasoning> = body.reasoning()
+    /** @see Body.modelOrThrow */
+    fun modelOrThrow(): String = body.modelOrThrow()
 
-    /**
-     * Configuration options for a text response from the model. Can be plain text or structured
-     * JSON data. Learn more:
-     * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
-     * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun text(): Optional<Text> = body.text()
+    /** @see Body.parallelToolCalls */
+    fun parallelToolCalls(): java.util.Optional<Boolean> = body.parallelToolCalls()
 
-    /**
-     * Controls which tool the model should use, if any.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun toolChoice(): Optional<ToolChoice> = body.toolChoice()
+    /** @see Body.parallelToolCallsOrThrow */
+    fun parallelToolCallsOrThrow(): Boolean = body.parallelToolCallsOrThrow()
 
-    /**
-     * An array of tools the model may call while generating a response. You can specify which tool
-     * to use by setting the `tool_choice` parameter.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun tools(): Optional<List<Tool>> = body.tools()
+    /** @see Body.personality */
+    fun personality(): java.util.Optional<Personality> = body.personality()
 
-    /**
-     * The truncation strategy to use for the model response. - `auto`: If the input to this
-     * Response exceeds the model's context window size, the model will truncate the response to fit
-     * the context window by dropping items from the beginning of the conversation. - `disabled`
-     * (default): If the input size will exceed the context window size for a model, the request
-     * will fail with a 400 error.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    @Deprecated("deprecated") fun truncation(): Optional<Truncation> = body.truncation()
+    /** @see Body.personalityOrThrow */
+    fun personalityOrThrow(): Personality = body.personalityOrThrow()
+
+    /** @see Body.previousResponseId */
+    fun previousResponseId(): java.util.Optional<String> = body.previousResponseId()
+
+    /** @see Body.previousResponseIdOrThrow */
+    fun previousResponseIdOrThrow(): String = body.previousResponseIdOrThrow()
+
+    /** @see Body.reasoning */
+    fun reasoning(): java.util.Optional<Reasoning> = body.reasoning()
+
+    /** @see Body.reasoningOrThrow */
+    fun reasoningOrThrow(): Reasoning = body.reasoningOrThrow()
+
+    /** @see Body.text */
+    fun text(): java.util.Optional<Text> = body.text()
+
+    /** @see Body.textOrThrow */
+    fun textOrThrow(): Text = body.textOrThrow()
+
+    /** @see Body.toolChoice */
+    fun toolChoice(): java.util.Optional<ToolChoice> = body.toolChoice()
+
+    /** @see Body.toolChoiceOrThrow */
+    fun toolChoiceOrThrow(): ToolChoice = body.toolChoiceOrThrow()
+
+    /** @see Body.tools */
+    fun tools(): java.util.Optional<List<Tool>> = body.tools()
+
+    /** @see Body.toolsOrThrow */
+    fun toolsOrThrow(): List<Tool> = body.toolsOrThrow()
+
+    /** @see Body.truncation */
+    @Deprecated("deprecated") fun truncation(): java.util.Optional<Truncation> = body.truncation()
+
+    /** @see Body.truncationOrThrow */
+    @Deprecated("deprecated") fun truncationOrThrow(): Truncation = body.truncationOrThrow()
 
     /**
      * Returns the raw JSON value of [conversation].
@@ -943,122 +898,195 @@ private constructor(
          * The conversation that this response belongs to. Items from this conversation are
          * prepended to `input_items` for this response request. Input items and output items from
          * this response are automatically added to this conversation after this response completes.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun conversation(): Optional<Conversation> = conversation.getOptional("conversation")
+        fun conversation(): java.util.Optional<Conversation> =
+            conversation.getOptional("conversation")
 
         /**
-         * Text, image, or file inputs to the model, used to generate a response
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun input(): Optional<Input> = input.getOptional("input")
+        fun conversationOrThrow(): Conversation = conversation.getRequired("conversation")
+
+        /**
+         * Text, image, or file inputs to the model, used to generate a response Returns empty if
+         * the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun input(): java.util.Optional<Input> = input.getOptional("input")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun inputOrThrow(): Input = input.getRequired("input")
 
         /**
          * A system (or developer) message inserted into the model's context. When used along with
          * `previous_response_id`, the instructions from a previous response will not be carried
          * over to the next response. This makes it simple to swap out system (or developer)
-         * messages in new responses.
+         * messages in new responses. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun instructions(): Optional<String> = instructions.getOptional("instructions")
+        fun instructions(): java.util.Optional<String> = instructions.getOptional("instructions")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun instructionsOrThrow(): String = instructions.getRequired("instructions")
 
         /**
          * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
          * of models with different capabilities, performance characteristics, and price points.
          * Refer to the [model guide](https://developers.openai.com/api/docs/models) to browse and
-         * compare available models.
+         * compare available models. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun model(): Optional<String> = model.getOptional("model")
+        fun model(): java.util.Optional<String> = model.getOptional("model")
 
         /**
-         * Whether to allow the model to run tool calls in parallel.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun parallelToolCalls(): Optional<Boolean> =
+        fun modelOrThrow(): String = model.getRequired("model")
+
+        /**
+         * Whether to allow the model to run tool calls in parallel. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun parallelToolCalls(): java.util.Optional<Boolean> =
             parallelToolCalls.getOptional("parallel_tool_calls")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun parallelToolCallsOrThrow(): Boolean =
+            parallelToolCalls.getRequired("parallel_tool_calls")
 
         /**
          * A model-owned style preset to apply to this request. Omit this parameter to use the
          * model's default style. Supported values may expand over time. Values must be at most 64
-         * characters.
+         * characters. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun personality(): Optional<Personality> = personality.getOptional("personality")
+        fun personality(): java.util.Optional<Personality> = personality.getOptional("personality")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun personalityOrThrow(): Personality = personality.getRequired("personality")
 
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
          * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
-         * Cannot be used in conjunction with `conversation`.
+         * Cannot be used in conjunction with `conversation`. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun previousResponseId(): Optional<String> =
+        fun previousResponseId(): java.util.Optional<String> =
             previousResponseId.getOptional("previous_response_id")
 
         /**
-         * **gpt-5 and o-series models only** Configuration options for
-         * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun reasoning(): Optional<Reasoning> = reasoning.getOptional("reasoning")
+        fun previousResponseIdOrThrow(): String =
+            previousResponseId.getRequired("previous_response_id")
+
+        /**
+         * **gpt-5 and o-series models only** Configuration options for
+         * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning). Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun reasoning(): java.util.Optional<Reasoning> = reasoning.getOptional("reasoning")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun reasoningOrThrow(): Reasoning = reasoning.getRequired("reasoning")
 
         /**
          * Configuration options for a text response from the model. Can be plain text or structured
          * JSON data. Learn more:
          * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
          * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
+         *   Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun text(): Optional<Text> = text.getOptional("text")
+        fun text(): java.util.Optional<Text> = text.getOptional("text")
 
         /**
-         * Controls which tool the model should use, if any.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun toolChoice(): Optional<ToolChoice> = toolChoice.getOptional("tool_choice")
+        fun textOrThrow(): Text = text.getRequired("text")
+
+        /**
+         * Controls which tool the model should use, if any. Returns empty if the JSON property is
+         * missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun toolChoice(): java.util.Optional<ToolChoice> = toolChoice.getOptional("tool_choice")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun toolChoiceOrThrow(): ToolChoice = toolChoice.getRequired("tool_choice")
 
         /**
          * An array of tools the model may call while generating a response. You can specify which
-         * tool to use by setting the `tool_choice` parameter.
+         * tool to use by setting the `tool_choice` parameter. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun tools(): Optional<List<Tool>> = tools.getOptional("tools")
+        fun tools(): java.util.Optional<List<Tool>> = tools.getOptional("tools")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun toolsOrThrow(): List<Tool> = tools.getRequired("tools")
 
         /**
          * The truncation strategy to use for the model response. - `auto`: If the input to this
          * Response exceeds the model's context window size, the model will truncate the response to
          * fit the context window by dropping items from the beginning of the conversation. -
          * `disabled` (default): If the input size will exceed the context window size for a model,
-         * the request will fail with a 400 error.
+         * the request will fail with a 400 error. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
         @Deprecated("deprecated")
-        fun truncation(): Optional<Truncation> = truncation.getOptional("truncation")
+        fun truncation(): java.util.Optional<Truncation> = truncation.getOptional("truncation")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        @Deprecated("deprecated")
+        fun truncationOrThrow(): Truncation = truncation.getRequired("truncation")
 
         /**
          * Returns the raw JSON value of [conversation].
@@ -2495,22 +2523,33 @@ private constructor(
          *
          * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
          * message the model generates is valid JSON. Using `json_schema` is preferred for models
-         * that support it.
+         * that support it. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun format(): Optional<ResponseFormatTextConfig> = format.getOptional("format")
+        fun format(): java.util.Optional<ResponseFormatTextConfig> = format.getOptional("format")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun formatOrThrow(): ResponseFormatTextConfig = format.getRequired("format")
 
         /**
          * Constrains the verbosity of the model's response. Lower values will result in more
          * concise responses, while higher values will result in more verbose responses. Currently
-         * supported values are `low`, `medium`, and `high`. The default is `medium`.
+         * supported values are `low`, `medium`, and `high`. The default is `medium`. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun verbosity(): Optional<Verbosity> = verbosity.getOptional("verbosity")
+        fun verbosity(): java.util.Optional<Verbosity> = verbosity.getOptional("verbosity")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun verbosityOrThrow(): Verbosity = verbosity.getRequired("verbosity")
 
         /**
          * Returns the raw JSON value of [format].

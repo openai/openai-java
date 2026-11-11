@@ -20,11 +20,11 @@ internal class ChatKitAttachmentTest {
                 .type(ChatKitAttachment.Type.IMAGE)
                 .build()
 
-        assertThat(chatkitAttachment.id()).isEqualTo("id")
-        assertThat(chatkitAttachment.mimeType()).isEqualTo("mime_type")
-        assertThat(chatkitAttachment.name()).isEqualTo("name")
+        assertThat(chatkitAttachment.id()).contains("id")
+        assertThat(chatkitAttachment.mimeType()).contains("mime_type")
+        assertThat(chatkitAttachment.name()).contains("name")
         assertThat(chatkitAttachment.previewUrl()).contains("https://example.com")
-        assertThat(chatkitAttachment.type()).isEqualTo(ChatKitAttachment.Type.IMAGE)
+        assertThat(chatkitAttachment.type()).contains(ChatKitAttachment.Type.IMAGE)
 
         val jsonMapper = jsonMapper()
 

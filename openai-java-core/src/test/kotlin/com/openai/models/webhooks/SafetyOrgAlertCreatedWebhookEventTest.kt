@@ -22,10 +22,10 @@ internal class SafetyOrgAlertCreatedWebhookEventTest {
                 )
                 .build()
 
-        assertThat(safetyOrgAlertCreatedWebhookEvent.id()).isEqualTo("id")
-        assertThat(safetyOrgAlertCreatedWebhookEvent.createdAt()).isEqualTo(0L)
+        assertThat(safetyOrgAlertCreatedWebhookEvent.id()).contains("id")
+        assertThat(safetyOrgAlertCreatedWebhookEvent.createdAt()).contains(0L)
         assertThat(safetyOrgAlertCreatedWebhookEvent.data())
-            .isEqualTo(
+            .contains(
                 SafetyOrgAlertCreatedWebhookEvent.Data.builder()
                     .id("alert_ecc2efdd09bd231a9ad9bd2aada37aa7")
                     .build()

@@ -14,8 +14,8 @@ internal class McpListToolsFailedTest {
         val mcpListToolsFailed =
             McpListToolsFailed.builder().eventId("event_id").itemId("item_id").build()
 
-        assertThat(mcpListToolsFailed.eventId()).isEqualTo("event_id")
-        assertThat(mcpListToolsFailed.itemId()).isEqualTo("item_id")
+        assertThat(mcpListToolsFailed.eventId()).contains("event_id")
+        assertThat(mcpListToolsFailed.itemId()).contains("item_id")
 
         val jsonMapper = jsonMapper()
 

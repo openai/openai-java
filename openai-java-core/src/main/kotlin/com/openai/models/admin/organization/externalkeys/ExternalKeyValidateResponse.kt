@@ -29,10 +29,16 @@ private constructor(
     ) : this(status, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): String = status.getRequired("status")
+    fun status(): java.util.Optional<String> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): String = status.getRequired("status")
 
     /**
      * Returns the raw JSON value of [status].
@@ -155,7 +161,7 @@ private constructor(
             return@apply
         }
 
-        status()
+        statusOrThrow()
         validated = true
     }
 

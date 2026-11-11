@@ -18,6 +18,6 @@ internal class CertificateDeactivateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.certificateIds()).containsExactly("cert_abc")
+        assertThat(body.certificateIdsOrThrow()).containsExactly("cert_abc")
     }
 }

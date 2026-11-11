@@ -46,7 +46,7 @@ internal class ContainerCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.name()).isEqualTo("name")
+        assertThat(body.nameOrThrow()).isEqualTo("name")
         assertThat(body.expiresAfter())
             .contains(
                 ContainerCreateParams.ExpiresAfter.builder()
@@ -76,6 +76,6 @@ internal class ContainerCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.name()).isEqualTo("name")
+        assertThat(body.nameOrThrow()).isEqualTo("name")
     }
 }

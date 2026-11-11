@@ -14,8 +14,8 @@ internal class VoiceConsentDeletedTest {
         val voiceConsentDeleted =
             VoiceConsentDeleted.builder().id("cons_1234").deleted(true).build()
 
-        assertThat(voiceConsentDeleted.id()).isEqualTo("cons_1234")
-        assertThat(voiceConsentDeleted.deleted()).isEqualTo(true)
+        assertThat(voiceConsentDeleted.id()).contains("cons_1234")
+        assertThat(voiceConsentDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

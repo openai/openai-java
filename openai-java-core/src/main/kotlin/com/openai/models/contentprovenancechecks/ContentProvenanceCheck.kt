@@ -49,29 +49,44 @@ private constructor(
     ) : this(createdAt, object_, results, mutableMapOf())
 
     /**
-     * The Unix timestamp, in seconds, when the provenance check was created.
+     * The Unix timestamp, in seconds, when the provenance check was created. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * The object type. Always `content_provenance_check` for this endpoint.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun object_(): Object = object_.getRequired("object")
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * The object type. Always `content_provenance_check` for this endpoint. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<Object> = object_.getOptional("object")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): Object = object_.getRequired("object")
 
     /**
      * The provenance results that apply to the uploaded file. Image results include C2PA and
-     * SynthID; audio results include SynthID.
+     * SynthID; audio results include SynthID. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun results(): List<Result> = results.getRequired("results")
+    fun results(): java.util.Optional<List<Result>> = results.getOptional("results")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun resultsOrThrow(): List<Result> = results.getRequired("results")
 
     /**
      * Returns the raw JSON value of [createdAt].
@@ -270,9 +285,9 @@ private constructor(
             return@apply
         }
 
-        createdAt()
-        object_().validate()
-        results().forEach { it.validate() }
+        createdAtOrThrow()
+        object_OrThrow().validate()
+        resultsOrThrow().forEach { it.validate() }
         validated = true
     }
 
@@ -668,28 +683,46 @@ private constructor(
 
             /**
              * The UTC RFC 3339 timestamp recorded by the provenance signal for when the asset was
-             * generated, when available.
+             * generated, when available. The schema requires this property. Returns empty if the
+             * JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun generatedAt(): Optional<String> = generatedAt.getOptional("generated_at")
+            fun generatedAt(): java.util.Optional<String> = generatedAt.getOptional("generated_at")
 
             /**
-             * The C2PA manifest issuer, when available.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun issuer(): Optional<String> = issuer.getOptional("issuer")
+            fun generatedAtOrThrow(): String = generatedAt.getRequired("generated_at")
 
             /**
-             * The OpenAI model recorded by the provenance signal, when available.
+             * The C2PA manifest issuer, when available. The schema requires this property. Returns
+             * empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun model(): Optional<String> = model.getOptional("model")
+            fun issuer(): java.util.Optional<String> = issuer.getOptional("issuer")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun issuerOrThrow(): String = issuer.getRequired("issuer")
+
+            /**
+             * The OpenAI model recorded by the provenance signal, when available. The schema
+             * requires this property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun model(): java.util.Optional<String> = model.getOptional("model")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun modelOrThrow(): String = model.getRequired("model")
 
             /**
              * Whether a supported OpenAI C2PA provenance signal was detected. If `not_detected`, it
@@ -698,34 +731,58 @@ private constructor(
              * tampering, the watermark was degraded, it comes from a legacy generation model, or it
              * was created before provenance signals were available. Content could also still be
              * AI-generated by another company's model, which the tool currently does not detect.
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun outcome(): Outcome = outcome.getRequired("outcome")
+            fun outcome(): java.util.Optional<Outcome> = outcome.getOptional("outcome")
 
             /**
-             * The provenance signal type. Always `c2pa`.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("c2pa")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun outcomeOrThrow(): Outcome = outcome.getRequired("outcome")
 
             /**
-             * The validation status of the C2PA manifest in the uploaded image.
+             * The provenance signal type. Always `c2pa`. The schema requires this property. Returns
+             * empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun validationState(): ValidationState = validationState.getRequired("validation_state")
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("c2pa")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+            /**
+             * The validation status of the C2PA manifest in the uploaded image. The schema requires
+             * this property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun validationState(): java.util.Optional<ValidationState> =
+                validationState.getOptional("validation_state")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun validationStateOrThrow(): ValidationState =
+                validationState.getRequired("validation_state")
 
             /**
              * Returns the raw JSON value of [generatedAt].
@@ -1006,13 +1063,9 @@ private constructor(
                 generatedAt()
                 issuer()
                 model()
-                outcome().validate()
-                _type().let {
-                    if (it != JsonValue.from("c2pa")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                validationState().validate()
+                outcomeOrThrow().validate()
+                typeOrThrow()
+                validationStateOrThrow().validate()
                 validated = true
             }
 
@@ -1410,20 +1463,32 @@ private constructor(
 
             /**
              * The UTC RFC 3339 timestamp recorded by the provenance signal for when the asset was
-             * generated, when available.
+             * generated, when available. The schema requires this property. Returns empty if the
+             * JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun generatedAt(): Optional<String> = generatedAt.getOptional("generated_at")
+            fun generatedAt(): java.util.Optional<String> = generatedAt.getOptional("generated_at")
 
             /**
-             * The OpenAI model recorded by the provenance signal, when available.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun model(): Optional<String> = model.getOptional("model")
+            fun generatedAtOrThrow(): String = generatedAt.getRequired("generated_at")
+
+            /**
+             * The OpenAI model recorded by the provenance signal, when available. The schema
+             * requires this property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun model(): java.util.Optional<String> = model.getOptional("model")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun modelOrThrow(): String = model.getRequired("model")
 
             /**
              * Whether a supported OpenAI SynthID watermark was detected. If `not_detected`, it
@@ -1432,25 +1497,42 @@ private constructor(
              * tampering, the watermark was degraded, it comes from a legacy generation model, or it
              * was created before provenance signals were available. Content could also still be
              * AI-generated by another company's model, which the tool currently does not detect.
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun outcome(): Outcome = outcome.getRequired("outcome")
+            fun outcome(): java.util.Optional<Outcome> = outcome.getOptional("outcome")
 
             /**
-             * The provenance signal type. Always `synthid`.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("synthid")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun outcomeOrThrow(): Outcome = outcome.getRequired("outcome")
+
+            /**
+             * The provenance signal type. Always `synthid`. The schema requires this property.
+             * Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("synthid")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
             /**
              * Returns the raw JSON value of [generatedAt].
@@ -1673,12 +1755,8 @@ private constructor(
 
                 generatedAt()
                 model()
-                outcome().validate()
-                _type().let {
-                    if (it != JsonValue.from("synthid")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
+                outcomeOrThrow().validate()
+                typeOrThrow()
                 validated = true
             }
 

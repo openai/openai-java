@@ -34,8 +34,8 @@ internal class BetaResponseErrorTest {
                 .type("type")
                 .build()
 
-        assertThat(betaResponseError.code()).isEqualTo(BetaResponseError.Code.SERVER_ERROR)
-        assertThat(betaResponseError.message()).isEqualTo("message")
+        assertThat(betaResponseError.code()).contains(BetaResponseError.Code.SERVER_ERROR)
+        assertThat(betaResponseError.message()).contains("message")
         assertThat(betaResponseError.misalignment())
             .contains(
                 BetaResponseError.Misalignment.builder()

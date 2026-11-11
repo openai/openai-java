@@ -24,9 +24,9 @@ internal class ResponseFunctionToolCallItemTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(responseFunctionToolCallItem.arguments()).isEqualTo("arguments")
-        assertThat(responseFunctionToolCallItem.callId()).isEqualTo("call_id")
-        assertThat(responseFunctionToolCallItem.name()).isEqualTo("name")
+        assertThat(responseFunctionToolCallItem.arguments()).contains("arguments")
+        assertThat(responseFunctionToolCallItem.callId()).contains("call_id")
+        assertThat(responseFunctionToolCallItem.name()).contains("name")
         assertThat(responseFunctionToolCallItem.id()).contains("id")
         assertThat(responseFunctionToolCallItem.async()).contains(true)
         assertThat(responseFunctionToolCallItem.caller())

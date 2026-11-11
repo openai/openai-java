@@ -339,52 +339,87 @@ private constructor(
         )
 
         /**
-         * A label for this MCP server, used to identify it in tool calls.
+         * A label for this MCP server, used to identify it in tool calls. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun serverLabel(): String = serverLabel.getRequired("server_label")
+        fun serverLabel(): java.util.Optional<String> = serverLabel.getOptional("server_label")
 
         /**
-         * The type of the MCP tool. Always `mcp`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("mcp")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun serverLabelOrThrow(): String = serverLabel.getRequired("server_label")
 
         /**
-         * The tool invocation context(s).
+         * The type of the MCP tool. Always `mcp`. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun allowedCallers(): Optional<List<AllowedCaller>> =
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("mcp")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+        /**
+         * The tool invocation context(s). Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun allowedCallers(): java.util.Optional<List<AllowedCaller>> =
             allowedCallers.getOptional("allowed_callers")
 
         /**
-         * List of allowed tool names or a filter object.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun allowedTools(): Optional<AllowedTools> = allowedTools.getOptional("allowed_tools")
+        fun allowedCallersOrThrow(): List<AllowedCaller> =
+            allowedCallers.getRequired("allowed_callers")
+
+        /**
+         * List of allowed tool names or a filter object. Returns empty if the JSON property is
+         * missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun allowedTools(): java.util.Optional<AllowedTools> =
+            allowedTools.getOptional("allowed_tools")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun allowedToolsOrThrow(): AllowedTools = allowedTools.getRequired("allowed_tools")
 
         /**
          * An OAuth access token that can be used with a remote MCP server, either with a custom MCP
          * server URL or a service connector. Your application must handle the OAuth authorization
-         * flow and provide the token here.
+         * flow and provide the token here. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun authorization(): Optional<String> = authorization.getOptional("authorization")
+        fun authorization(): java.util.Optional<String> = authorization.getOptional("authorization")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun authorizationOrThrow(): String = authorization.getRequired("authorization")
 
         /**
          * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
@@ -402,66 +437,108 @@ private constructor(
          * - Microsoft Teams: `connector_microsoftteams`
          * - Outlook Calendar: `connector_outlookcalendar`
          * - Outlook Email: `connector_outlookemail`
-         * - SharePoint: `connector_sharepoint`
+         * - SharePoint: `connector_sharepoint` Returns empty if the JSON property is missing or
+         *   null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
         @Deprecated("deprecated")
-        fun connectorId(): Optional<ConnectorId> = connectorId.getOptional("connector_id")
+        fun connectorId(): java.util.Optional<ConnectorId> = connectorId.getOptional("connector_id")
 
         /**
-         * Whether this MCP tool is deferred and discovered via tool search.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun deferLoading(): Optional<Boolean> = deferLoading.getOptional("defer_loading")
+        @Deprecated("deprecated")
+        fun connectorIdOrThrow(): ConnectorId = connectorId.getRequired("connector_id")
+
+        /**
+         * Whether this MCP tool is deferred and discovered via tool search. Returns empty if the
+         * JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun deferLoading(): java.util.Optional<Boolean> = deferLoading.getOptional("defer_loading")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun deferLoadingOrThrow(): Boolean = deferLoading.getRequired("defer_loading")
 
         /**
          * Optional HTTP headers to send to the MCP server. Use for authentication or other
-         * purposes.
+         * purposes. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun headers(): Optional<Headers> = headers.getOptional("headers")
+        fun headers(): java.util.Optional<Headers> = headers.getOptional("headers")
 
         /**
-         * Specify which of the MCP server's tools require approval.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun requireApproval(): Optional<RequireApproval> =
+        fun headersOrThrow(): Headers = headers.getRequired("headers")
+
+        /**
+         * Specify which of the MCP server's tools require approval. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun requireApproval(): java.util.Optional<RequireApproval> =
             requireApproval.getOptional("require_approval")
 
         /**
-         * Optional description of the MCP server, used to provide more context.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun serverDescription(): Optional<String> =
+        fun requireApprovalOrThrow(): RequireApproval =
+            requireApproval.getRequired("require_approval")
+
+        /**
+         * Optional description of the MCP server, used to provide more context. Returns empty if
+         * the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun serverDescription(): java.util.Optional<String> =
             serverDescription.getOptional("server_description")
 
         /**
-         * The URL for the MCP server. One of `server_url`, `connector_id`, or `tunnel_id` must be
-         * provided.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun serverUrl(): Optional<String> = serverUrl.getOptional("server_url")
+        fun serverDescriptionOrThrow(): String = serverDescription.getRequired("server_description")
+
+        /**
+         * The URL for the MCP server. One of `server_url`, `connector_id`, or `tunnel_id` must be
+         * provided. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun serverUrl(): java.util.Optional<String> = serverUrl.getOptional("server_url")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun serverUrlOrThrow(): String = serverUrl.getRequired("server_url")
 
         /**
          * The Secure MCP Tunnel ID to use instead of a direct server URL. One of `server_url`,
-         * `connector_id`, or `tunnel_id` must be provided.
+         * `connector_id`, or `tunnel_id` must be provided. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun tunnelId(): Optional<String> = tunnelId.getOptional("tunnel_id")
+        fun tunnelId(): java.util.Optional<String> = tunnelId.getOptional("tunnel_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun tunnelIdOrThrow(): String = tunnelId.getRequired("tunnel_id")
 
         /**
          * Returns the raw JSON value of [serverLabel].
@@ -964,12 +1041,8 @@ private constructor(
                 return@apply
             }
 
-            serverLabel()
-            _type().let {
-                if (it != JsonValue.from("mcp")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            serverLabelOrThrow()
+            typeOrThrow()
             allowedCallers().ifPresent { it.forEach { it.validate() } }
             allowedTools().ifPresent { it.validate() }
             authorization()
@@ -1411,20 +1484,32 @@ private constructor(
                  * Indicates whether or not a tool modifies data or is read-only. If an MCP server
                  * is
                  * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
-                 * it will match this filter.
+                 * it will match this filter. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun readOnly(): Optional<Boolean> = readOnly.getOptional("read_only")
+                fun readOnly(): java.util.Optional<Boolean> = readOnly.getOptional("read_only")
 
                 /**
-                 * List of allowed tool names.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun toolNames(): Optional<List<String>> = toolNames.getOptional("tool_names")
+                fun readOnlyOrThrow(): Boolean = readOnly.getRequired("read_only")
+
+                /**
+                 * List of allowed tool names. Returns empty if the JSON property is missing or
+                 * null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun toolNames(): java.util.Optional<List<String>> =
+                    toolNames.getOptional("tool_names")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun toolNamesOrThrow(): List<String> = toolNames.getRequired("tool_names")
 
                 /**
                  * Returns the raw JSON value of [readOnly].
@@ -2283,20 +2368,32 @@ private constructor(
                 ) : this(always, never, mutableMapOf())
 
                 /**
-                 * A filter object to specify which tools are allowed.
+                 * A filter object to specify which tools are allowed. Returns empty if the JSON
+                 * property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun always(): Optional<Always> = always.getOptional("always")
+                fun always(): java.util.Optional<Always> = always.getOptional("always")
 
                 /**
-                 * A filter object to specify which tools are allowed.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun never(): Optional<Never> = never.getOptional("never")
+                fun alwaysOrThrow(): Always = always.getRequired("always")
+
+                /**
+                 * A filter object to specify which tools are allowed. Returns empty if the JSON
+                 * property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun never(): java.util.Optional<Never> = never.getOptional("never")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun neverOrThrow(): Never = never.getRequired("never")
 
                 /**
                  * Returns the raw JSON value of [always].
@@ -2487,20 +2584,33 @@ private constructor(
                      * Indicates whether or not a tool modifies data or is read-only. If an MCP
                      * server is
                      * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
-                     * it will match this filter.
+                     * it will match this filter. Returns empty if the JSON property is missing or
+                     * null.
                      *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   (e.g. if the server responded with an unexpected value).
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
                      */
-                    fun readOnly(): Optional<Boolean> = readOnly.getOptional("read_only")
+                    fun readOnly(): java.util.Optional<Boolean> = readOnly.getOptional("read_only")
 
                     /**
-                     * List of allowed tool names.
-                     *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   (e.g. if the server responded with an unexpected value).
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
                      */
-                    fun toolNames(): Optional<List<String>> = toolNames.getOptional("tool_names")
+                    fun readOnlyOrThrow(): Boolean = readOnly.getRequired("read_only")
+
+                    /**
+                     * List of allowed tool names. Returns empty if the JSON property is missing or
+                     * null.
+                     *
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                     */
+                    fun toolNames(): java.util.Optional<List<String>> =
+                        toolNames.getOptional("tool_names")
+
+                    /**
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
+                     */
+                    fun toolNamesOrThrow(): List<String> = toolNames.getRequired("tool_names")
 
                     /**
                      * Returns the raw JSON value of [readOnly].
@@ -2740,20 +2850,33 @@ private constructor(
                      * Indicates whether or not a tool modifies data or is read-only. If an MCP
                      * server is
                      * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
-                     * it will match this filter.
+                     * it will match this filter. Returns empty if the JSON property is missing or
+                     * null.
                      *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   (e.g. if the server responded with an unexpected value).
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
                      */
-                    fun readOnly(): Optional<Boolean> = readOnly.getOptional("read_only")
+                    fun readOnly(): java.util.Optional<Boolean> = readOnly.getOptional("read_only")
 
                     /**
-                     * List of allowed tool names.
-                     *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   (e.g. if the server responded with an unexpected value).
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
                      */
-                    fun toolNames(): Optional<List<String>> = toolNames.getOptional("tool_names")
+                    fun readOnlyOrThrow(): Boolean = readOnly.getRequired("read_only")
+
+                    /**
+                     * List of allowed tool names. Returns empty if the JSON property is missing or
+                     * null.
+                     *
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                     */
+                    fun toolNames(): java.util.Optional<List<String>> =
+                        toolNames.getOptional("tool_names")
+
+                    /**
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
+                     */
+                    fun toolNamesOrThrow(): List<String> = toolNames.getRequired("tool_names")
 
                     /**
                      * Returns the raw JSON value of [readOnly].

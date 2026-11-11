@@ -77,65 +77,99 @@ private constructor(
 
     /**
      * Number of examples in each batch. A larger batch size means that model parameters are updated
-     * less frequently, but with lower variance.
+     * less frequently, but with lower variance. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun batchSize(): Optional<BatchSize> = batchSize.getOptional("batch_size")
+    fun batchSize(): java.util.Optional<BatchSize> = batchSize.getOptional("batch_size")
 
     /**
-     * Multiplier on amount of compute used for exploring search space during training.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun computeMultiplier(): Optional<ComputeMultiplier> =
+    fun batchSizeOrThrow(): BatchSize = batchSize.getRequired("batch_size")
+
+    /**
+     * Multiplier on amount of compute used for exploring search space during training. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun computeMultiplier(): java.util.Optional<ComputeMultiplier> =
         computeMultiplier.getOptional("compute_multiplier")
 
     /**
-     * The number of training steps between evaluation runs.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun evalInterval(): Optional<EvalInterval> = evalInterval.getOptional("eval_interval")
+    fun computeMultiplierOrThrow(): ComputeMultiplier =
+        computeMultiplier.getRequired("compute_multiplier")
 
     /**
-     * Number of evaluation samples to generate per training step.
+     * The number of training steps between evaluation runs. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun evalSamples(): Optional<EvalSamples> = evalSamples.getOptional("eval_samples")
+    fun evalInterval(): java.util.Optional<EvalInterval> = evalInterval.getOptional("eval_interval")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun evalIntervalOrThrow(): EvalInterval = evalInterval.getRequired("eval_interval")
+
+    /**
+     * Number of evaluation samples to generate per training step. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun evalSamples(): java.util.Optional<EvalSamples> = evalSamples.getOptional("eval_samples")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun evalSamplesOrThrow(): EvalSamples = evalSamples.getRequired("eval_samples")
 
     /**
      * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
-     * overfitting.
+     * overfitting. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
+    fun learningRateMultiplier(): java.util.Optional<LearningRateMultiplier> =
         learningRateMultiplier.getOptional("learning_rate_multiplier")
 
     /**
-     * The number of epochs to train the model for. An epoch refers to one full cycle through the
-     * training dataset.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun nEpochs(): Optional<NEpochs> = nEpochs.getOptional("n_epochs")
+    fun learningRateMultiplierOrThrow(): LearningRateMultiplier =
+        learningRateMultiplier.getRequired("learning_rate_multiplier")
 
     /**
-     * Level of reasoning effort.
+     * The number of epochs to train the model for. An epoch refers to one full cycle through the
+     * training dataset. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun reasoningEffort(): Optional<ReasoningEffort> =
+    fun nEpochs(): java.util.Optional<NEpochs> = nEpochs.getOptional("n_epochs")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nEpochsOrThrow(): NEpochs = nEpochs.getRequired("n_epochs")
+
+    /**
+     * Level of reasoning effort. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun reasoningEffort(): java.util.Optional<ReasoningEffort> =
         reasoningEffort.getOptional("reasoning_effort")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun reasoningEffortOrThrow(): ReasoningEffort = reasoningEffort.getRequired("reasoning_effort")
 
     /**
      * Returns the raw JSON value of [batchSize].

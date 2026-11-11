@@ -46,12 +46,17 @@ private constructor(
     ) : this(grader, mutableMapOf())
 
     /**
-     * The grader used for the fine-tuning job.
+     * The grader used for the fine-tuning job. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun grader(): Optional<Grader> = grader.getOptional("grader")
+    fun grader(): java.util.Optional<Grader> = grader.getOptional("grader")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun graderOrThrow(): Grader = grader.getRequired("grader")
 
     /**
      * Returns the raw JSON value of [grader].

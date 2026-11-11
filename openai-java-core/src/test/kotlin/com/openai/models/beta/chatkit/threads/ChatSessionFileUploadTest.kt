@@ -14,7 +14,7 @@ internal class ChatSessionFileUploadTest {
         val chatSessionFileUpload =
             ChatSessionFileUpload.builder().enabled(true).maxFileSize(0L).maxFiles(0L).build()
 
-        assertThat(chatSessionFileUpload.enabled()).isEqualTo(true)
+        assertThat(chatSessionFileUpload.enabled()).contains(true)
         assertThat(chatSessionFileUpload.maxFileSize()).contains(0L)
         assertThat(chatSessionFileUpload.maxFiles()).contains(0L)
 

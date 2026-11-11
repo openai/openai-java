@@ -21,7 +21,7 @@ internal class FileSearchToolCallDeltaTest {
 
         assertThat(fileSearchToolCallDelta._fileSearch())
             .isEqualTo(JsonValue.from(mapOf<String, Any>()))
-        assertThat(fileSearchToolCallDelta.index()).isEqualTo(0L)
+        assertThat(fileSearchToolCallDelta.index()).contains(0L)
         assertThat(fileSearchToolCallDelta.id()).contains("id")
 
         val jsonMapper = jsonMapper()

@@ -20,17 +20,17 @@ public final class VideoGenerationExample {
         Video video = client.videos().create(params);
 
         // Poll until video is completed or failed
-        while (video.status() != Video.Status.COMPLETED && video.status() != Video.Status.FAILED) {
-            System.out.println("Polling... Progress: " + video.progress() + "%");
+        while (video.statusOrThrow() != Video.Status.COMPLETED && video.statusOrThrow() != Video.Status.FAILED) {
+            System.out.println("Polling... Progress: " + video.progressOrThrow() + "%");
             Thread.sleep(10_000); // Poll every 10 seconds
-            video = client.videos().retrieve(video.id());
+            video = client.videos().retrieve(video.idOrThrow());
         }
 
-        if (video.status() == Video.Status.COMPLETED) {
+        if (video.statusOrThrow() == Video.Status.COMPLETED) {
             System.out.println("Video successfully completed!");
-            System.out.println("Video ID: " + video.id());
+            System.out.println("Video ID: " + video.idOrThrow());
         } else {
-            System.out.println("Video creation did not complete. Status: " + video.status());
+            System.out.println("Video creation did not complete. Status: " + video.statusOrThrow());
             video.error().ifPresent(error -> {
                 System.out.println("Error: " + error);
             });

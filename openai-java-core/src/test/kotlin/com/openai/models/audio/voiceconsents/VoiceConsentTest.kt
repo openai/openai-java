@@ -19,10 +19,10 @@ internal class VoiceConsentTest {
                 .name("name")
                 .build()
 
-        assertThat(voiceConsent.id()).isEqualTo("cons_1234")
-        assertThat(voiceConsent.createdAt()).isEqualTo(0L)
-        assertThat(voiceConsent.language()).isEqualTo("language")
-        assertThat(voiceConsent.name()).isEqualTo("name")
+        assertThat(voiceConsent.id()).contains("cons_1234")
+        assertThat(voiceConsent.createdAt()).contains(0L)
+        assertThat(voiceConsent.language()).contains("language")
+        assertThat(voiceConsent.name()).contains("name")
 
         val jsonMapper = jsonMapper()
 

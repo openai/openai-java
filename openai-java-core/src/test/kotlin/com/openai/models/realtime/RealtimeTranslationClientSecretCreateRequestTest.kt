@@ -58,7 +58,7 @@ internal class RealtimeTranslationClientSecretCreateRequestTest {
                 .build()
 
         assertThat(realtimeTranslationClientSecretCreateRequest.session())
-            .isEqualTo(
+            .contains(
                 RealtimeTranslationSessionCreateRequest.builder()
                     .model("model")
                     .audio(

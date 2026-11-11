@@ -14,8 +14,8 @@ internal class RealtimeMcpProtocolErrorTest {
         val realtimeMcpProtocolError =
             RealtimeMcpProtocolError.builder().code(0L).message("message").build()
 
-        assertThat(realtimeMcpProtocolError.code()).isEqualTo(0L)
-        assertThat(realtimeMcpProtocolError.message()).isEqualTo("message")
+        assertThat(realtimeMcpProtocolError.code()).contains(0L)
+        assertThat(realtimeMcpProtocolError.message()).contains("message")
 
         val jsonMapper = jsonMapper()
 

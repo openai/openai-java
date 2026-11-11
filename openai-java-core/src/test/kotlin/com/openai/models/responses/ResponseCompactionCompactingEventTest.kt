@@ -18,9 +18,9 @@ internal class ResponseCompactionCompactingEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseCompactionCompactingEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseCompactionCompactingEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseCompactionCompactingEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseCompactionCompactingEvent.itemId()).contains("item_id")
+        assertThat(responseCompactionCompactingEvent.outputIndex()).contains(0L)
+        assertThat(responseCompactionCompactingEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

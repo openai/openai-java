@@ -108,7 +108,7 @@ internal class AutomationInvocationSourceAutomationTest {
                 .build()
 
         assertThat(automationInvocationSourceAutomation.automation())
-            .isEqualTo(
+            .contains(
                 Automation.ofPeriodic(
                     PeriodicAutomation.builder()
                         .id("id")

@@ -29,12 +29,12 @@ internal class ExternalStorageConfigurationTest {
                 .status(ExternalStorageConfiguration.Status.PENDING)
                 .build()
 
-        assertThat(externalStorageConfiguration.id()).isEqualTo("id")
-        assertThat(externalStorageConfiguration.createdAt()).isEqualTo(0L)
-        assertThat(externalStorageConfiguration.geography()).isEqualTo("geography")
-        assertThat(externalStorageConfiguration.projectId()).isEqualTo("project_id")
+        assertThat(externalStorageConfiguration.id()).contains("id")
+        assertThat(externalStorageConfiguration.createdAt()).contains(0L)
+        assertThat(externalStorageConfiguration.geography()).contains("geography")
+        assertThat(externalStorageConfiguration.projectId()).contains("project_id")
         assertThat(externalStorageConfiguration.provider())
-            .isEqualTo(
+            .contains(
                 ExternalStorageConfiguration.Provider.ofAws(
                     AwsExternalStorageProvider.builder()
                         .accountId("account_id")
@@ -46,7 +46,7 @@ internal class ExternalStorageConfigurationTest {
                 )
             )
         assertThat(externalStorageConfiguration.status())
-            .isEqualTo(ExternalStorageConfiguration.Status.PENDING)
+            .contains(ExternalStorageConfiguration.Status.PENDING)
 
         val jsonMapper = jsonMapper()
 

@@ -19,10 +19,10 @@ internal class ResponseMcpCallArgumentsDeltaEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseMcpCallArgumentsDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(responseMcpCallArgumentsDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseMcpCallArgumentsDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseMcpCallArgumentsDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseMcpCallArgumentsDeltaEvent.delta()).contains("delta")
+        assertThat(responseMcpCallArgumentsDeltaEvent.itemId()).contains("item_id")
+        assertThat(responseMcpCallArgumentsDeltaEvent.outputIndex()).contains(0L)
+        assertThat(responseMcpCallArgumentsDeltaEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

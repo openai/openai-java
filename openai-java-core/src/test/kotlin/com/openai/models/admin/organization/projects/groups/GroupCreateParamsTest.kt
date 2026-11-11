@@ -37,7 +37,7 @@ internal class GroupCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.groupId()).isEqualTo("group_id")
-        assertThat(body.role()).isEqualTo("role")
+        assertThat(body.groupIdOrThrow()).isEqualTo("group_id")
+        assertThat(body.roleOrThrow()).isEqualTo("role")
     }
 }

@@ -5,6 +5,7 @@ package com.openai.models.evals.runs
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -72,10 +73,10 @@ internal class RunCancelResponseTest {
                 .status("status")
                 .build()
 
-        assertThat(runCancelResponse.id()).isEqualTo("id")
-        assertThat(runCancelResponse.createdAt()).isEqualTo(0L)
+        assertThat(runCancelResponse.id()).contains("id")
+        assertThat(runCancelResponse.createdAt()).contains(0L)
         assertThat(runCancelResponse.dataSource())
-            .isEqualTo(
+            .contains(
                 RunCancelResponse.DataSource.ofJsonl(
                     CreateEvalJsonlRunDataSource.builder()
                         .fileContentSource(
@@ -101,17 +102,17 @@ internal class RunCancelResponseTest {
                 )
             )
         assertThat(runCancelResponse.error())
-            .isEqualTo(EvalApiError.builder().code("code").message("message").build())
-        assertThat(runCancelResponse.evalId()).isEqualTo("eval_id")
+            .contains(EvalApiError.builder().code("code").message("message").build())
+        assertThat(runCancelResponse.evalId()).contains("eval_id")
         assertThat(runCancelResponse.metadata())
             .contains(
                 RunCancelResponse.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(runCancelResponse.model()).isEqualTo("model")
-        assertThat(runCancelResponse.name()).isEqualTo("name")
-        assertThat(runCancelResponse.perModelUsage())
+        assertThat(runCancelResponse.model()).contains("model")
+        assertThat(runCancelResponse.name()).contains("name")
+        assertThat(runCancelResponse.perModelUsage().getOrNull())
             .containsExactly(
                 RunCancelResponse.PerModelUsage.builder()
                     .cachedTokens(0L)
@@ -122,7 +123,7 @@ internal class RunCancelResponseTest {
                     .totalTokens(0L)
                     .build()
             )
-        assertThat(runCancelResponse.perTestingCriteriaResults())
+        assertThat(runCancelResponse.perTestingCriteriaResults().getOrNull())
             .containsExactly(
                 RunCancelResponse.PerTestingCriteriaResult.builder()
                     .failed(0L)
@@ -130,9 +131,9 @@ internal class RunCancelResponseTest {
                     .testingCriteria("testing_criteria")
                     .build()
             )
-        assertThat(runCancelResponse.reportUrl()).isEqualTo("https://example.com")
+        assertThat(runCancelResponse.reportUrl()).contains("https://example.com")
         assertThat(runCancelResponse.resultCounts())
-            .isEqualTo(
+            .contains(
                 RunCancelResponse.ResultCounts.builder()
                     .errored(0L)
                     .failed(0L)
@@ -140,7 +141,7 @@ internal class RunCancelResponseTest {
                     .total(0L)
                     .build()
             )
-        assertThat(runCancelResponse.status()).isEqualTo("status")
+        assertThat(runCancelResponse.status()).contains("status")
 
         val jsonMapper = jsonMapper()
 

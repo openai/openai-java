@@ -66,7 +66,7 @@ internal class VectorStoreSearchParamsTest {
 
         val body = params._body()
 
-        assertThat(body.query()).isEqualTo(VectorStoreSearchParams.Query.ofString("string"))
+        assertThat(body.queryOrThrow()).isEqualTo(VectorStoreSearchParams.Query.ofString("string"))
         assertThat(body.filters())
             .contains(
                 VectorStoreSearchParams.Filters.ofComparisonFilter(
@@ -95,6 +95,6 @@ internal class VectorStoreSearchParamsTest {
 
         val body = params._body()
 
-        assertThat(body.query()).isEqualTo(VectorStoreSearchParams.Query.ofString("string"))
+        assertThat(body.queryOrThrow()).isEqualTo(VectorStoreSearchParams.Query.ofString("string"))
     }
 }

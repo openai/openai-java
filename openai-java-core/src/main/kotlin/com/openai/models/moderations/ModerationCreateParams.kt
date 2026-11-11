@@ -44,24 +44,17 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * Input (or inputs) to classify. Can be a single string, an array of strings, or an array of
-     * multi-modal input objects similar to other models.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun input(): Input = body.input()
+    /** @see Body.input */
+    fun input(): java.util.Optional<Input> = body.input()
 
-    /**
-     * The content moderation model you would like to use. Learn more in
-     * [the moderation guide](https://developers.openai.com/api/docs/guides/moderation), and learn
-     * about available models [here](https://developers.openai.com/api/docs/guides/moderation).
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun model(): Optional<ModerationModel> = body.model()
+    /** @see Body.inputOrThrow */
+    fun inputOrThrow(): Input = body.inputOrThrow()
+
+    /** @see Body.model */
+    fun model(): java.util.Optional<ModerationModel> = body.model()
+
+    /** @see Body.modelOrThrow */
+    fun modelOrThrow(): ModerationModel = body.modelOrThrow()
 
     /**
      * Returns the raw JSON value of [input].
@@ -339,23 +332,35 @@ private constructor(
 
         /**
          * Input (or inputs) to classify. Can be a single string, an array of strings, or an array
-         * of multi-modal input objects similar to other models.
+         * of multi-modal input objects similar to other models. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun input(): Input = input.getRequired("input")
+        fun input(): java.util.Optional<Input> = input.getOptional("input")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun inputOrThrow(): Input = input.getRequired("input")
 
         /**
          * The content moderation model you would like to use. Learn more in
          * [the moderation guide](https://developers.openai.com/api/docs/guides/moderation), and
          * learn about available models
-         * [here](https://developers.openai.com/api/docs/guides/moderation).
+         * [here](https://developers.openai.com/api/docs/guides/moderation). Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun model(): Optional<ModerationModel> = model.getOptional("model")
+        fun model(): java.util.Optional<ModerationModel> = model.getOptional("model")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun modelOrThrow(): ModerationModel = model.getRequired("model")
 
         /**
          * Returns the raw JSON value of [input].
@@ -530,7 +535,7 @@ private constructor(
                 return@apply
             }
 
-            input().validate()
+            inputOrThrow().validate()
             model().ifPresent { it.validate() }
             validated = true
         }

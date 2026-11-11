@@ -46,37 +46,59 @@ private constructor(
     ) : this(categories, categoryAppliedInputTypes, categoryScores, flagged, mutableMapOf())
 
     /**
-     * A list of the categories, and whether they are flagged or not.
+     * A list of the categories, and whether they are flagged or not. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun categories(): Categories = categories.getRequired("categories")
+    fun categories(): java.util.Optional<Categories> = categories.getOptional("categories")
 
     /**
-     * A list of the categories along with the input type(s) that the score applies to.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun categoryAppliedInputTypes(): CategoryAppliedInputTypes =
+    fun categoriesOrThrow(): Categories = categories.getRequired("categories")
+
+    /**
+     * A list of the categories along with the input type(s) that the score applies to. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun categoryAppliedInputTypes(): java.util.Optional<CategoryAppliedInputTypes> =
+        categoryAppliedInputTypes.getOptional("category_applied_input_types")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun categoryAppliedInputTypesOrThrow(): CategoryAppliedInputTypes =
         categoryAppliedInputTypes.getRequired("category_applied_input_types")
 
     /**
-     * A list of the categories along with their scores as predicted by model.
+     * A list of the categories along with their scores as predicted by model. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun categoryScores(): CategoryScores = categoryScores.getRequired("category_scores")
+    fun categoryScores(): java.util.Optional<CategoryScores> =
+        categoryScores.getOptional("category_scores")
 
     /**
-     * Whether any of the below categories are flagged.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun flagged(): Boolean = flagged.getRequired("flagged")
+    fun categoryScoresOrThrow(): CategoryScores = categoryScores.getRequired("category_scores")
+
+    /**
+     * Whether any of the below categories are flagged. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun flagged(): java.util.Optional<Boolean> = flagged.getOptional("flagged")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun flaggedOrThrow(): Boolean = flagged.getRequired("flagged")
 
     /**
      * Returns the raw JSON value of [categories].
@@ -292,10 +314,10 @@ private constructor(
             return@apply
         }
 
-        categories().validate()
-        categoryAppliedInputTypes().validate()
-        categoryScores().validate()
-        flagged()
+        categoriesOrThrow().validate()
+        categoryAppliedInputTypesOrThrow().validate()
+        categoryScoresOrThrow().validate()
+        flaggedOrThrow()
         validated = true
     }
 
@@ -392,122 +414,206 @@ private constructor(
         )
 
         /**
-         * Content that expresses, incites, or promotes harassing language towards any target.
+         * Content that expresses, incites, or promotes harassing language towards any target. The
+         * schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun harassment(): Boolean = harassment.getRequired("harassment")
+        fun harassment(): java.util.Optional<Boolean> = harassment.getOptional("harassment")
 
         /**
-         * Harassment content that also includes violence or serious harm towards any target.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun harassmentThreatening(): Boolean =
+        fun harassmentOrThrow(): Boolean = harassment.getRequired("harassment")
+
+        /**
+         * Harassment content that also includes violence or serious harm towards any target. The
+         * schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun harassmentThreatening(): java.util.Optional<Boolean> =
+            harassmentThreatening.getOptional("harassment/threatening")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun harassmentThreateningOrThrow(): Boolean =
             harassmentThreatening.getRequired("harassment/threatening")
 
         /**
          * Content that expresses, incites, or promotes hate based on race, gender, ethnicity,
          * religion, nationality, sexual orientation, disability status, or caste. Hateful content
-         * aimed at non-protected groups (e.g., chess players) is harassment.
+         * aimed at non-protected groups (e.g., chess players) is harassment. The schema requires
+         * this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun hate(): Boolean = hate.getRequired("hate")
+        fun hate(): java.util.Optional<Boolean> = hate.getOptional("hate")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun hateOrThrow(): Boolean = hate.getRequired("hate")
 
         /**
          * Hateful content that also includes violence or serious harm towards the targeted group
          * based on race, gender, ethnicity, religion, nationality, sexual orientation, disability
-         * status, or caste.
+         * status, or caste. The schema requires this property. Returns empty if the JSON property
+         * is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun hateThreatening(): Boolean = hateThreatening.getRequired("hate/threatening")
+        fun hateThreatening(): java.util.Optional<Boolean> =
+            hateThreatening.getOptional("hate/threatening")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun hateThreateningOrThrow(): Boolean = hateThreatening.getRequired("hate/threatening")
 
         /**
          * Content that includes instructions or advice that facilitate the planning or execution of
          * wrongdoing, or that gives advice or instruction on how to commit illicit acts. For
-         * example, "how to shoplift" would fit this category.
+         * example, "how to shoplift" would fit this category. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun illicit(): Optional<Boolean> = illicit.getOptional("illicit")
+        fun illicit(): java.util.Optional<Boolean> = illicit.getOptional("illicit")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun illicitOrThrow(): Boolean = illicit.getRequired("illicit")
 
         /**
          * Content that includes instructions or advice that facilitate the planning or execution of
          * wrongdoing that also includes violence, or that gives advice or instruction on the
-         * procurement of any weapon.
+         * procurement of any weapon. The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun illicitViolent(): Optional<Boolean> = illicitViolent.getOptional("illicit/violent")
+        fun illicitViolent(): java.util.Optional<Boolean> =
+            illicitViolent.getOptional("illicit/violent")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun illicitViolentOrThrow(): Boolean = illicitViolent.getRequired("illicit/violent")
 
         /**
          * Content that promotes, encourages, or depicts acts of self-harm, such as suicide,
-         * cutting, and eating disorders.
+         * cutting, and eating disorders. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun selfHarm(): Boolean = selfHarm.getRequired("self-harm")
+        fun selfHarm(): java.util.Optional<Boolean> = selfHarm.getOptional("self-harm")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun selfHarmOrThrow(): Boolean = selfHarm.getRequired("self-harm")
 
         /**
          * Content that encourages performing acts of self-harm, such as suicide, cutting, and
-         * eating disorders, or that gives instructions or advice on how to commit such acts.
+         * eating disorders, or that gives instructions or advice on how to commit such acts. The
+         * schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun selfHarmInstructions(): Boolean =
+        fun selfHarmInstructions(): java.util.Optional<Boolean> =
+            selfHarmInstructions.getOptional("self-harm/instructions")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun selfHarmInstructionsOrThrow(): Boolean =
             selfHarmInstructions.getRequired("self-harm/instructions")
 
         /**
          * Content where the speaker expresses that they are engaging or intend to engage in acts of
-         * self-harm, such as suicide, cutting, and eating disorders.
+         * self-harm, such as suicide, cutting, and eating disorders. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun selfHarmIntent(): Boolean = selfHarmIntent.getRequired("self-harm/intent")
+        fun selfHarmIntent(): java.util.Optional<Boolean> =
+            selfHarmIntent.getOptional("self-harm/intent")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun selfHarmIntentOrThrow(): Boolean = selfHarmIntent.getRequired("self-harm/intent")
 
         /**
          * Content meant to arouse sexual excitement, such as the description of sexual activity, or
-         * that promotes sexual services (excluding sex education and wellness).
+         * that promotes sexual services (excluding sex education and wellness). The schema requires
+         * this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun sexual(): Boolean = sexual.getRequired("sexual")
+        fun sexual(): java.util.Optional<Boolean> = sexual.getOptional("sexual")
 
         /**
-         * Sexual content that includes an individual who is under 18 years old.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun sexualMinors(): Boolean = sexualMinors.getRequired("sexual/minors")
+        fun sexualOrThrow(): Boolean = sexual.getRequired("sexual")
 
         /**
-         * Content that depicts death, violence, or physical injury.
+         * Sexual content that includes an individual who is under 18 years old. The schema requires
+         * this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun violence(): Boolean = violence.getRequired("violence")
+        fun sexualMinors(): java.util.Optional<Boolean> = sexualMinors.getOptional("sexual/minors")
 
         /**
-         * Content that depicts death, violence, or physical injury in graphic detail.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun violenceGraphic(): Boolean = violenceGraphic.getRequired("violence/graphic")
+        fun sexualMinorsOrThrow(): Boolean = sexualMinors.getRequired("sexual/minors")
+
+        /**
+         * Content that depicts death, violence, or physical injury. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun violence(): java.util.Optional<Boolean> = violence.getOptional("violence")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun violenceOrThrow(): Boolean = violence.getRequired("violence")
+
+        /**
+         * Content that depicts death, violence, or physical injury in graphic detail. The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun violenceGraphic(): java.util.Optional<Boolean> =
+            violenceGraphic.getOptional("violence/graphic")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun violenceGraphicOrThrow(): Boolean = violenceGraphic.getRequired("violence/graphic")
 
         /**
          * Returns the raw JSON value of [harassment].
@@ -1032,19 +1138,19 @@ private constructor(
                 return@apply
             }
 
-            harassment()
-            harassmentThreatening()
-            hate()
-            hateThreatening()
+            harassmentOrThrow()
+            harassmentThreateningOrThrow()
+            hateOrThrow()
+            hateThreateningOrThrow()
             illicit()
             illicitViolent()
-            selfHarm()
-            selfHarmInstructions()
-            selfHarmIntent()
-            sexual()
-            sexualMinors()
-            violence()
-            violenceGraphic()
+            selfHarmOrThrow()
+            selfHarmInstructionsOrThrow()
+            selfHarmIntentOrThrow()
+            sexualOrThrow()
+            sexualMinorsOrThrow()
+            violenceOrThrow()
+            violenceGraphicOrThrow()
             validated = true
         }
 
@@ -1202,111 +1308,199 @@ private constructor(
         )
 
         /**
-         * The applied input type(s) for the category 'harassment'.
+         * The applied input type(s) for the category 'harassment'. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun harassment(): List<Harassment> = harassment.getRequired("harassment")
+        fun harassment(): java.util.Optional<List<Harassment>> =
+            harassment.getOptional("harassment")
 
         /**
-         * The applied input type(s) for the category 'harassment/threatening'.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun harassmentThreatening(): List<HarassmentThreatening> =
+        fun harassmentOrThrow(): List<Harassment> = harassment.getRequired("harassment")
+
+        /**
+         * The applied input type(s) for the category 'harassment/threatening'. The schema requires
+         * this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun harassmentThreatening(): java.util.Optional<List<HarassmentThreatening>> =
+            harassmentThreatening.getOptional("harassment/threatening")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun harassmentThreateningOrThrow(): List<HarassmentThreatening> =
             harassmentThreatening.getRequired("harassment/threatening")
 
         /**
-         * The applied input type(s) for the category 'hate'.
+         * The applied input type(s) for the category 'hate'. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun hate(): List<Hate> = hate.getRequired("hate")
+        fun hate(): java.util.Optional<List<Hate>> = hate.getOptional("hate")
 
         /**
-         * The applied input type(s) for the category 'hate/threatening'.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun hateThreatening(): List<HateThreatening> =
+        fun hateOrThrow(): List<Hate> = hate.getRequired("hate")
+
+        /**
+         * The applied input type(s) for the category 'hate/threatening'. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun hateThreatening(): java.util.Optional<List<HateThreatening>> =
+            hateThreatening.getOptional("hate/threatening")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun hateThreateningOrThrow(): List<HateThreatening> =
             hateThreatening.getRequired("hate/threatening")
 
         /**
-         * The applied input type(s) for the category 'illicit'.
+         * The applied input type(s) for the category 'illicit'. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun illicit(): List<Illicit> = illicit.getRequired("illicit")
+        fun illicit(): java.util.Optional<List<Illicit>> = illicit.getOptional("illicit")
 
         /**
-         * The applied input type(s) for the category 'illicit/violent'.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun illicitViolent(): List<IllicitViolent> = illicitViolent.getRequired("illicit/violent")
+        fun illicitOrThrow(): List<Illicit> = illicit.getRequired("illicit")
 
         /**
-         * The applied input type(s) for the category 'self-harm'.
+         * The applied input type(s) for the category 'illicit/violent'. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun selfHarm(): List<SelfHarm> = selfHarm.getRequired("self-harm")
+        fun illicitViolent(): java.util.Optional<List<IllicitViolent>> =
+            illicitViolent.getOptional("illicit/violent")
 
         /**
-         * The applied input type(s) for the category 'self-harm/instructions'.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun selfHarmInstructions(): List<SelfHarmInstruction> =
+        fun illicitViolentOrThrow(): List<IllicitViolent> =
+            illicitViolent.getRequired("illicit/violent")
+
+        /**
+         * The applied input type(s) for the category 'self-harm'. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun selfHarm(): java.util.Optional<List<SelfHarm>> = selfHarm.getOptional("self-harm")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun selfHarmOrThrow(): List<SelfHarm> = selfHarm.getRequired("self-harm")
+
+        /**
+         * The applied input type(s) for the category 'self-harm/instructions'. The schema requires
+         * this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun selfHarmInstructions(): java.util.Optional<List<SelfHarmInstruction>> =
+            selfHarmInstructions.getOptional("self-harm/instructions")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun selfHarmInstructionsOrThrow(): List<SelfHarmInstruction> =
             selfHarmInstructions.getRequired("self-harm/instructions")
 
         /**
-         * The applied input type(s) for the category 'self-harm/intent'.
+         * The applied input type(s) for the category 'self-harm/intent'. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun selfHarmIntent(): List<SelfHarmIntent> = selfHarmIntent.getRequired("self-harm/intent")
+        fun selfHarmIntent(): java.util.Optional<List<SelfHarmIntent>> =
+            selfHarmIntent.getOptional("self-harm/intent")
 
         /**
-         * The applied input type(s) for the category 'sexual'.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun sexual(): List<Sexual> = sexual.getRequired("sexual")
+        fun selfHarmIntentOrThrow(): List<SelfHarmIntent> =
+            selfHarmIntent.getRequired("self-harm/intent")
 
         /**
-         * The applied input type(s) for the category 'sexual/minors'.
+         * The applied input type(s) for the category 'sexual'. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun sexualMinors(): List<SexualMinor> = sexualMinors.getRequired("sexual/minors")
+        fun sexual(): java.util.Optional<List<Sexual>> = sexual.getOptional("sexual")
 
         /**
-         * The applied input type(s) for the category 'violence'.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun violence(): List<Violence> = violence.getRequired("violence")
+        fun sexualOrThrow(): List<Sexual> = sexual.getRequired("sexual")
 
         /**
-         * The applied input type(s) for the category 'violence/graphic'.
+         * The applied input type(s) for the category 'sexual/minors'. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun violenceGraphic(): List<ViolenceGraphic> =
+        fun sexualMinors(): java.util.Optional<List<SexualMinor>> =
+            sexualMinors.getOptional("sexual/minors")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun sexualMinorsOrThrow(): List<SexualMinor> = sexualMinors.getRequired("sexual/minors")
+
+        /**
+         * The applied input type(s) for the category 'violence'. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun violence(): java.util.Optional<List<Violence>> = violence.getOptional("violence")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun violenceOrThrow(): List<Violence> = violence.getRequired("violence")
+
+        /**
+         * The applied input type(s) for the category 'violence/graphic'. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun violenceGraphic(): java.util.Optional<List<ViolenceGraphic>> =
+            violenceGraphic.getOptional("violence/graphic")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun violenceGraphicOrThrow(): List<ViolenceGraphic> =
             violenceGraphic.getRequired("violence/graphic")
 
         /**
@@ -1964,19 +2158,19 @@ private constructor(
                 return@apply
             }
 
-            harassment().forEach { it.validate() }
-            harassmentThreatening().forEach { it.validate() }
-            hate().forEach { it.validate() }
-            hateThreatening().forEach { it.validate() }
-            illicit().forEach { it.validate() }
-            illicitViolent().forEach { it.validate() }
-            selfHarm().forEach { it.validate() }
-            selfHarmInstructions().forEach { it.validate() }
-            selfHarmIntent().forEach { it.validate() }
-            sexual().forEach { it.validate() }
-            sexualMinors().forEach { it.validate() }
-            violence().forEach { it.validate() }
-            violenceGraphic().forEach { it.validate() }
+            harassmentOrThrow().forEach { it.validate() }
+            harassmentThreateningOrThrow().forEach { it.validate() }
+            hateOrThrow().forEach { it.validate() }
+            hateThreateningOrThrow().forEach { it.validate() }
+            illicitOrThrow().forEach { it.validate() }
+            illicitViolentOrThrow().forEach { it.validate() }
+            selfHarmOrThrow().forEach { it.validate() }
+            selfHarmInstructionsOrThrow().forEach { it.validate() }
+            selfHarmIntentOrThrow().forEach { it.validate() }
+            sexualOrThrow().forEach { it.validate() }
+            sexualMinorsOrThrow().forEach { it.validate() }
+            violenceOrThrow().forEach { it.validate() }
+            violenceGraphicOrThrow().forEach { it.validate() }
             validated = true
         }
 
@@ -3976,110 +4170,194 @@ private constructor(
         )
 
         /**
-         * The score for the category 'harassment'.
+         * The score for the category 'harassment'. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun harassment(): Double = harassment.getRequired("harassment")
+        fun harassment(): java.util.Optional<Double> = harassment.getOptional("harassment")
 
         /**
-         * The score for the category 'harassment/threatening'.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun harassmentThreatening(): Double =
+        fun harassmentOrThrow(): Double = harassment.getRequired("harassment")
+
+        /**
+         * The score for the category 'harassment/threatening'. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun harassmentThreatening(): java.util.Optional<Double> =
+            harassmentThreatening.getOptional("harassment/threatening")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun harassmentThreateningOrThrow(): Double =
             harassmentThreatening.getRequired("harassment/threatening")
 
         /**
-         * The score for the category 'hate'.
+         * The score for the category 'hate'. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun hate(): Double = hate.getRequired("hate")
+        fun hate(): java.util.Optional<Double> = hate.getOptional("hate")
 
         /**
-         * The score for the category 'hate/threatening'.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun hateThreatening(): Double = hateThreatening.getRequired("hate/threatening")
+        fun hateOrThrow(): Double = hate.getRequired("hate")
 
         /**
-         * The score for the category 'illicit'.
+         * The score for the category 'hate/threatening'. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun illicit(): Double = illicit.getRequired("illicit")
+        fun hateThreatening(): java.util.Optional<Double> =
+            hateThreatening.getOptional("hate/threatening")
 
         /**
-         * The score for the category 'illicit/violent'.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun illicitViolent(): Double = illicitViolent.getRequired("illicit/violent")
+        fun hateThreateningOrThrow(): Double = hateThreatening.getRequired("hate/threatening")
 
         /**
-         * The score for the category 'self-harm'.
+         * The score for the category 'illicit'. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun selfHarm(): Double = selfHarm.getRequired("self-harm")
+        fun illicit(): java.util.Optional<Double> = illicit.getOptional("illicit")
 
         /**
-         * The score for the category 'self-harm/instructions'.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun selfHarmInstructions(): Double =
+        fun illicitOrThrow(): Double = illicit.getRequired("illicit")
+
+        /**
+         * The score for the category 'illicit/violent'. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun illicitViolent(): java.util.Optional<Double> =
+            illicitViolent.getOptional("illicit/violent")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun illicitViolentOrThrow(): Double = illicitViolent.getRequired("illicit/violent")
+
+        /**
+         * The score for the category 'self-harm'. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun selfHarm(): java.util.Optional<Double> = selfHarm.getOptional("self-harm")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun selfHarmOrThrow(): Double = selfHarm.getRequired("self-harm")
+
+        /**
+         * The score for the category 'self-harm/instructions'. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun selfHarmInstructions(): java.util.Optional<Double> =
+            selfHarmInstructions.getOptional("self-harm/instructions")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun selfHarmInstructionsOrThrow(): Double =
             selfHarmInstructions.getRequired("self-harm/instructions")
 
         /**
-         * The score for the category 'self-harm/intent'.
+         * The score for the category 'self-harm/intent'. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun selfHarmIntent(): Double = selfHarmIntent.getRequired("self-harm/intent")
+        fun selfHarmIntent(): java.util.Optional<Double> =
+            selfHarmIntent.getOptional("self-harm/intent")
 
         /**
-         * The score for the category 'sexual'.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun sexual(): Double = sexual.getRequired("sexual")
+        fun selfHarmIntentOrThrow(): Double = selfHarmIntent.getRequired("self-harm/intent")
 
         /**
-         * The score for the category 'sexual/minors'.
+         * The score for the category 'sexual'. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun sexualMinors(): Double = sexualMinors.getRequired("sexual/minors")
+        fun sexual(): java.util.Optional<Double> = sexual.getOptional("sexual")
 
         /**
-         * The score for the category 'violence'.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun violence(): Double = violence.getRequired("violence")
+        fun sexualOrThrow(): Double = sexual.getRequired("sexual")
 
         /**
-         * The score for the category 'violence/graphic'.
+         * The score for the category 'sexual/minors'. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun violenceGraphic(): Double = violenceGraphic.getRequired("violence/graphic")
+        fun sexualMinors(): java.util.Optional<Double> = sexualMinors.getOptional("sexual/minors")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun sexualMinorsOrThrow(): Double = sexualMinors.getRequired("sexual/minors")
+
+        /**
+         * The score for the category 'violence'. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun violence(): java.util.Optional<Double> = violence.getOptional("violence")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun violenceOrThrow(): Double = violence.getRequired("violence")
+
+        /**
+         * The score for the category 'violence/graphic'. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun violenceGraphic(): java.util.Optional<Double> =
+            violenceGraphic.getOptional("violence/graphic")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun violenceGraphicOrThrow(): Double = violenceGraphic.getRequired("violence/graphic")
 
         /**
          * Returns the raw JSON value of [harassment].
@@ -4551,19 +4829,19 @@ private constructor(
                 return@apply
             }
 
-            harassment()
-            harassmentThreatening()
-            hate()
-            hateThreatening()
-            illicit()
-            illicitViolent()
-            selfHarm()
-            selfHarmInstructions()
-            selfHarmIntent()
-            sexual()
-            sexualMinors()
-            violence()
-            violenceGraphic()
+            harassmentOrThrow()
+            harassmentThreateningOrThrow()
+            hateOrThrow()
+            hateThreateningOrThrow()
+            illicitOrThrow()
+            illicitViolentOrThrow()
+            selfHarmOrThrow()
+            selfHarmInstructionsOrThrow()
+            selfHarmIntentOrThrow()
+            sexualOrThrow()
+            sexualMinorsOrThrow()
+            violenceOrThrow()
+            violenceGraphicOrThrow()
             validated = true
         }
 

@@ -20,11 +20,11 @@ internal class ResponseMcpCallArgumentsDoneTest {
                 .responseId("response_id")
                 .build()
 
-        assertThat(responseMcpCallArgumentsDone.arguments()).isEqualTo("arguments")
-        assertThat(responseMcpCallArgumentsDone.eventId()).isEqualTo("event_id")
-        assertThat(responseMcpCallArgumentsDone.itemId()).isEqualTo("item_id")
-        assertThat(responseMcpCallArgumentsDone.outputIndex()).isEqualTo(0L)
-        assertThat(responseMcpCallArgumentsDone.responseId()).isEqualTo("response_id")
+        assertThat(responseMcpCallArgumentsDone.arguments()).contains("arguments")
+        assertThat(responseMcpCallArgumentsDone.eventId()).contains("event_id")
+        assertThat(responseMcpCallArgumentsDone.itemId()).contains("item_id")
+        assertThat(responseMcpCallArgumentsDone.outputIndex()).contains(0L)
+        assertThat(responseMcpCallArgumentsDone.responseId()).contains("response_id")
 
         val jsonMapper = jsonMapper()
 

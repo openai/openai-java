@@ -32,21 +32,17 @@ private constructor(
 
     fun projectId(): Optional<String> = Optional.ofNullable(projectId)
 
-    /**
-     * Identifier of the group to add to the project.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun groupId(): String = body.groupId()
+    /** @see Body.groupId */
+    fun groupId(): java.util.Optional<String> = body.groupId()
 
-    /**
-     * Identifier of the project role to grant to the group.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun role(): String = body.role()
+    /** @see Body.groupIdOrThrow */
+    fun groupIdOrThrow(): String = body.groupIdOrThrow()
+
+    /** @see Body.role */
+    fun role(): java.util.Optional<String> = body.role()
+
+    /** @see Body.roleOrThrow */
+    fun roleOrThrow(): String = body.roleOrThrow()
 
     /**
      * Returns the raw JSON value of [groupId].
@@ -306,20 +302,32 @@ private constructor(
         ) : this(groupId, role, mutableMapOf())
 
         /**
-         * Identifier of the group to add to the project.
+         * Identifier of the group to add to the project. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun groupId(): String = groupId.getRequired("group_id")
+        fun groupId(): java.util.Optional<String> = groupId.getOptional("group_id")
 
         /**
-         * Identifier of the project role to grant to the group.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun role(): String = role.getRequired("role")
+        fun groupIdOrThrow(): String = groupId.getRequired("group_id")
+
+        /**
+         * Identifier of the project role to grant to the group. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun role(): java.util.Optional<String> = role.getOptional("role")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun roleOrThrow(): String = role.getRequired("role")
 
         /**
          * Returns the raw JSON value of [groupId].
@@ -473,8 +481,8 @@ private constructor(
                 return@apply
             }
 
-            groupId()
-            role()
+            groupIdOrThrow()
+            roleOrThrow()
             validated = true
         }
 

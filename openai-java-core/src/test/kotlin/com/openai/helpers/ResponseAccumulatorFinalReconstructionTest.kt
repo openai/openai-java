@@ -36,7 +36,7 @@ internal class ResponseAccumulatorFinalReconstructionTest {
         send(state, terminal())
         val original = state.response()
         val reconstructed = state.reconstructedResponse()
-        assertThat(reconstructed.output().map { it.asFunctionCall().arguments() })
+        assertThat(reconstructed.outputOrThrow().map { it.asFunctionCall().argumentsOrThrow() })
             .containsExactly("second", "replacement")
         assertThat(original._output().isMissing()).isTrue()
         assertThat(state.snapshot().get()).isSameAs(original)
@@ -94,7 +94,7 @@ internal class ResponseAccumulatorFinalReconstructionTest {
         assertThatThrownBy { state.reconstructedResponse() }
             .isInstanceOf(IllegalStateException::class.java)
         send(state, terminal())
-        assertThat(state.reconstructedResponse().output()).isEmpty()
+        assertThat(state.reconstructedResponse().outputOrThrow()).isEmpty()
     }
 
     @Test
@@ -111,7 +111,7 @@ internal class ResponseAccumulatorFinalReconstructionTest {
         assertThatThrownBy { state.reconstructedResponse() }
             .isInstanceOf(IllegalStateException::class.java)
             .hasMessageContaining("WebSocket error")
-        assertThat(state.response().id()).isEqualTo("r")
+        assertThat(state.response().idOrThrow()).isEqualTo("r")
         assertThat(state.snapshot().get()).isSameAs(state.response())
     }
 
@@ -126,7 +126,14 @@ internal class ResponseAccumulatorFinalReconstructionTest {
         )
         send(state, done(5, "new"))
         send(state, terminal())
-        assertThat(state.reconstructedResponse().output().single().asFunctionCall().arguments())
+        assertThat(
+                state
+                    .reconstructedResponse()
+                    .outputOrThrow()
+                    .single()
+                    .asFunctionCall()
+                    .argumentsOrThrow()
+            )
             .isEqualTo("new")
     }
 }

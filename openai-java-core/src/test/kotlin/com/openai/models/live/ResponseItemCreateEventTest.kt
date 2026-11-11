@@ -27,7 +27,7 @@ internal class ResponseItemCreateEventTest {
                 .build()
 
         assertThat(responseItemCreateEvent.item())
-            .isEqualTo(
+            .contains(
                 ResponseInputItem.ofEasyInputMessage(
                     EasyInputMessage.builder()
                         .content("string")

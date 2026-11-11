@@ -37,21 +37,31 @@ private constructor(
     ) : this(enabled, recentThreads, mutableMapOf())
 
     /**
-     * Indicates if chat history is persisted for the session.
+     * Indicates if chat history is persisted for the session. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun enabled(): Boolean = enabled.getRequired("enabled")
+    fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
 
     /**
      * Number of prior threads surfaced in history views. Defaults to null when all history is
-     * retained.
+     * retained. The schema requires this property. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun recentThreads(): Optional<Long> = recentThreads.getOptional("recent_threads")
+    fun recentThreads(): java.util.Optional<Long> = recentThreads.getOptional("recent_threads")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun recentThreadsOrThrow(): Long = recentThreads.getRequired("recent_threads")
 
     /**
      * Returns the raw JSON value of [enabled].
@@ -218,7 +228,7 @@ private constructor(
             return@apply
         }
 
-        enabled()
+        enabledOrThrow()
         recentThreads()
         validated = true
     }

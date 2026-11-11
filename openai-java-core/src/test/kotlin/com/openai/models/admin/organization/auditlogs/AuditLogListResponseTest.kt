@@ -450,9 +450,9 @@ internal class AuditLogListResponseTest {
                 )
                 .build()
 
-        assertThat(auditLogListResponse.id()).isEqualTo("id")
-        assertThat(auditLogListResponse.effectiveAt()).isEqualTo(0L)
-        assertThat(auditLogListResponse.type()).isEqualTo(AuditLogListResponse.Type.API_KEY_CREATED)
+        assertThat(auditLogListResponse.id()).contains("id")
+        assertThat(auditLogListResponse.effectiveAt()).contains(0L)
+        assertThat(auditLogListResponse.type()).contains(AuditLogListResponse.Type.API_KEY_CREATED)
         assertThat(auditLogListResponse.actor())
             .contains(
                 AuditLogListResponse.Actor.builder()

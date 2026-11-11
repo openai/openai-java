@@ -5,6 +5,7 @@ package com.openai.models.vectorstores
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -46,7 +47,7 @@ internal class VectorStoreListPageResponseTest {
                 .object_("list")
                 .build()
 
-        assertThat(vectorStoreListPageResponse.data())
+        assertThat(vectorStoreListPageResponse.data().getOrNull())
             .containsExactly(
                 VectorStore.builder()
                     .id("id")
@@ -73,10 +74,10 @@ internal class VectorStoreListPageResponseTest {
                     .expiresAt(0L)
                     .build()
             )
-        assertThat(vectorStoreListPageResponse.firstId()).isEqualTo("vs_abc123")
-        assertThat(vectorStoreListPageResponse.hasMore()).isEqualTo(false)
-        assertThat(vectorStoreListPageResponse.lastId()).isEqualTo("vs_abc456")
-        assertThat(vectorStoreListPageResponse.object_()).isEqualTo("list")
+        assertThat(vectorStoreListPageResponse.firstId()).contains("vs_abc123")
+        assertThat(vectorStoreListPageResponse.hasMore()).contains(false)
+        assertThat(vectorStoreListPageResponse.lastId()).contains("vs_abc456")
+        assertThat(vectorStoreListPageResponse.object_()).contains("list")
 
         val jsonMapper = jsonMapper()
 

@@ -54,11 +54,11 @@ internal class SafetyCasesTest {
                 val result = retrieve(params, async)
 
                 result.validate()
-                assertThat(result.id()).isEqualTo(CASE_ID)
-                assertThat(result.createdAt()).isEqualTo(123L)
-                assertThat(result.entityIdentifier()).isEqualTo("synthetic-entity")
+                assertThat(result.idOrThrow()).isEqualTo(CASE_ID)
+                assertThat(result.createdAtOrThrow()).isEqualTo(123L)
+                assertThat(result.entityIdentifierOrThrow()).isEqualTo("synthetic-entity")
                 assertThat(result.reason().orElse(null)).isEqualTo(reason)
-                assertThat(result.notice().type().asString()).isEqualTo(notice)
+                assertThat(result.noticeOrThrow().typeOrThrow().asString()).isEqualTo(notice)
                 assertThat(jsonMapper().readTree(jsonMapper().writeValueAsString(result)))
                     .isEqualTo(jsonMapper().readTree(payload))
             }
@@ -81,7 +81,7 @@ internal class SafetyCasesTest {
 
         val result = retrieve(CaseRetrieveParams.builder().id(CASE_ID).build(), async)
 
-        assertThat(result.notice().type().asString()).isEqualTo("future-notice")
+        assertThat(result.noticeOrThrow().typeOrThrow().asString()).isEqualTo("future-notice")
         assertThat(jsonMapper().readTree(jsonMapper().writeValueAsString(result)))
             .isEqualTo(jsonMapper().readTree(payload))
         server.verify(

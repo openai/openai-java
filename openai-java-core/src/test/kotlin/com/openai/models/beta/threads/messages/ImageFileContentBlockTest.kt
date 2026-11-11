@@ -19,7 +19,7 @@ internal class ImageFileContentBlockTest {
                 .build()
 
         assertThat(imageFileContentBlock.imageFile())
-            .isEqualTo(ImageFile.builder().fileId("file_id").detail(ImageFile.Detail.AUTO).build())
+            .contains(ImageFile.builder().fileId("file_id").detail(ImageFile.Detail.AUTO).build())
 
         val jsonMapper = jsonMapper()
 

@@ -112,7 +112,7 @@ internal class SessionUpdateEventTest {
                 .build()
 
         assertThat(sessionUpdateEvent.session())
-            .isEqualTo(
+            .contains(
                 SessionUpdateEvent.Session.ofRealtimeSessionCreateRequest(
                     RealtimeSessionCreateRequest.builder()
                         .audio(

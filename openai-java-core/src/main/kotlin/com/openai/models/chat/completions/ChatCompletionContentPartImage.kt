@@ -40,34 +40,55 @@ private constructor(
     ) : this(imageUrl, type, promptCacheBreakpoint, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun imageUrl(): ImageUrl = imageUrl.getRequired("image_url")
+    fun imageUrl(): java.util.Optional<ImageUrl> = imageUrl.getOptional("image_url")
 
     /**
-     * The type of the content part.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("image_url")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun imageUrlOrThrow(): ImageUrl = imageUrl.getRequired("image_url")
+
+    /**
+     * The type of the content part. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("image_url")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Marks the exact end of a reusable prompt prefix. When `ttl` is omitted, the breakpoint
      * inherits the request's `prompt_cache_options.ttl`; the boundary is not rounded to a token
-     * block.
+     * block. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun promptCacheBreakpoint(): Optional<PromptCacheBreakpoint> =
+    fun promptCacheBreakpoint(): java.util.Optional<PromptCacheBreakpoint> =
         promptCacheBreakpoint.getOptional("prompt_cache_breakpoint")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun promptCacheBreakpointOrThrow(): PromptCacheBreakpoint =
+        promptCacheBreakpoint.getRequired("prompt_cache_breakpoint")
 
     /**
      * Returns the raw JSON value of [imageUrl].
@@ -247,12 +268,8 @@ private constructor(
             return@apply
         }
 
-        imageUrl().validate()
-        _type().let {
-            if (it != JsonValue.from("image_url")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        imageUrlOrThrow().validate()
+        typeOrThrow()
         promptCacheBreakpoint().ifPresent { it.validate() }
         validated = true
     }
@@ -291,21 +308,33 @@ private constructor(
         ) : this(url, detail, mutableMapOf())
 
         /**
-         * Either a URL of the image or the base64 encoded image data.
+         * Either a URL of the image or the base64 encoded image data. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun url(): String = url.getRequired("url")
+        fun url(): java.util.Optional<String> = url.getOptional("url")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun urlOrThrow(): String = url.getRequired("url")
 
         /**
          * Specifies the detail level of the image. Learn more in the
          * [Vision guide](https://developers.openai.com/api/docs/guides/images-vision#choose-an-image-detail-level).
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun detail(): Optional<Detail> = detail.getOptional("detail")
+        fun detail(): java.util.Optional<Detail> = detail.getOptional("detail")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun detailOrThrow(): Detail = detail.getRequired("detail")
 
         /**
          * Returns the raw JSON value of [url].
@@ -452,7 +481,7 @@ private constructor(
                 return@apply
             }
 
-            url()
+            urlOrThrow()
             detail().ifPresent { it.validate() }
             validated = true
         }
@@ -676,25 +705,42 @@ private constructor(
         ) : this(mode, ttl, mutableMapOf())
 
         /**
-         * The breakpoint mode. Always `explicit`.
+         * The breakpoint mode. Always `explicit`. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("explicit")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonValue = mode
+        fun mode(): java.util.Optional<JsonValue> {
+            val raw = mode
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("explicit")) ->
+                    throw OpenAIInvalidDataException("`mode` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
 
         /**
-         * The minimum lifetime of this cache breakpoint. Defaults to the request TTL.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun ttl(): Optional<PromptCacheBreakpointTtl> = ttl.getOptional("ttl")
+        fun modeOrThrow(): JsonValue = mode().orElseGet { mode.getRequired("mode") }
+
+        @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<JsonValue> = mode
+
+        /**
+         * The minimum lifetime of this cache breakpoint. Defaults to the request TTL. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun ttl(): java.util.Optional<PromptCacheBreakpointTtl> = ttl.getOptional("ttl")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun ttlOrThrow(): PromptCacheBreakpointTtl = ttl.getRequired("ttl")
 
         /**
          * Returns the raw JSON value of [ttl].
@@ -821,11 +867,7 @@ private constructor(
                 return@apply
             }
 
-            _mode().let {
-                if (it != JsonValue.from("explicit")) {
-                    throw OpenAIInvalidDataException("'mode' is invalid, received $it")
-                }
-            }
+            modeOrThrow()
             ttl().ifPresent { it.validate() }
             validated = true
         }

@@ -13,9 +13,9 @@ internal class TranscriptionWordTest {
     fun createAndRoundtrip() {
         val transcriptionWord = TranscriptionWord.builder().end(0.0).start(0.0).word("word").build()
 
-        assertThat(transcriptionWord.end()).isEqualTo(0.0)
-        assertThat(transcriptionWord.start()).isEqualTo(0.0)
-        assertThat(transcriptionWord.word()).isEqualTo("word")
+        assertThat(transcriptionWord.end()).contains(0.0)
+        assertThat(transcriptionWord.start()).contains(0.0)
+        assertThat(transcriptionWord.word()).contains("word")
 
         val jsonMapper = jsonMapper()
 

@@ -13,7 +13,7 @@ internal class TranscriptionLanguageTest {
     fun createAndRoundtrip() {
         val transcriptionLanguage = TranscriptionLanguage.builder().code("code").build()
 
-        assertThat(transcriptionLanguage.code()).isEqualTo("code")
+        assertThat(transcriptionLanguage.code()).contains("code")
 
         val jsonMapper = jsonMapper()
 

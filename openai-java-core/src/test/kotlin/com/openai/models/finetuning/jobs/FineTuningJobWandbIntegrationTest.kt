@@ -20,7 +20,7 @@ internal class FineTuningJobWandbIntegrationTest {
                 .addTag("custom-tag")
                 .build()
 
-        assertThat(fineTuningJobWandbIntegration.project()).isEqualTo("my-wandb-project")
+        assertThat(fineTuningJobWandbIntegration.project()).contains("my-wandb-project")
         assertThat(fineTuningJobWandbIntegration.entity()).contains("entity")
         assertThat(fineTuningJobWandbIntegration.name()).contains("name")
         assertThat(fineTuningJobWandbIntegration.tags().getOrNull()).containsExactly("custom-tag")

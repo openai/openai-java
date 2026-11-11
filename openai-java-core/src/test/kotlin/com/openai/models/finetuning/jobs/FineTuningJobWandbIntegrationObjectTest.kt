@@ -24,7 +24,7 @@ internal class FineTuningJobWandbIntegrationObjectTest {
                 .build()
 
         assertThat(fineTuningJobWandbIntegrationObject.wandb())
-            .isEqualTo(
+            .contains(
                 FineTuningJobWandbIntegration.builder()
                     .project("my-wandb-project")
                     .entity("entity")

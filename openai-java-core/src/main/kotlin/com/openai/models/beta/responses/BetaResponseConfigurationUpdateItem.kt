@@ -56,49 +56,78 @@ private constructor(
     ) : this(id, type, agent, reasoning, text, mutableMapOf())
 
     /**
-     * The unique ID of the configuration update item.
+     * The unique ID of the configuration update item. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The item type. Always `configuration_update`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("configuration_update")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The agent that produced this item.
+     * The item type. Always `configuration_update`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun agent(): Optional<Agent> = agent.getOptional("agent")
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("configuration_update")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The reasoning configuration applied by this update.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun reasoning(): Optional<Reasoning> = reasoning.getOptional("reasoning")
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
-     * The text output configuration for subsequent responses.
+     * The agent that produced this item. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun text(): Optional<Text> = text.getOptional("text")
+    fun agent(): java.util.Optional<Agent> = agent.getOptional("agent")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun agentOrThrow(): Agent = agent.getRequired("agent")
+
+    /**
+     * The reasoning configuration applied by this update. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun reasoning(): java.util.Optional<Reasoning> = reasoning.getOptional("reasoning")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun reasoningOrThrow(): Reasoning = reasoning.getRequired("reasoning")
+
+    /**
+     * The text output configuration for subsequent responses. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun text(): java.util.Optional<Text> = text.getOptional("text")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun textOrThrow(): Text = text.getRequired("text")
 
     /**
      * Returns the raw JSON value of [id].
@@ -328,12 +357,8 @@ private constructor(
             return@apply
         }
 
-        id()
-        _type().let {
-            if (it != JsonValue.from("configuration_update")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        idOrThrow()
+        typeOrThrow()
         agent().ifPresent { it.validate() }
         reasoning().ifPresent { it.validate() }
         text().ifPresent { it.validate() }
@@ -377,12 +402,18 @@ private constructor(
         ) : this(agentName, mutableMapOf())
 
         /**
-         * The canonical name of the agent that produced this item.
+         * The canonical name of the agent that produced this item. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun agentName(): String = agentName.getRequired("agent_name")
+        fun agentName(): java.util.Optional<String> = agentName.getOptional("agent_name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun agentNameOrThrow(): String = agentName.getRequired("agent_name")
 
         /**
          * Returns the raw JSON value of [agentName].
@@ -505,7 +536,7 @@ private constructor(
                 return@apply
             }
 
-            agentName()
+            agentNameOrThrow()
             validated = true
         }
 
@@ -558,12 +589,17 @@ private constructor(
 
         /**
          * The reasoning effort used for subsequent responses until another configuration update
-         * replaces it.
+         * replaces it. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun effort(): Optional<Effort> = effort.getOptional("effort")
+        fun effort(): java.util.Optional<Effort> = effort.getOptional("effort")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun effortOrThrow(): Effort = effort.getRequired("effort")
 
         /**
          * Returns the raw JSON value of [effort].
@@ -906,12 +942,18 @@ private constructor(
         ) : this(format, mutableMapOf())
 
         /**
-         * Use a JSON schema for structured output or text to return to plain text.
+         * Use a JSON schema for structured output or text to return to plain text. The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun format(): Format = format.getRequired("format")
+        fun format(): java.util.Optional<Format> = format.getOptional("format")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun formatOrThrow(): Format = format.getRequired("format")
 
         /**
          * Returns the raw JSON value of [format].
@@ -1041,7 +1083,7 @@ private constructor(
                 return@apply
             }
 
-            format().validate()
+            formatOrThrow().validate()
             validated = true
         }
 

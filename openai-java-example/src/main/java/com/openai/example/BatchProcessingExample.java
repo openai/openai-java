@@ -34,7 +34,7 @@ public final class BatchProcessingExample {
         FileObject file = client.files().create(fileParams);
 
         BatchCreateParams batchParams = BatchCreateParams.builder()
-                .inputFileId(file.id())
+                .inputFileId(file.idOrThrow())
                 .endpoint(Endpoint.V1_CHAT_COMPLETIONS)
                 .completionWindow(CompletionWindow._24H)
                 .build();
@@ -43,7 +43,7 @@ public final class BatchProcessingExample {
         while (batch.outputFileId().isEmpty()) {
             System.out.println("Polling...");
             Thread.sleep(60_000);
-            batch = client.batches().retrieve(batch.id());
+            batch = client.batches().retrieve(batch.idOrThrow());
         }
 
         try (HttpResponse response = client.files().content(batch.outputFileId().orElseThrow())) {

@@ -31,8 +31,8 @@ internal class CompletionChoiceTest {
                 .text("text")
                 .build()
 
-        assertThat(completionChoice.finishReason()).isEqualTo(CompletionChoice.FinishReason.STOP)
-        assertThat(completionChoice.index()).isEqualTo(0L)
+        assertThat(completionChoice.finishReason()).contains(CompletionChoice.FinishReason.STOP)
+        assertThat(completionChoice.index()).contains(0L)
         assertThat(completionChoice.logprobs())
             .contains(
                 CompletionChoice.Logprobs.builder()
@@ -46,7 +46,7 @@ internal class CompletionChoiceTest {
                     )
                     .build()
             )
-        assertThat(completionChoice.text()).isEqualTo("text")
+        assertThat(completionChoice.text()).contains("text")
 
         val jsonMapper = jsonMapper()
 

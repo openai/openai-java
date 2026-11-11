@@ -25,17 +25,17 @@ internal class ResponseShellCallOutputContentDeltaEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseShellCallOutputContentDeltaEvent.commandIndex()).isEqualTo(0L)
+        assertThat(responseShellCallOutputContentDeltaEvent.commandIndex()).contains(0L)
         assertThat(responseShellCallOutputContentDeltaEvent.delta())
-            .isEqualTo(
+            .contains(
                 ResponseShellCallOutputContentDeltaEvent.Delta.builder()
                     .stderr("stderr")
                     .stdout("stdout")
                     .build()
             )
-        assertThat(responseShellCallOutputContentDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseShellCallOutputContentDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseShellCallOutputContentDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseShellCallOutputContentDeltaEvent.itemId()).contains("item_id")
+        assertThat(responseShellCallOutputContentDeltaEvent.outputIndex()).contains(0L)
+        assertThat(responseShellCallOutputContentDeltaEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

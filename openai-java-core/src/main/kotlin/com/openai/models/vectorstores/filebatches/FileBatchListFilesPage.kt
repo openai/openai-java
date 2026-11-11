@@ -8,8 +8,6 @@ import com.openai.core.checkRequired
 import com.openai.models.vectorstores.files.VectorStoreFile
 import com.openai.services.blocking.vectorstores.FileBatchService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see FileBatchService.listFiles */
 class FileBatchListFilesPage
@@ -19,22 +17,23 @@ private constructor(
     private val response: FileBatchListFilesPageResponse,
 ) : Page<VectorStoreFile> {
 
-    /**
-     * Delegates to [FileBatchListFilesPageResponse], but gracefully handles missing data.
-     *
-     * @see FileBatchListFilesPageResponse.data
-     */
-    fun data(): List<VectorStoreFile> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see FileBatchListFilesPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [FileBatchListFilesPageResponse], but gracefully handles missing data.
-     *
-     * @see FileBatchListFilesPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<VectorStoreFile> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<VectorStoreFile> = data()
+    fun _data() = response._data()
+
+    /** @see FileBatchListFilesPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<VectorStoreFile> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

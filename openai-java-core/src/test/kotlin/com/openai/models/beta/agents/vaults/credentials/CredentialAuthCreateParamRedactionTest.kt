@@ -38,7 +38,9 @@ internal class CredentialAuthCreateParamRedactionTest {
 
         for (environmentVariable in listOf(original, auth.asEnvironmentVariable())) {
             val accessorError =
-                assertThrows<OpenAIInvalidDataException> { environmentVariable.secretValue() }
+                assertThrows<OpenAIInvalidDataException> {
+                    environmentVariable.secretValueOrThrow()
+                }
             val validationError =
                 assertThrows<OpenAIInvalidDataException> { environmentVariable.validate() }
             for (error in listOf(accessorError, validationError)) {
@@ -74,7 +76,11 @@ internal class CredentialAuthCreateParamRedactionTest {
                 .build()
         val expected = if (isNull) "`secret_value` is null" else "`secret_value` is not set"
 
-        assertThat(assertThrows<OpenAIInvalidDataException> { environmentVariable.secretValue() })
+        assertThat(
+                assertThrows<OpenAIInvalidDataException> {
+                    environmentVariable.secretValueOrThrow()
+                }
+            )
             .hasMessage(expected)
             .hasNoCause()
         assertThat(assertThrows<OpenAIInvalidDataException> { environmentVariable.validate() })
@@ -113,7 +119,7 @@ internal class CredentialAuthCreateParamRedactionTest {
                 .contains("[REDACTED]", "future_field", "preserved")
         }
         assertThat(auth._json()).contains(raw)
-        assertThat(params._body().auth()._json()).contains(raw)
+        assertThat(params._body().authOrThrow()._json()).contains(raw)
         assertThat(mapper.readTree(mapper.writeValueAsString(auth)))
             .isEqualTo(mapper.readTree(original))
     }
@@ -161,10 +167,11 @@ internal class CredentialAuthCreateParamRedactionTest {
                     "preserved",
                 )
         }
-        assertThat(environmentVariable.secretValue()).isEqualTo(secret)
+        assertThat(environmentVariable.secretValueOrThrow()).isEqualTo(secret)
         assertThat(environmentVariable._allProperties()["secret_value"])
             .isEqualTo(JsonValue.from(secret))
-        assertThat(params._body().auth().asEnvironmentVariable()).isEqualTo(environmentVariable)
+        assertThat(params._body().authOrThrow().asEnvironmentVariable())
+            .isEqualTo(environmentVariable)
         assertThat(mapper.writeValueAsString(auth)).isEqualTo(serialized)
         assertThat(serialized).contains(secret, "fake-additional-secret")
         assertThat(mapper.readTree(serialized).get("secret_value"))
@@ -191,10 +198,11 @@ internal class CredentialAuthCreateParamRedactionTest {
         for (value in listOf(environmentVariable, auth, params)) {
             assertThat(value.toString()).doesNotContain(secret).contains("secretValue=[REDACTED]")
         }
-        assertThat(environmentVariable.secretValue()).isEqualTo(secret)
+        assertThat(environmentVariable.secretValueOrThrow()).isEqualTo(secret)
         val mapper = jsonMapper()
         assertThat(mapper.readTree(mapper.writeValueAsString(auth)).get("secret_value").asText())
             .isEqualTo(secret)
-        assertThat(params._body().auth().asEnvironmentVariable().secretValue()).isEqualTo(secret)
+        assertThat(params._body().authOrThrow().asEnvironmentVariable().secretValueOrThrow())
+            .isEqualTo(secret)
     }
 }

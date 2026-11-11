@@ -100,7 +100,7 @@ internal class AgentSessionStreamingRegressionTest {
                 .subscribe { agentSession ->
                     agentSession.validate()
                     received.incrementAndGet()
-                    deltas.add(agentSession.asTurnOutputTextDelta().delta())
+                    deltas.add(agentSession.asTurnOutputTextDelta().deltaOrThrow())
                 }
                 .onCompleteFuture()
         onCompleteFuture.get()

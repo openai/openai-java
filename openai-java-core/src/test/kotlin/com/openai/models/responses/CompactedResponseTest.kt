@@ -4,6 +4,7 @@ package com.openai.models.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -78,9 +79,9 @@ internal class CompactedResponseTest {
                 )
                 .build()
 
-        assertThat(compactedResponse.id()).isEqualTo("id")
-        assertThat(compactedResponse.createdAt()).isEqualTo(0L)
-        assertThat(compactedResponse.output())
+        assertThat(compactedResponse.id()).contains("id")
+        assertThat(compactedResponse.createdAt()).contains(0L)
+        assertThat(compactedResponse.output().getOrNull())
             .containsExactly(
                 ResponseOutputItem.ofMessage(
                     ResponseOutputMessage.builder()
@@ -117,7 +118,7 @@ internal class CompactedResponseTest {
                 )
             )
         assertThat(compactedResponse.usage())
-            .isEqualTo(
+            .contains(
                 ResponseUsage.builder()
                     .inputTokens(0L)
                     .inputTokensDetails(

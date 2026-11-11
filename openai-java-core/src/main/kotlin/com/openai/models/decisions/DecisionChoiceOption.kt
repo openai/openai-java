@@ -46,18 +46,29 @@ private constructor(
     ) : this(value, description, mutableMapOf())
 
     /**
-     * Choice values are typed: a string and a boolean with the same text are distinct.
+     * Choice values are typed: a string and a boolean with the same text are distinct. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun value(): Value = value.getRequired("value")
+    fun value(): java.util.Optional<Value> = value.getOptional("value")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun description(): Optional<String> = description.getOptional("description")
+    fun valueOrThrow(): Value = value.getRequired("value")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun description(): java.util.Optional<String> = description.getOptional("description")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun descriptionOrThrow(): String = description.getRequired("description")
 
     /**
      * Returns the raw JSON value of [value].
@@ -212,7 +223,7 @@ private constructor(
             return@apply
         }
 
-        value().validate()
+        valueOrThrow().validate()
         description()
         validated = true
     }

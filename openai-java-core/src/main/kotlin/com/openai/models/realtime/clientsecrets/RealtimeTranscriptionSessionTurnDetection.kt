@@ -45,39 +45,59 @@ private constructor(
 
     /**
      * Amount of audio to include before the VAD detected speech (in milliseconds). Defaults to
-     * 300ms.
+     * 300ms. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun prefixPaddingMs(): Optional<Long> = prefixPaddingMs.getOptional("prefix_padding_ms")
+    fun prefixPaddingMs(): java.util.Optional<Long> =
+        prefixPaddingMs.getOptional("prefix_padding_ms")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun prefixPaddingMsOrThrow(): Long = prefixPaddingMs.getRequired("prefix_padding_ms")
 
     /**
      * Duration of silence to detect speech stop (in milliseconds). Defaults to 500ms. With shorter
      * values the model will respond more quickly, but may jump in on short pauses from the user.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun silenceDurationMs(): Optional<Long> = silenceDurationMs.getOptional("silence_duration_ms")
+    fun silenceDurationMs(): java.util.Optional<Long> =
+        silenceDurationMs.getOptional("silence_duration_ms")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun silenceDurationMsOrThrow(): Long = silenceDurationMs.getRequired("silence_duration_ms")
 
     /**
      * Activation threshold for VAD (0.0 to 1.0), this defaults to 0.5. A higher threshold will
      * require louder audio to activate the model, and thus might perform better in noisy
-     * environments.
+     * environments. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun threshold(): Optional<Double> = threshold.getOptional("threshold")
+    fun threshold(): java.util.Optional<Double> = threshold.getOptional("threshold")
 
     /**
-     * Type of turn detection, only `server_vad` is currently supported.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun type(): Optional<String> = type.getOptional("type")
+    fun thresholdOrThrow(): Double = threshold.getRequired("threshold")
+
+    /**
+     * Type of turn detection, only `server_vad` is currently supported. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<String> = type.getOptional("type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): String = type.getRequired("type")
 
     /**
      * Returns the raw JSON value of [prefixPaddingMs].

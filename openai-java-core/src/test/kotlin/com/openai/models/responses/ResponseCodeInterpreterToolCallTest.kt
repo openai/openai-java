@@ -21,9 +21,9 @@ internal class ResponseCodeInterpreterToolCallTest {
                 .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
                 .build()
 
-        assertThat(responseCodeInterpreterToolCall.id()).isEqualTo("id")
+        assertThat(responseCodeInterpreterToolCall.id()).contains("id")
         assertThat(responseCodeInterpreterToolCall.code()).contains("code")
-        assertThat(responseCodeInterpreterToolCall.containerId()).isEqualTo("container_id")
+        assertThat(responseCodeInterpreterToolCall.containerId()).contains("container_id")
         assertThat(responseCodeInterpreterToolCall.outputs().getOrNull())
             .containsExactly(
                 ResponseCodeInterpreterToolCall.Output.ofLogs(
@@ -31,7 +31,7 @@ internal class ResponseCodeInterpreterToolCallTest {
                 )
             )
         assertThat(responseCodeInterpreterToolCall.status())
-            .isEqualTo(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+            .contains(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
 
         val jsonMapper = jsonMapper()
 

@@ -29,9 +29,9 @@ internal class AgentSessionSubagentActiveEventTest {
                 )
                 .build()
 
-        assertThat(agentSessionSubagentActiveEvent.eventId()).isEqualTo("event_id")
+        assertThat(agentSessionSubagentActiveEvent.eventId()).contains("event_id")
         assertThat(agentSessionSubagentActiveEvent.subagent())
-            .isEqualTo(
+            .contains(
                 Subagent.builder()
                     .id("id")
                     .closedAt(0L)

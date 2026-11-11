@@ -43,33 +43,54 @@ private constructor(
 
     /**
      * Translation session fields to update. The session `type` and `model` are set at creation and
-     * cannot be changed with `session.update`.
+     * cannot be changed with `session.update`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun session(): RealtimeTranslationSessionUpdateRequest = session.getRequired("session")
+    fun session(): java.util.Optional<RealtimeTranslationSessionUpdateRequest> =
+        session.getOptional("session")
 
     /**
-     * The event type, must be `session.update`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("session.update")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun sessionOrThrow(): RealtimeTranslationSessionUpdateRequest = session.getRequired("session")
 
     /**
-     * Optional client-generated ID used to identify this event.
+     * The event type, must be `session.update`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun eventId(): Optional<String> = eventId.getOptional("event_id")
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("session.update")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * Optional client-generated ID used to identify this event. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
      * Returns the raw JSON value of [session].
@@ -249,12 +270,8 @@ private constructor(
             return@apply
         }
 
-        session().validate()
-        _type().let {
-            if (it != JsonValue.from("session.update")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        sessionOrThrow().validate()
+        typeOrThrow()
         eventId()
         validated = true
     }

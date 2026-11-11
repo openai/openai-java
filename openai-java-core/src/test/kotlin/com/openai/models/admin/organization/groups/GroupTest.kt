@@ -20,11 +20,11 @@ internal class GroupTest {
                 .name("name")
                 .build()
 
-        assertThat(group.id()).isEqualTo("id")
-        assertThat(group.createdAt()).isEqualTo(0L)
-        assertThat(group.groupType()).isEqualTo(Group.GroupType.GROUP)
-        assertThat(group.isScimManaged()).isEqualTo(true)
-        assertThat(group.name()).isEqualTo("name")
+        assertThat(group.id()).contains("id")
+        assertThat(group.createdAt()).contains(0L)
+        assertThat(group.groupType()).contains(Group.GroupType.GROUP)
+        assertThat(group.isScimManaged()).contains(true)
+        assertThat(group.name()).contains("name")
 
         val jsonMapper = jsonMapper()
 

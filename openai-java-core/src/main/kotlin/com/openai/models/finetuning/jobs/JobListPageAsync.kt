@@ -7,10 +7,8 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.finetuning.JobServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see JobServiceAsync.list */
 class JobListPageAsync
@@ -21,22 +19,23 @@ private constructor(
     private val response: JobListPageResponse,
 ) : PageAsync<FineTuningJob> {
 
-    /**
-     * Delegates to [JobListPageResponse], but gracefully handles missing data.
-     *
-     * @see JobListPageResponse.data
-     */
-    fun data(): List<FineTuningJob> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see JobListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [JobListPageResponse], but gracefully handles missing data.
-     *
-     * @see JobListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<FineTuningJob> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<FineTuningJob> = data()
+    fun _data() = response._data()
+
+    /** @see JobListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<FineTuningJob> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

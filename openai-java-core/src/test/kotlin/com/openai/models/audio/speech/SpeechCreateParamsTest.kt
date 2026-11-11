@@ -35,9 +35,9 @@ internal class SpeechCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.input()).isEqualTo("input")
-        assertThat(body.model()).isEqualTo(SpeechModel.TTS_1)
-        assertThat(body.voice())
+        assertThat(body.inputOrThrow()).isEqualTo("input")
+        assertThat(body.modelOrThrow()).isEqualTo(SpeechModel.TTS_1)
+        assertThat(body.voiceOrThrow())
             .isEqualTo(
                 SpeechCreateParams.Voice.ofUnionMember1(SpeechCreateParams.Voice.UnionMember1.ALLOY)
             )
@@ -58,9 +58,9 @@ internal class SpeechCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.input()).isEqualTo("input")
-        assertThat(body.model()).isEqualTo(SpeechModel.TTS_1)
-        assertThat(body.voice())
+        assertThat(body.inputOrThrow()).isEqualTo("input")
+        assertThat(body.modelOrThrow()).isEqualTo(SpeechModel.TTS_1)
+        assertThat(body.voiceOrThrow())
             .isEqualTo(
                 SpeechCreateParams.Voice.ofUnionMember1(SpeechCreateParams.Voice.UnionMember1.ALLOY)
             )

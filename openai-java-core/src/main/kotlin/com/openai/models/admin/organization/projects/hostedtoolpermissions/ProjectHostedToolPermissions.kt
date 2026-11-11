@@ -47,44 +47,71 @@ private constructor(
     ) : this(codeInterpreter, fileSearch, imageGeneration, mcp, webSearch, mutableMapOf())
 
     /**
-     * Permission state for a single hosted tool on a project.
+     * Permission state for a single hosted tool on a project. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun codeInterpreter(): CodeInterpreter = codeInterpreter.getRequired("code_interpreter")
+    fun codeInterpreter(): java.util.Optional<CodeInterpreter> =
+        codeInterpreter.getOptional("code_interpreter")
 
     /**
-     * Permission state for a single hosted tool on a project.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun fileSearch(): FileSearch = fileSearch.getRequired("file_search")
+    fun codeInterpreterOrThrow(): CodeInterpreter = codeInterpreter.getRequired("code_interpreter")
 
     /**
-     * Permission state for a single hosted tool on a project.
+     * Permission state for a single hosted tool on a project. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun imageGeneration(): ImageGeneration = imageGeneration.getRequired("image_generation")
+    fun fileSearch(): java.util.Optional<FileSearch> = fileSearch.getOptional("file_search")
 
     /**
-     * Permission state for a single hosted tool on a project.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun mcp(): Mcp = mcp.getRequired("mcp")
+    fun fileSearchOrThrow(): FileSearch = fileSearch.getRequired("file_search")
 
     /**
-     * Permission state for a single hosted tool on a project.
+     * Permission state for a single hosted tool on a project. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun webSearch(): WebSearch = webSearch.getRequired("web_search")
+    fun imageGeneration(): java.util.Optional<ImageGeneration> =
+        imageGeneration.getOptional("image_generation")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun imageGenerationOrThrow(): ImageGeneration = imageGeneration.getRequired("image_generation")
+
+    /**
+     * Permission state for a single hosted tool on a project. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun mcp(): java.util.Optional<Mcp> = mcp.getOptional("mcp")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun mcpOrThrow(): Mcp = mcp.getRequired("mcp")
+
+    /**
+     * Permission state for a single hosted tool on a project. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun webSearch(): java.util.Optional<WebSearch> = webSearch.getOptional("web_search")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun webSearchOrThrow(): WebSearch = webSearch.getRequired("web_search")
 
     /**
      * Returns the raw JSON value of [codeInterpreter].
@@ -323,11 +350,11 @@ private constructor(
             return@apply
         }
 
-        codeInterpreter().validate()
-        fileSearch().validate()
-        imageGeneration().validate()
-        mcp().validate()
-        webSearch().validate()
+        codeInterpreterOrThrow().validate()
+        fileSearchOrThrow().validate()
+        imageGenerationOrThrow().validate()
+        mcpOrThrow().validate()
+        webSearchOrThrow().validate()
         validated = true
     }
 
@@ -366,12 +393,18 @@ private constructor(
         ) : this(enabled, mutableMapOf())
 
         /**
-         * Whether the hosted tool is enabled for the project.
+         * Whether the hosted tool is enabled for the project. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun enabled(): Boolean = enabled.getRequired("enabled")
+        fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
 
         /**
          * Returns the raw JSON value of [enabled].
@@ -497,7 +530,7 @@ private constructor(
                 return@apply
             }
 
-            enabled()
+            enabledOrThrow()
             validated = true
         }
 
@@ -549,12 +582,18 @@ private constructor(
         ) : this(enabled, mutableMapOf())
 
         /**
-         * Whether the hosted tool is enabled for the project.
+         * Whether the hosted tool is enabled for the project. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun enabled(): Boolean = enabled.getRequired("enabled")
+        fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
 
         /**
          * Returns the raw JSON value of [enabled].
@@ -677,7 +716,7 @@ private constructor(
                 return@apply
             }
 
-            enabled()
+            enabledOrThrow()
             validated = true
         }
 
@@ -729,12 +768,18 @@ private constructor(
         ) : this(enabled, mutableMapOf())
 
         /**
-         * Whether the hosted tool is enabled for the project.
+         * Whether the hosted tool is enabled for the project. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun enabled(): Boolean = enabled.getRequired("enabled")
+        fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
 
         /**
          * Returns the raw JSON value of [enabled].
@@ -860,7 +905,7 @@ private constructor(
                 return@apply
             }
 
-            enabled()
+            enabledOrThrow()
             validated = true
         }
 
@@ -912,12 +957,18 @@ private constructor(
         ) : this(enabled, mutableMapOf())
 
         /**
-         * Whether the hosted tool is enabled for the project.
+         * Whether the hosted tool is enabled for the project. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun enabled(): Boolean = enabled.getRequired("enabled")
+        fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
 
         /**
          * Returns the raw JSON value of [enabled].
@@ -1040,7 +1091,7 @@ private constructor(
                 return@apply
             }
 
-            enabled()
+            enabledOrThrow()
             validated = true
         }
 
@@ -1092,12 +1143,18 @@ private constructor(
         ) : this(enabled, mutableMapOf())
 
         /**
-         * Whether the hosted tool is enabled for the project.
+         * Whether the hosted tool is enabled for the project. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun enabled(): Boolean = enabled.getRequired("enabled")
+        fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
 
         /**
          * Returns the raw JSON value of [enabled].
@@ -1220,7 +1277,7 @@ private constructor(
                 return@apply
             }
 
-            enabled()
+            enabledOrThrow()
             validated = true
         }
 

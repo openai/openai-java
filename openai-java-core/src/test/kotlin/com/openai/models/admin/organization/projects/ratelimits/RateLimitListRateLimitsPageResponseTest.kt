@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.projects.ratelimits
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -30,7 +31,7 @@ internal class RateLimitListRateLimitsPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(rateLimitListRateLimitsPageResponse.data())
+        assertThat(rateLimitListRateLimitsPageResponse.data().getOrNull())
             .containsExactly(
                 ProjectRateLimit.builder()
                     .id("id")
@@ -43,7 +44,7 @@ internal class RateLimitListRateLimitsPageResponseTest {
                     .maxRequestsPer1Day(0L)
                     .build()
             )
-        assertThat(rateLimitListRateLimitsPageResponse.hasMore()).isEqualTo(true)
+        assertThat(rateLimitListRateLimitsPageResponse.hasMore()).contains(true)
         assertThat(rateLimitListRateLimitsPageResponse.firstId()).contains("first_id")
         assertThat(rateLimitListRateLimitsPageResponse.lastId()).contains("last_id")
 

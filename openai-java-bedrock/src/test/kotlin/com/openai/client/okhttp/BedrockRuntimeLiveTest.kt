@@ -78,8 +78,8 @@ internal class BedrockRuntimeLiveTest {
             val chunks = mutableListOf<String>()
             client.chat().completions().createStreaming(params).use { stream ->
                 stream.stream().forEach { chunk ->
-                    chunk.choices().forEach { choice ->
-                        choice.delta().content().ifPresent(chunks::add)
+                    chunk.choicesOrThrow().forEach { choice ->
+                        choice.deltaOrThrow().content().ifPresent(chunks::add)
                     }
                 }
             }
@@ -88,7 +88,7 @@ internal class BedrockRuntimeLiveTest {
                 .isNotEmpty()
         } else {
             val completion = client.chat().completions().create(params)
-            assertThat(completion.choices())
+            assertThat(completion.choicesOrThrow())
                 .describedAs("Chat Completions output for %s", model)
                 .isNotEmpty()
         }
@@ -105,13 +105,15 @@ internal class BedrockRuntimeLiveTest {
             val chunks = mutableListOf<String>()
             client.responses().createStreaming(params).use { stream ->
                 stream.stream().forEach { event ->
-                    event.outputTextDelta().ifPresent { chunks.add(it.delta()) }
+                    event.outputTextDelta().ifPresent { chunks.add(it.deltaOrThrow()) }
                 }
             }
             assertThat(chunks).describedAs("streaming Responses output for %s", model).isNotEmpty()
         } else {
             val response = client.responses().create(params)
-            assertThat(response.id()).describedAs("Responses identifier for %s", model).isNotBlank()
+            assertThat(response.idOrThrow())
+                .describedAs("Responses identifier for %s", model)
+                .isNotBlank()
         }
     }
 

@@ -38,23 +38,23 @@ internal class ImageToolErrorTransportTest {
                                 } else {
                                     client.async().responses().retrieve("resp_synthetic").join()
                                 }
-                            val call = response.output().single().asImageGenerationCall()
-                            assertThat(call.id()).isEqualTo("img_synthetic")
+                            val call = response.outputOrThrow().single().asImageGenerationCall()
+                            assertThat(call.idOrThrow()).isEqualTo("img_synthetic")
                             call
                                 .error()
                                 .map { error ->
                                     ErrorView(
                                         error.code().orElse(null),
                                         error.param().orElse(null),
-                                        error.message(),
-                                        error.type(),
+                                        error.messageOrThrow(),
+                                        error.typeOrThrow(),
                                         error
                                             .moderationDetails()
-                                            .map { it.moderationStage().toString() }
+                                            .map { it.moderationStageOrThrow().toString() }
                                             .orElse(null),
                                         error
                                             .moderationDetails()
-                                            .map { it.categories() }
+                                            .map { it.categoriesOrThrow() }
                                             .orElse(null),
                                     )
                                 }
@@ -73,23 +73,23 @@ internal class ImageToolErrorTransportTest {
                                         .retrieve("resp_synthetic")
                                         .join()
                                 }
-                            val call = response.output().single().asImageGenerationCall()
-                            assertThat(call.id()).isEqualTo("img_synthetic")
+                            val call = response.outputOrThrow().single().asImageGenerationCall()
+                            assertThat(call.idOrThrow()).isEqualTo("img_synthetic")
                             call
                                 .error()
                                 .map { error ->
                                     ErrorView(
                                         error.code().orElse(null),
                                         error.param().orElse(null),
-                                        error.message(),
-                                        error.type(),
+                                        error.messageOrThrow(),
+                                        error.typeOrThrow(),
                                         error
                                             .moderationDetails()
-                                            .map { it.moderationStage().toString() }
+                                            .map { it.moderationStageOrThrow().toString() }
                                             .orElse(null),
                                         error
                                             .moderationDetails()
-                                            .map { it.categories() }
+                                            .map { it.categoriesOrThrow() }
                                             .orElse(null),
                                     )
                                 }

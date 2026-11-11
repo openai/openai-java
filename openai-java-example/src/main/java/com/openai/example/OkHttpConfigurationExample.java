@@ -35,7 +35,7 @@ public final class OkHttpConfigurationExample {
                     .okHttpClient(transport)
                     .build();
             try {
-                client.models().list().data().forEach(model -> System.out.println(model.id()));
+                client.models().list().items().forEach(model -> System.out.println(model.idOrThrow()));
             } finally {
                 client.close();
             }
@@ -51,7 +51,7 @@ public final class OkHttpConfigurationExample {
                 asyncClient
                         .models()
                         .list()
-                        .thenAccept(page -> page.data().forEach(model -> System.out.println(model.id())))
+                        .thenAccept(page -> page.items().forEach(model -> System.out.println(model.idOrThrow())))
                         .join();
             } finally {
                 asyncClient.close();

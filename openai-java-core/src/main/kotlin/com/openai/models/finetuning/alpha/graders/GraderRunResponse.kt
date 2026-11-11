@@ -43,29 +43,54 @@ private constructor(
     ) : this(metadata, modelGraderTokenUsagePerModel, reward, subRewards, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun metadata(): Metadata = metadata.getRequired("metadata")
+    fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun modelGraderTokenUsagePerModel(): ModelGraderTokenUsagePerModel =
+    fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun modelGraderTokenUsagePerModel(): java.util.Optional<ModelGraderTokenUsagePerModel> =
+        modelGraderTokenUsagePerModel.getOptional("model_grader_token_usage_per_model")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun modelGraderTokenUsagePerModelOrThrow(): ModelGraderTokenUsagePerModel =
         modelGraderTokenUsagePerModel.getRequired("model_grader_token_usage_per_model")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun reward(): Double = reward.getRequired("reward")
+    fun reward(): java.util.Optional<Double> = reward.getOptional("reward")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun subRewards(): SubRewards = subRewards.getRequired("sub_rewards")
+    fun rewardOrThrow(): Double = reward.getRequired("reward")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun subRewards(): java.util.Optional<SubRewards> = subRewards.getOptional("sub_rewards")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun subRewardsOrThrow(): SubRewards = subRewards.getRequired("sub_rewards")
 
     /**
      * Returns the raw JSON value of [metadata].
@@ -273,10 +298,10 @@ private constructor(
             return@apply
         }
 
-        metadata().validate()
-        modelGraderTokenUsagePerModel().validate()
-        reward()
-        subRewards().validate()
+        metadataOrThrow().validate()
+        modelGraderTokenUsagePerModelOrThrow().validate()
+        rewardOrThrow()
+        subRewardsOrThrow().validate()
         validated = true
     }
 
@@ -340,47 +365,97 @@ private constructor(
         )
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun errors(): Errors = errors.getRequired("errors")
+        fun errors(): java.util.Optional<Errors> = errors.getOptional("errors")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun executionTime(): Double = executionTime.getRequired("execution_time")
+        fun errorsOrThrow(): Errors = errors.getRequired("errors")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): String = name.getRequired("name")
+        fun executionTime(): java.util.Optional<Double> =
+            executionTime.getOptional("execution_time")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun sampledModelName(): Optional<String> =
+        fun executionTimeOrThrow(): Double = executionTime.getRequired("execution_time")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun sampledModelName(): java.util.Optional<String> =
             sampledModelName.getOptional("sampled_model_name")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun scores(): Scores = scores.getRequired("scores")
+        fun sampledModelNameOrThrow(): String = sampledModelName.getRequired("sampled_model_name")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun tokenUsage(): Optional<Long> = tokenUsage.getOptional("token_usage")
+        fun scores(): java.util.Optional<Scores> = scores.getOptional("scores")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun type(): String = type.getRequired("type")
+        fun scoresOrThrow(): Scores = scores.getRequired("scores")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun tokenUsage(): java.util.Optional<Long> = tokenUsage.getOptional("token_usage")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun tokenUsageOrThrow(): Long = tokenUsage.getRequired("token_usage")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<String> = type.getOptional("type")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): String = type.getRequired("type")
 
         /**
          * Returns the raw JSON value of [errors].
@@ -675,13 +750,13 @@ private constructor(
                 return@apply
             }
 
-            errors().validate()
-            executionTime()
-            name()
+            errorsOrThrow().validate()
+            executionTimeOrThrow()
+            nameOrThrow()
             sampledModelName()
-            scores().validate()
+            scoresOrThrow().validate()
             tokenUsage()
-            type()
+            typeOrThrow()
             validated = true
         }
 
@@ -792,109 +867,225 @@ private constructor(
             )
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun formulaParseError(): Boolean = formulaParseError.getRequired("formula_parse_error")
+            fun formulaParseError(): java.util.Optional<Boolean> =
+                formulaParseError.getOptional("formula_parse_error")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun invalidVariableError(): Boolean =
+            fun formulaParseErrorOrThrow(): Boolean =
+                formulaParseError.getRequired("formula_parse_error")
+
+            /**
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun invalidVariableError(): java.util.Optional<Boolean> =
+                invalidVariableError.getOptional("invalid_variable_error")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun invalidVariableErrorOrThrow(): Boolean =
                 invalidVariableError.getRequired("invalid_variable_error")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun modelGraderParseError(): Boolean =
+            fun modelGraderParseError(): java.util.Optional<Boolean> =
+                modelGraderParseError.getOptional("model_grader_parse_error")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun modelGraderParseErrorOrThrow(): Boolean =
                 modelGraderParseError.getRequired("model_grader_parse_error")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun modelGraderRefusalError(): Boolean =
+            fun modelGraderRefusalError(): java.util.Optional<Boolean> =
+                modelGraderRefusalError.getOptional("model_grader_refusal_error")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun modelGraderRefusalErrorOrThrow(): Boolean =
                 modelGraderRefusalError.getRequired("model_grader_refusal_error")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun modelGraderServerError(): Boolean =
+            fun modelGraderServerError(): java.util.Optional<Boolean> =
+                modelGraderServerError.getOptional("model_grader_server_error")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun modelGraderServerErrorOrThrow(): Boolean =
                 modelGraderServerError.getRequired("model_grader_server_error")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun modelGraderServerErrorDetails(): Optional<String> =
+            fun modelGraderServerErrorDetails(): java.util.Optional<String> =
                 modelGraderServerErrorDetails.getOptional("model_grader_server_error_details")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun otherError(): Boolean = otherError.getRequired("other_error")
+            fun modelGraderServerErrorDetailsOrThrow(): String =
+                modelGraderServerErrorDetails.getRequired("model_grader_server_error_details")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun pythonGraderRuntimeError(): Boolean =
+            fun otherError(): java.util.Optional<Boolean> = otherError.getOptional("other_error")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun otherErrorOrThrow(): Boolean = otherError.getRequired("other_error")
+
+            /**
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun pythonGraderRuntimeError(): java.util.Optional<Boolean> =
+                pythonGraderRuntimeError.getOptional("python_grader_runtime_error")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun pythonGraderRuntimeErrorOrThrow(): Boolean =
                 pythonGraderRuntimeError.getRequired("python_grader_runtime_error")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun pythonGraderRuntimeErrorDetails(): Optional<String> =
+            fun pythonGraderRuntimeErrorDetails(): java.util.Optional<String> =
                 pythonGraderRuntimeErrorDetails.getOptional("python_grader_runtime_error_details")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun pythonGraderServerError(): Boolean =
+            fun pythonGraderRuntimeErrorDetailsOrThrow(): String =
+                pythonGraderRuntimeErrorDetails.getRequired("python_grader_runtime_error_details")
+
+            /**
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun pythonGraderServerError(): java.util.Optional<Boolean> =
+                pythonGraderServerError.getOptional("python_grader_server_error")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun pythonGraderServerErrorOrThrow(): Boolean =
                 pythonGraderServerError.getRequired("python_grader_server_error")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun pythonGraderServerErrorType(): Optional<String> =
+            fun pythonGraderServerErrorType(): java.util.Optional<String> =
                 pythonGraderServerErrorType.getOptional("python_grader_server_error_type")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun sampleParseError(): Boolean = sampleParseError.getRequired("sample_parse_error")
+            fun pythonGraderServerErrorTypeOrThrow(): String =
+                pythonGraderServerErrorType.getRequired("python_grader_server_error_type")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun truncatedObservationError(): Boolean =
+            fun sampleParseError(): java.util.Optional<Boolean> =
+                sampleParseError.getOptional("sample_parse_error")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun sampleParseErrorOrThrow(): Boolean =
+                sampleParseError.getRequired("sample_parse_error")
+
+            /**
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun truncatedObservationError(): java.util.Optional<Boolean> =
+                truncatedObservationError.getOptional("truncated_observation_error")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun truncatedObservationErrorOrThrow(): Boolean =
                 truncatedObservationError.getRequired("truncated_observation_error")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun unresponsiveRewardError(): Boolean =
+            fun unresponsiveRewardError(): java.util.Optional<Boolean> =
+                unresponsiveRewardError.getOptional("unresponsive_reward_error")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun unresponsiveRewardErrorOrThrow(): Boolean =
                 unresponsiveRewardError.getRequired("unresponsive_reward_error")
 
             /**
@@ -1451,20 +1642,20 @@ private constructor(
                     return@apply
                 }
 
-                formulaParseError()
-                invalidVariableError()
-                modelGraderParseError()
-                modelGraderRefusalError()
-                modelGraderServerError()
+                formulaParseErrorOrThrow()
+                invalidVariableErrorOrThrow()
+                modelGraderParseErrorOrThrow()
+                modelGraderRefusalErrorOrThrow()
+                modelGraderServerErrorOrThrow()
                 modelGraderServerErrorDetails()
-                otherError()
-                pythonGraderRuntimeError()
+                otherErrorOrThrow()
+                pythonGraderRuntimeErrorOrThrow()
                 pythonGraderRuntimeErrorDetails()
-                pythonGraderServerError()
+                pythonGraderServerErrorOrThrow()
                 pythonGraderServerErrorType()
-                sampleParseError()
-                truncatedObservationError()
-                unresponsiveRewardError()
+                sampleParseErrorOrThrow()
+                truncatedObservationErrorOrThrow()
+                unresponsiveRewardErrorOrThrow()
                 validated = true
             }
 

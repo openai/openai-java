@@ -13,7 +13,7 @@ internal class DecisionCreateEventTest {
     fun createAndRoundtrip() {
         val decisionCreateEvent = DecisionCreateEvent.builder().eventId("decision_1").build()
 
-        assertThat(decisionCreateEvent.eventId()).isEqualTo("decision_1")
+        assertThat(decisionCreateEvent.eventId()).contains("decision_1")
 
         val jsonMapper = jsonMapper()
 

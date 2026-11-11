@@ -33,12 +33,17 @@ private constructor(
     ) : this(seconds, mutableMapOf())
 
     /**
-     * The cumulative Live audio duration in seconds. Do not sum this value across usage events.
+     * The cumulative Live audio duration in seconds. Do not sum this value across usage events. The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun seconds(): Double = seconds.getRequired("seconds")
+    fun seconds(): java.util.Optional<Double> = seconds.getOptional("seconds")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun secondsOrThrow(): Double = seconds.getRequired("seconds")
 
     /**
      * Returns the raw JSON value of [seconds].
@@ -161,7 +166,7 @@ private constructor(
             return@apply
         }
 
-        seconds()
+        secondsOrThrow()
         validated = true
     }
 

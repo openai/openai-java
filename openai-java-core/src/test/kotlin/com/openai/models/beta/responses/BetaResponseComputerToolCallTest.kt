@@ -44,9 +44,9 @@ internal class BetaResponseComputerToolCallTest {
                 .agent(BetaResponseComputerToolCall.Agent.builder().agentName("agent_name").build())
                 .build()
 
-        assertThat(betaResponseComputerToolCall.id()).isEqualTo("id")
-        assertThat(betaResponseComputerToolCall.callId()).isEqualTo("call_id")
-        assertThat(betaResponseComputerToolCall.pendingSafetyChecks())
+        assertThat(betaResponseComputerToolCall.id()).contains("id")
+        assertThat(betaResponseComputerToolCall.callId()).contains("call_id")
+        assertThat(betaResponseComputerToolCall.pendingSafetyChecks().getOrNull())
             .containsExactly(
                 BetaResponseComputerToolCall.PendingSafetyCheck.builder()
                     .id("id")
@@ -55,9 +55,9 @@ internal class BetaResponseComputerToolCallTest {
                     .build()
             )
         assertThat(betaResponseComputerToolCall.status())
-            .isEqualTo(BetaResponseComputerToolCall.Status.IN_PROGRESS)
+            .contains(BetaResponseComputerToolCall.Status.IN_PROGRESS)
         assertThat(betaResponseComputerToolCall.type())
-            .isEqualTo(BetaResponseComputerToolCall.Type.COMPUTER_CALL)
+            .contains(BetaResponseComputerToolCall.Type.COMPUTER_CALL)
         assertThat(betaResponseComputerToolCall.action())
             .contains(
                 BetaComputerAction.ofClick(

@@ -40,41 +40,66 @@ private constructor(
     ) : this(description, name, source, type, mutableMapOf())
 
     /**
-     * The description of the skill.
+     * The description of the skill. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun description(): String = description.getRequired("description")
+    fun description(): java.util.Optional<String> = description.getOptional("description")
 
     /**
-     * The name of the skill.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): String = name.getRequired("name")
+    fun descriptionOrThrow(): String = description.getRequired("description")
 
     /**
-     * Inline skill payload
+     * The name of the skill. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun source(): InlineSkillSource = source.getRequired("source")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
 
     /**
-     * Defines an inline skill for this request.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("inline")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun nameOrThrow(): String = name.getRequired("name")
+
+    /**
+     * Inline skill payload The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun source(): java.util.Optional<InlineSkillSource> = source.getOptional("source")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sourceOrThrow(): InlineSkillSource = source.getRequired("source")
+
+    /**
+     * Defines an inline skill for this request. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("inline")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [description].
@@ -269,14 +294,10 @@ private constructor(
             return@apply
         }
 
-        description()
-        name()
-        source().validate()
-        _type().let {
-            if (it != JsonValue.from("inline")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        descriptionOrThrow()
+        nameOrThrow()
+        sourceOrThrow().validate()
+        typeOrThrow()
         validated = true
     }
 

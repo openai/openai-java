@@ -19,10 +19,10 @@ internal class ResponseCodeInterpreterCallCodeDeltaEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseCodeInterpreterCallCodeDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(responseCodeInterpreterCallCodeDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseCodeInterpreterCallCodeDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseCodeInterpreterCallCodeDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseCodeInterpreterCallCodeDeltaEvent.delta()).contains("delta")
+        assertThat(responseCodeInterpreterCallCodeDeltaEvent.itemId()).contains("item_id")
+        assertThat(responseCodeInterpreterCallCodeDeltaEvent.outputIndex()).contains(0L)
+        assertThat(responseCodeInterpreterCallCodeDeltaEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

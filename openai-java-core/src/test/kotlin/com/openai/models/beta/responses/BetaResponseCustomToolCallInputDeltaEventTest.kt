@@ -24,10 +24,10 @@ internal class BetaResponseCustomToolCallInputDeltaEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseCustomToolCallInputDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(betaResponseCustomToolCallInputDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseCustomToolCallInputDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseCustomToolCallInputDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseCustomToolCallInputDeltaEvent.delta()).contains("delta")
+        assertThat(betaResponseCustomToolCallInputDeltaEvent.itemId()).contains("item_id")
+        assertThat(betaResponseCustomToolCallInputDeltaEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseCustomToolCallInputDeltaEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseCustomToolCallInputDeltaEvent.agent())
             .contains(
                 BetaResponseCustomToolCallInputDeltaEvent.Agent.builder()

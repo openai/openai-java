@@ -35,9 +35,9 @@ internal class TranscriptionVerboseTest {
                 .addWord(TranscriptionWord.builder().end(0.0).start(0.0).word("word").build())
                 .build()
 
-        assertThat(transcriptionVerbose.duration()).isEqualTo(0.0)
-        assertThat(transcriptionVerbose.language()).isEqualTo("language")
-        assertThat(transcriptionVerbose.text()).isEqualTo("text")
+        assertThat(transcriptionVerbose.duration()).contains(0.0)
+        assertThat(transcriptionVerbose.language()).contains("language")
+        assertThat(transcriptionVerbose.text()).contains("text")
         assertThat(transcriptionVerbose.segments().getOrNull())
             .containsExactly(
                 TranscriptionSegment.builder()

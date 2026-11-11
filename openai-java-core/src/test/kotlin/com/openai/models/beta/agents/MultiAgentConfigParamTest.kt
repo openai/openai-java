@@ -14,7 +14,7 @@ internal class MultiAgentConfigParamTest {
         val multiAgentConfigParam =
             MultiAgentConfigParam.builder().enabled(true).maxConcurrentSubagents(1L).build()
 
-        assertThat(multiAgentConfigParam.enabled()).isEqualTo(true)
+        assertThat(multiAgentConfigParam.enabled()).contains(true)
         assertThat(multiAgentConfigParam.maxConcurrentSubagents()).contains(1L)
 
         val jsonMapper = jsonMapper()

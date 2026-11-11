@@ -13,7 +13,7 @@ internal class RefusalDeltaBlockTest {
     fun createAndRoundtrip() {
         val refusalDeltaBlock = RefusalDeltaBlock.builder().index(0L).refusal("refusal").build()
 
-        assertThat(refusalDeltaBlock.index()).isEqualTo(0L)
+        assertThat(refusalDeltaBlock.index()).contains(0L)
         assertThat(refusalDeltaBlock.refusal()).contains("refusal")
 
         val jsonMapper = jsonMapper()

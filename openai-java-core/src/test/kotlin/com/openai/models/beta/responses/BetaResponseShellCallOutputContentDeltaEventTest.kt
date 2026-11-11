@@ -30,17 +30,17 @@ internal class BetaResponseShellCallOutputContentDeltaEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseShellCallOutputContentDeltaEvent.commandIndex()).isEqualTo(0L)
+        assertThat(betaResponseShellCallOutputContentDeltaEvent.commandIndex()).contains(0L)
         assertThat(betaResponseShellCallOutputContentDeltaEvent.delta())
-            .isEqualTo(
+            .contains(
                 BetaResponseShellCallOutputContentDeltaEvent.Delta.builder()
                     .stderr("stderr")
                     .stdout("stdout")
                     .build()
             )
-        assertThat(betaResponseShellCallOutputContentDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseShellCallOutputContentDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseShellCallOutputContentDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseShellCallOutputContentDeltaEvent.itemId()).contains("item_id")
+        assertThat(betaResponseShellCallOutputContentDeltaEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseShellCallOutputContentDeltaEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseShellCallOutputContentDeltaEvent.agent())
             .contains(
                 BetaResponseShellCallOutputContentDeltaEvent.Agent.builder()

@@ -19,10 +19,10 @@ internal class HostedEnvironmentFileIdTest {
                 .sizeBytes(0L)
                 .build()
 
-        assertThat(hostedEnvironmentFileId.id()).isEqualTo("id")
-        assertThat(hostedEnvironmentFileId.fileId()).isEqualTo("file_id")
-        assertThat(hostedEnvironmentFileId.path()).isEqualTo("path")
-        assertThat(hostedEnvironmentFileId.sizeBytes()).isEqualTo(0L)
+        assertThat(hostedEnvironmentFileId.id()).contains("id")
+        assertThat(hostedEnvironmentFileId.fileId()).contains("file_id")
+        assertThat(hostedEnvironmentFileId.path()).contains("path")
+        assertThat(hostedEnvironmentFileId.sizeBytes()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

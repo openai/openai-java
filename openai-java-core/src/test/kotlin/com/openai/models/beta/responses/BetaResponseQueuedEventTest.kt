@@ -318,7 +318,7 @@ internal class BetaResponseQueuedEventTest {
                 .build()
 
         assertThat(betaResponseQueuedEvent.response())
-            .isEqualTo(
+            .contains(
                 BetaResponse.builder()
                     .id("id")
                     .accessPrograms(
@@ -609,7 +609,7 @@ internal class BetaResponseQueuedEventTest {
                     .user("user-1234")
                     .build()
             )
-        assertThat(betaResponseQueuedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseQueuedEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseQueuedEvent.agent())
             .contains(BetaResponseQueuedEvent.Agent.builder().agentName("agent_name").build())
 

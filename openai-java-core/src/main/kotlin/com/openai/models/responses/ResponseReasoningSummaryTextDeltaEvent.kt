@@ -46,57 +46,92 @@ private constructor(
     ) : this(delta, itemId, outputIndex, sequenceNumber, summaryIndex, type, mutableMapOf())
 
     /**
-     * The text delta that was added to the summary.
+     * The text delta that was added to the summary. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun delta(): String = delta.getRequired("delta")
+    fun delta(): java.util.Optional<String> = delta.getOptional("delta")
 
     /**
-     * The ID of the item this summary text delta is associated with.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun itemId(): String = itemId.getRequired("item_id")
+    fun deltaOrThrow(): String = delta.getRequired("delta")
 
     /**
-     * The index of the output item this summary text delta is associated with.
+     * The ID of the item this summary text delta is associated with. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun outputIndex(): Long = outputIndex.getRequired("output_index")
+    fun itemId(): java.util.Optional<String> = itemId.getOptional("item_id")
 
     /**
-     * The sequence number of this event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
+    fun itemIdOrThrow(): String = itemId.getRequired("item_id")
 
     /**
-     * The index of the summary part within the reasoning summary.
+     * The index of the output item this summary text delta is associated with. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun summaryIndex(): Long = summaryIndex.getRequired("summary_index")
+    fun outputIndex(): java.util.Optional<Long> = outputIndex.getOptional("output_index")
 
     /**
-     * The type of the event. Always `response.reasoning_summary_text.delta`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.reasoning_summary_text.delta")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun outputIndexOrThrow(): Long = outputIndex.getRequired("output_index")
+
+    /**
+     * The sequence number of this event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun sequenceNumber(): java.util.Optional<Long> = sequenceNumber.getOptional("sequence_number")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sequenceNumberOrThrow(): Long = sequenceNumber.getRequired("sequence_number")
+
+    /**
+     * The index of the summary part within the reasoning summary. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun summaryIndex(): java.util.Optional<Long> = summaryIndex.getOptional("summary_index")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun summaryIndexOrThrow(): Long = summaryIndex.getRequired("summary_index")
+
+    /**
+     * The type of the event. Always `response.reasoning_summary_text.delta`. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.reasoning_summary_text.delta")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [delta].
@@ -350,16 +385,12 @@ private constructor(
             return@apply
         }
 
-        delta()
-        itemId()
-        outputIndex()
-        sequenceNumber()
-        summaryIndex()
-        _type().let {
-            if (it != JsonValue.from("response.reasoning_summary_text.delta")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        deltaOrThrow()
+        itemIdOrThrow()
+        outputIndexOrThrow()
+        sequenceNumberOrThrow()
+        summaryIndexOrThrow()
+        typeOrThrow()
         validated = true
     }
 

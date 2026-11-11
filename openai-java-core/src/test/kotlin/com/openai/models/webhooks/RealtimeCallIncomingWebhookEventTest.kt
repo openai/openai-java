@@ -3,6 +3,7 @@
 package com.openai.models.webhooks
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -32,10 +33,10 @@ internal class RealtimeCallIncomingWebhookEventTest {
                 .object_(RealtimeCallIncomingWebhookEvent.Object.EVENT)
                 .build()
 
-        assertThat(realtimeCallIncomingWebhookEvent.id()).isEqualTo("id")
-        assertThat(realtimeCallIncomingWebhookEvent.createdAt()).isEqualTo(0L)
+        assertThat(realtimeCallIncomingWebhookEvent.id()).contains("id")
+        assertThat(realtimeCallIncomingWebhookEvent.createdAt()).contains(0L)
         assertThat(realtimeCallIncomingWebhookEvent.data())
-            .isEqualTo(
+            .contains(
                 RealtimeCallIncomingWebhookEvent.Data.builder()
                     .callId("call_id")
                     .addSipHeader(
@@ -47,8 +48,7 @@ internal class RealtimeCallIncomingWebhookEventTest {
                     .sipMediaSecurity(RealtimeCallIncomingWebhookEvent.Data.SipMediaSecurity.RTP)
                     .build()
             )
-        assertThat(realtimeCallIncomingWebhookEvent.object_())
-            .contains(RealtimeCallIncomingWebhookEvent.Object.EVENT)
+        assertThat(realtimeCallIncomingWebhookEvent.object_()).contains(JsonValue.from("event"))
 
         val jsonMapper = jsonMapper()
 

@@ -38,23 +38,39 @@ private constructor(
     ) : this(imageFile, type, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun imageFile(): ImageFile = imageFile.getRequired("image_file")
+    fun imageFile(): java.util.Optional<ImageFile> = imageFile.getOptional("image_file")
 
     /**
-     * Always `image_file`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("image_file")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun imageFileOrThrow(): ImageFile = imageFile.getRequired("image_file")
+
+    /**
+     * Always `image_file`. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("image_file")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [imageFile].
@@ -199,12 +215,8 @@ private constructor(
             return@apply
         }
 
-        imageFile().validate()
-        _type().let {
-            if (it != JsonValue.from("image_file")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        imageFileOrThrow().validate()
+        typeOrThrow()
         validated = true
     }
 

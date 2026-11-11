@@ -12,6 +12,6 @@ public final class ModelListExample {
         // - The `OPENAI_BASE_URL` and `AZURE_OPENAI_KEY` environment variables
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
-        client.models().list().autoPager().forEach(model -> System.out.println(model.id()));
+        client.models().list().autoPager().forEach(model -> System.out.println(model.idOrThrow()));
     }
 }

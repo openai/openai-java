@@ -4,6 +4,7 @@ package com.openai.models.beta.agents.sessions.artifacts
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -29,7 +30,7 @@ internal class ArtifactListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(artifactListPageResponse.data())
+        assertThat(artifactListPageResponse.data().getOrNull())
             .containsExactly(
                 SessionArtifact.builder()
                     .id("id")
@@ -42,7 +43,7 @@ internal class ArtifactListPageResponseTest {
                     .build()
             )
         assertThat(artifactListPageResponse.firstId()).contains("first_id")
-        assertThat(artifactListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(artifactListPageResponse.hasMore()).contains(true)
         assertThat(artifactListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

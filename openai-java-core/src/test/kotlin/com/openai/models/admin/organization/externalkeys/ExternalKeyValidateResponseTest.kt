@@ -14,7 +14,7 @@ internal class ExternalKeyValidateResponseTest {
         val externalKeyValidateResponse =
             ExternalKeyValidateResponse.builder().status("status").build()
 
-        assertThat(externalKeyValidateResponse.status()).isEqualTo("status")
+        assertThat(externalKeyValidateResponse.status()).contains("status")
 
         val jsonMapper = jsonMapper()
 

@@ -42,13 +42,11 @@ private constructor(
 
     fun runId(): Optional<String> = Optional.ofNullable(runId)
 
-    /**
-     * A list of tools for which the outputs are being submitted.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun toolOutputs(): List<ToolOutput> = body.toolOutputs()
+    /** @see Body.toolOutputs */
+    fun toolOutputs(): java.util.Optional<List<ToolOutput>> = body.toolOutputs()
+
+    /** @see Body.toolOutputsOrThrow */
+    fun toolOutputsOrThrow(): List<ToolOutput> = body.toolOutputsOrThrow()
 
     /**
      * Returns the raw JSON value of [toolOutputs].
@@ -304,12 +302,19 @@ private constructor(
         ) : this(toolOutputs, mutableMapOf())
 
         /**
-         * A list of tools for which the outputs are being submitted.
+         * A list of tools for which the outputs are being submitted. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun toolOutputs(): List<ToolOutput> = toolOutputs.getRequired("tool_outputs")
+        fun toolOutputs(): java.util.Optional<List<ToolOutput>> =
+            toolOutputs.getOptional("tool_outputs")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun toolOutputsOrThrow(): List<ToolOutput> = toolOutputs.getRequired("tool_outputs")
 
         /**
          * Returns the raw JSON value of [toolOutputs].
@@ -450,7 +455,7 @@ private constructor(
                 return@apply
             }
 
-            toolOutputs().forEach { it.validate() }
+            toolOutputsOrThrow().forEach { it.validate() }
             validated = true
         }
 
@@ -507,21 +512,32 @@ private constructor(
         ) : this(output, toolCallId, mutableMapOf())
 
         /**
-         * The output of the tool call to be submitted to continue the run.
+         * The output of the tool call to be submitted to continue the run. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun output(): Optional<String> = output.getOptional("output")
+        fun output(): java.util.Optional<String> = output.getOptional("output")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun outputOrThrow(): String = output.getRequired("output")
 
         /**
          * The ID of the tool call in the `required_action` object within the run object the output
-         * is being submitted for.
+         * is being submitted for. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun toolCallId(): Optional<String> = toolCallId.getOptional("tool_call_id")
+        fun toolCallId(): java.util.Optional<String> = toolCallId.getOptional("tool_call_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun toolCallIdOrThrow(): String = toolCallId.getRequired("tool_call_id")
 
         /**
          * Returns the raw JSON value of [output].

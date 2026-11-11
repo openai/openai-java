@@ -22,7 +22,7 @@ internal class ImageUrlContentBlockTest {
                 .build()
 
         assertThat(imageUrlContentBlock.imageUrl())
-            .isEqualTo(
+            .contains(
                 ImageUrl.builder().url("https://example.com").detail(ImageUrl.Detail.AUTO).build()
             )
 

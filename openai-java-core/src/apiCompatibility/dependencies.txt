@@ -2,6 +2,7 @@
 org.jetbrains.kotlin:kotlin-stdlib:1.9.20
 org.jetbrains.kotlin:kotlin-test:1.9.20
 org.assertj:assertj-core:3.27.7
+com.squareup.okhttp3:mockwebserver:4.12.0
 org.junit.jupiter:junit-jupiter-api:5.9.3
 org.junit.jupiter:junit-jupiter-params:5.9.3
 org.mockito:mockito-core:5.14.2

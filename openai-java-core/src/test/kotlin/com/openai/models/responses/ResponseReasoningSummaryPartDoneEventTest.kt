@@ -21,12 +21,12 @@ internal class ResponseReasoningSummaryPartDoneEventTest {
                 .status(ResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
                 .build()
 
-        assertThat(responseReasoningSummaryPartDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseReasoningSummaryPartDoneEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseReasoningSummaryPartDoneEvent.itemId()).contains("item_id")
+        assertThat(responseReasoningSummaryPartDoneEvent.outputIndex()).contains(0L)
         assertThat(responseReasoningSummaryPartDoneEvent.part())
-            .isEqualTo(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
-        assertThat(responseReasoningSummaryPartDoneEvent.sequenceNumber()).isEqualTo(0L)
-        assertThat(responseReasoningSummaryPartDoneEvent.summaryIndex()).isEqualTo(0L)
+            .contains(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
+        assertThat(responseReasoningSummaryPartDoneEvent.sequenceNumber()).contains(0L)
+        assertThat(responseReasoningSummaryPartDoneEvent.summaryIndex()).contains(0L)
         assertThat(responseReasoningSummaryPartDoneEvent.status())
             .contains(ResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
 

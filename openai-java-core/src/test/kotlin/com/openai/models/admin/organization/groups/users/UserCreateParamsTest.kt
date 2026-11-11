@@ -27,6 +27,6 @@ internal class UserCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.userId()).isEqualTo("user_id")
+        assertThat(body.userIdOrThrow()).isEqualTo("user_id")
     }
 }

@@ -52,107 +52,62 @@ private constructor(
 
     fun betas(): Optional<List<Beta>> = Optional.ofNullable(betas)
 
-    /**
-     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
-     * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
-     * available models.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun model(): Optional<Model> = body.model()
+    /** @see Body.model */
+    fun model(): java.util.Optional<Model> = body.model()
 
-    /**
-     * Request level image options.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun image(): Optional<Image> = body.image()
+    /** @see Body.modelOrThrow */
+    fun modelOrThrow(): Model = body.modelOrThrow()
 
-    /**
-     * Text, image, or file inputs to the model, used to generate a response
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun input(): Optional<Input> = body.input()
+    /** @see Body.image */
+    fun image(): java.util.Optional<Image> = body.image()
 
-    /**
-     * A system (or developer) message inserted into the model's context. When used along with
-     * `previous_response_id`, the instructions from a previous response will not be carried over to
-     * the next response. This makes it simple to swap out system (or developer) messages in new
-     * responses.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun instructions(): Optional<String> = body.instructions()
+    /** @see Body.imageOrThrow */
+    fun imageOrThrow(): Image = body.imageOrThrow()
 
-    /**
-     * The unique ID of the previous response to the model. Use this to create multi-turn
-     * conversations. Learn more about
-     * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
-     * Cannot be used in conjunction with `conversation`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun previousResponseId(): Optional<String> = body.previousResponseId()
+    /** @see Body.input */
+    fun input(): java.util.Optional<Input> = body.input()
 
-    /**
-     * A key to use when reading from or writing to the prompt cache.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun promptCacheKey(): Optional<String> = body.promptCacheKey()
+    /** @see Body.inputOrThrow */
+    fun inputOrThrow(): Input = body.inputOrThrow()
 
-    /**
-     * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
-     * automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to
-     * content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints.
-     * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
-     * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
-     * breakpoint. The `ttl` defaults to `30m`. Supported lifetimes depend on the API. See the
-     * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
-     * current details.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun promptCacheOptions(): Optional<PromptCacheOptions> = body.promptCacheOptions()
+    /** @see Body.instructions */
+    fun instructions(): java.util.Optional<String> = body.instructions()
 
-    /**
-     * How long to retain a prompt cache entry created by this request.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
+    /** @see Body.instructionsOrThrow */
+    fun instructionsOrThrow(): String = body.instructionsOrThrow()
+
+    /** @see Body.previousResponseId */
+    fun previousResponseId(): java.util.Optional<String> = body.previousResponseId()
+
+    /** @see Body.previousResponseIdOrThrow */
+    fun previousResponseIdOrThrow(): String = body.previousResponseIdOrThrow()
+
+    /** @see Body.promptCacheKey */
+    fun promptCacheKey(): java.util.Optional<String> = body.promptCacheKey()
+
+    /** @see Body.promptCacheKeyOrThrow */
+    fun promptCacheKeyOrThrow(): String = body.promptCacheKeyOrThrow()
+
+    /** @see Body.promptCacheOptions */
+    fun promptCacheOptions(): java.util.Optional<PromptCacheOptions> = body.promptCacheOptions()
+
+    /** @see Body.promptCacheOptionsOrThrow */
+    fun promptCacheOptionsOrThrow(): PromptCacheOptions = body.promptCacheOptionsOrThrow()
+
+    /** @see Body.promptCacheRetention */
     @Deprecated("deprecated")
-    fun promptCacheRetention(): Optional<PromptCacheRetention> = body.promptCacheRetention()
+    fun promptCacheRetention(): java.util.Optional<PromptCacheRetention> =
+        body.promptCacheRetention()
 
-    /**
-     * Specifies the processing type used for serving the request. - If set to 'auto', then the
-     * request will be processed with the service tier configured in the Project settings. Unless
-     * otherwise configured, the Project will use 'default'. - If set to 'default', then the request
-     * will be processed with the standard pricing and performance for the selected model. - If set
-     * to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the request
-     * will be processed with the Flex Processing service tier. - To opt-in to
-     * [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the request level,
-     * include the `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-     * Completions. For models with a dedicated Fast tier, either value resolves to
-     * `service_tier=fast`; for other models, either value resolves to `service_tier=priority`. -
-     * When not set, the default behavior is 'auto'. When the `service_tier` parameter is set, the
-     * response body will include the `service_tier` value based on the processing mode actually
-     * used to serve the request. This response value may be different from the value set in the
-     * parameter.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun serviceTier(): Optional<ServiceTier> = body.serviceTier()
+    /** @see Body.promptCacheRetentionOrThrow */
+    @Deprecated("deprecated")
+    fun promptCacheRetentionOrThrow(): PromptCacheRetention = body.promptCacheRetentionOrThrow()
+
+    /** @see Body.serviceTier */
+    fun serviceTier(): java.util.Optional<ServiceTier> = body.serviceTier()
+
+    /** @see Body.serviceTierOrThrow */
+    fun serviceTierOrThrow(): ServiceTier = body.serviceTierOrThrow()
 
     /**
      * Returns the raw JSON value of [model].
@@ -712,59 +667,95 @@ private constructor(
          * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
          * models with different capabilities, performance characteristics, and price points. Refer
          * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
-         * available models.
+         * available models. The schema requires this property. Returns empty if the JSON property
+         * is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun model(): Optional<Model> = model.getOptional("model")
+        fun model(): java.util.Optional<Model> = model.getOptional("model")
 
         /**
-         * Request level image options.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun image(): Optional<Image> = image.getOptional("image")
+        fun modelOrThrow(): Model = model.getRequired("model")
 
         /**
-         * Text, image, or file inputs to the model, used to generate a response
+         * Request level image options. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun input(): Optional<Input> = input.getOptional("input")
+        fun image(): java.util.Optional<Image> = image.getOptional("image")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun imageOrThrow(): Image = image.getRequired("image")
+
+        /**
+         * Text, image, or file inputs to the model, used to generate a response Returns empty if
+         * the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun input(): java.util.Optional<Input> = input.getOptional("input")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun inputOrThrow(): Input = input.getRequired("input")
 
         /**
          * A system (or developer) message inserted into the model's context. When used along with
          * `previous_response_id`, the instructions from a previous response will not be carried
          * over to the next response. This makes it simple to swap out system (or developer)
-         * messages in new responses.
+         * messages in new responses. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun instructions(): Optional<String> = instructions.getOptional("instructions")
+        fun instructions(): java.util.Optional<String> = instructions.getOptional("instructions")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun instructionsOrThrow(): String = instructions.getRequired("instructions")
 
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
          * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
-         * Cannot be used in conjunction with `conversation`.
+         * Cannot be used in conjunction with `conversation`. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun previousResponseId(): Optional<String> =
+        fun previousResponseId(): java.util.Optional<String> =
             previousResponseId.getOptional("previous_response_id")
 
         /**
-         * A key to use when reading from or writing to the prompt cache.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun promptCacheKey(): Optional<String> = promptCacheKey.getOptional("prompt_cache_key")
+        fun previousResponseIdOrThrow(): String =
+            previousResponseId.getRequired("previous_response_id")
+
+        /**
+         * A key to use when reading from or writing to the prompt cache. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun promptCacheKey(): java.util.Optional<String> =
+            promptCacheKey.getOptional("prompt_cache_key")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun promptCacheKeyOrThrow(): String = promptCacheKey.getRequired("prompt_cache_key")
 
         /**
          * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
@@ -775,23 +766,37 @@ private constructor(
          * the implicit breakpoint. The `ttl` defaults to `30m`. Supported lifetimes depend on the
          * API. See the
          * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
-         * current details.
+         * current details. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun promptCacheOptions(): Optional<PromptCacheOptions> =
+        fun promptCacheOptions(): java.util.Optional<PromptCacheOptions> =
             promptCacheOptions.getOptional("prompt_cache_options")
 
         /**
-         * How long to retain a prompt cache entry created by this request.
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun promptCacheOptionsOrThrow(): PromptCacheOptions =
+            promptCacheOptions.getRequired("prompt_cache_options")
+
+        /**
+         * How long to retain a prompt cache entry created by this request. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
         @Deprecated("deprecated")
-        fun promptCacheRetention(): Optional<PromptCacheRetention> =
+        fun promptCacheRetention(): java.util.Optional<PromptCacheRetention> =
             promptCacheRetention.getOptional("prompt_cache_retention")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        @Deprecated("deprecated")
+        fun promptCacheRetentionOrThrow(): PromptCacheRetention =
+            promptCacheRetention.getRequired("prompt_cache_retention")
 
         /**
          * Specifies the processing type used for serving the request. - If set to 'auto', then the
@@ -808,12 +813,18 @@ private constructor(
          * `service_tier=priority`. - When not set, the default behavior is 'auto'. When the
          * `service_tier` parameter is set, the response body will include the `service_tier` value
          * based on the processing mode actually used to serve the request. This response value may
-         * be different from the value set in the parameter.
+         * be different from the value set in the parameter. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun serviceTier(): Optional<ServiceTier> = serviceTier.getOptional("service_tier")
+        fun serviceTier(): java.util.Optional<ServiceTier> = serviceTier.getOptional("service_tier")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun serviceTierOrThrow(): ServiceTier = serviceTier.getRequired("service_tier")
 
         /**
          * Returns the raw JSON value of [model].
@@ -3026,13 +3037,19 @@ private constructor(
         /**
          * Controls image context optimization. Defaults to `auto`, which uses the model, transport,
          * and input to select a policy. Use `enabled` to require compression support or `disabled`
-         * to turn it off.
+         * to turn it off. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun contextCompression(): Optional<ContextCompression> =
+        fun contextCompression(): java.util.Optional<ContextCompression> =
             contextCompression.getOptional("context_compression")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun contextCompressionOrThrow(): ContextCompression =
+            contextCompression.getRequired("context_compression")
 
         /**
          * Returns the raw JSON value of [contextCompression].
@@ -3619,22 +3636,34 @@ private constructor(
          * `implicit`. With `implicit`, OpenAI creates one implicit breakpoint and writes up to the
          * latest three explicit breakpoints in the request. With `explicit`, OpenAI does not create
          * an implicit breakpoint and writes up to the latest four explicit breakpoints. If there
-         * are no explicit breakpoints, the request does not use prompt caching.
+         * are no explicit breakpoints, the request does not use prompt caching. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun mode(): Optional<Mode> = mode.getOptional("mode")
+        fun mode(): java.util.Optional<Mode> = mode.getOptional("mode")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun modeOrThrow(): Mode = mode.getRequired("mode")
 
         /**
          * The minimum lifetime applied to every implicit and explicit cache breakpoint written by
          * the request. Defaults to `30m`, which is currently the only supported value. The backend
-         * may retain cache entries for longer.
+         * may retain cache entries for longer. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun ttl(): Optional<Ttl> = ttl.getOptional("ttl")
+        fun ttl(): java.util.Optional<Ttl> = ttl.getOptional("ttl")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun ttlOrThrow(): Ttl = ttl.getRequired("ttl")
 
         /**
          * Returns the raw JSON value of [mode].

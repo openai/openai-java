@@ -21,11 +21,11 @@ public final class ResponsesAsyncExample {
 
         client.responses()
                 .create(createParams)
-                .thenAccept(response -> response.output().stream()
+                .thenAccept(response -> response.outputOrThrow().stream()
                         .flatMap(item -> item.message().stream())
-                        .flatMap(message -> message.content().stream())
+                        .flatMap(message -> message.contentOrThrow().stream())
                         .flatMap(content -> content.outputText().stream())
-                        .forEach(outputText -> System.out.println(outputText.text())))
+                        .forEach(outputText -> System.out.println(outputText.textOrThrow())))
                 .join();
     }
 }

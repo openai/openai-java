@@ -33,7 +33,7 @@ internal class TextContentBlockTest {
                 .build()
 
         assertThat(textContentBlock.text())
-            .isEqualTo(
+            .contains(
                 Text.builder()
                     .addAnnotation(
                         FileCitationAnnotation.builder()

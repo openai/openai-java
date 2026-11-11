@@ -34,28 +34,17 @@ private constructor(
 
     fun threadId(): Optional<String> = Optional.ofNullable(threadId)
 
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
-     *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun metadata(): Optional<Metadata> = body.metadata()
+    /** @see Body.metadata */
+    fun metadata(): java.util.Optional<Metadata> = body.metadata()
 
-    /**
-     * A set of resources that are made available to the assistant's tools in this thread. The
-     * resources are specific to the type of tool. For example, the `code_interpreter` tool requires
-     * a list of file IDs, while the `file_search` tool requires a list of vector store IDs.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun toolResources(): Optional<ToolResources> = body.toolResources()
+    /** @see Body.metadataOrThrow */
+    fun metadataOrThrow(): Metadata = body.metadataOrThrow()
+
+    /** @see Body.toolResources */
+    fun toolResources(): java.util.Optional<ToolResources> = body.toolResources()
+
+    /** @see Body.toolResourcesOrThrow */
+    fun toolResourcesOrThrow(): ToolResources = body.toolResourcesOrThrow()
 
     /**
      * Returns the raw JSON value of [metadata].
@@ -334,23 +323,34 @@ private constructor(
          * objects via API or the dashboard.
          *
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * maximum length of 512 characters. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+        fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
 
         /**
          * A set of resources that are made available to the assistant's tools in this thread. The
          * resources are specific to the type of tool. For example, the `code_interpreter` tool
          * requires a list of file IDs, while the `file_search` tool requires a list of vector store
-         * IDs.
+         * IDs. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun toolResources(): Optional<ToolResources> = toolResources.getOptional("tool_resources")
+        fun toolResources(): java.util.Optional<ToolResources> =
+            toolResources.getOptional("tool_resources")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun toolResourcesOrThrow(): ToolResources = toolResources.getRequired("tool_resources")
 
         /**
          * Returns the raw JSON value of [metadata].
@@ -711,17 +711,32 @@ private constructor(
         ) : this(codeInterpreter, fileSearch, mutableMapOf())
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun codeInterpreter(): Optional<CodeInterpreter> =
+        fun codeInterpreter(): java.util.Optional<CodeInterpreter> =
             codeInterpreter.getOptional("code_interpreter")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun fileSearch(): Optional<FileSearch> = fileSearch.getOptional("file_search")
+        fun codeInterpreterOrThrow(): CodeInterpreter =
+            codeInterpreter.getRequired("code_interpreter")
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun fileSearch(): java.util.Optional<FileSearch> = fileSearch.getOptional("file_search")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun fileSearchOrThrow(): FileSearch = fileSearch.getRequired("file_search")
 
         /**
          * Returns the raw JSON value of [codeInterpreter].
@@ -904,12 +919,17 @@ private constructor(
             /**
              * A list of [file](https://developers.openai.com/api/reference/resources/files) IDs
              * made available to the `code_interpreter` tool. There can be a maximum of 20 files
-             * associated with the tool.
+             * associated with the tool. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun fileIds(): Optional<List<String>> = fileIds.getOptional("file_ids")
+            fun fileIds(): java.util.Optional<List<String>> = fileIds.getOptional("file_ids")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun fileIdsOrThrow(): List<String> = fileIds.getRequired("file_ids")
 
             /**
              * Returns the raw JSON value of [fileIds].
@@ -1100,13 +1120,19 @@ private constructor(
              * The
              * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
              * attached to this thread. There can be a maximum of 1 vector store attached to the
-             * thread.
+             * thread. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun vectorStoreIds(): Optional<List<String>> =
+            fun vectorStoreIds(): java.util.Optional<List<String>> =
                 vectorStoreIds.getOptional("vector_store_ids")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun vectorStoreIdsOrThrow(): List<String> =
+                vectorStoreIds.getRequired("vector_store_ids")
 
             /**
              * Returns the raw JSON value of [vectorStoreIds].

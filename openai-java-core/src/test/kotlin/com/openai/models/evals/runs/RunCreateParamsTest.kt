@@ -109,7 +109,7 @@ internal class RunCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.dataSource())
+        assertThat(body.dataSourceOrThrow())
             .isEqualTo(
                 RunCreateParams.DataSource.ofCreateEvalJsonlRun(
                     CreateEvalJsonlRunDataSource.builder()
@@ -169,7 +169,7 @@ internal class RunCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.dataSource())
+        assertThat(body.dataSourceOrThrow())
             .isEqualTo(
                 RunCreateParams.DataSource.ofCreateEvalJsonlRun(
                     CreateEvalJsonlRunDataSource.builder()

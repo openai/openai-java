@@ -39,7 +39,7 @@ internal class ServiceAccountCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.name()).isEqualTo("name")
+        assertThat(body.nameOrThrow()).isEqualTo("name")
         assertThat(body.createServiceAccountOnly()).contains(true)
         assertThat(body.expiresInSeconds()).contains(1L)
     }
@@ -51,6 +51,6 @@ internal class ServiceAccountCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.name()).isEqualTo("name")
+        assertThat(body.nameOrThrow()).isEqualTo("name")
     }
 }

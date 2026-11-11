@@ -13,7 +13,7 @@ internal class DecisionQuestionInputTextTest {
     fun createAndRoundtrip() {
         val decisionQuestionInputText = DecisionQuestionInputText.builder().text("text").build()
 
-        assertThat(decisionQuestionInputText.text()).isEqualTo("text")
+        assertThat(decisionQuestionInputText.text()).contains("text")
 
         val jsonMapper = jsonMapper()
 

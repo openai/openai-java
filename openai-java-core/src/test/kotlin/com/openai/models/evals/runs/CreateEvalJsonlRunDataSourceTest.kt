@@ -35,7 +35,7 @@ internal class CreateEvalJsonlRunDataSourceTest {
                 .build()
 
         assertThat(createEvalJsonlRunDataSource.source())
-            .isEqualTo(
+            .contains(
                 CreateEvalJsonlRunDataSource.Source.ofFileContent(
                     CreateEvalJsonlRunDataSource.Source.FileContent.builder()
                         .addContent(

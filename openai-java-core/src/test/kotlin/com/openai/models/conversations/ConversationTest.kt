@@ -19,8 +19,8 @@ internal class ConversationTest {
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .build()
 
-        assertThat(conversation.id()).isEqualTo("id")
-        assertThat(conversation.createdAt()).isEqualTo(0L)
+        assertThat(conversation.id()).contains("id")
+        assertThat(conversation.createdAt()).contains(0L)
         assertThat(conversation._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
 
         val jsonMapper = jsonMapper()

@@ -21,12 +21,12 @@ internal class ResponseTextDoneEventTest {
                 .text("text")
                 .build()
 
-        assertThat(responseTextDoneEvent.contentIndex()).isEqualTo(0L)
-        assertThat(responseTextDoneEvent.eventId()).isEqualTo("event_id")
-        assertThat(responseTextDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseTextDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseTextDoneEvent.responseId()).isEqualTo("response_id")
-        assertThat(responseTextDoneEvent.text()).isEqualTo("text")
+        assertThat(responseTextDoneEvent.contentIndex()).contains(0L)
+        assertThat(responseTextDoneEvent.eventId()).contains("event_id")
+        assertThat(responseTextDoneEvent.itemId()).contains("item_id")
+        assertThat(responseTextDoneEvent.outputIndex()).contains(0L)
+        assertThat(responseTextDoneEvent.responseId()).contains("response_id")
+        assertThat(responseTextDoneEvent.text()).contains("text")
 
         val jsonMapper = jsonMapper()
 

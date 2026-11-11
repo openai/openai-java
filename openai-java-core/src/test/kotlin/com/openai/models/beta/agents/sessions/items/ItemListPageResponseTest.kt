@@ -7,6 +7,7 @@ import com.openai.core.jsonMapper
 import com.openai.models.beta.agents.AgentOutputItemStatus
 import com.openai.models.beta.agents.AgentSessionItem
 import com.openai.models.beta.agents.AgentSessionMessage
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -31,7 +32,7 @@ internal class ItemListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(itemListPageResponse.data())
+        assertThat(itemListPageResponse.data().getOrNull())
             .containsExactly(
                 AgentSessionItem.ofMessage(
                     AgentSessionMessage.builder()
@@ -45,7 +46,7 @@ internal class ItemListPageResponseTest {
                 )
             )
         assertThat(itemListPageResponse.firstId()).contains("first_id")
-        assertThat(itemListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(itemListPageResponse.hasMore()).contains(true)
         assertThat(itemListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

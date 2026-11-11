@@ -20,11 +20,11 @@ internal class ResponseReasoningSummaryTextDoneEventTest {
                 .text("text")
                 .build()
 
-        assertThat(responseReasoningSummaryTextDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseReasoningSummaryTextDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseReasoningSummaryTextDoneEvent.sequenceNumber()).isEqualTo(0L)
-        assertThat(responseReasoningSummaryTextDoneEvent.summaryIndex()).isEqualTo(0L)
-        assertThat(responseReasoningSummaryTextDoneEvent.text()).isEqualTo("text")
+        assertThat(responseReasoningSummaryTextDoneEvent.itemId()).contains("item_id")
+        assertThat(responseReasoningSummaryTextDoneEvent.outputIndex()).contains(0L)
+        assertThat(responseReasoningSummaryTextDoneEvent.sequenceNumber()).contains(0L)
+        assertThat(responseReasoningSummaryTextDoneEvent.summaryIndex()).contains(0L)
+        assertThat(responseReasoningSummaryTextDoneEvent.text()).contains("text")
 
         val jsonMapper = jsonMapper()
 

@@ -45,25 +45,40 @@ private constructor(
     ) : this(custom, type, mutableMapOf())
 
     /**
-     * Properties of the custom tool.
+     * Properties of the custom tool. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun custom(): Custom = custom.getRequired("custom")
+    fun custom(): java.util.Optional<Custom> = custom.getOptional("custom")
 
     /**
-     * The type of the custom tool. Always `custom`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("custom")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun customOrThrow(): Custom = custom.getRequired("custom")
+
+    /**
+     * The type of the custom tool. Always `custom`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("custom")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [custom].
@@ -204,12 +219,8 @@ private constructor(
             return@apply
         }
 
-        custom().validate()
-        _type().let {
-            if (it != JsonValue.from("custom")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        customOrThrow().validate()
+        typeOrThrow()
         validated = true
     }
 
@@ -251,28 +262,46 @@ private constructor(
         ) : this(name, description, format, mutableMapOf())
 
         /**
-         * The name of the custom tool, used to identify it in tool calls.
+         * The name of the custom tool, used to identify it in tool calls. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): String = name.getRequired("name")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
 
         /**
-         * Optional description of the custom tool, used to provide more context.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun description(): Optional<String> = description.getOptional("description")
+        fun nameOrThrow(): String = name.getRequired("name")
 
         /**
-         * The input format for the custom tool. Default is unconstrained text.
+         * Optional description of the custom tool, used to provide more context. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun format(): Optional<Format> = format.getOptional("format")
+        fun description(): java.util.Optional<String> = description.getOptional("description")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun descriptionOrThrow(): String = description.getRequired("description")
+
+        /**
+         * The input format for the custom tool. Default is unconstrained text. Returns empty if the
+         * JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun format(): java.util.Optional<Format> = format.getOptional("format")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun formatOrThrow(): Format = format.getRequired("format")
 
         /**
          * Returns the raw JSON value of [name].
@@ -468,7 +497,7 @@ private constructor(
                 return@apply
             }
 
-            name()
+            nameOrThrow()
             description()
             format().ifPresent { it.validate() }
             validated = true
@@ -740,26 +769,42 @@ private constructor(
                 ) : this(grammar, type, mutableMapOf())
 
                 /**
-                 * Your chosen grammar.
+                 * Your chosen grammar. The schema requires this property. Returns empty if the JSON
+                 * property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun grammar(): InnerGrammar = grammar.getRequired("grammar")
+                fun grammar(): java.util.Optional<InnerGrammar> = grammar.getOptional("grammar")
 
                 /**
-                 * Grammar format. Always `grammar`.
-                 *
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("grammar")
-                 * ```
-                 *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+                fun grammarOrThrow(): InnerGrammar = grammar.getRequired("grammar")
+
+                /**
+                 * Grammar format. Always `grammar`. The schema requires this property. Returns
+                 * empty if the JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun type(): java.util.Optional<JsonValue> {
+                    val raw = type
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("grammar")) ->
+                            throw OpenAIInvalidDataException("`type` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
                 /**
                  * Returns the raw JSON value of [grammar].
@@ -913,12 +958,8 @@ private constructor(
                         return@apply
                     }
 
-                    grammar().validate()
-                    _type().let {
-                        if (it != JsonValue.from("grammar")) {
-                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                        }
-                    }
+                    grammarOrThrow().validate()
+                    typeOrThrow()
                     validated = true
                 }
 
@@ -961,22 +1002,34 @@ private constructor(
                     ) : this(definition, syntax, mutableMapOf())
 
                     /**
-                     * The grammar definition.
+                     * The grammar definition. The schema requires this property. Returns empty if
+                     * the JSON property is missing or null.
                      *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   or is unexpectedly missing or null (e.g. if the server responded with an
-                     *   unexpected value).
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
                      */
-                    fun definition(): String = definition.getRequired("definition")
+                    fun definition(): java.util.Optional<String> =
+                        definition.getOptional("definition")
 
                     /**
-                     * The syntax of the grammar definition. One of `lark` or `regex`.
-                     *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   or is unexpectedly missing or null (e.g. if the server responded with an
-                     *   unexpected value).
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
                      */
-                    fun syntax(): Syntax = syntax.getRequired("syntax")
+                    fun definitionOrThrow(): String = definition.getRequired("definition")
+
+                    /**
+                     * The syntax of the grammar definition. One of `lark` or `regex`. The schema
+                     * requires this property. Returns empty if the JSON property is missing or
+                     * null.
+                     *
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                     */
+                    fun syntax(): java.util.Optional<Syntax> = syntax.getOptional("syntax")
+
+                    /**
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
+                     */
+                    fun syntaxOrThrow(): Syntax = syntax.getRequired("syntax")
 
                     /**
                      * Returns the raw JSON value of [definition].
@@ -1144,8 +1197,8 @@ private constructor(
                             return@apply
                         }
 
-                        definition()
-                        syntax().validate()
+                        definitionOrThrow()
+                        syntaxOrThrow().validate()
                         validated = true
                     }
 

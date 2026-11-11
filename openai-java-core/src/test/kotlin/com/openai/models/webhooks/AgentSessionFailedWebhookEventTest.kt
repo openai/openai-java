@@ -24,10 +24,10 @@ internal class AgentSessionFailedWebhookEventTest {
                 )
                 .build()
 
-        assertThat(agentSessionFailedWebhookEvent.id()).isEqualTo("id")
-        assertThat(agentSessionFailedWebhookEvent.createdAt()).isEqualTo(0L)
+        assertThat(agentSessionFailedWebhookEvent.id()).contains("id")
+        assertThat(agentSessionFailedWebhookEvent.createdAt()).contains(0L)
         assertThat(agentSessionFailedWebhookEvent.data())
-            .isEqualTo(
+            .contains(
                 AgentSessionFailedWebhookEvent.Data.builder()
                     .id("id")
                     .environmentType("environment_type")

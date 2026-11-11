@@ -14,9 +14,9 @@ internal class ContainerNetworkPolicyDomainSecretTest {
         val containerNetworkPolicyDomainSecret =
             ContainerNetworkPolicyDomainSecret.builder().domain("x").name("x").value("x").build()
 
-        assertThat(containerNetworkPolicyDomainSecret.domain()).isEqualTo("x")
-        assertThat(containerNetworkPolicyDomainSecret.name()).isEqualTo("x")
-        assertThat(containerNetworkPolicyDomainSecret.value()).isEqualTo("x")
+        assertThat(containerNetworkPolicyDomainSecret.domain()).contains("x")
+        assertThat(containerNetworkPolicyDomainSecret.name()).contains("x")
+        assertThat(containerNetworkPolicyDomainSecret.value()).contains("x")
 
         val jsonMapper = jsonMapper()
 

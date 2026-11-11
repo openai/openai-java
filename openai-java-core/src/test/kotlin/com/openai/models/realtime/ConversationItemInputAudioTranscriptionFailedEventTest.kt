@@ -26,9 +26,9 @@ internal class ConversationItemInputAudioTranscriptionFailedEventTest {
                 .itemId("item_id")
                 .build()
 
-        assertThat(conversationItemInputAudioTranscriptionFailedEvent.contentIndex()).isEqualTo(0L)
+        assertThat(conversationItemInputAudioTranscriptionFailedEvent.contentIndex()).contains(0L)
         assertThat(conversationItemInputAudioTranscriptionFailedEvent.error())
-            .isEqualTo(
+            .contains(
                 ConversationItemInputAudioTranscriptionFailedEvent.Error.builder()
                     .code("code")
                     .message("message")
@@ -37,8 +37,8 @@ internal class ConversationItemInputAudioTranscriptionFailedEventTest {
                     .build()
             )
         assertThat(conversationItemInputAudioTranscriptionFailedEvent.eventId())
-            .isEqualTo("event_id")
-        assertThat(conversationItemInputAudioTranscriptionFailedEvent.itemId()).isEqualTo("item_id")
+            .contains("event_id")
+        assertThat(conversationItemInputAudioTranscriptionFailedEvent.itemId()).contains("item_id")
 
         val jsonMapper = jsonMapper()
 

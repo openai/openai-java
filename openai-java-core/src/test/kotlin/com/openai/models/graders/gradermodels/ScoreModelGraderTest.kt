@@ -36,7 +36,7 @@ internal class ScoreModelGraderTest {
                 )
                 .build()
 
-        assertThat(scoreModelGrader.input())
+        assertThat(scoreModelGrader.input().getOrNull())
             .containsExactly(
                 ScoreModelGrader.Input.builder()
                     .content("string")
@@ -44,8 +44,8 @@ internal class ScoreModelGraderTest {
                     .type(ScoreModelGrader.Input.Type.MESSAGE)
                     .build()
             )
-        assertThat(scoreModelGrader.model()).isEqualTo("model")
-        assertThat(scoreModelGrader.name()).isEqualTo("name")
+        assertThat(scoreModelGrader.model()).contains("model")
+        assertThat(scoreModelGrader.name()).contains("name")
         assertThat(scoreModelGrader.range().getOrNull()).containsExactly(0.0)
         assertThat(scoreModelGrader.samplingParams())
             .contains(

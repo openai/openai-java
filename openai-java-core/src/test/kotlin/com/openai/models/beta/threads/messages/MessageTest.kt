@@ -46,7 +46,7 @@ internal class MessageTest {
                 .threadId("thread_id")
                 .build()
 
-        assertThat(message.id()).isEqualTo("id")
+        assertThat(message.id()).contains("id")
         assertThat(message.assistantId()).contains("assistant_id")
         assertThat(message.attachments().getOrNull())
             .containsExactly(
@@ -56,7 +56,7 @@ internal class MessageTest {
                     .build()
             )
         assertThat(message.completedAt()).contains(0L)
-        assertThat(message.content())
+        assertThat(message.content().getOrNull())
             .containsExactly(
                 MessageContent.ofImageFile(
                     ImageFileContentBlock.builder()
@@ -69,7 +69,7 @@ internal class MessageTest {
                         .build()
                 )
             )
-        assertThat(message.createdAt()).isEqualTo(0L)
+        assertThat(message.createdAt()).contains(0L)
         assertThat(message.incompleteAt()).contains(0L)
         assertThat(message.incompleteDetails())
             .contains(
@@ -83,10 +83,10 @@ internal class MessageTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(message.role()).isEqualTo(Message.Role.USER)
+        assertThat(message.role()).contains(Message.Role.USER)
         assertThat(message.runId()).contains("run_id")
-        assertThat(message.status()).isEqualTo(Message.Status.IN_PROGRESS)
-        assertThat(message.threadId()).isEqualTo("thread_id")
+        assertThat(message.status()).contains(Message.Status.IN_PROGRESS)
+        assertThat(message.threadId()).contains("thread_id")
 
         val jsonMapper = jsonMapper()
 

@@ -31,18 +31,29 @@ private constructor(
     ) : this(fileId, imageUrl, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun fileId(): Optional<String> = fileId.getOptional("file_id")
+    fun fileId(): java.util.Optional<String> = fileId.getOptional("file_id")
 
     /**
-     * A fully qualified URL or base64-encoded data URL.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun imageUrl(): Optional<String> = imageUrl.getOptional("image_url")
+    fun fileIdOrThrow(): String = fileId.getRequired("file_id")
+
+    /**
+     * A fully qualified URL or base64-encoded data URL. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun imageUrl(): java.util.Optional<String> = imageUrl.getOptional("image_url")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun imageUrlOrThrow(): String = imageUrl.getRequired("image_url")
 
     /**
      * Returns the raw JSON value of [fileId].

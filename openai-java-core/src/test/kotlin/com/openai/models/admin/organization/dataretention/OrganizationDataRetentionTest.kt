@@ -17,7 +17,7 @@ internal class OrganizationDataRetentionTest {
                 .build()
 
         assertThat(organizationDataRetention.type())
-            .isEqualTo(OrganizationDataRetention.Type.ZERO_DATA_RETENTION)
+            .contains(OrganizationDataRetention.Type.ZERO_DATA_RETENTION)
 
         val jsonMapper = jsonMapper()
 

@@ -47,54 +47,83 @@ private constructor(
 
     /**
      * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and dashes,
-     * with a maximum length of 64.
+     * with a maximum length of 64. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun name(): String = name.getRequired("name")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
 
     /**
      * The schema for the response format, described as a JSON Schema object. Learn how to build
-     * JSON schemas [here](https://json-schema.org/).
+     * JSON schemas [here](https://json-schema.org/). The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun schema(): Schema = schema.getRequired("schema")
+    fun schema(): java.util.Optional<Schema> = schema.getOptional("schema")
 
     /**
-     * The type of response format being defined. Always `json_schema`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("json_schema")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun schemaOrThrow(): Schema = schema.getRequired("schema")
+
+    /**
+     * The type of response format being defined. Always `json_schema`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("json_schema")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * A description of what the response format is for, used by the model to determine how to
-     * respond in the format.
+     * respond in the format. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun description(): Optional<String> = description.getOptional("description")
+    fun description(): java.util.Optional<String> = description.getOptional("description")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun descriptionOrThrow(): String = description.getRequired("description")
 
     /**
      * Whether to enable strict schema adherence when generating the output. If set to true, the
      * model will always follow the exact schema defined in the `schema` field. Only a subset of
      * JSON Schema is supported when `strict` is `true`. To learn more, read the
      * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun strict(): Optional<Boolean> = strict.getOptional("strict")
+    fun strict(): java.util.Optional<Boolean> = strict.getOptional("strict")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun strictOrThrow(): Boolean = strict.getRequired("strict")
 
     /**
      * Returns the raw JSON value of [name].
@@ -335,13 +364,9 @@ private constructor(
             return@apply
         }
 
-        name()
-        schema().validate()
-        _type().let {
-            if (it != JsonValue.from("json_schema")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        nameOrThrow()
+        schemaOrThrow().validate()
+        typeOrThrow()
         description()
         strict()
         validated = true

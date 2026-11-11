@@ -14,8 +14,8 @@ internal class RealtimeMcphttpErrorTest {
         val realtimeMcphttpError =
             RealtimeMcphttpError.builder().code(0L).message("message").build()
 
-        assertThat(realtimeMcphttpError.code()).isEqualTo(0L)
-        assertThat(realtimeMcphttpError.message()).isEqualTo("message")
+        assertThat(realtimeMcphttpError.code()).contains(0L)
+        assertThat(realtimeMcphttpError.message()).contains("message")
 
         val jsonMapper = jsonMapper()
 

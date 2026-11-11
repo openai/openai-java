@@ -4,6 +4,7 @@ package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -34,10 +35,10 @@ internal class BetaResponseFunctionShellToolCallOutputTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(betaResponseFunctionShellToolCallOutput.id()).isEqualTo("id")
-        assertThat(betaResponseFunctionShellToolCallOutput.callId()).isEqualTo("call_id")
+        assertThat(betaResponseFunctionShellToolCallOutput.id()).contains("id")
+        assertThat(betaResponseFunctionShellToolCallOutput.callId()).contains("call_id")
         assertThat(betaResponseFunctionShellToolCallOutput.maxOutputLength()).contains(0L)
-        assertThat(betaResponseFunctionShellToolCallOutput.output())
+        assertThat(betaResponseFunctionShellToolCallOutput.output().getOrNull())
             .containsExactly(
                 BetaResponseFunctionShellToolCallOutput.Output.builder()
                     .outcomeTimeout()
@@ -47,7 +48,7 @@ internal class BetaResponseFunctionShellToolCallOutputTest {
                     .build()
             )
         assertThat(betaResponseFunctionShellToolCallOutput.status())
-            .isEqualTo(BetaResponseFunctionShellToolCallOutput.Status.IN_PROGRESS)
+            .contains(BetaResponseFunctionShellToolCallOutput.Status.IN_PROGRESS)
         assertThat(betaResponseFunctionShellToolCallOutput.agent())
             .contains(
                 BetaResponseFunctionShellToolCallOutput.Agent.builder()

@@ -4,6 +4,7 @@ package com.openai.models.beta.agents
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -22,16 +23,16 @@ internal class AgentSessionMessageTest {
                 .build()
 
         assertThat(agentSessionMessage.id()).contains("id")
-        assertThat(agentSessionMessage.content())
+        assertThat(agentSessionMessage.content().getOrNull())
             .containsExactly(
                 AgentSessionMessageContent.ofInputText(
                     AgentSessionMessageContent.InputText.builder().text("text").build()
                 )
             )
         assertThat(agentSessionMessage.phase()).contains(AgentSessionMessage.Phase.COMMENTARY)
-        assertThat(agentSessionMessage.role()).isEqualTo(AgentSessionMessage.Role.USER)
-        assertThat(agentSessionMessage.status()).isEqualTo(AgentOutputItemStatus.IN_PROGRESS)
-        assertThat(agentSessionMessage.turnId()).isEqualTo("turn_id")
+        assertThat(agentSessionMessage.role()).contains(AgentSessionMessage.Role.USER)
+        assertThat(agentSessionMessage.status()).contains(AgentOutputItemStatus.IN_PROGRESS)
+        assertThat(agentSessionMessage.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()
 

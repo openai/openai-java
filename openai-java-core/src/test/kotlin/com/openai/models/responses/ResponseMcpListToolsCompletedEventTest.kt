@@ -18,9 +18,9 @@ internal class ResponseMcpListToolsCompletedEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseMcpListToolsCompletedEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseMcpListToolsCompletedEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseMcpListToolsCompletedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseMcpListToolsCompletedEvent.itemId()).contains("item_id")
+        assertThat(responseMcpListToolsCompletedEvent.outputIndex()).contains(0L)
+        assertThat(responseMcpListToolsCompletedEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

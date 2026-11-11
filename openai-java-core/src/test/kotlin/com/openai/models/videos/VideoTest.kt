@@ -55,9 +55,9 @@ internal class VideoTest {
                 .status(Video.Status.QUEUED)
                 .build()
 
-        assertThat(video.id()).isEqualTo("id")
+        assertThat(video.id()).contains("id")
         assertThat(video.completedAt()).contains(0L)
-        assertThat(video.createdAt()).isEqualTo(0L)
+        assertThat(video.createdAt()).contains(0L)
         assertThat(video.error())
             .contains(
                 VideoCreateError.builder()
@@ -88,13 +88,13 @@ internal class VideoTest {
                     .build()
             )
         assertThat(video.expiresAt()).contains(0L)
-        assertThat(video.model()).isEqualTo(VideoModel.SORA_2)
-        assertThat(video.progress()).isEqualTo(0L)
+        assertThat(video.model()).contains(VideoModel.SORA_2)
+        assertThat(video.progress()).contains(0L)
         assertThat(video.prompt()).contains("prompt")
         assertThat(video.remixedFromVideoId()).contains("remixed_from_video_id")
-        assertThat(video.seconds()).isEqualTo(VideoSeconds._4)
-        assertThat(video.size()).isEqualTo(VideoSize._720X1280)
-        assertThat(video.status()).isEqualTo(Video.Status.QUEUED)
+        assertThat(video.seconds()).contains(VideoSeconds._4)
+        assertThat(video.size()).contains(VideoSize._720X1280)
+        assertThat(video.status()).contains(Video.Status.QUEUED)
 
         val jsonMapper = jsonMapper()
 

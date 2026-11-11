@@ -127,13 +127,13 @@ internal class VertexClientTest {
         try {
             val first = client.responses().create(params())
             val messages = mutableListOf<ResponseInputItem>()
-            first.output().forEach { item ->
+            first.outputOrThrow().forEach { item ->
                 messages.add(mapper.convertValue(item, ResponseInputItem::class.java))
                 if (item.isFunctionCall()) {
                     messages.add(
                         ResponseInputItem.ofFunctionCallOutput(
                             ResponseInputItem.FunctionCallOutput.builder()
-                                .callId(item.asFunctionCall().callId())
+                                .callId(item.asFunctionCall().callIdOrThrow())
                                 .output("ok")
                                 .build()
                         )
@@ -218,7 +218,9 @@ internal class VertexClientTest {
                 .maxRetries(1)
                 .build()
         try {
-            assertThat(client.async().responses().create(params()).get(5, TimeUnit.SECONDS).id())
+            assertThat(
+                    client.async().responses().create(params()).get(5, TimeUnit.SECONDS).idOrThrow()
+                )
                 .isEqualTo("resp_test")
             assertThat(calls.get()).isEqualTo(2)
             val received = findAll(postRequestedFor(urlPathEqualTo("$api/responses")))
@@ -325,7 +327,7 @@ internal class VertexClientTest {
                 .hasRootCauseMessage("Timed out while obtaining Google credentials for Vertex.")
             assertThat(interrupted.await(5, TimeUnit.SECONDS)).isTrue()
             release.countDown()
-            assertThat(client.responses().create(params()).id()).isEqualTo("resp_test")
+            assertThat(client.responses().create(params()).idOrThrow()).isEqualTo("resp_test")
             verify(1, postRequestedFor(urlPathEqualTo("$api/responses")))
         } finally {
             release.countDown()
@@ -384,7 +386,8 @@ internal class VertexClientTest {
                 .maxRetries(0)
                 .build()
         try {
-            val response = executor.submit<String> { client.responses().create(params()).id() }
+            val response =
+                executor.submit<String> { client.responses().create(params()).idOrThrow() }
             assertThat(response.get(5, TimeUnit.SECONDS)).isEqualTo("resp_test")
         } finally {
             client.close()
@@ -427,7 +430,7 @@ internal class VertexClientTest {
                 .maxRetries(1)
                 .build()
         try {
-            assertThat(client.responses().create(params()).id()).isEqualTo("resp_test")
+            assertThat(client.responses().create(params()).idOrThrow()).isEqualTo("resp_test")
             assertThat(credentials.calls.get()).isEqualTo(2)
             verify(1, postRequestedFor(urlPathEqualTo("$api/responses")))
         } finally {
@@ -471,10 +474,10 @@ internal class VertexClientTest {
                         .responses()
                         .create(params())
                         .get()
-                        .id()
+                        .idOrThrow()
                 )
                 .isEqualTo("resp_test")
-            assertThat(client.responses().retrieve("resp_test").id()).isEqualTo("resp_test")
+            assertThat(client.responses().retrieve("resp_test").idOrThrow()).isEqualTo("resp_test")
             client.responses().delete("resp_test")
         } finally {
             client.close()
@@ -620,7 +623,7 @@ internal class VertexClientTest {
         try {
             val calls = List(8) { client.async().responses().create(params()) }
             CompletableFuture.allOf(*calls.toTypedArray()).get(10, TimeUnit.SECONDS)
-            assertThat(calls.map { it.get().id() }).containsOnly("resp_test")
+            assertThat(calls.map { it.get().idOrThrow() }).containsOnly("resp_test")
         } finally {
             client.close()
         }
@@ -668,7 +671,7 @@ internal class VertexClientTest {
                 .hasRootCauseMessage("Timed out while obtaining Google credentials for Vertex.")
             verify(0, postRequestedFor(urlPathEqualTo("$api/responses")))
             released.countDown()
-            assertThat(client.responses().create(params()).id()).isEqualTo("resp_test")
+            assertThat(client.responses().create(params()).idOrThrow()).isEqualTo("resp_test")
             // A completed late token from the timed-out waiter must never start an HTTP call.
             verify(1, postRequestedFor(urlPathEqualTo("$api/responses")))
         } finally {
@@ -733,7 +736,7 @@ internal class VertexClientTest {
                 assertThat(events).hasSize(2)
                 val first = events[0] as com.openai.models.responses.ResponseStreamEvent
                 val last = events[1] as com.openai.models.responses.ResponseStreamEvent
-                assertThat(first.asOutputTextDelta().delta()).isEqualTo("ok")
+                assertThat(first.asOutputTextDelta().deltaOrThrow()).isEqualTo("ok")
                 assertThat(last.asError().code()).hasValue("unsupported_feature")
             }
         } finally {

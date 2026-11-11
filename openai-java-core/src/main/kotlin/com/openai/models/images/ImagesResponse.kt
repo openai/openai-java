@@ -68,78 +68,123 @@ private constructor(
     )
 
     /**
-     * The Unix timestamp (in seconds) of when the image was created.
+     * The Unix timestamp (in seconds) of when the image was created. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun created(): Long = created.getRequired("created")
+    fun created(): java.util.Optional<Long> = created.getOptional("created")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun createdOrThrow(): Long = created.getRequired("created")
 
     /**
      * The background parameter used for the image generation. Either `transparent` or `opaque`.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun background(): Optional<Background> = background.getOptional("background")
+    fun background(): java.util.Optional<Background> = background.getOptional("background")
 
     /**
-     * The list of generated images.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun data(): Optional<List<Image>> = data.getOptional("data")
+    fun backgroundOrThrow(): Background = background.getRequired("background")
 
     /**
-     * The output format of the generated image.
+     * The list of generated images. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun outputFormat(): Optional<OutputFormat> = outputFormat.getOptional("output_format")
+    fun data(): java.util.Optional<List<Image>> = data.getOptional("data")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun dataOrThrow(): List<Image> = data.getRequired("data")
+
+    /**
+     * The output format of the generated image. Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun outputFormat(): java.util.Optional<OutputFormat> = outputFormat.getOptional("output_format")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun outputFormatOrThrow(): OutputFormat = outputFormat.getRequired("output_format")
 
     /**
      * The quality of the image generated. One of `low`, `medium`, `high`, `xhigh`, or `max`.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun quality(): Optional<Quality> = quality.getOptional("quality")
+    fun quality(): java.util.Optional<Quality> = quality.getOptional("quality")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun qualityOrThrow(): Quality = quality.getRequired("quality")
 
     /**
      * The effective safety identifier used for safety monitoring and abuse detection. This is the
      * non-empty `safety_identifier` from the request, or the deprecated `user` value when
-     * `safety_identifier` is omitted, null, or empty.
+     * `safety_identifier` is omitted, null, or empty. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun safetyIdentifier(): Optional<String> = safetyIdentifier.getOptional("safety_identifier")
+    fun safetyIdentifier(): java.util.Optional<String> =
+        safetyIdentifier.getOptional("safety_identifier")
 
     /**
-     * The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun size(): Optional<Size> = size.getOptional("size")
+    fun safetyIdentifierOrThrow(): String = safetyIdentifier.getRequired("safety_identifier")
 
     /**
-     * Token usage for the model that authored the SVG, separate from image rendering usage.
+     * The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun svgUsage(): Optional<SvgUsage> = svgUsage.getOptional("svg_usage")
+    fun size(): java.util.Optional<Size> = size.getOptional("size")
 
     /**
-     * For `gpt-image-1` only, the token usage information for the image generation.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun usage(): Optional<Usage> = usage.getOptional("usage")
+    fun sizeOrThrow(): Size = size.getRequired("size")
+
+    /**
+     * Token usage for the model that authored the SVG, separate from image rendering usage. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun svgUsage(): java.util.Optional<SvgUsage> = svgUsage.getOptional("svg_usage")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun svgUsageOrThrow(): SvgUsage = svgUsage.getRequired("svg_usage")
+
+    /**
+     * For `gpt-image-1` only, the token usage information for the image generation. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun usage(): java.util.Optional<Usage> = usage.getOptional("usage")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun usageOrThrow(): Usage = usage.getRequired("usage")
 
     /**
      * Returns the raw JSON value of [created].
@@ -493,7 +538,7 @@ private constructor(
             return@apply
         }
 
-        created()
+        createdOrThrow()
         background().ifPresent { it.validate() }
         data().ifPresent { it.forEach { it.validate() } }
         outputFormat().ifPresent { it.validate() }
@@ -1163,34 +1208,70 @@ private constructor(
         ) : this(inputTokens, model, outputTokens, reasoningTokens, totalTokens, mutableMapOf())
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun inputTokens(): Long = inputTokens.getRequired("input_tokens")
+        fun inputTokens(): java.util.Optional<Long> = inputTokens.getOptional("input_tokens")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun model(): String = model.getRequired("model")
+        fun inputTokensOrThrow(): Long = inputTokens.getRequired("input_tokens")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun outputTokens(): Long = outputTokens.getRequired("output_tokens")
+        fun model(): java.util.Optional<String> = model.getOptional("model")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun reasoningTokens(): Long = reasoningTokens.getRequired("reasoning_tokens")
+        fun modelOrThrow(): String = model.getRequired("model")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun totalTokens(): Long = totalTokens.getRequired("total_tokens")
+        fun outputTokens(): java.util.Optional<Long> = outputTokens.getOptional("output_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun outputTokensOrThrow(): Long = outputTokens.getRequired("output_tokens")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun reasoningTokens(): java.util.Optional<Long> =
+            reasoningTokens.getOptional("reasoning_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun reasoningTokensOrThrow(): Long = reasoningTokens.getRequired("reasoning_tokens")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun totalTokens(): java.util.Optional<Long> = totalTokens.getOptional("total_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun totalTokensOrThrow(): Long = totalTokens.getRequired("total_tokens")
 
         /**
          * Returns the raw JSON value of [inputTokens].
@@ -1429,11 +1510,11 @@ private constructor(
                 return@apply
             }
 
-            inputTokens()
-            model()
-            outputTokens()
-            reasoningTokens()
-            totalTokens()
+            inputTokensOrThrow()
+            modelOrThrow()
+            outputTokensOrThrow()
+            reasoningTokensOrThrow()
+            totalTokensOrThrow()
             validated = true
         }
 
@@ -1529,46 +1610,78 @@ private constructor(
         )
 
         /**
-         * The number of tokens (images and text) in the input prompt.
+         * The number of tokens (images and text) in the input prompt. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun inputTokens(): Long = inputTokens.getRequired("input_tokens")
+        fun inputTokens(): java.util.Optional<Long> = inputTokens.getOptional("input_tokens")
 
         /**
-         * The input tokens detailed information for the image generation.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun inputTokensDetails(): InputTokensDetails =
+        fun inputTokensOrThrow(): Long = inputTokens.getRequired("input_tokens")
+
+        /**
+         * The input tokens detailed information for the image generation. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun inputTokensDetails(): java.util.Optional<InputTokensDetails> =
+            inputTokensDetails.getOptional("input_tokens_details")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun inputTokensDetailsOrThrow(): InputTokensDetails =
             inputTokensDetails.getRequired("input_tokens_details")
 
         /**
-         * The number of output tokens generated by the model.
+         * The number of output tokens generated by the model. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun outputTokens(): Long = outputTokens.getRequired("output_tokens")
+        fun outputTokens(): java.util.Optional<Long> = outputTokens.getOptional("output_tokens")
 
         /**
-         * The total number of tokens (images and text) used for the image generation.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun totalTokens(): Long = totalTokens.getRequired("total_tokens")
+        fun outputTokensOrThrow(): Long = outputTokens.getRequired("output_tokens")
 
         /**
-         * The output token details for the image generation.
+         * The total number of tokens (images and text) used for the image generation. The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun outputTokensDetails(): Optional<OutputTokensDetails> =
+        fun totalTokens(): java.util.Optional<Long> = totalTokens.getOptional("total_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun totalTokensOrThrow(): Long = totalTokens.getRequired("total_tokens")
+
+        /**
+         * The output token details for the image generation. Returns empty if the JSON property is
+         * missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun outputTokensDetails(): java.util.Optional<OutputTokensDetails> =
             outputTokensDetails.getOptional("output_tokens_details")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun outputTokensDetailsOrThrow(): OutputTokensDetails =
+            outputTokensDetails.getRequired("output_tokens_details")
 
         /**
          * Returns the raw JSON value of [inputTokens].
@@ -1816,10 +1929,10 @@ private constructor(
                 return@apply
             }
 
-            inputTokens()
-            inputTokensDetails().validate()
-            outputTokens()
-            totalTokens()
+            inputTokensOrThrow()
+            inputTokensDetailsOrThrow().validate()
+            outputTokensOrThrow()
+            totalTokensOrThrow()
             outputTokensDetails().ifPresent { it.validate() }
             validated = true
         }
@@ -1866,22 +1979,32 @@ private constructor(
             ) : this(imageTokens, textTokens, mutableMapOf())
 
             /**
-             * The number of image tokens in the input prompt.
+             * The number of image tokens in the input prompt. The schema requires this property.
+             * Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun imageTokens(): Long = imageTokens.getRequired("image_tokens")
+            fun imageTokens(): java.util.Optional<Long> = imageTokens.getOptional("image_tokens")
 
             /**
-             * The number of text tokens in the input prompt.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun textTokens(): Long = textTokens.getRequired("text_tokens")
+            fun imageTokensOrThrow(): Long = imageTokens.getRequired("image_tokens")
+
+            /**
+             * The number of text tokens in the input prompt. The schema requires this property.
+             * Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun textTokens(): java.util.Optional<Long> = textTokens.getOptional("text_tokens")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun textTokensOrThrow(): Long = textTokens.getRequired("text_tokens")
 
             /**
              * Returns the raw JSON value of [imageTokens].
@@ -2047,8 +2170,8 @@ private constructor(
                     return@apply
                 }
 
-                imageTokens()
-                textTokens()
+                imageTokensOrThrow()
+                textTokensOrThrow()
                 validated = true
             }
 
@@ -2112,22 +2235,32 @@ private constructor(
             ) : this(imageTokens, textTokens, mutableMapOf())
 
             /**
-             * The number of image output tokens generated by the model.
+             * The number of image output tokens generated by the model. The schema requires this
+             * property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun imageTokens(): Long = imageTokens.getRequired("image_tokens")
+            fun imageTokens(): java.util.Optional<Long> = imageTokens.getOptional("image_tokens")
 
             /**
-             * The number of text output tokens generated by the model.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun textTokens(): Long = textTokens.getRequired("text_tokens")
+            fun imageTokensOrThrow(): Long = imageTokens.getRequired("image_tokens")
+
+            /**
+             * The number of text output tokens generated by the model. The schema requires this
+             * property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun textTokens(): java.util.Optional<Long> = textTokens.getOptional("text_tokens")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun textTokensOrThrow(): Long = textTokens.getRequired("text_tokens")
 
             /**
              * Returns the raw JSON value of [imageTokens].
@@ -2293,8 +2426,8 @@ private constructor(
                     return@apply
                 }
 
-                imageTokens()
-                textTokens()
+                imageTokensOrThrow()
+                textTokensOrThrow()
                 validated = true
             }
 

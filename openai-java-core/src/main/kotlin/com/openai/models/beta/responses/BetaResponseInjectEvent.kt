@@ -45,33 +45,53 @@ private constructor(
     ) : this(input, responseId, type, mutableMapOf())
 
     /**
-     * Input items to inject into the active response.
+     * Input items to inject into the active response. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun input(): List<BetaResponseInputItem> = input.getRequired("input")
+    fun input(): java.util.Optional<List<BetaResponseInputItem>> = input.getOptional("input")
 
     /**
-     * The ID of the active response that should receive the input.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun responseId(): String = responseId.getRequired("response_id")
+    fun inputOrThrow(): List<BetaResponseInputItem> = input.getRequired("input")
 
     /**
-     * The event discriminator. Always `response.inject`.
+     * The ID of the active response that should receive the input. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.inject")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun responseId(): java.util.Optional<String> = responseId.getOptional("response_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun responseIdOrThrow(): String = responseId.getRequired("response_id")
+
+    /**
+     * The event discriminator. Always `response.inject`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.inject")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [input].
@@ -582,13 +602,9 @@ private constructor(
             return@apply
         }
 
-        input().forEach { it.validate() }
-        responseId()
-        _type().let {
-            if (it != JsonValue.from("response.inject")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        inputOrThrow().forEach { it.validate() }
+        responseIdOrThrow()
+        typeOrThrow()
         validated = true
     }
 

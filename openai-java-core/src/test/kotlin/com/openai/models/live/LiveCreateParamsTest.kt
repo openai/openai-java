@@ -133,7 +133,7 @@ internal class LiveCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.session())
+        assertThat(body.sessionOrThrow())
             .isEqualTo(
                 MediaSessionConfig.builder()
                     .model(MediaSessionConfig.Model.GPT_LIVE_1)
@@ -189,7 +189,7 @@ internal class LiveCreateParamsTest {
                     )
                     .build()
             )
-        assertThat(body.transport())
+        assertThat(body.transportOrThrow())
             .isEqualTo(LiveCreateParams.Transport.builder().sdp("x").build())
     }
 
@@ -205,11 +205,11 @@ internal class LiveCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.session())
+        assertThat(body.sessionOrThrow())
             .isEqualTo(
                 MediaSessionConfig.builder().model(MediaSessionConfig.Model.GPT_LIVE_1).build()
             )
-        assertThat(body.transport())
+        assertThat(body.transportOrThrow())
             .isEqualTo(LiveCreateParams.Transport.builder().sdp("x").build())
     }
 }

@@ -33,22 +33,40 @@ private constructor(
     ) : this(deleted, object_, runId, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun deleted(): Optional<Boolean> = deleted.getOptional("deleted")
+    fun deleted(): java.util.Optional<Boolean> = deleted.getOptional("deleted")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun object_(): Optional<String> = object_.getOptional("object")
+    fun deletedOrThrow(): Boolean = deleted.getRequired("deleted")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun runId(): Optional<String> = runId.getOptional("run_id")
+    fun object_(): java.util.Optional<String> = object_.getOptional("object")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): String = object_.getRequired("object")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun runId(): java.util.Optional<String> = runId.getOptional("run_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun runIdOrThrow(): String = runId.getRequired("run_id")
 
     /**
      * Returns the raw JSON value of [deleted].

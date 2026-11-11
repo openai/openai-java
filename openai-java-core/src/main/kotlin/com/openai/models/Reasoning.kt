@@ -52,12 +52,16 @@ private constructor(
      * `all_turns`; earlier models default to `current_turn`.
      *
      * When returned on a response, this is the effective reasoning context mode used for the
-     * response.
+     * response. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun context(): Optional<Context> = context.getOptional("context")
+    fun context(): java.util.Optional<Context> = context.getOptional("context")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun contextOrThrow(): Context = context.getRequired("context")
 
     /**
      * Constrains effort on reasoning for reasoning models. Currently supported values are `none`,
@@ -65,47 +69,66 @@ private constructor(
      * in faster responses and fewer tokens used on reasoning in a response. Not all reasoning
      * models support every value. See the
      * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for model-specific
-     * support.
+     * support. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun effort(): Optional<ReasoningEffort> = effort.getOptional("effort")
+    fun effort(): java.util.Optional<ReasoningEffort> = effort.getOptional("effort")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun effortOrThrow(): ReasoningEffort = effort.getRequired("effort")
 
     /**
      * **Deprecated:** use `summary` instead.
      *
      * A summary of the reasoning performed by the model. This can be useful for debugging and
-     * understanding the model's reasoning process. One of `auto`, `concise`, or `detailed`.
+     * understanding the model's reasoning process. One of `auto`, `concise`, or `detailed`. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
     @Deprecated("deprecated")
-    fun generateSummary(): Optional<GenerateSummary> =
+    fun generateSummary(): java.util.Optional<GenerateSummary> =
         generateSummary.getOptional("generate_summary")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    @Deprecated("deprecated")
+    fun generateSummaryOrThrow(): GenerateSummary = generateSummary.getRequired("generate_summary")
 
     /**
      * Controls the reasoning execution mode for the request.
      *
-     * When returned on a response, this is the effective execution mode.
+     * When returned on a response, this is the effective execution mode. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun mode(): Optional<Mode> = mode.getOptional("mode")
+    fun mode(): java.util.Optional<Mode> = mode.getOptional("mode")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun modeOrThrow(): Mode = mode.getRequired("mode")
 
     /**
      * A summary of the reasoning performed by the model. This can be useful for debugging and
      * understanding the model's reasoning process. One of `auto`, `concise`, or `detailed`.
      *
      * `concise` is supported for `computer-use-preview` models and all reasoning models after
-     * `gpt-5`.
+     * `gpt-5`. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun summary(): Optional<Summary> = summary.getOptional("summary")
+    fun summary(): java.util.Optional<Summary> = summary.getOptional("summary")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun summaryOrThrow(): Summary = summary.getRequired("summary")
 
     /**
      * Returns the raw JSON value of [context].

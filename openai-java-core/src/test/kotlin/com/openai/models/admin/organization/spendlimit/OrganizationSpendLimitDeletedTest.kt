@@ -14,7 +14,7 @@ internal class OrganizationSpendLimitDeletedTest {
         val organizationSpendLimitDeleted =
             OrganizationSpendLimitDeleted.builder().deleted(true).build()
 
-        assertThat(organizationSpendLimitDeleted.deleted()).isEqualTo(true)
+        assertThat(organizationSpendLimitDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

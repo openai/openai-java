@@ -13,8 +13,8 @@ internal class InviteDeleteResponseTest {
     fun createAndRoundtrip() {
         val inviteDeleteResponse = InviteDeleteResponse.builder().id("id").deleted(true).build()
 
-        assertThat(inviteDeleteResponse.id()).isEqualTo("id")
-        assertThat(inviteDeleteResponse.deleted()).isEqualTo(true)
+        assertThat(inviteDeleteResponse.id()).contains("id")
+        assertThat(inviteDeleteResponse.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

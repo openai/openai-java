@@ -124,7 +124,7 @@ internal class RealtimeResponseTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(realtimeResponse.object_()).contains(RealtimeResponse.Object.REALTIME_RESPONSE)
+        assertThat(realtimeResponse.object_()).contains(JsonValue.from("realtime.response"))
         assertThat(realtimeResponse.output().getOrNull())
             .containsExactly(
                 ConversationItem.ofRealtimeConversationItemSystemMessage(

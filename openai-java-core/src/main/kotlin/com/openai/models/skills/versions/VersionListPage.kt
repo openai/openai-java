@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.skills.VersionService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see VersionService.list */
 class VersionListPage
@@ -18,21 +16,23 @@ private constructor(
     private val response: SkillVersionList,
 ) : Page<SkillVersion> {
 
-    /**
-     * Delegates to [SkillVersionList], but gracefully handles missing data.
-     *
-     * @see SkillVersionList.data
-     */
-    fun data(): List<SkillVersion> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see SkillVersionList.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [SkillVersionList], but gracefully handles missing data.
-     *
-     * @see SkillVersionList.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<SkillVersion> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<SkillVersion> = data()
+    fun _data() = response._data()
+
+    /** @see SkillVersionList.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<SkillVersion> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

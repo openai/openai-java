@@ -21,14 +21,14 @@ internal class ResponseCustomToolCallOutputItemTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(responseCustomToolCallOutputItem.callId()).isEqualTo("call_id")
+        assertThat(responseCustomToolCallOutputItem.callId()).contains("call_id")
         assertThat(responseCustomToolCallOutputItem.output())
-            .isEqualTo(ResponseCustomToolCallOutput.Output.ofString("string"))
+            .contains(ResponseCustomToolCallOutput.Output.ofString("string"))
         assertThat(responseCustomToolCallOutputItem.id()).contains("id")
         assertThat(responseCustomToolCallOutputItem.caller())
             .contains(ResponseCustomToolCallOutput.Caller.ofDirect())
         assertThat(responseCustomToolCallOutputItem.status())
-            .isEqualTo(ResponseCustomToolCallOutputItem.Status.IN_PROGRESS)
+            .contains(ResponseCustomToolCallOutputItem.Status.IN_PROGRESS)
         assertThat(responseCustomToolCallOutputItem.createdBy()).contains("created_by")
 
         val jsonMapper = jsonMapper()

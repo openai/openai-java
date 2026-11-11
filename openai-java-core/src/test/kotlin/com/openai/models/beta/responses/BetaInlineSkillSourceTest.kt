@@ -13,7 +13,7 @@ internal class BetaInlineSkillSourceTest {
     fun createAndRoundtrip() {
         val betaInlineSkillSource = BetaInlineSkillSource.builder().data("x").build()
 
-        assertThat(betaInlineSkillSource.data()).isEqualTo("x")
+        assertThat(betaInlineSkillSource.data()).contains("x")
 
         val jsonMapper = jsonMapper()
 

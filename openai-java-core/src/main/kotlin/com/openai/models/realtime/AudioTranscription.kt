@@ -49,52 +49,75 @@ private constructor(
     /**
      * Controls how long the model waits before emitting transcription text. Higher values can
      * improve transcription accuracy at the cost of latency. Only supported with
-     * `gpt-realtime-whisper` in GA Realtime sessions.
+     * `gpt-realtime-whisper` in GA Realtime sessions. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun delay(): Optional<Delay> = delay.getOptional("delay")
+    fun delay(): java.util.Optional<Delay> = delay.getOptional("delay")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun delayOrThrow(): Delay = delay.getRequired("delay")
 
     /**
      * Words or phrases to guide transcription of the input audio. Supported by `gpt-transcribe` and
-     * `gpt-live-transcribe`.
+     * `gpt-live-transcribe`. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun keywords(): Optional<List<String>> = keywords.getOptional("keywords")
+    fun keywords(): java.util.Optional<List<String>> = keywords.getOptional("keywords")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun keywordsOrThrow(): List<String> = keywords.getRequired("keywords")
 
     /**
      * The language of the input audio. Supplying the input language in
      * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format will
-     * improve accuracy and latency.
+     * improve accuracy and latency. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun language(): Optional<String> = language.getOptional("language")
+    fun language(): java.util.Optional<String> = language.getOptional("language")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun languageOrThrow(): String = language.getRequired("language")
 
     /**
      * Possible languages of the input audio, in
      * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) format. Supported by
-     * `gpt-transcribe` and `gpt-live-transcribe`.
+     * `gpt-transcribe` and `gpt-live-transcribe`. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun languages(): Optional<List<String>> = languages.getOptional("languages")
+    fun languages(): java.util.Optional<List<String>> = languages.getOptional("languages")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun languagesOrThrow(): List<String> = languages.getRequired("languages")
 
     /**
      * The model to use for transcription. Current options are `whisper-1`, `gpt-transcribe`,
      * `gpt-live-transcribe`, `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`,
      * `gpt-4o-transcribe`, `gpt-4o-transcribe-diarize`, and `gpt-realtime-whisper`. Use
-     * `gpt-4o-transcribe-diarize` when you need diarization with speaker labels.
+     * `gpt-4o-transcribe-diarize` when you need diarization with speaker labels. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun model(): Optional<Model> = model.getOptional("model")
+    fun model(): java.util.Optional<Model> = model.getOptional("model")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun modelOrThrow(): Model = model.getRequired("model")
 
     /**
      * An optional text to guide the model's style or continue a previous audio segment. For
@@ -102,12 +125,17 @@ private constructor(
      * [prompt is a list of keywords](https://developers.openai.com/api/docs/guides/speech-to-text#prompting).
      * For `gpt-4o-transcribe` models (excluding `gpt-4o-transcribe-diarize`), the prompt is a free
      * text string, for example "expect words related to technology". Prompt is not supported with
-     * `gpt-realtime-whisper` in GA Realtime sessions.
+     * `gpt-realtime-whisper` in GA Realtime sessions. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun prompt(): Optional<String> = prompt.getOptional("prompt")
+    fun prompt(): java.util.Optional<String> = prompt.getOptional("prompt")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun promptOrThrow(): String = prompt.getRequired("prompt")
 
     /**
      * Returns the raw JSON value of [delay].

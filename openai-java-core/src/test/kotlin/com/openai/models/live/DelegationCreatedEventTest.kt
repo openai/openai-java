@@ -26,15 +26,15 @@ internal class DelegationCreatedEventTest {
                 .build()
 
         assertThat(delegationCreatedEvent.delegation())
-            .isEqualTo(
+            .contains(
                 DelegationCreatedEvent.Delegation.builder()
                     .id("del_abc123")
                     .target(DelegationCreatedEvent.Delegation.Target.CLIENT)
                     .responseId("response_id")
                     .build()
             )
-        assertThat(delegationCreatedEvent.eventId()).isEqualTo("evt_delegation_001")
-        assertThat(delegationCreatedEvent.offsetMs()).isEqualTo(3600L)
+        assertThat(delegationCreatedEvent.eventId()).contains("evt_delegation_001")
+        assertThat(delegationCreatedEvent.offsetMs()).contains(3600L)
         assertThat(delegationCreatedEvent.clientEventId()).contains("client_event_id")
 
         val jsonMapper = jsonMapper()

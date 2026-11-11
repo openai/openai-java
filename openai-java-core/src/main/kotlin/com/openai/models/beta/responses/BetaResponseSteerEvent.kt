@@ -70,33 +70,54 @@ private constructor(
      * Steering accepts only messages with the `user` role. Each message may contain only `type`,
      * `role`, and `content`, with `content` as a string or an array of `input_text`, `input_image`,
      * and `input_file` parts. The optional `type` must be `message`. Other roles, tool outputs, and
-     * item types are not supported for steering.
+     * item types are not supported for steering. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun input(): BetaResponseSteerInput = input.getRequired("input")
+    fun input(): java.util.Optional<BetaResponseSteerInput> = input.getOptional("input")
 
     /**
-     * The ID of the response to steer on this WebSocket connection.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun previousResponseId(): String = previousResponseId.getRequired("previous_response_id")
+    fun inputOrThrow(): BetaResponseSteerInput = input.getRequired("input")
 
     /**
-     * The event discriminator. Always `response.steer`.
+     * The ID of the response to steer on this WebSocket connection. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.steer")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun previousResponseId(): java.util.Optional<String> =
+        previousResponseId.getOptional("previous_response_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun previousResponseIdOrThrow(): String = previousResponseId.getRequired("previous_response_id")
+
+    /**
+     * The event discriminator. Always `response.steer`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.steer")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [input].
@@ -292,13 +313,9 @@ private constructor(
             return@apply
         }
 
-        input().validate()
-        previousResponseId()
-        _type().let {
-            if (it != JsonValue.from("response.steer")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        inputOrThrow().validate()
+        previousResponseIdOrThrow()
+        typeOrThrow()
         validated = true
     }
 

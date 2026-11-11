@@ -5,6 +5,7 @@ package com.openai.models.evals.runs
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -72,10 +73,10 @@ internal class RunListResponseTest {
                 .status("status")
                 .build()
 
-        assertThat(runListResponse.id()).isEqualTo("id")
-        assertThat(runListResponse.createdAt()).isEqualTo(0L)
+        assertThat(runListResponse.id()).contains("id")
+        assertThat(runListResponse.createdAt()).contains(0L)
         assertThat(runListResponse.dataSource())
-            .isEqualTo(
+            .contains(
                 RunListResponse.DataSource.ofJsonl(
                     CreateEvalJsonlRunDataSource.builder()
                         .fileContentSource(
@@ -101,17 +102,17 @@ internal class RunListResponseTest {
                 )
             )
         assertThat(runListResponse.error())
-            .isEqualTo(EvalApiError.builder().code("code").message("message").build())
-        assertThat(runListResponse.evalId()).isEqualTo("eval_id")
+            .contains(EvalApiError.builder().code("code").message("message").build())
+        assertThat(runListResponse.evalId()).contains("eval_id")
         assertThat(runListResponse.metadata())
             .contains(
                 RunListResponse.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(runListResponse.model()).isEqualTo("model")
-        assertThat(runListResponse.name()).isEqualTo("name")
-        assertThat(runListResponse.perModelUsage())
+        assertThat(runListResponse.model()).contains("model")
+        assertThat(runListResponse.name()).contains("name")
+        assertThat(runListResponse.perModelUsage().getOrNull())
             .containsExactly(
                 RunListResponse.PerModelUsage.builder()
                     .cachedTokens(0L)
@@ -122,7 +123,7 @@ internal class RunListResponseTest {
                     .totalTokens(0L)
                     .build()
             )
-        assertThat(runListResponse.perTestingCriteriaResults())
+        assertThat(runListResponse.perTestingCriteriaResults().getOrNull())
             .containsExactly(
                 RunListResponse.PerTestingCriteriaResult.builder()
                     .failed(0L)
@@ -130,9 +131,9 @@ internal class RunListResponseTest {
                     .testingCriteria("testing_criteria")
                     .build()
             )
-        assertThat(runListResponse.reportUrl()).isEqualTo("https://example.com")
+        assertThat(runListResponse.reportUrl()).contains("https://example.com")
         assertThat(runListResponse.resultCounts())
-            .isEqualTo(
+            .contains(
                 RunListResponse.ResultCounts.builder()
                     .errored(0L)
                     .failed(0L)
@@ -140,7 +141,7 @@ internal class RunListResponseTest {
                     .total(0L)
                     .build()
             )
-        assertThat(runListResponse.status()).isEqualTo("status")
+        assertThat(runListResponse.status()).contains("status")
 
         val jsonMapper = jsonMapper()
 

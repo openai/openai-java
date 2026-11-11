@@ -46,35 +46,57 @@ private constructor(
     ) : this(id, certificateDetails, createdAt, name, object_, active, mutableMapOf())
 
     /**
-     * The identifier, which can be referenced in API endpoints
+     * The identifier, which can be referenced in API endpoints The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun certificateDetails(): CertificateDetails =
+    fun idOrThrow(): String = id.getRequired("id")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun certificateDetails(): java.util.Optional<CertificateDetails> =
+        certificateDetails.getOptional("certificate_details")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun certificateDetailsOrThrow(): CertificateDetails =
         certificateDetails.getRequired("certificate_details")
 
     /**
-     * The Unix timestamp (in seconds) of when the certificate was uploaded.
+     * The Unix timestamp (in seconds) of when the certificate was uploaded. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * The name of the certificate.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): Optional<String> = name.getOptional("name")
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * The name of the certificate. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
 
     /**
      * The object type.
@@ -82,21 +104,30 @@ private constructor(
      * - If listing, activating, or deactivating certificates for the organization, the object type
      *   is `organization.certificate`.
      * - If listing, activating, or deactivating certificates for a project, the object type is
-     *   `organization.project.certificate`.
+     *   `organization.project.certificate`. The schema requires this property. Returns empty if the
+     *   JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun object_(): Object = object_.getRequired("object")
+    fun object_(): java.util.Optional<Object> = object_.getOptional("object")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): Object = object_.getRequired("object")
 
     /**
      * Whether the certificate is currently active at the specified scope. Not returned when getting
-     * details for a specific certificate.
+     * details for a specific certificate. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun active(): Optional<Boolean> = active.getOptional("active")
+    fun active(): java.util.Optional<Boolean> = active.getOptional("active")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun activeOrThrow(): Boolean = active.getRequired("active")
 
     /**
      * Returns the raw JSON value of [id].
@@ -359,11 +390,11 @@ private constructor(
             return@apply
         }
 
-        id()
-        certificateDetails().validate()
-        createdAt()
+        idOrThrow()
+        certificateDetailsOrThrow().validate()
+        createdAtOrThrow()
         name()
-        object_().validate()
+        object_OrThrow().validate()
         active()
         validated = true
     }
@@ -409,28 +440,46 @@ private constructor(
         ) : this(content, expiresAt, validAt, mutableMapOf())
 
         /**
-         * The content of the certificate in PEM format.
+         * The content of the certificate in PEM format. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun content(): Optional<String> = content.getOptional("content")
+        fun content(): java.util.Optional<String> = content.getOptional("content")
 
         /**
-         * The Unix timestamp (in seconds) of when the certificate expires.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
+        fun contentOrThrow(): String = content.getRequired("content")
 
         /**
-         * The Unix timestamp (in seconds) of when the certificate becomes valid.
+         * The Unix timestamp (in seconds) of when the certificate expires. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun validAt(): Optional<Long> = validAt.getOptional("valid_at")
+        fun expiresAt(): java.util.Optional<Long> = expiresAt.getOptional("expires_at")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun expiresAtOrThrow(): Long = expiresAt.getRequired("expires_at")
+
+        /**
+         * The Unix timestamp (in seconds) of when the certificate becomes valid. Returns empty if
+         * the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun validAt(): java.util.Optional<Long> = validAt.getOptional("valid_at")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun validAtOrThrow(): Long = validAt.getRequired("valid_at")
 
         /**
          * Returns the raw JSON value of [content].

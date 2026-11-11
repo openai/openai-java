@@ -19,10 +19,10 @@ internal class ChatCompletionAudioTest {
                 .transcript("transcript")
                 .build()
 
-        assertThat(chatCompletionAudio.id()).isEqualTo("id")
-        assertThat(chatCompletionAudio.data()).isEqualTo("data")
-        assertThat(chatCompletionAudio.expiresAt()).isEqualTo(0L)
-        assertThat(chatCompletionAudio.transcript()).isEqualTo("transcript")
+        assertThat(chatCompletionAudio.id()).contains("id")
+        assertThat(chatCompletionAudio.data()).contains("data")
+        assertThat(chatCompletionAudio.expiresAt()).contains(0L)
+        assertThat(chatCompletionAudio.transcript()).contains("transcript")
 
         val jsonMapper = jsonMapper()
 

@@ -9,6 +9,7 @@ import com.openai.models.beta.agents.AgentReasoning
 import com.openai.models.beta.agents.AgentText
 import com.openai.models.beta.agents.AgentTool
 import com.openai.models.beta.agents.MultiAgentConfig
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -106,7 +107,7 @@ internal class AutomationListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(automationListPageResponse.data())
+        assertThat(automationListPageResponse.data().getOrNull())
             .containsExactly(
                 Automation.ofPeriodic(
                     PeriodicAutomation.builder()
@@ -193,7 +194,7 @@ internal class AutomationListPageResponseTest {
                 )
             )
         assertThat(automationListPageResponse.firstId()).contains("first_id")
-        assertThat(automationListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(automationListPageResponse.hasMore()).contains(true)
         assertThat(automationListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

@@ -33,7 +33,7 @@ private constructor(
     override fun param(): Optional<String> =
         Optional.ofNullable(error.asKnown().getOrNull()?.param()?.getOrNull())
 
-    override fun type(): Optional<String> = Optional.ofNullable(error.asKnown().getOrNull()?.type())
+    override fun type(): Optional<String> = error.asKnown().map { it.typeOrThrow() }
 
     override fun headers(): Headers = headers
 

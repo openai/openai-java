@@ -13,8 +13,8 @@ internal class ExternalStorageDeletedTest {
     fun createAndRoundtrip() {
         val externalStorageDeleted = ExternalStorageDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(externalStorageDeleted.id()).isEqualTo("id")
-        assertThat(externalStorageDeleted.deleted()).isEqualTo(true)
+        assertThat(externalStorageDeleted.id()).contains("id")
+        assertThat(externalStorageDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

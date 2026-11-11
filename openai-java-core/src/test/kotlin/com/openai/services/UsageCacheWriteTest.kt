@@ -91,7 +91,11 @@ internal class UsageCacheWriteTest {
                                 .get(10, TimeUnit.SECONDS)
                         else client.admin().organization().usage().completions(params)
                     response.validate()
-                    val result = response.data()[0].results()[0].asOrganizationUsageCompletions()
+                    val result =
+                        response
+                            .dataOrThrow()[0]
+                            .resultsOrThrow()[0]
+                            .asOrganizationUsageCompletions()
                     assertThat(result.inputCacheWrite30mTokens())
                         .isEqualTo(Optional.ofNullable(expected))
                     assertThat(result.inputCacheWriteTokens()).contains(17L)
@@ -109,7 +113,7 @@ internal class UsageCacheWriteTest {
                                 .get(10, TimeUnit.SECONDS)
                         else client.admin().organization().usage().decisions(params)
                     response.validate()
-                    val result = response.data()[0].results()[0]
+                    val result = response.dataOrThrow()[0].resultsOrThrow()[0]
                     assertThat(result.inputCacheWrite30mTokens())
                         .isEqualTo(Optional.ofNullable(expected))
                     assertThat(result.inputCacheWriteTokens()).contains(17L)

@@ -29,13 +29,11 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * The desired organization data retention type.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun retentionType(): RetentionType = body.retentionType()
+    /** @see Body.retentionType */
+    fun retentionType(): java.util.Optional<RetentionType> = body.retentionType()
+
+    /** @see Body.retentionTypeOrThrow */
+    fun retentionTypeOrThrow(): RetentionType = body.retentionTypeOrThrow()
 
     /**
      * Returns the raw JSON value of [retentionType].
@@ -265,12 +263,19 @@ private constructor(
         ) : this(retentionType, mutableMapOf())
 
         /**
-         * The desired organization data retention type.
+         * The desired organization data retention type. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun retentionType(): RetentionType = retentionType.getRequired("retention_type")
+        fun retentionType(): java.util.Optional<RetentionType> =
+            retentionType.getOptional("retention_type")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun retentionTypeOrThrow(): RetentionType = retentionType.getRequired("retention_type")
 
         /**
          * Returns the raw JSON value of [retentionType].
@@ -402,7 +407,7 @@ private constructor(
                 return@apply
             }
 
-            retentionType().validate()
+            retentionTypeOrThrow().validate()
             validated = true
         }
 

@@ -19,10 +19,10 @@ internal class InputAudioBufferTimeoutTriggeredTest {
                 .itemId("item_id")
                 .build()
 
-        assertThat(inputAudioBufferTimeoutTriggered.audioEndMs()).isEqualTo(0L)
-        assertThat(inputAudioBufferTimeoutTriggered.audioStartMs()).isEqualTo(0L)
-        assertThat(inputAudioBufferTimeoutTriggered.eventId()).isEqualTo("event_id")
-        assertThat(inputAudioBufferTimeoutTriggered.itemId()).isEqualTo("item_id")
+        assertThat(inputAudioBufferTimeoutTriggered.audioEndMs()).contains(0L)
+        assertThat(inputAudioBufferTimeoutTriggered.audioStartMs()).contains(0L)
+        assertThat(inputAudioBufferTimeoutTriggered.eventId()).contains("event_id")
+        assertThat(inputAudioBufferTimeoutTriggered.itemId()).contains("item_id")
 
         val jsonMapper = jsonMapper()
 

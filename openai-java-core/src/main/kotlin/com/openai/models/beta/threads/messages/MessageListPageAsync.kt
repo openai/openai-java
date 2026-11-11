@@ -7,10 +7,8 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.beta.threads.MessageServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see MessageServiceAsync.list */
 @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -22,21 +20,22 @@ private constructor(
     private val response: MessageListPageResponse,
 ) : PageAsync<Message> {
 
-    /**
-     * Delegates to [MessageListPageResponse], but gracefully handles missing data.
-     *
-     * @see MessageListPageResponse.data
-     */
-    fun data(): List<Message> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see MessageListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [MessageListPageResponse], but gracefully handles missing data.
-     *
-     * @see MessageListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<Message> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<Message> = data()
+    fun _data() = response._data()
+
+    /** @see MessageListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<Message> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

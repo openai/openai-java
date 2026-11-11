@@ -52,43 +52,67 @@ private constructor(
     ) : this(index, type, id, codeInterpreter, mutableMapOf())
 
     /**
-     * The index of the tool call in the tool calls array.
+     * The index of the tool call in the tool calls array. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun index(): Long = index.getRequired("index")
+    fun index(): java.util.Optional<Long> = index.getOptional("index")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun indexOrThrow(): Long = index.getRequired("index")
 
     /**
      * The type of tool call. This is always going to be `code_interpreter` for this type of tool
-     * call.
+     * call. The schema requires this property. Returns empty if the JSON property is missing or
+     * null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("code_interpreter")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("code_interpreter")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The ID of the tool call.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun id(): Optional<String> = id.getOptional("id")
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
-     * The Code Interpreter tool call definition.
+     * The ID of the tool call. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun codeInterpreter(): Optional<CodeInterpreter> =
+    fun id(): java.util.Optional<String> = id.getOptional("id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun idOrThrow(): String = id.getRequired("id")
+
+    /**
+     * The Code Interpreter tool call definition. Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun codeInterpreter(): java.util.Optional<CodeInterpreter> =
         codeInterpreter.getOptional("code_interpreter")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun codeInterpreterOrThrow(): CodeInterpreter = codeInterpreter.getRequired("code_interpreter")
 
     /**
      * Returns the raw JSON value of [index].
@@ -283,12 +307,8 @@ private constructor(
             return@apply
         }
 
-        index()
-        _type().let {
-            if (it != JsonValue.from("code_interpreter")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        indexOrThrow()
+        typeOrThrow()
         id()
         codeInterpreter().ifPresent { it.validate() }
         validated = true
@@ -332,22 +352,33 @@ private constructor(
         ) : this(input, outputs, mutableMapOf())
 
         /**
-         * The input to the Code Interpreter tool call.
+         * The input to the Code Interpreter tool call. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun input(): Optional<String> = input.getOptional("input")
+        fun input(): java.util.Optional<String> = input.getOptional("input")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun inputOrThrow(): String = input.getRequired("input")
 
         /**
          * The outputs from the Code Interpreter tool call. Code Interpreter can output one or more
          * items, including text (`logs`) or images (`image`). Each of these are represented by a
-         * different object type.
+         * different object type. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun outputs(): Optional<List<Output>> = outputs.getOptional("outputs")
+        fun outputs(): java.util.Optional<List<Output>> = outputs.getOptional("outputs")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun outputsOrThrow(): List<Output> = outputs.getRequired("outputs")
 
         /**
          * Returns the raw JSON value of [input].

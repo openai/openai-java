@@ -14,7 +14,7 @@ internal class BetaToolChoiceTypesTest {
         val betaToolChoiceTypes =
             BetaToolChoiceTypes.builder().type(BetaToolChoiceTypes.Type.FILE_SEARCH).build()
 
-        assertThat(betaToolChoiceTypes.type()).isEqualTo(BetaToolChoiceTypes.Type.FILE_SEARCH)
+        assertThat(betaToolChoiceTypes.type()).contains(BetaToolChoiceTypes.Type.FILE_SEARCH)
 
         val jsonMapper = jsonMapper()
 

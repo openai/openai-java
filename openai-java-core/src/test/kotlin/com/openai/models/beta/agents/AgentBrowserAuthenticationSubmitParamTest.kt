@@ -4,6 +4,7 @@ package com.openai.models.beta.agents
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -22,7 +23,7 @@ internal class AgentBrowserAuthenticationSubmitParamTest {
                 .selectedOption("selected_option")
                 .build()
 
-        assertThat(agentBrowserAuthenticationSubmitParam.fields())
+        assertThat(agentBrowserAuthenticationSubmitParam.fields().getOrNull())
             .containsExactly(
                 AgentBrowserAuthenticationSubmitParam.Field.builder()
                     .fieldId("field_id")

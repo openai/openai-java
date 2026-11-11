@@ -13,9 +13,9 @@ internal class UploadPartTest {
     fun createAndRoundtrip() {
         val uploadPart = UploadPart.builder().id("id").createdAt(0L).uploadId("upload_id").build()
 
-        assertThat(uploadPart.id()).isEqualTo("id")
-        assertThat(uploadPart.createdAt()).isEqualTo(0L)
-        assertThat(uploadPart.uploadId()).isEqualTo("upload_id")
+        assertThat(uploadPart.id()).contains("id")
+        assertThat(uploadPart.createdAt()).contains(0L)
+        assertThat(uploadPart.uploadId()).contains("upload_id")
 
         val jsonMapper = jsonMapper()
 

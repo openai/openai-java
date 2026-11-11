@@ -18,10 +18,10 @@ internal class AgentEnvironmentExpiredWebhookEventTest {
                 .data(AgentEnvironmentExpiredWebhookEvent.Data.builder().id("id").build())
                 .build()
 
-        assertThat(agentEnvironmentExpiredWebhookEvent.id()).isEqualTo("id")
-        assertThat(agentEnvironmentExpiredWebhookEvent.createdAt()).isEqualTo(0L)
+        assertThat(agentEnvironmentExpiredWebhookEvent.id()).contains("id")
+        assertThat(agentEnvironmentExpiredWebhookEvent.createdAt()).contains(0L)
         assertThat(agentEnvironmentExpiredWebhookEvent.data())
-            .isEqualTo(AgentEnvironmentExpiredWebhookEvent.Data.builder().id("id").build())
+            .contains(AgentEnvironmentExpiredWebhookEvent.Data.builder().id("id").build())
 
         val jsonMapper = jsonMapper()
 

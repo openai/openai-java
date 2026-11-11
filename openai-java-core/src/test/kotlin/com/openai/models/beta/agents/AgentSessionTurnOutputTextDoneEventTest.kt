@@ -22,12 +22,12 @@ internal class AgentSessionTurnOutputTextDoneEventTest {
                 .turnId("turn_id")
                 .build()
 
-        assertThat(agentSessionTurnOutputTextDoneEvent.contentIndex()).isEqualTo(0L)
-        assertThat(agentSessionTurnOutputTextDoneEvent.eventId()).isEqualTo("event_id")
-        assertThat(agentSessionTurnOutputTextDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(agentSessionTurnOutputTextDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(agentSessionTurnOutputTextDoneEvent.sessionId()).isEqualTo("session_id")
-        assertThat(agentSessionTurnOutputTextDoneEvent.text()).isEqualTo("text")
+        assertThat(agentSessionTurnOutputTextDoneEvent.contentIndex()).contains(0L)
+        assertThat(agentSessionTurnOutputTextDoneEvent.eventId()).contains("event_id")
+        assertThat(agentSessionTurnOutputTextDoneEvent.itemId()).contains("item_id")
+        assertThat(agentSessionTurnOutputTextDoneEvent.outputIndex()).contains(0L)
+        assertThat(agentSessionTurnOutputTextDoneEvent.sessionId()).contains("session_id")
+        assertThat(agentSessionTurnOutputTextDoneEvent.text()).contains("text")
         assertThat(agentSessionTurnOutputTextDoneEvent.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()

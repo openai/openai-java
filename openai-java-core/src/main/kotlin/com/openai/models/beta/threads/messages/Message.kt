@@ -105,71 +105,112 @@ private constructor(
     )
 
     /**
-     * The identifier, which can be referenced in API endpoints.
+     * The identifier, which can be referenced in API endpoints. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
      * If applicable, the ID of the
      * [assistant](https://developers.openai.com/api/docs/assistants/migration) that authored this
-     * message.
+     * message. The schema requires this property. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun assistantId(): Optional<String> = assistantId.getOptional("assistant_id")
+    fun assistantId(): java.util.Optional<String> = assistantId.getOptional("assistant_id")
 
     /**
-     * A list of files attached to the message, and the tools they were added to.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun attachments(): Optional<List<Attachment>> = attachments.getOptional("attachments")
+    fun assistantIdOrThrow(): String = assistantId.getRequired("assistant_id")
 
     /**
-     * The Unix timestamp (in seconds) for when the message was completed.
+     * A list of files attached to the message, and the tools they were added to. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun completedAt(): Optional<Long> = completedAt.getOptional("completed_at")
+    fun attachments(): java.util.Optional<List<Attachment>> = attachments.getOptional("attachments")
 
     /**
-     * The content of the message in array of text and/or images.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun content(): List<MessageContent> = content.getRequired("content")
+    fun attachmentsOrThrow(): List<Attachment> = attachments.getRequired("attachments")
 
     /**
-     * The Unix timestamp (in seconds) for when the message was created.
+     * The Unix timestamp (in seconds) for when the message was completed. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun completedAt(): java.util.Optional<Long> = completedAt.getOptional("completed_at")
 
     /**
-     * The Unix timestamp (in seconds) for when the message was marked as incomplete.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun incompleteAt(): Optional<Long> = incompleteAt.getOptional("incomplete_at")
+    fun completedAtOrThrow(): Long = completedAt.getRequired("completed_at")
 
     /**
-     * On an incomplete message, details about why the message is incomplete.
+     * The content of the message in array of text and/or images. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun incompleteDetails(): Optional<IncompleteDetails> =
+    fun content(): java.util.Optional<List<MessageContent>> = content.getOptional("content")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun contentOrThrow(): List<MessageContent> = content.getRequired("content")
+
+    /**
+     * The Unix timestamp (in seconds) for when the message was created. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * The Unix timestamp (in seconds) for when the message was marked as incomplete. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun incompleteAt(): java.util.Optional<Long> = incompleteAt.getOptional("incomplete_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun incompleteAtOrThrow(): Long = incompleteAt.getRequired("incomplete_at")
+
+    /**
+     * On an incomplete message, details about why the message is incomplete. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun incompleteDetails(): java.util.Optional<IncompleteDetails> =
         incompleteDetails.getOptional("incomplete_details")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun incompleteDetailsOrThrow(): IncompleteDetails =
+        incompleteDetails.getRequired("incomplete_details")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -177,60 +218,95 @@ private constructor(
      * API or the dashboard.
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * length of 512 characters. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+    fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
-     * The object type, which is always `thread.message`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("thread.message")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
 
     /**
-     * The entity that produced the message. One of `user` or `assistant`.
+     * The object type, which is always `thread.message`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun role(): Role = role.getRequired("role")
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("thread.message")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * The entity that produced the message. One of `user` or `assistant`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun role(): java.util.Optional<Role> = role.getOptional("role")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun roleOrThrow(): Role = role.getRequired("role")
 
     /**
      * The ID of the [run](https://developers.openai.com/api/docs/assistants/migration) associated
      * with the creation of this message. Value is `null` when messages are created manually using
-     * the create message or create thread endpoints.
+     * the create message or create thread endpoints. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun runId(): Optional<String> = runId.getOptional("run_id")
+    fun runId(): java.util.Optional<String> = runId.getOptional("run_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun runIdOrThrow(): String = runId.getRequired("run_id")
 
     /**
      * The status of the message, which can be either `in_progress`, `incomplete`, or `completed`.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): Status = status.getRequired("status")
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): Status = status.getRequired("status")
 
     /**
      * The [thread](https://developers.openai.com/api/docs/assistants/migration) ID that this
-     * message belongs to.
+     * message belongs to. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun threadId(): String = threadId.getRequired("thread_id")
+    fun threadId(): java.util.Optional<String> = threadId.getOptional("thread_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun threadIdOrThrow(): String = threadId.getRequired("thread_id")
 
     /**
      * Returns the raw JSON value of [id].
@@ -814,24 +890,20 @@ private constructor(
             return@apply
         }
 
-        id()
+        idOrThrow()
         assistantId()
         attachments().ifPresent { it.forEach { it.validate() } }
         completedAt()
-        content().forEach { it.validate() }
-        createdAt()
+        contentOrThrow().forEach { it.validate() }
+        createdAtOrThrow()
         incompleteAt()
         incompleteDetails().ifPresent { it.validate() }
         metadata().ifPresent { it.validate() }
-        _object_().let {
-            if (it != JsonValue.from("thread.message")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        role().validate()
+        object_OrThrow()
+        roleOrThrow().validate()
         runId()
-        status().validate()
-        threadId()
+        statusOrThrow().validate()
+        threadIdOrThrow()
         validated = true
     }
 
@@ -880,20 +952,31 @@ private constructor(
         ) : this(fileId, tools, mutableMapOf())
 
         /**
-         * The ID of the file to attach to the message.
+         * The ID of the file to attach to the message. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun fileId(): Optional<String> = fileId.getOptional("file_id")
+        fun fileId(): java.util.Optional<String> = fileId.getOptional("file_id")
 
         /**
-         * The tools to add this file to.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun tools(): Optional<List<Tool>> = tools.getOptional("tools")
+        fun fileIdOrThrow(): String = fileId.getRequired("file_id")
+
+        /**
+         * The tools to add this file to. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun tools(): java.util.Optional<List<Tool>> = tools.getOptional("tools")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun toolsOrThrow(): List<Tool> = tools.getRequired("tools")
 
         /**
          * Returns the raw JSON value of [fileId].
@@ -1370,12 +1453,18 @@ private constructor(
         ) : this(reason, mutableMapOf())
 
         /**
-         * The reason the message is incomplete.
+         * The reason the message is incomplete. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun reason(): Reason = reason.getRequired("reason")
+        fun reason(): java.util.Optional<Reason> = reason.getOptional("reason")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun reasonOrThrow(): Reason = reason.getRequired("reason")
 
         /**
          * Returns the raw JSON value of [reason].
@@ -1501,7 +1590,7 @@ private constructor(
                 return@apply
             }
 
-            reason().validate()
+            reasonOrThrow().validate()
             validated = true
         }
 

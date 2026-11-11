@@ -29,30 +29,23 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * The currency for the threshold amount. Currently, only `USD` is supported.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun currency(): Currency = body.currency()
+    /** @see Body.currency */
+    fun currency(): java.util.Optional<Currency> = body.currency()
 
-    /**
-     * The time interval for evaluating spend against the threshold. Currently, only `month` is
-     * supported.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun interval(): Interval = body.interval()
+    /** @see Body.currencyOrThrow */
+    fun currencyOrThrow(): Currency = body.currencyOrThrow()
 
-    /**
-     * The hard spend limit amount, in cents.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun thresholdAmount(): Long = body.thresholdAmount()
+    /** @see Body.interval */
+    fun interval(): java.util.Optional<Interval> = body.interval()
+
+    /** @see Body.intervalOrThrow */
+    fun intervalOrThrow(): Interval = body.intervalOrThrow()
+
+    /** @see Body.thresholdAmount */
+    fun thresholdAmount(): java.util.Optional<Long> = body.thresholdAmount()
+
+    /** @see Body.thresholdAmountOrThrow */
+    fun thresholdAmountOrThrow(): Long = body.thresholdAmountOrThrow()
 
     /**
      * Returns the raw JSON value of [currency].
@@ -335,29 +328,48 @@ private constructor(
         ) : this(currency, interval, thresholdAmount, mutableMapOf())
 
         /**
-         * The currency for the threshold amount. Currently, only `USD` is supported.
+         * The currency for the threshold amount. Currently, only `USD` is supported. The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun currency(): Currency = currency.getRequired("currency")
+        fun currency(): java.util.Optional<Currency> = currency.getOptional("currency")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun currencyOrThrow(): Currency = currency.getRequired("currency")
 
         /**
          * The time interval for evaluating spend against the threshold. Currently, only `month` is
-         * supported.
+         * supported. The schema requires this property. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun interval(): Interval = interval.getRequired("interval")
+        fun interval(): java.util.Optional<Interval> = interval.getOptional("interval")
 
         /**
-         * The hard spend limit amount, in cents.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun thresholdAmount(): Long = thresholdAmount.getRequired("threshold_amount")
+        fun intervalOrThrow(): Interval = interval.getRequired("interval")
+
+        /**
+         * The hard spend limit amount, in cents. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun thresholdAmount(): java.util.Optional<Long> =
+            thresholdAmount.getOptional("threshold_amount")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun thresholdAmountOrThrow(): Long = thresholdAmount.getRequired("threshold_amount")
 
         /**
          * Returns the raw JSON value of [currency].
@@ -545,9 +557,9 @@ private constructor(
                 return@apply
             }
 
-            currency().validate()
-            interval().validate()
-            thresholdAmount()
+            currencyOrThrow().validate()
+            intervalOrThrow().validate()
+            thresholdAmountOrThrow()
             validated = true
         }
 

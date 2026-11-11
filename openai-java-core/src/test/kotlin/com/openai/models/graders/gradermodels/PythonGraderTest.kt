@@ -14,8 +14,8 @@ internal class PythonGraderTest {
         val pythonGrader =
             PythonGrader.builder().name("name").source("source").imageTag("image_tag").build()
 
-        assertThat(pythonGrader.name()).isEqualTo("name")
-        assertThat(pythonGrader.source()).isEqualTo("source")
+        assertThat(pythonGrader.name()).contains("name")
+        assertThat(pythonGrader.source()).contains("source")
         assertThat(pythonGrader.imageTag()).contains("image_tag")
 
         val jsonMapper = jsonMapper()

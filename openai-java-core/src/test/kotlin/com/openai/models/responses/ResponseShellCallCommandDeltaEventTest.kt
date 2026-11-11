@@ -20,10 +20,10 @@ internal class ResponseShellCallCommandDeltaEventTest {
                 .obfuscation("obfuscation")
                 .build()
 
-        assertThat(responseShellCallCommandDeltaEvent.commandIndex()).isEqualTo(0L)
-        assertThat(responseShellCallCommandDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(responseShellCallCommandDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseShellCallCommandDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseShellCallCommandDeltaEvent.commandIndex()).contains(0L)
+        assertThat(responseShellCallCommandDeltaEvent.delta()).contains("delta")
+        assertThat(responseShellCallCommandDeltaEvent.outputIndex()).contains(0L)
+        assertThat(responseShellCallCommandDeltaEvent.sequenceNumber()).contains(0L)
         assertThat(responseShellCallCommandDeltaEvent.obfuscation()).contains("obfuscation")
 
         val jsonMapper = jsonMapper()

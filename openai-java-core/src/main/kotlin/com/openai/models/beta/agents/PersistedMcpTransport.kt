@@ -269,33 +269,56 @@ private constructor(
         ) : this(headers, serverUrl, type, mutableMapOf())
 
         /**
-         * Non-secret HTTP headers sent to the MCP server.
+         * Non-secret HTTP headers sent to the MCP server. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun headers(): Headers = headers.getRequired("headers")
+        fun headers(): java.util.Optional<Headers> = headers.getOptional("headers")
 
         /**
-         * The URL of the MCP server.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun serverUrl(): String = serverUrl.getRequired("server_url")
+        fun headersOrThrow(): Headers = headers.getRequired("headers")
 
         /**
-         * The type of the object. Always `http`.
+         * The URL of the MCP server. The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("http")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun serverUrl(): java.util.Optional<String> = serverUrl.getOptional("server_url")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun serverUrlOrThrow(): String = serverUrl.getRequired("server_url")
+
+        /**
+         * The type of the object. Always `http`. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("http")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [headers].
@@ -467,13 +490,9 @@ private constructor(
                 return@apply
             }
 
-            headers().validate()
-            serverUrl()
-            _type().let {
-                if (it != JsonValue.from("http")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            headersOrThrow().validate()
+            serverUrlOrThrow()
+            typeOrThrow()
             validated = true
         }
 
@@ -675,49 +694,84 @@ private constructor(
         ) : this(args, command, cwd, envVars, type, mutableMapOf())
 
         /**
-         * Arguments passed to the MCP server command.
+         * Arguments passed to the MCP server command. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun args(): List<String> = args.getRequired("args")
+        fun args(): java.util.Optional<List<String>> = args.getOptional("args")
 
         /**
-         * The command used to start the MCP server.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun command(): String = command.getRequired("command")
+        fun argsOrThrow(): List<String> = args.getRequired("args")
 
         /**
-         * The working directory used to start the MCP server.
+         * The command used to start the MCP server. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun cwd(): String = cwd.getRequired("cwd")
+        fun command(): java.util.Optional<String> = command.getOptional("command")
 
         /**
-         * Environment variable names inherited from the execution environment.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun envVars(): List<String> = envVars.getRequired("env_vars")
+        fun commandOrThrow(): String = command.getRequired("command")
 
         /**
-         * The type of the object. Always `stdio`.
+         * The working directory used to start the MCP server. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("stdio")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun cwd(): java.util.Optional<String> = cwd.getOptional("cwd")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun cwdOrThrow(): String = cwd.getRequired("cwd")
+
+        /**
+         * Environment variable names inherited from the execution environment. The schema requires
+         * this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun envVars(): java.util.Optional<List<String>> = envVars.getOptional("env_vars")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun envVarsOrThrow(): List<String> = envVars.getRequired("env_vars")
+
+        /**
+         * The type of the object. Always `stdio`. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("stdio")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [args].
@@ -965,15 +1019,11 @@ private constructor(
                 return@apply
             }
 
-            args()
-            command()
-            cwd()
-            envVars()
-            _type().let {
-                if (it != JsonValue.from("stdio")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            argsOrThrow()
+            commandOrThrow()
+            cwdOrThrow()
+            envVarsOrThrow()
+            typeOrThrow()
             validated = true
         }
 

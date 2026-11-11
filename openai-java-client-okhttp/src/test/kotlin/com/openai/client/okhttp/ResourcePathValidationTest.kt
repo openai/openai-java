@@ -116,7 +116,9 @@ internal class ResourcePathValidationTest {
                 dynamicTest("literal ID ${id.toCharArray().map { it.code }}") {
                     withClient { client, server ->
                         val params = params(id, id)
-                        assertThat(client.beta().threads().messages().delete(params).deleted())
+                        assertThat(
+                                client.beta().threads().messages().delete(params).deletedOrThrow()
+                            )
                             .isTrue()
                         assertThat(
                                 client
@@ -126,7 +128,7 @@ internal class ResourcePathValidationTest {
                                     .messages()
                                     .delete(params)
                                     .get(5, TimeUnit.SECONDS)
-                                    .deleted()
+                                    .deletedOrThrow()
                             )
                             .isTrue()
                         repeat(2) {

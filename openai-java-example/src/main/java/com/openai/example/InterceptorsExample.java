@@ -20,7 +20,7 @@ public final class InterceptorsExample {
                 .addInterceptor(applicationHeader)
                 .build();
         try {
-            client.models().list().data().forEach(model -> System.out.println(model.id()));
+            client.models().list().items().forEach(model -> System.out.println(model.idOrThrow()));
         } finally {
             client.close();
         }
@@ -33,7 +33,7 @@ public final class InterceptorsExample {
             asyncClient
                     .models()
                     .list()
-                    .thenAccept(page -> page.data().forEach(model -> System.out.println(model.id())))
+                    .thenAccept(page -> page.items().forEach(model -> System.out.println(model.idOrThrow())))
                     .join();
         } finally {
             asyncClient.close();

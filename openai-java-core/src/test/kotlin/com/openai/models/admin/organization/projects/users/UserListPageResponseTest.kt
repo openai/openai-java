@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.projects.users
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -28,7 +29,7 @@ internal class UserListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(userListPageResponse.data())
+        assertThat(userListPageResponse.data().getOrNull())
             .containsExactly(
                 ProjectUser.builder()
                     .id("id")
@@ -38,8 +39,8 @@ internal class UserListPageResponseTest {
                     .name("name")
                     .build()
             )
-        assertThat(userListPageResponse.hasMore()).isEqualTo(true)
-        assertThat(userListPageResponse.object_()).isEqualTo("object")
+        assertThat(userListPageResponse.hasMore()).contains(true)
+        assertThat(userListPageResponse.object_()).contains("object")
         assertThat(userListPageResponse.firstId()).contains("first_id")
         assertThat(userListPageResponse.lastId()).contains("last_id")
 

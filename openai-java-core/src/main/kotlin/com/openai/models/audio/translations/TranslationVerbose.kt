@@ -42,36 +42,57 @@ private constructor(
     ) : this(duration, language, text, segments, mutableMapOf())
 
     /**
-     * The duration of the input audio.
+     * The duration of the input audio. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun duration(): Double = duration.getRequired("duration")
+    fun duration(): java.util.Optional<Double> = duration.getOptional("duration")
 
     /**
-     * The language of the output translation (always `english`).
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun language(): String = language.getRequired("language")
+    fun durationOrThrow(): Double = duration.getRequired("duration")
 
     /**
-     * The translated text.
+     * The language of the output translation (always `english`). The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun text(): String = text.getRequired("text")
+    fun language(): java.util.Optional<String> = language.getOptional("language")
 
     /**
-     * Segments of the translated text and their corresponding details.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun segments(): Optional<List<TranscriptionSegment>> = segments.getOptional("segments")
+    fun languageOrThrow(): String = language.getRequired("language")
+
+    /**
+     * The translated text. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun text(): java.util.Optional<String> = text.getOptional("text")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun textOrThrow(): String = text.getRequired("text")
+
+    /**
+     * Segments of the translated text and their corresponding details. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun segments(): java.util.Optional<List<TranscriptionSegment>> =
+        segments.getOptional("segments")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun segmentsOrThrow(): List<TranscriptionSegment> = segments.getRequired("segments")
 
     /**
      * Returns the raw JSON value of [duration].
@@ -285,9 +306,9 @@ private constructor(
             return@apply
         }
 
-        duration()
-        language()
-        text()
+        durationOrThrow()
+        languageOrThrow()
+        textOrThrow()
         segments().ifPresent { it.forEach { it.validate() } }
         validated = true
     }

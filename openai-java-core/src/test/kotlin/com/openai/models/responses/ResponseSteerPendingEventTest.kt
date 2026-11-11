@@ -4,6 +4,7 @@ package com.openai.models.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -31,8 +32,8 @@ internal class ResponseSteerPendingEventTest {
                 .build()
 
         assertThat(responseSteerPendingEvent.reason())
-            .isEqualTo(ResponseSteerPendingReason.WAITING_FOR_REQUIRED_INPUT)
-        assertThat(responseSteerPendingEvent.requiredInput())
+            .contains(ResponseSteerPendingReason.WAITING_FOR_REQUIRED_INPUT)
+        assertThat(responseSteerPendingEvent.requiredInput().getOrNull())
             .containsExactly(
                 ResponseSteerRequiredInput.ofFunctionCallOutput(
                     ResponseSteerRequiredInput.FunctionCallOutput.builder()
@@ -41,9 +42,9 @@ internal class ResponseSteerPendingEventTest {
                         .build()
                 )
             )
-        assertThat(responseSteerPendingEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseSteerPendingEvent.sequenceNumber()).contains(0L)
         assertThat(responseSteerPendingEvent.steer())
-            .isEqualTo(
+            .contains(
                 ResponseSteerPendingEvent.Steer.builder()
                     .id("id")
                     .previousResponseId("previous_response_id")

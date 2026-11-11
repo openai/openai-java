@@ -13,7 +13,7 @@ internal class SkillReferenceTest {
     fun createAndRoundtrip() {
         val skillReference = SkillReference.builder().skillId("x").version("version").build()
 
-        assertThat(skillReference.skillId()).isEqualTo("x")
+        assertThat(skillReference.skillId()).contains("x")
         assertThat(skillReference.version()).contains("version")
 
         val jsonMapper = jsonMapper()

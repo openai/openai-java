@@ -14,8 +14,8 @@ internal class RoleDeleteResponseTest {
         val roleDeleteResponse =
             RoleDeleteResponse.builder().deleted(true).object_("object").build()
 
-        assertThat(roleDeleteResponse.deleted()).isEqualTo(true)
-        assertThat(roleDeleteResponse.object_()).isEqualTo("object")
+        assertThat(roleDeleteResponse.deleted()).contains(true)
+        assertThat(roleDeleteResponse.object_()).contains("object")
 
         val jsonMapper = jsonMapper()
 

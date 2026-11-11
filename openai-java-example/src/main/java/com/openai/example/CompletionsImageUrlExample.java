@@ -41,8 +41,8 @@ public final class CompletionsImageUrlExample {
                 .addUserMessageOfArrayOfContentParts(List.of(questionContentPart, logoContentPart))
                 .build();
 
-        client.chat().completions().create(createParams).choices().stream()
-                .flatMap(choice -> choice.message().content().stream())
+        client.chat().completions().create(createParams).choicesOrThrow().stream()
+                .flatMap(choice -> choice.messageOrThrow().content().stream())
                 .forEach(System.out::println);
     }
 }

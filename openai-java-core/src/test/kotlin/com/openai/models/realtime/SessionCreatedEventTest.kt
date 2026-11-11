@@ -111,9 +111,9 @@ internal class SessionCreatedEventTest {
                 )
                 .build()
 
-        assertThat(sessionCreatedEvent.eventId()).isEqualTo("event_id")
+        assertThat(sessionCreatedEvent.eventId()).contains("event_id")
         assertThat(sessionCreatedEvent.session())
-            .isEqualTo(
+            .contains(
                 SessionCreatedEvent.Session.ofRealtimeSessionCreateRequest(
                     RealtimeSessionCreateRequest.builder()
                         .audio(

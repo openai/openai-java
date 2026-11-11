@@ -14,8 +14,8 @@ internal class ResponseOutputAudioTest {
         val responseOutputAudio =
             ResponseOutputAudio.builder().data("data").transcript("transcript").build()
 
-        assertThat(responseOutputAudio.data()).isEqualTo("data")
-        assertThat(responseOutputAudio.transcript()).isEqualTo("transcript")
+        assertThat(responseOutputAudio.data()).contains("data")
+        assertThat(responseOutputAudio.transcript()).contains("transcript")
 
         val jsonMapper = jsonMapper()
 

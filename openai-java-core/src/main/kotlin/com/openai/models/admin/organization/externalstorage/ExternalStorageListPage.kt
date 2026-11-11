@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.admin.organization.ExternalStorageService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see ExternalStorageService.list */
 class ExternalStorageListPage
@@ -18,22 +16,23 @@ private constructor(
     private val response: ExternalStorageListPageResponse,
 ) : Page<ExternalStorageConfiguration> {
 
-    /**
-     * Delegates to [ExternalStorageListPageResponse], but gracefully handles missing data.
-     *
-     * @see ExternalStorageListPageResponse.data
-     */
-    fun data(): List<ExternalStorageConfiguration> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see ExternalStorageListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [ExternalStorageListPageResponse], but gracefully handles missing data.
-     *
-     * @see ExternalStorageListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<ExternalStorageConfiguration> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<ExternalStorageConfiguration> = data()
+    fun _data() = response._data()
+
+    /** @see ExternalStorageListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<ExternalStorageConfiguration> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

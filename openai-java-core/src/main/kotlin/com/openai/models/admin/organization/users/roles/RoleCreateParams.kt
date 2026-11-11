@@ -32,13 +32,11 @@ private constructor(
 
     fun userId(): Optional<String> = Optional.ofNullable(userId)
 
-    /**
-     * Identifier of the role to assign.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun roleId(): String = body.roleId()
+    /** @see Body.roleId */
+    fun roleId(): java.util.Optional<String> = body.roleId()
+
+    /** @see Body.roleIdOrThrow */
+    fun roleIdOrThrow(): String = body.roleIdOrThrow()
 
     /**
      * Returns the raw JSON value of [roleId].
@@ -275,12 +273,18 @@ private constructor(
         ) : this(roleId, mutableMapOf())
 
         /**
-         * Identifier of the role to assign.
+         * Identifier of the role to assign. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun roleId(): String = roleId.getRequired("role_id")
+        fun roleId(): java.util.Optional<String> = roleId.getOptional("role_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun roleIdOrThrow(): String = roleId.getRequired("role_id")
 
         /**
          * Returns the raw JSON value of [roleId].
@@ -403,7 +407,7 @@ private constructor(
                 return@apply
             }
 
-            roleId()
+            roleIdOrThrow()
             validated = true
         }
 

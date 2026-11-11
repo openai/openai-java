@@ -5,6 +5,7 @@ package com.openai.models.admin.organization.workloadidentityproviders.federatio
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -38,7 +39,7 @@ internal class FederationRuleListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(federationRuleListPageResponse.data())
+        assertThat(federationRuleListPageResponse.data().getOrNull())
             .containsExactly(
                 FederationRule.builder()
                     .id("id")
@@ -59,7 +60,7 @@ internal class FederationRuleListPageResponseTest {
                     .build()
             )
         assertThat(federationRuleListPageResponse.firstId()).contains("first_id")
-        assertThat(federationRuleListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(federationRuleListPageResponse.hasMore()).contains(true)
         assertThat(federationRuleListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

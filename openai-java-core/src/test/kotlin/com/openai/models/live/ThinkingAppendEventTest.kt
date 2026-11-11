@@ -19,7 +19,7 @@ internal class ThinkingAppendEventTest {
                 .build()
 
         assertThat(thinkingAppendEvent.content())
-            .isEqualTo("Checking availability for two guests at 7 PM.")
+            .contains("Checking availability for two guests at 7 PM.")
         assertThat(thinkingAppendEvent.delegationId()).contains("del_abc123")
         assertThat(thinkingAppendEvent.eventId()).contains("evt_thinking_001")
 

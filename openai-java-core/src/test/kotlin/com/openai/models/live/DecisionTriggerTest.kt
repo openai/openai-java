@@ -27,7 +27,7 @@ internal class DecisionTriggerTest {
                 .build()
 
         assertThat(decisionTrigger.decisions())
-            .isEqualTo(
+            .contains(
                 DecisionTrigger.Decisions.builder()
                     .addQuestion(
                         DecisionTrigger.Decisions.Question.Predicate.builder()
@@ -38,7 +38,7 @@ internal class DecisionTriggerTest {
                     .build()
             )
         assertThat(decisionTrigger.eventType())
-            .isEqualTo(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+            .contains(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
 
         val jsonMapper = jsonMapper()
 

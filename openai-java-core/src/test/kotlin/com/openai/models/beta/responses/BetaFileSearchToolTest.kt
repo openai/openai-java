@@ -4,6 +4,7 @@ package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -36,7 +37,7 @@ internal class BetaFileSearchToolTest {
                 )
                 .build()
 
-        assertThat(betaFileSearchTool.vectorStoreIds()).containsExactly("string")
+        assertThat(betaFileSearchTool.vectorStoreIds().getOrNull()).containsExactly("string")
         assertThat(betaFileSearchTool.filters())
             .contains(
                 BetaFileSearchTool.Filters.ofComparisonFilter(

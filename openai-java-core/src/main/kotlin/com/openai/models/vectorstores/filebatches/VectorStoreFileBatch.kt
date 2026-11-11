@@ -46,58 +46,95 @@ private constructor(
     ) : this(id, createdAt, fileCounts, object_, status, vectorStoreId, mutableMapOf())
 
     /**
-     * The identifier, which can be referenced in API endpoints.
+     * The identifier, which can be referenced in API endpoints. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The Unix timestamp (in seconds) for when the vector store files batch was created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The Unix timestamp (in seconds) for when the vector store files batch was created. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun fileCounts(): FileCounts = fileCounts.getRequired("file_counts")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * The object type, which is always `vector_store.file_batch`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("vector_store.files_batch")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun fileCounts(): java.util.Optional<FileCounts> = fileCounts.getOptional("file_counts")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun fileCountsOrThrow(): FileCounts = fileCounts.getRequired("file_counts")
+
+    /**
+     * The object type, which is always `vector_store.file_batch`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("vector_store.files_batch") ||
+                raw == JsonValue.from("vector_store.file_batch")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * The status of the vector store files batch, which can be either `in_progress`, `completed`,
-     * `cancelled` or `failed`.
+     * `cancelled` or `failed`. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): Status = status.getRequired("status")
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): Status = status.getRequired("status")
 
     /**
      * The ID of the
      * [vector store](https://developers.openai.com/api/reference/resources/vector_stores) that the
-     * [File](https://developers.openai.com/api/reference/resources/files) is attached to.
+     * [File](https://developers.openai.com/api/reference/resources/files) is attached to. The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun vectorStoreId(): String = vectorStoreId.getRequired("vector_store_id")
+    fun vectorStoreId(): java.util.Optional<String> = vectorStoreId.getOptional("vector_store_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun vectorStoreIdOrThrow(): String = vectorStoreId.getRequired("vector_store_id")
 
     /**
      * Returns the raw JSON value of [id].
@@ -352,19 +389,12 @@ private constructor(
             return@apply
         }
 
-        id()
-        createdAt()
-        fileCounts().validate()
-        _object_().let {
-            if (
-                !(object_ == JsonValue.from("vector_store.files_batch") ||
-                    object_ == JsonValue.from("vector_store.file_batch"))
-            ) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        status().validate()
-        vectorStoreId()
+        idOrThrow()
+        createdAtOrThrow()
+        fileCountsOrThrow().validate()
+        object_OrThrow()
+        statusOrThrow().validate()
+        vectorStoreIdOrThrow()
         validated = true
     }
 
@@ -422,44 +452,74 @@ private constructor(
         ) : this(cancelled, completed, failed, inProgress, total, mutableMapOf())
 
         /**
-         * The number of files that where cancelled.
+         * The number of files that where cancelled. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun cancelled(): Long = cancelled.getRequired("cancelled")
+        fun cancelled(): java.util.Optional<Long> = cancelled.getOptional("cancelled")
 
         /**
-         * The number of files that have been processed.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun completed(): Long = completed.getRequired("completed")
+        fun cancelledOrThrow(): Long = cancelled.getRequired("cancelled")
 
         /**
-         * The number of files that have failed to process.
+         * The number of files that have been processed. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun failed(): Long = failed.getRequired("failed")
+        fun completed(): java.util.Optional<Long> = completed.getOptional("completed")
 
         /**
-         * The number of files that are currently being processed.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun inProgress(): Long = inProgress.getRequired("in_progress")
+        fun completedOrThrow(): Long = completed.getRequired("completed")
 
         /**
-         * The total number of files.
+         * The number of files that have failed to process. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun total(): Long = total.getRequired("total")
+        fun failed(): java.util.Optional<Long> = failed.getOptional("failed")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun failedOrThrow(): Long = failed.getRequired("failed")
+
+        /**
+         * The number of files that are currently being processed. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun inProgress(): java.util.Optional<Long> = inProgress.getOptional("in_progress")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun inProgressOrThrow(): Long = inProgress.getRequired("in_progress")
+
+        /**
+         * The total number of files. The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun total(): java.util.Optional<Long> = total.getOptional("total")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun totalOrThrow(): Long = total.getRequired("total")
 
         /**
          * Returns the raw JSON value of [cancelled].
@@ -688,11 +748,11 @@ private constructor(
                 return@apply
             }
 
-            cancelled()
-            completed()
-            failed()
-            inProgress()
-            total()
+            cancelledOrThrow()
+            completedOrThrow()
+            failedOrThrow()
+            inProgressOrThrow()
+            totalOrThrow()
             validated = true
         }
 

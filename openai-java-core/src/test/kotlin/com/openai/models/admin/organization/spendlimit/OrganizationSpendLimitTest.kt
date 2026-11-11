@@ -23,16 +23,16 @@ internal class OrganizationSpendLimitTest {
                 .thresholdAmount(0L)
                 .build()
 
-        assertThat(organizationSpendLimit.currency()).isEqualTo(OrganizationSpendLimit.Currency.USD)
+        assertThat(organizationSpendLimit.currency()).contains(OrganizationSpendLimit.Currency.USD)
         assertThat(organizationSpendLimit.enforcement())
-            .isEqualTo(
+            .contains(
                 OrganizationSpendLimit.Enforcement.builder()
                     .status(OrganizationSpendLimit.Enforcement.Status.INACTIVE)
                     .build()
             )
         assertThat(organizationSpendLimit.interval())
-            .isEqualTo(OrganizationSpendLimit.Interval.MONTH)
-        assertThat(organizationSpendLimit.thresholdAmount()).isEqualTo(0L)
+            .contains(OrganizationSpendLimit.Interval.MONTH)
+        assertThat(organizationSpendLimit.thresholdAmount()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

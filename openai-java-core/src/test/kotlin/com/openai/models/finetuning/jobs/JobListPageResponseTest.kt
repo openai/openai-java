@@ -12,6 +12,7 @@ import com.openai.models.finetuning.methods.ReinforcementMethod
 import com.openai.models.finetuning.methods.SupervisedHyperparameters
 import com.openai.models.finetuning.methods.SupervisedMethod
 import com.openai.models.graders.gradermodels.StringCheckGrader
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -126,7 +127,7 @@ internal class JobListPageResponseTest {
                 .hasMore(true)
                 .build()
 
-        assertThat(jobListPageResponse.data())
+        assertThat(jobListPageResponse.data().getOrNull())
             .containsExactly(
                 FineTuningJob.builder()
                     .id("id")
@@ -228,7 +229,7 @@ internal class JobListPageResponseTest {
                     )
                     .build()
             )
-        assertThat(jobListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(jobListPageResponse.hasMore()).contains(true)
 
         val jsonMapper = jsonMapper()
 

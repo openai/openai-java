@@ -8,7 +8,6 @@ import com.openai.core.checkRequired
 import com.openai.services.blocking.beta.agents.AutomationService
 import java.util.Objects
 import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see AutomationService.list */
 class AutomationListPage
@@ -18,21 +17,22 @@ private constructor(
     private val response: AutomationListPageResponse,
 ) : Page<Automation> {
 
-    /**
-     * Delegates to [AutomationListPageResponse], but gracefully handles missing data.
-     *
-     * @see AutomationListPageResponse.data
-     */
-    fun data(): List<Automation> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see AutomationListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [AutomationListPageResponse], but gracefully handles missing data.
-     *
-     * @see AutomationListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<Automation> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<Automation> = data()
+    fun _data() = response._data()
+
+    /** @see AutomationListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<Automation> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

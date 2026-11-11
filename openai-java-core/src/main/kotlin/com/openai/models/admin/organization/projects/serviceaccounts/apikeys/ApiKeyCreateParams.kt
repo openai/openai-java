@@ -39,29 +39,23 @@ private constructor(
     /** The ID of the service account. */
     fun serviceAccountId(): Optional<String> = Optional.ofNullable(serviceAccountId)
 
-    /**
-     * Number of seconds until the API key expires.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun expiresInSeconds(): Optional<Long> = body.expiresInSeconds()
+    /** @see Body.expiresInSeconds */
+    fun expiresInSeconds(): java.util.Optional<Long> = body.expiresInSeconds()
 
-    /**
-     * API key name.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun name(): Optional<String> = body.name()
+    /** @see Body.expiresInSecondsOrThrow */
+    fun expiresInSecondsOrThrow(): Long = body.expiresInSecondsOrThrow()
 
-    /**
-     * API key scopes.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun scopes(): Optional<List<String>> = body.scopes()
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
+
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
+
+    /** @see Body.scopes */
+    fun scopes(): java.util.Optional<List<String>> = body.scopes()
+
+    /** @see Body.scopesOrThrow */
+    fun scopesOrThrow(): List<String> = body.scopesOrThrow()
 
     /**
      * Returns the raw JSON value of [expiresInSeconds].
@@ -380,28 +374,45 @@ private constructor(
         ) : this(expiresInSeconds, name, scopes, mutableMapOf())
 
         /**
-         * Number of seconds until the API key expires.
+         * Number of seconds until the API key expires. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun expiresInSeconds(): Optional<Long> = expiresInSeconds.getOptional("expires_in_seconds")
+        fun expiresInSeconds(): java.util.Optional<Long> =
+            expiresInSeconds.getOptional("expires_in_seconds")
 
         /**
-         * API key name.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun name(): Optional<String> = name.getOptional("name")
+        fun expiresInSecondsOrThrow(): Long = expiresInSeconds.getRequired("expires_in_seconds")
 
         /**
-         * API key scopes.
+         * API key name. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun scopes(): Optional<List<String>> = scopes.getOptional("scopes")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
+
+        /**
+         * API key scopes. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun scopes(): java.util.Optional<List<String>> = scopes.getOptional("scopes")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun scopesOrThrow(): List<String> = scopes.getRequired("scopes")
 
         /**
          * Returns the raw JSON value of [expiresInSeconds].

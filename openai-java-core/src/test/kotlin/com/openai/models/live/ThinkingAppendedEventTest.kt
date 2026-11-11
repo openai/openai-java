@@ -19,9 +19,9 @@ internal class ThinkingAppendedEventTest {
                 .clientEventId("evt_thinking_001")
                 .build()
 
-        assertThat(thinkingAppendedEvent.endMs()).isEqualTo(4800L)
-        assertThat(thinkingAppendedEvent.eventId()).isEqualTo("evt_thinking_002")
-        assertThat(thinkingAppendedEvent.startMs()).isEqualTo(4600L)
+        assertThat(thinkingAppendedEvent.endMs()).contains(4800L)
+        assertThat(thinkingAppendedEvent.eventId()).contains("evt_thinking_002")
+        assertThat(thinkingAppendedEvent.startMs()).contains(4600L)
         assertThat(thinkingAppendedEvent.clientEventId()).contains("evt_thinking_001")
 
         val jsonMapper = jsonMapper()

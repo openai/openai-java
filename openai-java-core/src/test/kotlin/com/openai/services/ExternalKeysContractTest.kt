@@ -99,7 +99,7 @@ internal class ExternalKeysContractTest {
                         .withRequestBody(equalToJson(json))
                         .willReturn(okJson(key))
                 )
-                assertThat(sync.admin().organization().externalKeys().create(body).id())
+                assertThat(sync.admin().organization().externalKeys().create(body).idOrThrow())
                     .isEqualTo("key_1")
                 assertThat(
                         async
@@ -108,7 +108,7 @@ internal class ExternalKeysContractTest {
                             .externalKeys()
                             .create(body)
                             .get(10, TimeUnit.SECONDS)
-                            .id()
+                            .idOrThrow()
                     )
                     .isEqualTo("key_1")
                 verify(
@@ -148,7 +148,9 @@ internal class ExternalKeysContractTest {
         val sync = syncClient(info)
         try {
             val keys =
-                sync.admin().organization().externalKeys().list(params).autoPager().map { it.id() }
+                sync.admin().organization().externalKeys().list(params).autoPager().map {
+                    it.idOrThrow()
+                }
             assertThat(keys).containsExactly("key_1", "key_2")
         } finally {
             sync.close()
@@ -157,9 +159,9 @@ internal class ExternalKeysContractTest {
         try {
             val first =
                 async.admin().organization().externalKeys().list(params).get(10, TimeUnit.SECONDS)
-            assertThat(first.items().map { it.id() }).containsExactly("key_1")
+            assertThat(first.items().map { it.idOrThrow() }).containsExactly("key_1")
             val second = first.nextPage().get(10, TimeUnit.SECONDS)
-            assertThat(second.items().map { it.id() }).containsExactly("key_2")
+            assertThat(second.items().map { it.idOrThrow() }).containsExactly("key_2")
             assertThat(second.hasNextPage()).isFalse()
         } finally {
             async.close()
@@ -202,21 +204,23 @@ internal class ExternalKeysContractTest {
         val sync = syncClient(info)
         try {
             val keys = sync.admin().organization().externalKeys()
-            assertThat(keys.retrieve("key_1").id()).isEqualTo("key_1")
-            assertThat(keys.validate("key_1").status()).isEqualTo("valid")
+            assertThat(keys.retrieve("key_1").idOrThrow()).isEqualTo("key_1")
+            assertThat(keys.validate("key_1").statusOrThrow()).isEqualTo("valid")
             val deleted = keys.delete("key_1")
-            assertThat(deleted.id()).isEqualTo("key_1")
-            assertThat(deleted.workspaceId()).isEqualTo("org_1")
-            assertThat(deleted.object_()).isEqualTo("organization.external_key.deleted")
+            assertThat(deleted.idOrThrow()).isEqualTo("key_1")
+            assertThat(deleted.workspaceIdOrThrow()).isEqualTo("org_1")
+            assertThat(deleted.object_OrThrow()).isEqualTo("organization.external_key.deleted")
         } finally {
             sync.close()
         }
         val async = asyncClient(info)
         try {
             val keys = async.admin().organization().externalKeys()
-            assertThat(keys.retrieve("key_1").get(10, TimeUnit.SECONDS).id()).isEqualTo("key_1")
-            assertThat(keys.validate("key_1").get(10, TimeUnit.SECONDS).status()).isEqualTo("valid")
-            assertThat(keys.delete("key_1").get(10, TimeUnit.SECONDS).workspaceId())
+            assertThat(keys.retrieve("key_1").get(10, TimeUnit.SECONDS).idOrThrow())
+                .isEqualTo("key_1")
+            assertThat(keys.validate("key_1").get(10, TimeUnit.SECONDS).statusOrThrow())
+                .isEqualTo("valid")
+            assertThat(keys.delete("key_1").get(10, TimeUnit.SECONDS).workspaceIdOrThrow())
                 .isEqualTo("org_1")
         } finally {
             async.close()

@@ -17,7 +17,7 @@ internal class InputAudioUnmutedEventTest {
                 .clientEventId("evt_unmute_001")
                 .build()
 
-        assertThat(inputAudioUnmutedEvent.eventId()).isEqualTo("evt_unmuted_001")
+        assertThat(inputAudioUnmutedEvent.eventId()).contains("evt_unmuted_001")
         assertThat(inputAudioUnmutedEvent.clientEventId()).contains("evt_unmute_001")
 
         val jsonMapper = jsonMapper()

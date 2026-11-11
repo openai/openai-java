@@ -35,53 +35,41 @@ private constructor(
 
     fun rateLimitId(): Optional<String> = Optional.ofNullable(rateLimitId)
 
-    /**
-     * The maximum batch input tokens per day. Only relevant for certain models.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun batch1DayMaxInputTokens(): Optional<Long> = body.batch1DayMaxInputTokens()
+    /** @see Body.batch1DayMaxInputTokens */
+    fun batch1DayMaxInputTokens(): java.util.Optional<Long> = body.batch1DayMaxInputTokens()
 
-    /**
-     * The maximum audio megabytes per minute. Only relevant for certain models.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun maxAudioMegabytesPer1Minute(): Optional<Long> = body.maxAudioMegabytesPer1Minute()
+    /** @see Body.batch1DayMaxInputTokensOrThrow */
+    fun batch1DayMaxInputTokensOrThrow(): Long = body.batch1DayMaxInputTokensOrThrow()
 
-    /**
-     * The maximum images per minute. Only relevant for certain models.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun maxImagesPer1Minute(): Optional<Long> = body.maxImagesPer1Minute()
+    /** @see Body.maxAudioMegabytesPer1Minute */
+    fun maxAudioMegabytesPer1Minute(): java.util.Optional<Long> = body.maxAudioMegabytesPer1Minute()
 
-    /**
-     * The maximum requests per day. Only relevant for certain models.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun maxRequestsPer1Day(): Optional<Long> = body.maxRequestsPer1Day()
+    /** @see Body.maxAudioMegabytesPer1MinuteOrThrow */
+    fun maxAudioMegabytesPer1MinuteOrThrow(): Long = body.maxAudioMegabytesPer1MinuteOrThrow()
 
-    /**
-     * The maximum requests per minute.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun maxRequestsPer1Minute(): Optional<Long> = body.maxRequestsPer1Minute()
+    /** @see Body.maxImagesPer1Minute */
+    fun maxImagesPer1Minute(): java.util.Optional<Long> = body.maxImagesPer1Minute()
 
-    /**
-     * The maximum tokens per minute.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun maxTokensPer1Minute(): Optional<Long> = body.maxTokensPer1Minute()
+    /** @see Body.maxImagesPer1MinuteOrThrow */
+    fun maxImagesPer1MinuteOrThrow(): Long = body.maxImagesPer1MinuteOrThrow()
+
+    /** @see Body.maxRequestsPer1Day */
+    fun maxRequestsPer1Day(): java.util.Optional<Long> = body.maxRequestsPer1Day()
+
+    /** @see Body.maxRequestsPer1DayOrThrow */
+    fun maxRequestsPer1DayOrThrow(): Long = body.maxRequestsPer1DayOrThrow()
+
+    /** @see Body.maxRequestsPer1Minute */
+    fun maxRequestsPer1Minute(): java.util.Optional<Long> = body.maxRequestsPer1Minute()
+
+    /** @see Body.maxRequestsPer1MinuteOrThrow */
+    fun maxRequestsPer1MinuteOrThrow(): Long = body.maxRequestsPer1MinuteOrThrow()
+
+    /** @see Body.maxTokensPer1Minute */
+    fun maxTokensPer1Minute(): java.util.Optional<Long> = body.maxTokensPer1Minute()
+
+    /** @see Body.maxTokensPer1MinuteOrThrow */
+    fun maxTokensPer1MinuteOrThrow(): Long = body.maxTokensPer1MinuteOrThrow()
 
     /**
      * Returns the raw JSON value of [batch1DayMaxInputTokens].
@@ -485,58 +473,98 @@ private constructor(
         )
 
         /**
-         * The maximum batch input tokens per day. Only relevant for certain models.
+         * The maximum batch input tokens per day. Only relevant for certain models. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun batch1DayMaxInputTokens(): Optional<Long> =
+        fun batch1DayMaxInputTokens(): java.util.Optional<Long> =
             batch1DayMaxInputTokens.getOptional("batch_1_day_max_input_tokens")
 
         /**
-         * The maximum audio megabytes per minute. Only relevant for certain models.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun maxAudioMegabytesPer1Minute(): Optional<Long> =
+        fun batch1DayMaxInputTokensOrThrow(): Long =
+            batch1DayMaxInputTokens.getRequired("batch_1_day_max_input_tokens")
+
+        /**
+         * The maximum audio megabytes per minute. Only relevant for certain models. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun maxAudioMegabytesPer1Minute(): java.util.Optional<Long> =
             maxAudioMegabytesPer1Minute.getOptional("max_audio_megabytes_per_1_minute")
 
         /**
-         * The maximum images per minute. Only relevant for certain models.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun maxImagesPer1Minute(): Optional<Long> =
+        fun maxAudioMegabytesPer1MinuteOrThrow(): Long =
+            maxAudioMegabytesPer1Minute.getRequired("max_audio_megabytes_per_1_minute")
+
+        /**
+         * The maximum images per minute. Only relevant for certain models. Returns empty if the
+         * JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun maxImagesPer1Minute(): java.util.Optional<Long> =
             maxImagesPer1Minute.getOptional("max_images_per_1_minute")
 
         /**
-         * The maximum requests per day. Only relevant for certain models.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun maxRequestsPer1Day(): Optional<Long> =
+        fun maxImagesPer1MinuteOrThrow(): Long =
+            maxImagesPer1Minute.getRequired("max_images_per_1_minute")
+
+        /**
+         * The maximum requests per day. Only relevant for certain models. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun maxRequestsPer1Day(): java.util.Optional<Long> =
             maxRequestsPer1Day.getOptional("max_requests_per_1_day")
 
         /**
-         * The maximum requests per minute.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun maxRequestsPer1Minute(): Optional<Long> =
+        fun maxRequestsPer1DayOrThrow(): Long =
+            maxRequestsPer1Day.getRequired("max_requests_per_1_day")
+
+        /**
+         * The maximum requests per minute. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun maxRequestsPer1Minute(): java.util.Optional<Long> =
             maxRequestsPer1Minute.getOptional("max_requests_per_1_minute")
 
         /**
-         * The maximum tokens per minute.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun maxTokensPer1Minute(): Optional<Long> =
+        fun maxRequestsPer1MinuteOrThrow(): Long =
+            maxRequestsPer1Minute.getRequired("max_requests_per_1_minute")
+
+        /**
+         * The maximum tokens per minute. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun maxTokensPer1Minute(): java.util.Optional<Long> =
             maxTokensPer1Minute.getOptional("max_tokens_per_1_minute")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun maxTokensPer1MinuteOrThrow(): Long =
+            maxTokensPer1Minute.getRequired("max_tokens_per_1_minute")
 
         /**
          * Returns the raw JSON value of [batch1DayMaxInputTokens].

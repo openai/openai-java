@@ -33,22 +33,17 @@ private constructor(
 
     fun sessionId(): Optional<String> = Optional.ofNullable(sessionId)
 
-    /**
-     * WebRTC transport with an SDP offer for the new connection to the forked session.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun transport(): Transport = body.transport()
+    /** @see Body.transport */
+    fun transport(): java.util.Optional<Transport> = body.transport()
 
-    /**
-     * Optional configuration overrides for the new Live session. Omit this object or send an empty
-     * object to inherit the stored session's settings.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun session(): Optional<MediaSessionForkConfig> = body.session()
+    /** @see Body.transportOrThrow */
+    fun transportOrThrow(): Transport = body.transportOrThrow()
+
+    /** @see Body.session */
+    fun session(): java.util.Optional<MediaSessionForkConfig> = body.session()
+
+    /** @see Body.sessionOrThrow */
+    fun sessionOrThrow(): MediaSessionForkConfig = body.sessionOrThrow()
 
     /**
      * Returns the raw JSON value of [transport].
@@ -318,21 +313,33 @@ private constructor(
         ) : this(transport, session, mutableMapOf())
 
         /**
-         * WebRTC transport with an SDP offer for the new connection to the forked session.
+         * WebRTC transport with an SDP offer for the new connection to the forked session. The
+         * schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun transport(): Transport = transport.getRequired("transport")
+        fun transport(): java.util.Optional<Transport> = transport.getOptional("transport")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun transportOrThrow(): Transport = transport.getRequired("transport")
 
         /**
          * Optional configuration overrides for the new Live session. Omit this object or send an
-         * empty object to inherit the stored session's settings.
+         * empty object to inherit the stored session's settings. Returns empty if the JSON property
+         * is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun session(): Optional<MediaSessionForkConfig> = session.getOptional("session")
+        fun session(): java.util.Optional<MediaSessionForkConfig> = session.getOptional("session")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun sessionOrThrow(): MediaSessionForkConfig = session.getRequired("session")
 
         /**
          * Returns the raw JSON value of [transport].
@@ -493,7 +500,7 @@ private constructor(
                 return@apply
             }
 
-            transport().validate()
+            transportOrThrow().validate()
             session().ifPresent { it.validate() }
             validated = true
         }
@@ -552,25 +559,42 @@ private constructor(
         ) : this(sdp, type, mutableMapOf())
 
         /**
-         * Session Description Protocol message for the WebRTC connection.
+         * Session Description Protocol message for the WebRTC connection. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun sdp(): String = sdp.getRequired("sdp")
+        fun sdp(): java.util.Optional<String> = sdp.getOptional("sdp")
 
         /**
-         * The transport used for the Live session. Always `webrtc`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("webrtc")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun sdpOrThrow(): String = sdp.getRequired("sdp")
+
+        /**
+         * The transport used for the Live session. Always `webrtc`. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("webrtc")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [sdp].
@@ -709,12 +733,8 @@ private constructor(
                 return@apply
             }
 
-            sdp()
-            _type().let {
-                if (it != JsonValue.from("webrtc")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            sdpOrThrow()
+            typeOrThrow()
             validated = true
         }
 

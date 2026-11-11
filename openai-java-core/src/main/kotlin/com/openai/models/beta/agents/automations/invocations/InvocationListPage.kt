@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.beta.agents.automations.InvocationService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see InvocationService.list */
 class InvocationListPage
@@ -18,22 +16,23 @@ private constructor(
     private val response: InvocationListPageResponse,
 ) : Page<AutomationInvocation> {
 
-    /**
-     * Delegates to [InvocationListPageResponse], but gracefully handles missing data.
-     *
-     * @see InvocationListPageResponse.data
-     */
-    fun data(): List<AutomationInvocation> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see InvocationListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [InvocationListPageResponse], but gracefully handles missing data.
-     *
-     * @see InvocationListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<AutomationInvocation> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<AutomationInvocation> = data()
+    fun _data() = response._data()
+
+    /** @see InvocationListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<AutomationInvocation> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

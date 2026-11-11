@@ -66,10 +66,10 @@ internal class AgentSessionTurnFailedEventTest {
                 )
                 .build()
 
-        assertThat(agentSessionTurnFailedEvent.eventId()).isEqualTo("event_id")
-        assertThat(agentSessionTurnFailedEvent.sessionId()).isEqualTo("session_id")
+        assertThat(agentSessionTurnFailedEvent.eventId()).contains("event_id")
+        assertThat(agentSessionTurnFailedEvent.sessionId()).contains("session_id")
         assertThat(agentSessionTurnFailedEvent.turn())
-            .isEqualTo(
+            .contains(
                 Turn.builder()
                     .id("id")
                     .agentId("agent_id")
@@ -101,7 +101,7 @@ internal class AgentSessionTurnFailedEventTest {
                     )
                     .build()
             )
-        assertThat(agentSessionTurnFailedEvent.turnId()).isEqualTo("turn_id")
+        assertThat(agentSessionTurnFailedEvent.turnId()).contains("turn_id")
         assertThat(agentSessionTurnFailedEvent.usage())
             .contains(
                 TokenUsage.builder()

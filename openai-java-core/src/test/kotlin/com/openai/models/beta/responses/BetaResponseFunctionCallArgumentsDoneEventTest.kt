@@ -24,10 +24,10 @@ internal class BetaResponseFunctionCallArgumentsDoneEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseFunctionCallArgumentsDoneEvent.arguments()).isEqualTo("arguments")
-        assertThat(betaResponseFunctionCallArgumentsDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseFunctionCallArgumentsDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseFunctionCallArgumentsDoneEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseFunctionCallArgumentsDoneEvent.arguments()).contains("arguments")
+        assertThat(betaResponseFunctionCallArgumentsDoneEvent.itemId()).contains("item_id")
+        assertThat(betaResponseFunctionCallArgumentsDoneEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseFunctionCallArgumentsDoneEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseFunctionCallArgumentsDoneEvent.agent())
             .contains(
                 BetaResponseFunctionCallArgumentsDoneEvent.Agent.builder()

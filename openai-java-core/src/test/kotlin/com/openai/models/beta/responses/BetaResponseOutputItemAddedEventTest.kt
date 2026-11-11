@@ -59,7 +59,7 @@ internal class BetaResponseOutputItemAddedEventTest {
                 .build()
 
         assertThat(betaResponseOutputItemAddedEvent.item())
-            .isEqualTo(
+            .contains(
                 BetaResponseOutputItem.ofMessage(
                     BetaResponseOutputMessage.builder()
                         .id("id")
@@ -99,8 +99,8 @@ internal class BetaResponseOutputItemAddedEventTest {
                         .build()
                 )
             )
-        assertThat(betaResponseOutputItemAddedEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseOutputItemAddedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseOutputItemAddedEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseOutputItemAddedEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseOutputItemAddedEvent.agent())
             .contains(
                 BetaResponseOutputItemAddedEvent.Agent.builder().agentName("agent_name").build()

@@ -20,11 +20,11 @@ internal class ChatKitThreadTest {
                 .user("user_456")
                 .build()
 
-        assertThat(chatkitThread.id()).isEqualTo("cthr_def456")
-        assertThat(chatkitThread.createdAt()).isEqualTo(1712345600L)
-        assertThat(chatkitThread.status()).isEqualTo(ChatKitThread.Status.ofActive())
+        assertThat(chatkitThread.id()).contains("cthr_def456")
+        assertThat(chatkitThread.createdAt()).contains(1712345600L)
+        assertThat(chatkitThread.status()).contains(ChatKitThread.Status.ofActive())
         assertThat(chatkitThread.title()).contains("Demo feedback")
-        assertThat(chatkitThread.user()).isEqualTo("user_456")
+        assertThat(chatkitThread.user()).contains("user_456")
 
         val jsonMapper = jsonMapper()
 

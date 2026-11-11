@@ -48,57 +48,92 @@ private constructor(
     ) : this(environmentId, eventId, resetCount, sessionId, turnId, type, mutableMapOf())
 
     /**
-     * The stable environment ID, retained across sandbox replacements.
+     * The stable environment ID, retained across sandbox replacements. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun environmentId(): String = environmentId.getRequired("environment_id")
+    fun environmentId(): java.util.Optional<String> = environmentId.getOptional("environment_id")
 
     /**
-     * The unique ID of the event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun environmentIdOrThrow(): String = environmentId.getRequired("environment_id")
 
     /**
-     * Monotonically increasing reset number. Repeated notifications share this number.
+     * The unique ID of the event. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun resetCount(): Long = resetCount.getRequired("reset_count")
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
     /**
-     * The ID of the session associated with the event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun sessionId(): String = sessionId.getRequired("session_id")
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
-     * The associated turn, when applicable.
+     * Monotonically increasing reset number. Repeated notifications share this number. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun turnId(): Optional<String> = turnId.getOptional("turn_id")
+    fun resetCount(): java.util.Optional<Long> = resetCount.getOptional("reset_count")
 
     /**
-     * The type of the object. Always `agent.session.environment.reset`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("agent.session.environment.reset")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun resetCountOrThrow(): Long = resetCount.getRequired("reset_count")
+
+    /**
+     * The ID of the session associated with the event. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun sessionId(): java.util.Optional<String> = sessionId.getOptional("session_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sessionIdOrThrow(): String = sessionId.getRequired("session_id")
+
+    /**
+     * The associated turn, when applicable. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun turnId(): java.util.Optional<String> = turnId.getOptional("turn_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun turnIdOrThrow(): String = turnId.getRequired("turn_id")
+
+    /**
+     * The type of the object. Always `agent.session.environment.reset`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("agent.session.environment.reset")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [environmentId].
@@ -349,16 +384,12 @@ private constructor(
             return@apply
         }
 
-        environmentId()
-        eventId()
-        resetCount()
-        sessionId()
+        environmentIdOrThrow()
+        eventIdOrThrow()
+        resetCountOrThrow()
+        sessionIdOrThrow()
         turnId()
-        _type().let {
-            if (it != JsonValue.from("agent.session.environment.reset")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        typeOrThrow()
         validated = true
     }
 

@@ -14,7 +14,7 @@ internal class InputAudioBufferClearedEventTest {
         val inputAudioBufferClearedEvent =
             InputAudioBufferClearedEvent.builder().eventId("event_id").build()
 
-        assertThat(inputAudioBufferClearedEvent.eventId()).isEqualTo("event_id")
+        assertThat(inputAudioBufferClearedEvent.eventId()).contains("event_id")
 
         val jsonMapper = jsonMapper()
 

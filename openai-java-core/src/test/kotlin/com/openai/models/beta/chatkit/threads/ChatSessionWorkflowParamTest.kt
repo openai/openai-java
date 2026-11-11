@@ -24,7 +24,7 @@ internal class ChatSessionWorkflowParamTest {
                 .version("version")
                 .build()
 
-        assertThat(chatSessionWorkflowParam.id()).isEqualTo("id")
+        assertThat(chatSessionWorkflowParam.id()).contains("id")
         assertThat(chatSessionWorkflowParam.stateVariables())
             .contains(
                 ChatSessionWorkflowParam.StateVariables.builder()

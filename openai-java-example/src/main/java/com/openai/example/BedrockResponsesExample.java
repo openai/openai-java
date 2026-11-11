@@ -17,10 +17,10 @@ public final class BedrockResponsesExample {
                 .model("openai.gpt-5.5")
                 .build();
 
-        client.responses().create(params).output().stream()
+        client.responses().create(params).outputOrThrow().stream()
                 .flatMap(item -> item.message().stream())
-                .flatMap(message -> message.content().stream())
+                .flatMap(message -> message.contentOrThrow().stream())
                 .flatMap(content -> content.outputText().stream())
-                .forEach(outputText -> System.out.println(outputText.text()));
+                .forEach(outputText -> System.out.println(outputText.textOrThrow()));
     }
 }

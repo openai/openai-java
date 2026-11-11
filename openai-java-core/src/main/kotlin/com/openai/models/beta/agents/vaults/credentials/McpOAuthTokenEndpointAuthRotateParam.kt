@@ -279,26 +279,43 @@ private constructor(
         ) : this(type, clientSecret, mutableMapOf())
 
         /**
-         * The type of the object. Always `client_secret_basic`.
+         * The type of the object. Always `client_secret_basic`. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("client_secret_basic")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("client_secret_basic")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * The replacement OAuth client secret. Omit or pass `null` to keep the stored secret. This
-         * secret is never returned in resources.
+         * secret is never returned in resources. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun clientSecret(): Optional<String> = clientSecret.getOptional("client_secret")
+        fun clientSecret(): java.util.Optional<String> = clientSecret.getOptional("client_secret")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun clientSecretOrThrow(): String = clientSecret.getRequired("client_secret")
 
         /**
          * Returns the raw JSON value of [clientSecret].
@@ -440,11 +457,7 @@ private constructor(
                 return@apply
             }
 
-            _type().let {
-                if (it != JsonValue.from("client_secret_basic")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            typeOrThrow()
             clientSecret()
             validated = true
         }
@@ -505,26 +518,43 @@ private constructor(
         ) : this(type, clientSecret, mutableMapOf())
 
         /**
-         * The type of the object. Always `client_secret_post`.
+         * The type of the object. Always `client_secret_post`. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("client_secret_post")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("client_secret_post")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * The replacement OAuth client secret. Omit or pass `null` to keep the stored secret. This
-         * secret is never returned in resources.
+         * secret is never returned in resources. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun clientSecret(): Optional<String> = clientSecret.getOptional("client_secret")
+        fun clientSecret(): java.util.Optional<String> = clientSecret.getOptional("client_secret")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun clientSecretOrThrow(): String = clientSecret.getRequired("client_secret")
 
         /**
          * Returns the raw JSON value of [clientSecret].
@@ -666,11 +696,7 @@ private constructor(
                 return@apply
             }
 
-            _type().let {
-                if (it != JsonValue.from("client_secret_post")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            typeOrThrow()
             clientSecret()
             validated = true
         }

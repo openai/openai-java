@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.certificates
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -32,7 +33,7 @@ internal class CertificateListPageResponseTest {
                 .lastId("cert_abc")
                 .build()
 
-        assertThat(certificateListPageResponse.data())
+        assertThat(certificateListPageResponse.data().getOrNull())
             .containsExactly(
                 CertificateListResponse.builder()
                     .id("id")
@@ -48,7 +49,7 @@ internal class CertificateListPageResponseTest {
                     .build()
             )
         assertThat(certificateListPageResponse.firstId()).contains("cert_abc")
-        assertThat(certificateListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(certificateListPageResponse.hasMore()).contains(true)
         assertThat(certificateListPageResponse.lastId()).contains("cert_abc")
 
         val jsonMapper = jsonMapper()

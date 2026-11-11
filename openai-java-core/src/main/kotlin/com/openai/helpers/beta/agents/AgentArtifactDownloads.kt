@@ -39,12 +39,12 @@ private constructor(
             path: String,
         ): SessionArtifact? {
             if (
-                candidate.sessionId() != sessionId ||
-                    candidate.turnId() != turnId ||
-                    candidate.path() != path
+                candidate.sessionIdOrThrow() != sessionId ||
+                    candidate.turnIdOrThrow() != turnId ||
+                    candidate.pathOrThrow() != path
             )
                 return current
-            check(current == null || current.id() == candidate.id()) {
+            check(current == null || current.idOrThrow() == candidate.idOrThrow()) {
                 "More than one artifact matches this turn and path"
             }
             return candidate
@@ -71,7 +71,10 @@ private constructor(
 
     private fun openContent(artifact: SessionArtifact, options: RequestOptions) =
         service.content(
-            ArtifactContentParams.builder().sessionId(sessionId).artifactId(artifact.id()).build(),
+            ArtifactContentParams.builder()
+                .sessionId(sessionId)
+                .artifactId(artifact.idOrThrow())
+                .build(),
             options,
         )
 
@@ -80,7 +83,7 @@ private constructor(
         var params = ArtifactListParams.builder().sessionId(sessionId).build()
         while (true) {
             val page = service.list(params, options)
-            page.data().forEach { selected = match(selected, it, sessionId, turnId, path) }
+            page.items().forEach { selected = match(selected, it, sessionId, turnId, path) }
             if (!page.hasNextPage()) break
             params = page.nextPageParams()
         }
@@ -130,7 +133,7 @@ private constructor(
                     .content(
                         ArtifactContentParams.builder()
                             .sessionId(sessionId)
-                            .artifactId(artifact.id())
+                            .artifactId(artifact.idOrThrow())
                             .build(),
                         options,
                     )
@@ -165,7 +168,7 @@ private constructor(
                         if (failure != null) result.completeExceptionally(failure)
                         else if (!result.isDone) {
                             try {
-                                page.data().forEach {
+                                page.items().forEach {
                                     selected = match(selected, it, sessionId, turnId, path)
                                 }
                                 if (page.hasNextPage()) next(page.nextPageParams())

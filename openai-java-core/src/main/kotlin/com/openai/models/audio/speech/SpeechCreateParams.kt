@@ -53,71 +53,47 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * The text to generate audio for. The maximum length is 4096 characters.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun input(): String = body.input()
+    /** @see Body.input */
+    fun input(): java.util.Optional<String> = body.input()
 
-    /**
-     * One of the available
-     * [TTS models](https://developers.openai.com/api/docs/guides/text-to-speech): `tts-1`,
-     * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun model(): SpeechModel = body.model()
+    /** @see Body.inputOrThrow */
+    fun inputOrThrow(): String = body.inputOrThrow()
 
-    /**
-     * The voice to use when generating the audio. Supported built-in voices are `alloy`, `ash`,
-     * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`, and
-     * `cedar`. You may also provide a custom voice object with an `id`, for example `{ "id":
-     * "voice_1234" }`. Previews of the voices are available in the
-     * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
-     * Custom voices must be created from audio samples. Voices created from text prompts are
-     * supported only in Live.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun voice(): Voice = body.voice()
+    /** @see Body.model */
+    fun model(): java.util.Optional<SpeechModel> = body.model()
 
-    /**
-     * Control the voice of your generated audio with additional instructions. Does not work with
-     * `tts-1` or `tts-1-hd`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun instructions(): Optional<String> = body.instructions()
+    /** @see Body.modelOrThrow */
+    fun modelOrThrow(): SpeechModel = body.modelOrThrow()
 
-    /**
-     * The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and `pcm`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
+    /** @see Body.voice */
+    fun voice(): java.util.Optional<Voice> = body.voice()
 
-    /**
-     * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the default.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun speed(): Optional<Double> = body.speed()
+    /** @see Body.voiceOrThrow */
+    fun voiceOrThrow(): Voice = body.voiceOrThrow()
 
-    /**
-     * The format to stream the audio in. Supported formats are `sse` and `audio`. `sse` is not
-     * supported for `tts-1` or `tts-1-hd`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun streamFormat(): Optional<StreamFormat> = body.streamFormat()
+    /** @see Body.instructions */
+    fun instructions(): java.util.Optional<String> = body.instructions()
+
+    /** @see Body.instructionsOrThrow */
+    fun instructionsOrThrow(): String = body.instructionsOrThrow()
+
+    /** @see Body.responseFormat */
+    fun responseFormat(): java.util.Optional<ResponseFormat> = body.responseFormat()
+
+    /** @see Body.responseFormatOrThrow */
+    fun responseFormatOrThrow(): ResponseFormat = body.responseFormatOrThrow()
+
+    /** @see Body.speed */
+    fun speed(): java.util.Optional<Double> = body.speed()
+
+    /** @see Body.speedOrThrow */
+    fun speedOrThrow(): Double = body.speedOrThrow()
+
+    /** @see Body.streamFormat */
+    fun streamFormat(): java.util.Optional<StreamFormat> = body.streamFormat()
+
+    /** @see Body.streamFormatOrThrow */
+    fun streamFormatOrThrow(): StreamFormat = body.streamFormatOrThrow()
 
     /**
      * Returns the raw JSON value of [input].
@@ -536,22 +512,34 @@ private constructor(
         )
 
         /**
-         * The text to generate audio for. The maximum length is 4096 characters.
+         * The text to generate audio for. The maximum length is 4096 characters. The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun input(): String = input.getRequired("input")
+        fun input(): java.util.Optional<String> = input.getOptional("input")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun inputOrThrow(): String = input.getRequired("input")
 
         /**
          * One of the available
          * [TTS models](https://developers.openai.com/api/docs/guides/text-to-speech): `tts-1`,
-         * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
+         * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun model(): SpeechModel = model.getRequired("model")
+        fun model(): java.util.Optional<SpeechModel> = model.getOptional("model")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun modelOrThrow(): SpeechModel = model.getRequired("model")
 
         /**
          * The voice to use when generating the audio. Supported built-in voices are `alloy`, `ash`,
@@ -560,49 +548,77 @@ private constructor(
          * "id": "voice_1234" }`. Previews of the voices are available in the
          * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
          * Custom voices must be created from audio samples. Voices created from text prompts are
-         * supported only in Live.
+         * supported only in Live. The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun voice(): Voice = voice.getRequired("voice")
+        fun voice(): java.util.Optional<Voice> = voice.getOptional("voice")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun voiceOrThrow(): Voice = voice.getRequired("voice")
 
         /**
          * Control the voice of your generated audio with additional instructions. Does not work
-         * with `tts-1` or `tts-1-hd`.
+         * with `tts-1` or `tts-1-hd`. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun instructions(): Optional<String> = instructions.getOptional("instructions")
+        fun instructions(): java.util.Optional<String> = instructions.getOptional("instructions")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun instructionsOrThrow(): String = instructions.getRequired("instructions")
 
         /**
          * The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and
-         * `pcm`.
+         * `pcm`. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun responseFormat(): Optional<ResponseFormat> =
+        fun responseFormat(): java.util.Optional<ResponseFormat> =
             responseFormat.getOptional("response_format")
 
         /**
-         * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the
-         * default.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun speed(): Optional<Double> = speed.getOptional("speed")
+        fun responseFormatOrThrow(): ResponseFormat = responseFormat.getRequired("response_format")
+
+        /**
+         * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the
+         * default. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun speed(): java.util.Optional<Double> = speed.getOptional("speed")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun speedOrThrow(): Double = speed.getRequired("speed")
 
         /**
          * The format to stream the audio in. Supported formats are `sse` and `audio`. `sse` is not
-         * supported for `tts-1` or `tts-1-hd`.
+         * supported for `tts-1` or `tts-1-hd`. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun streamFormat(): Optional<StreamFormat> = streamFormat.getOptional("stream_format")
+        fun streamFormat(): java.util.Optional<StreamFormat> =
+            streamFormat.getOptional("stream_format")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun streamFormatOrThrow(): StreamFormat = streamFormat.getRequired("stream_format")
 
         /**
          * Returns the raw JSON value of [input].
@@ -932,9 +948,9 @@ private constructor(
                 return@apply
             }
 
-            input()
-            model().validate()
-            voice().validate()
+            inputOrThrow()
+            modelOrThrow().validate()
+            voiceOrThrow().validate()
             instructions()
             responseFormat().ifPresent { it.validate() }
             speed()
@@ -1526,13 +1542,18 @@ private constructor(
             ) : this(id, mutableMapOf())
 
             /**
-             * The custom voice ID, e.g. `voice_1234`.
+             * The custom voice ID, e.g. `voice_1234`. The schema requires this property. Returns
+             * empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun id(): String = id.getRequired("id")
+            fun id(): java.util.Optional<String> = id.getOptional("id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun idOrThrow(): String = id.getRequired("id")
 
             /**
              * Returns the raw JSON value of [id].
@@ -1658,7 +1679,7 @@ private constructor(
                     return@apply
                 }
 
-                id()
+                idOrThrow()
                 validated = true
             }
 

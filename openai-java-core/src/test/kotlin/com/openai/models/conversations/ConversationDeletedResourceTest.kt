@@ -14,8 +14,8 @@ internal class ConversationDeletedResourceTest {
         val conversationDeletedResource =
             ConversationDeletedResource.builder().id("id").deleted(true).build()
 
-        assertThat(conversationDeletedResource.id()).isEqualTo("id")
-        assertThat(conversationDeletedResource.deleted()).isEqualTo(true)
+        assertThat(conversationDeletedResource.id()).contains("id")
+        assertThat(conversationDeletedResource.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

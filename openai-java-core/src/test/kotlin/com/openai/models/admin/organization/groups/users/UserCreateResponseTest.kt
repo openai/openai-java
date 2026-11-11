@@ -14,8 +14,8 @@ internal class UserCreateResponseTest {
         val userCreateResponse =
             UserCreateResponse.builder().groupId("group_id").userId("user_id").build()
 
-        assertThat(userCreateResponse.groupId()).isEqualTo("group_id")
-        assertThat(userCreateResponse.userId()).isEqualTo("user_id")
+        assertThat(userCreateResponse.groupId()).contains("group_id")
+        assertThat(userCreateResponse.userId()).contains("user_id")
 
         val jsonMapper = jsonMapper()
 

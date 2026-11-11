@@ -4,6 +4,7 @@ package com.openai.models.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -29,10 +30,10 @@ internal class ResponseFunctionShellToolCallOutputTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(responseFunctionShellToolCallOutput.id()).isEqualTo("id")
-        assertThat(responseFunctionShellToolCallOutput.callId()).isEqualTo("call_id")
+        assertThat(responseFunctionShellToolCallOutput.id()).contains("id")
+        assertThat(responseFunctionShellToolCallOutput.callId()).contains("call_id")
         assertThat(responseFunctionShellToolCallOutput.maxOutputLength()).contains(0L)
-        assertThat(responseFunctionShellToolCallOutput.output())
+        assertThat(responseFunctionShellToolCallOutput.output().getOrNull())
             .containsExactly(
                 ResponseFunctionShellToolCallOutput.Output.builder()
                     .outcomeTimeout()
@@ -42,7 +43,7 @@ internal class ResponseFunctionShellToolCallOutputTest {
                     .build()
             )
         assertThat(responseFunctionShellToolCallOutput.status())
-            .isEqualTo(ResponseFunctionShellToolCallOutput.Status.IN_PROGRESS)
+            .contains(ResponseFunctionShellToolCallOutput.Status.IN_PROGRESS)
         assertThat(responseFunctionShellToolCallOutput.caller())
             .contains(ResponseFunctionShellToolCallOutput.Caller.ofDirect())
         assertThat(responseFunctionShellToolCallOutput.createdBy()).contains("created_by")

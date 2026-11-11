@@ -28,7 +28,7 @@ internal class BetaWebSearchPreviewToolTest {
                 .build()
 
         assertThat(betaWebSearchPreviewTool.type())
-            .isEqualTo(BetaWebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
+            .contains(BetaWebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
         assertThat(betaWebSearchPreviewTool.searchContentTypes().getOrNull())
             .containsExactly(BetaWebSearchPreviewTool.SearchContentType.TEXT)
         assertThat(betaWebSearchPreviewTool.searchContextSize())

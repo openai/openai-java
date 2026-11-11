@@ -32,25 +32,40 @@ private constructor(
     ) : this(anchor, seconds, mutableMapOf())
 
     /**
-     * Base timestamp used to calculate expiration. Currently fixed to `created_at`.
+     * Base timestamp used to calculate expiration. Currently fixed to `created_at`. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("created_at")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonValue = anchor
+    fun anchor(): java.util.Optional<JsonValue> {
+        val raw = anchor
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("created_at")) ->
+                throw OpenAIInvalidDataException("`anchor` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * Number of seconds after the anchor when the session expires.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun seconds(): Long = seconds.getRequired("seconds")
+    fun anchorOrThrow(): JsonValue = anchor().orElseGet { anchor.getRequired("anchor") }
+
+    @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonField<JsonValue> = anchor
+
+    /**
+     * Number of seconds after the anchor when the session expires. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun seconds(): java.util.Optional<Long> = seconds.getOptional("seconds")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun secondsOrThrow(): Long = seconds.getRequired("seconds")
 
     /**
      * Returns the raw JSON value of [seconds].
@@ -195,12 +210,8 @@ private constructor(
             return@apply
         }
 
-        _anchor().let {
-            if (it != JsonValue.from("created_at")) {
-                throw OpenAIInvalidDataException("'anchor' is invalid, received $it")
-            }
-        }
-        seconds()
+        anchorOrThrow()
+        secondsOrThrow()
         validated = true
     }
 

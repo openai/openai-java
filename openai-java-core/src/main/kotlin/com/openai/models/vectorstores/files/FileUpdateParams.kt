@@ -36,16 +36,11 @@ private constructor(
 
     fun fileId(): Optional<String> = Optional.ofNullable(fileId)
 
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
-     * strings with a maximum length of 512 characters, booleans, or numbers.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun attributes(): Optional<Attributes> = body.attributes()
+    /** @see Body.attributes */
+    fun attributes(): java.util.Optional<Attributes> = body.attributes()
+
+    /** @see Body.attributesOrThrow */
+    fun attributesOrThrow(): Attributes = body.attributesOrThrow()
 
     /**
      * Returns the raw JSON value of [attributes].
@@ -305,12 +300,18 @@ private constructor(
          * storing additional information about the object in a structured format, and querying for
          * objects via API or the dashboard. Keys are strings with a maximum length of 64
          * characters. Values are strings with a maximum length of 512 characters, booleans, or
-         * numbers.
+         * numbers. The schema requires this property. Returns empty if the JSON property is missing
+         * or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun attributes(): Optional<Attributes> = attributes.getOptional("attributes")
+        fun attributes(): java.util.Optional<Attributes> = attributes.getOptional("attributes")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun attributesOrThrow(): Attributes = attributes.getRequired("attributes")
 
         /**
          * Returns the raw JSON value of [attributes].

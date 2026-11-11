@@ -7,7 +7,6 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.admin.organization.GroupServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
@@ -21,28 +20,29 @@ private constructor(
     private val response: GroupListPageResponse,
 ) : PageAsync<Group> {
 
-    /**
-     * Delegates to [GroupListPageResponse], but gracefully handles missing data.
-     *
-     * @see GroupListPageResponse.data
-     */
-    fun data(): List<Group> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see GroupListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [GroupListPageResponse], but gracefully handles missing data.
-     *
-     * @see GroupListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<Group> = data().orElseGet { response._data().getRequired("data") }
 
-    /**
-     * Delegates to [GroupListPageResponse], but gracefully handles missing data.
-     *
-     * @see GroupListPageResponse.next
-     */
-    fun next(): Optional<String> = response._next().getOptional("next")
+    fun _data() = response._data()
 
-    override fun items(): List<Group> = data()
+    /** @see GroupListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    /** @see GroupListPageResponse.next */
+    fun next() = response.next()
+
+    fun nextOrThrow(): String = next().orElseGet { response._next().getRequired("next") }
+
+    fun _next() = response._next()
+
+    override fun items(): List<Group> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean =
         hasMore().orElse(true) && items().isNotEmpty() && next().isPresent

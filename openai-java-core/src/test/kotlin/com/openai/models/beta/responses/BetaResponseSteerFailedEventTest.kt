@@ -31,15 +31,15 @@ internal class BetaResponseSteerFailedEventTest {
                 .build()
 
         assertThat(betaResponseSteerFailedEvent.error())
-            .isEqualTo(
+            .contains(
                 BetaResponseSteerFailedEvent.Error.builder()
                     .code(BetaResponseSteerErrorCode.RESPONSE_NOT_FOUND)
                     .message("message")
                     .build()
             )
-        assertThat(betaResponseSteerFailedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseSteerFailedEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseSteerFailedEvent.steer())
-            .isEqualTo(
+            .contains(
                 BetaResponseSteerFailedEvent.Steer.builder()
                     .input("string")
                     .previousResponseId("previous_response_id")

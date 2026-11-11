@@ -13,8 +13,8 @@ internal class FederationRuleDeletedTest {
     fun createAndRoundtrip() {
         val federationRuleDeleted = FederationRuleDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(federationRuleDeleted.id()).isEqualTo("id")
-        assertThat(federationRuleDeleted.deleted()).isEqualTo(true)
+        assertThat(federationRuleDeleted.id()).contains("id")
+        assertThat(federationRuleDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

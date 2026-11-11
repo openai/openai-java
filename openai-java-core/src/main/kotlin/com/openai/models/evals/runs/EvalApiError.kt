@@ -32,20 +32,30 @@ private constructor(
     ) : this(code, message, mutableMapOf())
 
     /**
-     * The error code.
+     * The error code. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun code(): String = code.getRequired("code")
+    fun code(): java.util.Optional<String> = code.getOptional("code")
 
     /**
-     * The error message.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun message(): String = message.getRequired("message")
+    fun codeOrThrow(): String = code.getRequired("code")
+
+    /**
+     * The error message. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun message(): java.util.Optional<String> = message.getOptional("message")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun messageOrThrow(): String = message.getRequired("message")
 
     /**
      * Returns the raw JSON value of [code].
@@ -192,8 +202,8 @@ private constructor(
             return@apply
         }
 
-        code()
-        message()
+        codeOrThrow()
+        messageOrThrow()
         validated = true
     }
 

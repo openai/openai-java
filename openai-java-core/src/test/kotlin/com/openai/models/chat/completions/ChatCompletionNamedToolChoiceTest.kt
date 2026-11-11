@@ -17,7 +17,7 @@ internal class ChatCompletionNamedToolChoiceTest {
                 .build()
 
         assertThat(chatCompletionNamedToolChoice.function())
-            .isEqualTo(ChatCompletionNamedToolChoice.Function.builder().name("name").build())
+            .contains(ChatCompletionNamedToolChoice.Function.builder().name("name").build())
 
         val jsonMapper = jsonMapper()
 

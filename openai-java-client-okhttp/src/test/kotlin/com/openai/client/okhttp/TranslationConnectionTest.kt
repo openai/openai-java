@@ -228,7 +228,8 @@ class TranslationConnectionTest {
                         )
                         val error =
                             if (async) it.receiveAsync().get(7, TimeUnit.SECONDS) else it.receive()
-                        assertThat(error.asError().error().message()).isEqualTo("test")
+                        assertThat(error.asError().errorOrThrow().messageOrThrow())
+                            .isEqualTo("test")
                         socket.send("""{"type":"translation.future","raw":{"more":[1,2,3]}}""")
                         val future =
                             if (async) it.receiveAsync().get(7, TimeUnit.SECONDS) else it.receive()
@@ -254,19 +255,20 @@ class TranslationConnectionTest {
                     assertThat(peer.next().path("type").asText()).isEqualTo(appended)
                     val finish = connection.finishAsync(deadline)
                     assertThat(connection.finishAsync(deadline)).isSameAs(finish)
-                    assertThat(finish.get(7, TimeUnit.SECONDS).eventId()).isEqualTo("done")
+                    assertThat(finish.get(7, TimeUnit.SECONDS).eventIdOrThrow()).isEqualTo("done")
                     assertThat(peer.next().path("type").asText()).isEqualTo(close)
                     val text = connection.receive().asSessionOutputTranscriptDelta()
-                    assertThat(text.delta()).isEqualTo("Hola")
+                    assertThat(text.deltaOrThrow()).isEqualTo("Hola")
                     assertThat(text.elapsedMs()).hasValue(200L)
                     val audio =
                         connection
                             .receiveAsync()
                             .get(7, TimeUnit.SECONDS)
                             .asSessionOutputAudioDelta()
-                    assertThat(audio.delta()).isEqualTo("AQID")
+                    assertThat(audio.deltaOrThrow()).isEqualTo("AQID")
                     assertThat(audio.sampleRate()).hasValue(24000L)
-                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("done")
+                    assertThat(connection.receive().asSessionClosed().eventIdOrThrow())
+                        .isEqualTo("done")
                     assertThatThrownBy { connection.receive() }.hasMessageContaining("failed")
                     assertThatThrownBy { connection.send(audio()) }
                         .isInstanceOf(IllegalStateException::class.java)
@@ -294,11 +296,11 @@ class TranslationConnectionTest {
                     TranslationConnection.connectAsync(configuration).thenApply { connection ->
                         connection.use {
                             it.send(audio())
-                            assertThat(it.finish(deadline).eventId()).isEqualTo("done")
+                            assertThat(it.finish(deadline).eventIdOrThrow()).isEqualTo("done")
                             listOf(
-                                it.receive().asSessionOutputTranscriptDelta().delta(),
-                                it.receive().asSessionOutputAudioDelta().delta(),
-                                it.receive().asSessionClosed().eventId(),
+                                it.receive().asSessionOutputTranscriptDelta().deltaOrThrow(),
+                                it.receive().asSessionOutputAudioDelta().deltaOrThrow(),
+                                it.receive().asSessionClosed().eventIdOrThrow(),
                             )
                         }
                     }
@@ -327,13 +329,14 @@ class TranslationConnectionTest {
                             waiting
                                 .get(7, TimeUnit.SECONDS)
                                 .asSessionOutputTranscriptDelta()
-                                .delta()
+                                .deltaOrThrow()
                         )
                         .isEqualTo("Hola")
-                    assertThat(ending.get(7, TimeUnit.SECONDS).eventId()).isEqualTo("done")
-                    assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                    assertThat(ending.get(7, TimeUnit.SECONDS).eventIdOrThrow()).isEqualTo("done")
+                    assertThat(connection.receive().asSessionOutputAudioDelta().deltaOrThrow())
                         .isEqualTo("AQID")
-                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("done")
+                    assertThat(connection.receive().asSessionClosed().eventIdOrThrow())
+                        .isEqualTo("done")
                 }
             }
         }
@@ -438,7 +441,7 @@ class TranslationConnectionTest {
                     assertThatThrownBy { connection.finishAsync(deadline).get(7, TimeUnit.SECONDS) }
                         .isInstanceOf(ExecutionException::class.java)
                         .hasCauseInstanceOf(IOException::class.java)
-                    assertThat(connection.receive().asSessionOutputTranscriptDelta().delta())
+                    assertThat(connection.receive().asSessionOutputTranscriptDelta().deltaOrThrow())
                         .isEqualTo("Hola")
                     assertThatThrownBy { connection.receive() }.hasMessageContaining("failed")
                     assertThat(peer.next().path("type").asText()).isEqualTo(close)
@@ -520,13 +523,13 @@ class TranslationConnectionTest {
                             reading
                                 .get(5, TimeUnit.SECONDS)
                                 .asSessionOutputTranscriptDelta()
-                                .delta()
+                                .deltaOrThrow()
                         )
                         .isEqualTo("Hola")
                     connection.send(audio())
                     connection.awaitWritable(deadline)
                     assertThat(peer.next().path("type").asText()).isEqualTo(appended)
-                    assertThat(connection.finish(deadline).eventId()).isEqualTo("done")
+                    assertThat(connection.finish(deadline).eventIdOrThrow()).isEqualTo("done")
                     assertThat(peer.next().path("type").asText()).isEqualTo(close)
                     assertThat(peer.messages).isEmpty()
                 }
@@ -621,19 +624,19 @@ class TranslationConnectionTest {
                         assertThat(peer.messages).isEmpty()
                         release.countDown()
                         input.get(5, TimeUnit.SECONDS)
-                        assertThat(end.get(5, TimeUnit.SECONDS).eventId()).isEqualTo("done")
+                        assertThat(end.get(5, TimeUnit.SECONDS).eventIdOrThrow()).isEqualTo("done")
                         assertThat(peer.next().path("type").asText()).isEqualTo(appended)
                         assertThat(peer.next().path("type").asText()).isEqualTo(close)
                         assertThat(
                                 reading
                                     .get(5, TimeUnit.SECONDS)
                                     .asSessionOutputTranscriptDelta()
-                                    .delta()
+                                    .deltaOrThrow()
                             )
                             .isEqualTo("Hola")
-                        assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                        assertThat(connection.receive().asSessionOutputAudioDelta().deltaOrThrow())
                             .isEqualTo("AQID")
-                        assertThat(connection.receive().asSessionClosed().eventId())
+                        assertThat(connection.receive().asSessionClosed().eventIdOrThrow())
                             .isEqualTo("done")
                         assertThat(peer.messages).isEmpty()
                     } finally {
@@ -848,15 +851,17 @@ class TranslationConnectionTest {
                         assertThat(peer.messages).isEmpty()
                         release.countDown()
                         input.get(7, TimeUnit.SECONDS)
-                        assertThat(end.get(7, TimeUnit.SECONDS).eventId()).isEqualTo("done")
+                        assertThat(end.get(7, TimeUnit.SECONDS).eventIdOrThrow()).isEqualTo("done")
                         assertThat(peer.next().path("type").asText()).isEqualTo(appended)
                         assertThat(peer.next().path("type").asText()).isEqualTo(close)
                         assertThat(peer.messages).isEmpty()
-                        assertThat(connection.receive().asSessionOutputTranscriptDelta().delta())
+                        assertThat(
+                                connection.receive().asSessionOutputTranscriptDelta().deltaOrThrow()
+                            )
                             .isEqualTo("Hola")
-                        assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                        assertThat(connection.receive().asSessionOutputAudioDelta().deltaOrThrow())
                             .isEqualTo("AQID")
-                        assertThat(connection.receive().asSessionClosed().eventId())
+                        assertThat(connection.receive().asSessionClosed().eventIdOrThrow())
                             .isEqualTo("done")
                     } finally {
                         release.countDown()
@@ -963,15 +968,21 @@ class TranslationConnectionTest {
                     assertThat(received.await(5, TimeUnit.SECONDS)).isTrue()
                     peers.forEach { finalEvents(it.socket.get(7, TimeUnit.SECONDS)) }
                     for (i in peers.indices) {
-                        assertThat(finishes[i].get(7, TimeUnit.SECONDS).eventId()).isEqualTo("done")
+                        assertThat(finishes[i].get(7, TimeUnit.SECONDS).eventIdOrThrow())
+                            .isEqualTo("done")
                         assertThat(peers[i].next().path("type").asText()).isEqualTo(close)
                         assertThat(
-                                connections[i].receive().asSessionOutputTranscriptDelta().delta()
+                                connections[i]
+                                    .receive()
+                                    .asSessionOutputTranscriptDelta()
+                                    .deltaOrThrow()
                             )
                             .isEqualTo("Hola")
-                        assertThat(connections[i].receive().asSessionOutputAudioDelta().delta())
+                        assertThat(
+                                connections[i].receive().asSessionOutputAudioDelta().deltaOrThrow()
+                            )
                             .isEqualTo("AQID")
-                        assertThat(connections[i].receive().asSessionClosed().eventId())
+                        assertThat(connections[i].receive().asSessionClosed().eventIdOrThrow())
                             .isEqualTo("done")
                         assertThat(peers[i].messages).isEmpty()
                     }
@@ -1376,12 +1387,17 @@ class TranslationConnectionTest {
                                 .isInstanceOf(ExecutionException::class.java)
                                 .hasCause(closing)
                             assertThat(
-                                    connection.receive().asSessionOutputTranscriptDelta().delta()
+                                    connection
+                                        .receive()
+                                        .asSessionOutputTranscriptDelta()
+                                        .deltaOrThrow()
                                 )
                                 .isEqualTo("Hola")
-                            assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                            assertThat(
+                                    connection.receive().asSessionOutputAudioDelta().deltaOrThrow()
+                                )
                                 .isEqualTo("AQID")
-                            assertThat(connection.receive().asSessionClosed().eventId())
+                            assertThat(connection.receive().asSessionClosed().eventIdOrThrow())
                                 .isEqualTo("done")
                             assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
                         }
@@ -1468,12 +1484,17 @@ class TranslationConnectionTest {
                                 .hasCauseInstanceOf(TimeoutException::class.java)
                         } else {
                             assertThat(
-                                    connection.receive().asSessionOutputTranscriptDelta().delta()
+                                    connection
+                                        .receive()
+                                        .asSessionOutputTranscriptDelta()
+                                        .deltaOrThrow()
                                 )
                                 .isEqualTo("Hola")
-                            assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                            assertThat(
+                                    connection.receive().asSessionOutputAudioDelta().deltaOrThrow()
+                                )
                                 .isEqualTo("AQID")
-                            assertThat(connection.receive().asSessionClosed().eventId())
+                            assertThat(connection.receive().asSessionClosed().eventIdOrThrow())
                                 .isEqualTo("done")
                         }
                     } finally {
@@ -1500,8 +1521,8 @@ class TranslationConnectionTest {
                             connection.receiveAsync().thenApply {
                                 connection.send(audio())
                                 listOf(
-                                    it.asSessionOutputTranscriptDelta().delta(),
-                                    connection.receive().asSessionOutputAudioDelta().delta(),
+                                    it.asSessionOutputTranscriptDelta().deltaOrThrow(),
+                                    connection.receive().asSessionOutputAudioDelta().deltaOrThrow(),
                                 )
                             }
                         val socket = peer.socket.get(5, TimeUnit.SECONDS)
@@ -1694,7 +1715,7 @@ class TranslationConnectionTest {
                         assertThat(initial.next().path("audio").asText()).isEqualTo("AAAA")
                         val recovered =
                             connection.receiveAsync().thenApply {
-                                assertThat(it.asSessionOutputTranscriptDelta().delta())
+                                assertThat(it.asSessionOutputTranscriptDelta().deltaOrThrow())
                                     .isEqualTo("Hola")
                                 connection.reconnect().use { next ->
                                     assertThat(fresh.messages).isEmpty()
@@ -1734,13 +1755,19 @@ class TranslationConnectionTest {
                         native.send(text)
                     }
                 TranslationConnection.connect(options(server, client)).use { connection ->
-                    assertThat(connection.finishAsync(deadline).get(7, TimeUnit.SECONDS).eventId())
+                    assertThat(
+                            connection
+                                .finishAsync(deadline)
+                                .get(7, TimeUnit.SECONDS)
+                                .eventIdOrThrow()
+                        )
                         .isEqualTo("done")
-                    assertThat(connection.receive().asSessionOutputTranscriptDelta().delta())
+                    assertThat(connection.receive().asSessionOutputTranscriptDelta().deltaOrThrow())
                         .isEqualTo("Hola")
-                    assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                    assertThat(connection.receive().asSessionOutputAudioDelta().deltaOrThrow())
                         .isEqualTo("AQID")
-                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("done")
+                    assertThat(connection.receive().asSessionClosed().eventIdOrThrow())
+                        .isEqualTo("done")
                     assertThat(peer.messages).isEmpty()
                     assertThat(server.requestCount).isEqualTo(1)
                 }
@@ -1776,13 +1803,19 @@ class TranslationConnectionTest {
                     connection.send(audio("AA=="))
                     assertThat(peer.next().path("audio").asText()).isEqualTo("AA==")
                     finalEvents(peer.socket.get(5, TimeUnit.SECONDS))
-                    assertThat(connection.receive().asSessionOutputTranscriptDelta().delta())
+                    assertThat(connection.receive().asSessionOutputTranscriptDelta().deltaOrThrow())
                         .isEqualTo("Hola")
-                    assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                    assertThat(connection.receive().asSessionOutputAudioDelta().deltaOrThrow())
                         .isEqualTo("AQID")
-                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("done")
+                    assertThat(connection.receive().asSessionClosed().eventIdOrThrow())
+                        .isEqualTo("done")
                     assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
-                    assertThat(connection.finishAsync(deadline).get(7, TimeUnit.SECONDS).eventId())
+                    assertThat(
+                            connection
+                                .finishAsync(deadline)
+                                .get(7, TimeUnit.SECONDS)
+                                .eventIdOrThrow()
+                        )
                         .isEqualTo("done")
                     assertThat(peer.messages).isEmpty()
                     assertThat(server.requestCount).isEqualTo(1)
@@ -1832,7 +1865,7 @@ class TranslationConnectionTest {
                             .hasCauseInstanceOf(IOException::class.java)
                         // Expose what the configured reader returned without making it the
                         // transport's successful terminal unless that type was actually on wire.
-                        assertThat(connection.receive().asSessionClosed().eventId())
+                        assertThat(connection.receive().asSessionClosed().eventIdOrThrow())
                             .isEqualTo("mapped")
                         assertThat(peer.next().path("type").asText()).isEqualTo(close)
                         assertThat(peer.messages).isEmpty()
@@ -1889,9 +1922,15 @@ class TranslationConnectionTest {
                 val configuration =
                     options(server, http).toBuilder().jsonMapper(customMapper).build()
                 TranslationConnection.connect(configuration).use { connection ->
-                    assertThat(connection.finishAsync(deadline).get(7, TimeUnit.SECONDS).eventId())
+                    assertThat(
+                            connection
+                                .finishAsync(deadline)
+                                .get(7, TimeUnit.SECONDS)
+                                .eventIdOrThrow()
+                        )
                         .isEqualTo("mapped")
-                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("mapped")
+                    assertThat(connection.receive().asSessionClosed().eventIdOrThrow())
+                        .isEqualTo("mapped")
                     assertThat(peer.next().path("type").asText()).isEqualTo(close)
                     assertThat(peer.messages).isEmpty()
                 }
@@ -1988,7 +2027,8 @@ class TranslationConnectionTest {
                             assertThat(fresh.messages).isEmpty()
                             independent.send(audio("AQ=="))
                             assertThat(other.next().path("audio").asText()).isEqualTo("AQ==")
-                            assertThat(reconnected.finish(deadline).eventId()).isEqualTo("done")
+                            assertThat(reconnected.finish(deadline).eventIdOrThrow())
+                                .isEqualTo("done")
                             assertThat(fresh.next().path("type").asText()).isEqualTo(close)
                             assertThat(fresh.messages).isEmpty()
                             assertThat(other.messages).isEmpty()

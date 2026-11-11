@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.SkillService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see SkillService.list */
 class SkillListPage
@@ -18,21 +16,22 @@ private constructor(
     private val response: SkillList,
 ) : Page<Skill> {
 
-    /**
-     * Delegates to [SkillList], but gracefully handles missing data.
-     *
-     * @see SkillList.data
-     */
-    fun data(): List<Skill> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see SkillList.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [SkillList], but gracefully handles missing data.
-     *
-     * @see SkillList.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<Skill> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<Skill> = data()
+    fun _data() = response._data()
+
+    /** @see SkillList.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<Skill> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

@@ -24,7 +24,7 @@ internal class ChatKitWorkflowTest {
                 .version("version")
                 .build()
 
-        assertThat(chatkitWorkflow.id()).isEqualTo("id")
+        assertThat(chatkitWorkflow.id()).contains("id")
         assertThat(chatkitWorkflow.stateVariables())
             .contains(
                 ChatKitWorkflow.StateVariables.builder()
@@ -32,7 +32,7 @@ internal class ChatKitWorkflowTest {
                     .build()
             )
         assertThat(chatkitWorkflow.tracing())
-            .isEqualTo(ChatKitWorkflow.Tracing.builder().enabled(true).build())
+            .contains(ChatKitWorkflow.Tracing.builder().enabled(true).build())
         assertThat(chatkitWorkflow.version()).contains("version")
 
         val jsonMapper = jsonMapper()

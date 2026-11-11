@@ -39,36 +39,56 @@ private constructor(
     ) : this(code, message, param, type, mutableMapOf())
 
     /**
-     * The machine-readable error code, if any.
+     * The machine-readable error code, if any. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun code(): Optional<String> = code.getOptional("code")
+    fun code(): java.util.Optional<String> = code.getOptional("code")
 
     /**
-     * A customer-safe explanation of the error.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun message(): String = message.getRequired("message")
+    fun codeOrThrow(): String = code.getRequired("code")
 
     /**
-     * The request parameter associated with the error, if any.
+     * A customer-safe explanation of the error. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun param(): Optional<String> = param.getOptional("param")
+    fun message(): java.util.Optional<String> = message.getOptional("message")
 
     /**
-     * The error type.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun type(): String = type.getRequired("type")
+    fun messageOrThrow(): String = message.getRequired("message")
+
+    /**
+     * The request parameter associated with the error, if any. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun param(): java.util.Optional<String> = param.getOptional("param")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun paramOrThrow(): String = param.getRequired("param")
+
+    /**
+     * The error type. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<String> = type.getOptional("type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): String = type.getRequired("type")
 
     /**
      * Returns the raw JSON value of [code].
@@ -270,9 +290,9 @@ private constructor(
         }
 
         code()
-        message()
+        messageOrThrow()
         param()
-        type()
+        typeOrThrow()
         validated = true
     }
 

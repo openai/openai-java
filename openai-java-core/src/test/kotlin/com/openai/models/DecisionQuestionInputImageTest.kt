@@ -17,7 +17,7 @@ internal class DecisionQuestionInputImageTest {
                 .detail(DecisionQuestionInputImage.Detail.LOW)
                 .build()
 
-        assertThat(decisionQuestionInputImage.imageUrl()).isEqualTo("https://")
+        assertThat(decisionQuestionInputImage.imageUrl()).contains("https://")
         assertThat(decisionQuestionInputImage.detail())
             .contains(DecisionQuestionInputImage.Detail.LOW)
 

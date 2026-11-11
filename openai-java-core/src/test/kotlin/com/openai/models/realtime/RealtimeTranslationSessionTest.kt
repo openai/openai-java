@@ -42,9 +42,9 @@ internal class RealtimeTranslationSessionTest {
                 .model("model")
                 .build()
 
-        assertThat(realtimeTranslationSession.id()).isEqualTo("id")
+        assertThat(realtimeTranslationSession.id()).contains("id")
         assertThat(realtimeTranslationSession.audio())
-            .isEqualTo(
+            .contains(
                 RealtimeTranslationSession.Audio.builder()
                     .input(
                         RealtimeTranslationSession.Audio.Input.builder()
@@ -68,8 +68,8 @@ internal class RealtimeTranslationSessionTest {
                     )
                     .build()
             )
-        assertThat(realtimeTranslationSession.expiresAt()).isEqualTo(0L)
-        assertThat(realtimeTranslationSession.model()).isEqualTo("model")
+        assertThat(realtimeTranslationSession.expiresAt()).contains(0L)
+        assertThat(realtimeTranslationSession.model()).contains("model")
 
         val jsonMapper = jsonMapper()
 

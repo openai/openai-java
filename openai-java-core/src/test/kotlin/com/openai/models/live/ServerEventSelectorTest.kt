@@ -14,7 +14,7 @@ internal class ServerEventSelectorTest {
         val serverEventSelector =
             ServerEventSelector.builder().type("session.started").responseEvent("x").build()
 
-        assertThat(serverEventSelector.type()).isEqualTo("session.started")
+        assertThat(serverEventSelector.type()).contains("session.started")
         assertThat(serverEventSelector.responseEvent()).contains("x")
 
         val jsonMapper = jsonMapper()

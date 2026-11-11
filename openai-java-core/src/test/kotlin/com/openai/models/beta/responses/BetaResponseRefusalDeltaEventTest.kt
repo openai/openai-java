@@ -23,11 +23,11 @@ internal class BetaResponseRefusalDeltaEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseRefusalDeltaEvent.contentIndex()).isEqualTo(0L)
-        assertThat(betaResponseRefusalDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(betaResponseRefusalDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseRefusalDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseRefusalDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseRefusalDeltaEvent.contentIndex()).contains(0L)
+        assertThat(betaResponseRefusalDeltaEvent.delta()).contains("delta")
+        assertThat(betaResponseRefusalDeltaEvent.itemId()).contains("item_id")
+        assertThat(betaResponseRefusalDeltaEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseRefusalDeltaEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseRefusalDeltaEvent.agent())
             .contains(BetaResponseRefusalDeltaEvent.Agent.builder().agentName("agent_name").build())
 

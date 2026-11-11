@@ -24,9 +24,9 @@ internal class ResponseFunctionWebSearchStatusTest {
                 )
 
         responseFunctionWebSearch.validate()
-        assertThat(responseFunctionWebSearch.status().value())
+        assertThat(responseFunctionWebSearch.statusOrThrow().value())
             .isEqualTo(ResponseFunctionWebSearch.Status.Value.INCOMPLETE)
-        assertThat(responseFunctionWebSearch.status().known())
+        assertThat(responseFunctionWebSearch.statusOrThrow().known())
             .isEqualTo(ResponseFunctionWebSearch.Status.Known.INCOMPLETE)
     }
 }

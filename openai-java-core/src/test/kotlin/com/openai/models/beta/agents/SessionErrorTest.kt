@@ -20,9 +20,9 @@ internal class SessionErrorTest {
                 .build()
 
         assertThat(sessionError.code()).contains("code")
-        assertThat(sessionError.message()).isEqualTo("message")
+        assertThat(sessionError.message()).contains("message")
         assertThat(sessionError.param()).contains("param")
-        assertThat(sessionError.type()).isEqualTo("type")
+        assertThat(sessionError.type()).contains("type")
 
         val jsonMapper = jsonMapper()
 

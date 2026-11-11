@@ -25,7 +25,7 @@ internal class ModerationCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.input())
+        assertThat(body.inputOrThrow())
             .isEqualTo(ModerationCreateParams.Input.ofString("...text to classify goes here..."))
         assertThat(body.model()).contains(ModerationModel.OMNI_MODERATION_2024_09_26)
     }
@@ -37,7 +37,7 @@ internal class ModerationCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.input())
+        assertThat(body.inputOrThrow())
             .isEqualTo(ModerationCreateParams.Input.ofString("...text to classify goes here..."))
     }
 }

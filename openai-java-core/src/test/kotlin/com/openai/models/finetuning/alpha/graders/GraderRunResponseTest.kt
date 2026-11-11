@@ -62,7 +62,7 @@ internal class GraderRunResponseTest {
                 .build()
 
         assertThat(graderRunResponse.metadata())
-            .isEqualTo(
+            .contains(
                 GraderRunResponse.Metadata.builder()
                     .errors(
                         GraderRunResponse.Metadata.Errors.builder()
@@ -95,14 +95,14 @@ internal class GraderRunResponseTest {
                     .build()
             )
         assertThat(graderRunResponse.modelGraderTokenUsagePerModel())
-            .isEqualTo(
+            .contains(
                 GraderRunResponse.ModelGraderTokenUsagePerModel.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-        assertThat(graderRunResponse.reward()).isEqualTo(0.0)
+        assertThat(graderRunResponse.reward()).contains(0.0)
         assertThat(graderRunResponse.subRewards())
-            .isEqualTo(
+            .contains(
                 GraderRunResponse.SubRewards.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()

@@ -18,9 +18,9 @@ internal class PermissionCreateResponseTest {
                 .projectId("project_id")
                 .build()
 
-        assertThat(permissionCreateResponse.id()).isEqualTo("id")
-        assertThat(permissionCreateResponse.createdAt()).isEqualTo(0L)
-        assertThat(permissionCreateResponse.projectId()).isEqualTo("project_id")
+        assertThat(permissionCreateResponse.id()).contains("id")
+        assertThat(permissionCreateResponse.createdAt()).contains(0L)
+        assertThat(permissionCreateResponse.projectId()).contains("project_id")
 
         val jsonMapper = jsonMapper()
 

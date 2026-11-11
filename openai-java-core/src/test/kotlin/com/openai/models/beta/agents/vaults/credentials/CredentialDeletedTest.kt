@@ -13,8 +13,8 @@ internal class CredentialDeletedTest {
     fun createAndRoundtrip() {
         val credentialDeleted = CredentialDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(credentialDeleted.id()).isEqualTo("id")
-        assertThat(credentialDeleted.deleted()).isEqualTo(true)
+        assertThat(credentialDeleted.id()).contains("id")
+        assertThat(credentialDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

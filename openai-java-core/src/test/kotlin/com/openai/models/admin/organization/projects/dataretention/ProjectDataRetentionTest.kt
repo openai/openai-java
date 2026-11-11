@@ -17,7 +17,7 @@ internal class ProjectDataRetentionTest {
                 .build()
 
         assertThat(projectDataRetention.type())
-            .isEqualTo(ProjectDataRetention.Type.ORGANIZATION_DEFAULT)
+            .contains(ProjectDataRetention.Type.ORGANIZATION_DEFAULT)
 
         val jsonMapper = jsonMapper()
 

@@ -42,6 +42,6 @@ internal class RoleCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.roleId()).isEqualTo("role_id")
+        assertThat(body.roleIdOrThrow()).isEqualTo("role_id")
     }
 }

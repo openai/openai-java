@@ -3,6 +3,7 @@
 package com.openai.models.webhooks
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -19,12 +20,11 @@ internal class FineTuningJobSucceededWebhookEventTest {
                 .object_(FineTuningJobSucceededWebhookEvent.Object.EVENT)
                 .build()
 
-        assertThat(fineTuningJobSucceededWebhookEvent.id()).isEqualTo("id")
-        assertThat(fineTuningJobSucceededWebhookEvent.createdAt()).isEqualTo(0L)
+        assertThat(fineTuningJobSucceededWebhookEvent.id()).contains("id")
+        assertThat(fineTuningJobSucceededWebhookEvent.createdAt()).contains(0L)
         assertThat(fineTuningJobSucceededWebhookEvent.data())
-            .isEqualTo(FineTuningJobSucceededWebhookEvent.Data.builder().id("id").build())
-        assertThat(fineTuningJobSucceededWebhookEvent.object_())
-            .contains(FineTuningJobSucceededWebhookEvent.Object.EVENT)
+            .contains(FineTuningJobSucceededWebhookEvent.Data.builder().id("id").build())
+        assertThat(fineTuningJobSucceededWebhookEvent.object_()).contains(JsonValue.from("event"))
 
         val jsonMapper = jsonMapper()
 

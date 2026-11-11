@@ -33,13 +33,11 @@ private constructor(
 
     fun webhookEndpointId(): Optional<String> = Optional.ofNullable(webhookEndpointId)
 
-    /**
-     * The event type to send as a sample delivery.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun eventType(): EventType = body.eventType()
+    /** @see Body.eventType */
+    fun eventType(): java.util.Optional<EventType> = body.eventType()
+
+    /** @see Body.eventTypeOrThrow */
+    fun eventTypeOrThrow(): EventType = body.eventTypeOrThrow()
 
     /**
      * Returns the raw JSON value of [eventType].
@@ -281,12 +279,18 @@ private constructor(
         ) : this(eventType, mutableMapOf())
 
         /**
-         * The event type to send as a sample delivery.
+         * The event type to send as a sample delivery. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun eventType(): EventType = eventType.getRequired("event_type")
+        fun eventType(): java.util.Optional<EventType> = eventType.getOptional("event_type")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun eventTypeOrThrow(): EventType = eventType.getRequired("event_type")
 
         /**
          * Returns the raw JSON value of [eventType].
@@ -411,7 +415,7 @@ private constructor(
                 return@apply
             }
 
-            eventType().validate()
+            eventTypeOrThrow().validate()
             validated = true
         }
 

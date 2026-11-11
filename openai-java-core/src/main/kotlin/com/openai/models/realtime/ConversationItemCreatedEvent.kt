@@ -49,42 +49,68 @@ private constructor(
     ) : this(eventId, item, type, previousItemId, mutableMapOf())
 
     /**
-     * The unique ID of the server event.
+     * The unique ID of the server event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
     /**
-     * A single item within a Realtime conversation.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun item(): ConversationItem = item.getRequired("item")
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
-     * The event type, must be `conversation.item.created`.
+     * A single item within a Realtime conversation. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("conversation.item.created")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun item(): java.util.Optional<ConversationItem> = item.getOptional("item")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun itemOrThrow(): ConversationItem = item.getRequired("item")
+
+    /**
+     * The event type, must be `conversation.item.created`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("conversation.item.created")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * The ID of the preceding item in the Conversation context, allows the client to understand the
-     * order of the conversation. Can be `null` if the item has no predecessor.
+     * order of the conversation. Can be `null` if the item has no predecessor. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun previousItemId(): Optional<String> = previousItemId.getOptional("previous_item_id")
+    fun previousItemId(): java.util.Optional<String> =
+        previousItemId.getOptional("previous_item_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun previousItemIdOrThrow(): String = previousItemId.getRequired("previous_item_id")
 
     /**
      * Returns the raw JSON value of [eventId].
@@ -392,13 +418,9 @@ private constructor(
             return@apply
         }
 
-        eventId()
-        item().validate()
-        _type().let {
-            if (it != JsonValue.from("conversation.item.created")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        eventIdOrThrow()
+        itemOrThrow().validate()
+        typeOrThrow()
         previousItemId()
         validated = true
     }

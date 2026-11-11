@@ -20,11 +20,11 @@ internal class ResponseRefusalDeltaEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseRefusalDeltaEvent.contentIndex()).isEqualTo(0L)
-        assertThat(responseRefusalDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(responseRefusalDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseRefusalDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseRefusalDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseRefusalDeltaEvent.contentIndex()).contains(0L)
+        assertThat(responseRefusalDeltaEvent.delta()).contains("delta")
+        assertThat(responseRefusalDeltaEvent.itemId()).contains("item_id")
+        assertThat(responseRefusalDeltaEvent.outputIndex()).contains(0L)
+        assertThat(responseRefusalDeltaEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

@@ -96,7 +96,7 @@ internal class SessionUpdateEventTest {
                 .build()
 
         assertThat(sessionUpdateEvent.session())
-            .isEqualTo(
+            .contains(
                 SessionUpdateConfig.builder()
                     .delegation(
                         SessionUpdateConfig.Delegation.Responses.builder()

@@ -40,59 +40,94 @@ private constructor(
     ) : this(id, end, speaker, start, text, type, mutableMapOf())
 
     /**
-     * Unique identifier for the segment.
+     * Unique identifier for the segment. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * End timestamp of the segment in seconds.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun end(): Double = end.getRequired("end")
+    fun idOrThrow(): String = id.getRequired("id")
+
+    /**
+     * End timestamp of the segment in seconds. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun end(): java.util.Optional<Double> = end.getOptional("end")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun endOrThrow(): Double = end.getRequired("end")
 
     /**
      * Speaker label for this segment. When known speakers are provided, the label matches
      * `known_speaker_names[]`. Otherwise speakers are labeled sequentially using capital letters
-     * (`A`, `B`, ...).
+     * (`A`, `B`, ...). The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun speaker(): String = speaker.getRequired("speaker")
+    fun speaker(): java.util.Optional<String> = speaker.getOptional("speaker")
 
     /**
-     * Start timestamp of the segment in seconds.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun start(): Double = start.getRequired("start")
+    fun speakerOrThrow(): String = speaker.getRequired("speaker")
 
     /**
-     * Transcript text for this segment.
+     * Start timestamp of the segment in seconds. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun text(): String = text.getRequired("text")
+    fun start(): java.util.Optional<Double> = start.getOptional("start")
 
     /**
-     * The type of the segment. Always `transcript.text.segment`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("transcript.text.segment")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun startOrThrow(): Double = start.getRequired("start")
+
+    /**
+     * Transcript text for this segment. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun text(): java.util.Optional<String> = text.getOptional("text")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun textOrThrow(): String = text.getRequired("text")
+
+    /**
+     * The type of the segment. Always `transcript.text.segment`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("transcript.text.segment")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [id].
@@ -337,16 +372,12 @@ private constructor(
             return@apply
         }
 
-        id()
-        end()
-        speaker()
-        start()
-        text()
-        _type().let {
-            if (it != JsonValue.from("transcript.text.segment")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        idOrThrow()
+        endOrThrow()
+        speakerOrThrow()
+        startOrThrow()
+        textOrThrow()
+        typeOrThrow()
         validated = true
     }
 

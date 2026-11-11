@@ -45,47 +45,78 @@ private constructor(
     ) : this(data, hasMore, nextPage, object_, searchQuery, mutableMapOf())
 
     /**
-     * The list of search result items.
+     * The list of search result items. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun data(): List<VectorStoreSearchResponse> = data.getRequired("data")
+    fun data(): java.util.Optional<List<VectorStoreSearchResponse>> = data.getOptional("data")
 
     /**
-     * Indicates if there are more results to fetch.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun hasMore(): Boolean = hasMore.getRequired("has_more")
+    fun dataOrThrow(): List<VectorStoreSearchResponse> = data.getRequired("data")
 
     /**
-     * The token for the next page, if any.
+     * Indicates if there are more results to fetch. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun nextPage(): Optional<String> = nextPage.getOptional("next_page")
+    fun hasMore(): java.util.Optional<Boolean> = hasMore.getOptional("has_more")
 
     /**
-     * The object type, which is always `vector_store.search_results.page`
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("vector_store.search_results.page")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun hasMoreOrThrow(): Boolean = hasMore.getRequired("has_more")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The token for the next page, if any. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun searchQuery(): List<String> = searchQuery.getRequired("search_query")
+    fun nextPage(): java.util.Optional<String> = nextPage.getOptional("next_page")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nextPageOrThrow(): String = nextPage.getRequired("next_page")
+
+    /**
+     * The object type, which is always `vector_store.search_results.page` The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("vector_store.search_results.page")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun searchQuery(): java.util.Optional<List<String>> = searchQuery.getOptional("search_query")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun searchQueryOrThrow(): List<String> = searchQuery.getRequired("search_query")
 
     /**
      * Returns the raw JSON value of [data].
@@ -339,15 +370,11 @@ private constructor(
             return@apply
         }
 
-        data().forEach { it.validate() }
-        hasMore()
+        dataOrThrow().forEach { it.validate() }
+        hasMoreOrThrow()
         nextPage()
-        _object_().let {
-            if (it != JsonValue.from("vector_store.search_results.page")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        searchQuery()
+        object_OrThrow()
+        searchQueryOrThrow()
         validated = true
     }
 

@@ -46,53 +46,41 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * Name of the container to create.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = body.name()
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
 
-    /**
-     * Container expiration time in seconds relative to the 'anchor' time.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun expiresAfter(): Optional<ExpiresAfter> = body.expiresAfter()
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
 
-    /**
-     * IDs of files to copy to the container.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun fileIds(): Optional<List<String>> = body.fileIds()
+    /** @see Body.expiresAfter */
+    fun expiresAfter(): java.util.Optional<ExpiresAfter> = body.expiresAfter()
 
-    /**
-     * Optional memory limit for the container. Defaults to "1g".
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun memoryLimit(): Optional<MemoryLimit> = body.memoryLimit()
+    /** @see Body.expiresAfterOrThrow */
+    fun expiresAfterOrThrow(): ExpiresAfter = body.expiresAfterOrThrow()
 
-    /**
-     * Network access policy for the container.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun networkPolicy(): Optional<NetworkPolicy> = body.networkPolicy()
+    /** @see Body.fileIds */
+    fun fileIds(): java.util.Optional<List<String>> = body.fileIds()
 
-    /**
-     * An optional list of skills referenced by id or inline data.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun skills(): Optional<List<Skill>> = body.skills()
+    /** @see Body.fileIdsOrThrow */
+    fun fileIdsOrThrow(): List<String> = body.fileIdsOrThrow()
+
+    /** @see Body.memoryLimit */
+    fun memoryLimit(): java.util.Optional<MemoryLimit> = body.memoryLimit()
+
+    /** @see Body.memoryLimitOrThrow */
+    fun memoryLimitOrThrow(): MemoryLimit = body.memoryLimitOrThrow()
+
+    /** @see Body.networkPolicy */
+    fun networkPolicy(): java.util.Optional<NetworkPolicy> = body.networkPolicy()
+
+    /** @see Body.networkPolicyOrThrow */
+    fun networkPolicyOrThrow(): NetworkPolicy = body.networkPolicyOrThrow()
+
+    /** @see Body.skills */
+    fun skills(): java.util.Optional<List<Skill>> = body.skills()
+
+    /** @see Body.skillsOrThrow */
+    fun skillsOrThrow(): List<Skill> = body.skillsOrThrow()
 
     /**
      * Returns the raw JSON value of [name].
@@ -494,52 +482,90 @@ private constructor(
         ) : this(name, expiresAfter, fileIds, memoryLimit, networkPolicy, skills, mutableMapOf())
 
         /**
-         * Name of the container to create.
+         * Name of the container to create. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): String = name.getRequired("name")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
 
         /**
-         * Container expiration time in seconds relative to the 'anchor' time.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun expiresAfter(): Optional<ExpiresAfter> = expiresAfter.getOptional("expires_after")
+        fun nameOrThrow(): String = name.getRequired("name")
 
         /**
-         * IDs of files to copy to the container.
+         * Container expiration time in seconds relative to the 'anchor' time. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun fileIds(): Optional<List<String>> = fileIds.getOptional("file_ids")
+        fun expiresAfter(): java.util.Optional<ExpiresAfter> =
+            expiresAfter.getOptional("expires_after")
 
         /**
-         * Optional memory limit for the container. Defaults to "1g".
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun memoryLimit(): Optional<MemoryLimit> = memoryLimit.getOptional("memory_limit")
+        fun expiresAfterOrThrow(): ExpiresAfter = expiresAfter.getRequired("expires_after")
 
         /**
-         * Network access policy for the container.
+         * IDs of files to copy to the container. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun networkPolicy(): Optional<NetworkPolicy> = networkPolicy.getOptional("network_policy")
+        fun fileIds(): java.util.Optional<List<String>> = fileIds.getOptional("file_ids")
 
         /**
-         * An optional list of skills referenced by id or inline data.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun skills(): Optional<List<Skill>> = skills.getOptional("skills")
+        fun fileIdsOrThrow(): List<String> = fileIds.getRequired("file_ids")
+
+        /**
+         * Optional memory limit for the container. Defaults to "1g". Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun memoryLimit(): java.util.Optional<MemoryLimit> = memoryLimit.getOptional("memory_limit")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun memoryLimitOrThrow(): MemoryLimit = memoryLimit.getRequired("memory_limit")
+
+        /**
+         * Network access policy for the container. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun networkPolicy(): java.util.Optional<NetworkPolicy> =
+            networkPolicy.getOptional("network_policy")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun networkPolicyOrThrow(): NetworkPolicy = networkPolicy.getRequired("network_policy")
+
+        /**
+         * An optional list of skills referenced by id or inline data. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun skills(): java.util.Optional<List<Skill>> = skills.getOptional("skills")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun skillsOrThrow(): List<Skill> = skills.getRequired("skills")
 
         /**
          * Returns the raw JSON value of [name].
@@ -864,7 +890,7 @@ private constructor(
                 return@apply
             }
 
-            name()
+            nameOrThrow()
             expiresAfter().ifPresent { it.validate() }
             fileIds()
             memoryLimit().ifPresent { it.validate() }
@@ -945,18 +971,31 @@ private constructor(
         ) : this(anchor, minutes, mutableMapOf())
 
         /**
-         * Time anchor for the expiration time. Currently only 'last_active_at' is supported.
+         * Time anchor for the expiration time. Currently only 'last_active_at' is supported. The
+         * schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun anchor(): Anchor = anchor.getRequired("anchor")
+        fun anchor(): java.util.Optional<Anchor> = anchor.getOptional("anchor")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun minutes(): Long = minutes.getRequired("minutes")
+        fun anchorOrThrow(): Anchor = anchor.getRequired("anchor")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun minutes(): java.util.Optional<Long> = minutes.getOptional("minutes")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun minutesOrThrow(): Long = minutes.getRequired("minutes")
 
         /**
          * Returns the raw JSON value of [anchor].
@@ -1111,8 +1150,8 @@ private constructor(
                 return@apply
             }
 
-            anchor().validate()
-            minutes()
+            anchorOrThrow().validate()
+            minutesOrThrow()
             validated = true
         }
 

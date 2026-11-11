@@ -105,34 +105,49 @@ private constructor(
     )
 
     /**
-     * Configuration for audio input and output.
+     * Configuration for audio input and output. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun audio(): Optional<RealtimeResponseCreateAudioOutput> = audio.getOptional("audio")
+    fun audio(): java.util.Optional<RealtimeResponseCreateAudioOutput> = audio.getOptional("audio")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun audioOrThrow(): RealtimeResponseCreateAudioOutput = audio.getRequired("audio")
 
     /**
      * Controls which conversation the response is added to. Currently supports `auto` and `none`,
      * with `auto` as the default value. The `auto` value means that the contents of the response
      * will be added to the default conversation. Set this to `none` to create an out-of-band
-     * response which will not add items to default conversation.
+     * response which will not add items to default conversation. Returns empty if the JSON property
+     * is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun conversation(): Optional<Conversation> = conversation.getOptional("conversation")
+    fun conversation(): java.util.Optional<Conversation> = conversation.getOptional("conversation")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun conversationOrThrow(): Conversation = conversation.getRequired("conversation")
 
     /**
      * Input items to include in the prompt for the model. Using this field creates a new context
      * for this Response instead of using the default conversation. An empty array `[]` will clear
      * the context for this Response. Note that this can include references to items that previously
-     * appeared in the session using their id.
+     * appeared in the session using their id. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun input(): Optional<List<ConversationItem>> = input.getOptional("input")
+    fun input(): java.util.Optional<List<ConversationItem>> = input.getOptional("input")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun inputOrThrow(): List<ConversationItem> = input.getRequired("input")
 
     /**
      * The default system instructions (i.e. system message) prepended to model calls. This field
@@ -142,23 +157,33 @@ private constructor(
      * your voice", "laugh frequently"). The instructions are not guaranteed to be followed by the
      * model, but they provide guidance to the model on the desired behavior. Note that the server
      * sets default instructions which will be used if this field is not set and are visible in the
-     * `session.created` event at the start of the session.
+     * `session.created` event at the start of the session. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun instructions(): Optional<String> = instructions.getOptional("instructions")
+    fun instructions(): java.util.Optional<String> = instructions.getOptional("instructions")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun instructionsOrThrow(): String = instructions.getRequired("instructions")
 
     /**
      * Maximum number of output tokens for a single assistant response, inclusive of tool calls.
      * Provide an integer between 1 and 4096 to limit output tokens, or `inf` for the maximum
-     * available tokens for a given model. Defaults to `inf`.
+     * available tokens for a given model. Defaults to `inf`. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun maxOutputTokens(): Optional<MaxOutputTokens> =
+    fun maxOutputTokens(): java.util.Optional<MaxOutputTokens> =
         maxOutputTokens.getOptional("max_output_tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun maxOutputTokensOrThrow(): MaxOutputTokens = maxOutputTokens.getRequired("max_output_tokens")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -166,67 +191,99 @@ private constructor(
      * API or the dashboard.
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * length of 512 characters. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+    fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
 
     /**
      * The set of modalities the model used to respond, currently the only possible values are
      * `[\"audio\"]`, `[\"text\"]`. Audio output always include a text transcript. Setting the
-     * output to mode `text` will disable audio output from the model.
+     * output to mode `text` will disable audio output from the model. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun outputModalities(): Optional<List<OutputModality>> =
+    fun outputModalities(): java.util.Optional<List<OutputModality>> =
         outputModalities.getOptional("output_modalities")
 
     /**
-     * Whether the model may call multiple tools in parallel. Only supported by reasoning Realtime
-     * models such as `gpt-realtime-2`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun parallelToolCalls(): Optional<Boolean> =
+    fun outputModalitiesOrThrow(): List<OutputModality> =
+        outputModalities.getRequired("output_modalities")
+
+    /**
+     * Whether the model may call multiple tools in parallel. Only supported by reasoning Realtime
+     * models such as `gpt-realtime-2`. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun parallelToolCalls(): java.util.Optional<Boolean> =
         parallelToolCalls.getOptional("parallel_tool_calls")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun parallelToolCallsOrThrow(): Boolean = parallelToolCalls.getRequired("parallel_tool_calls")
 
     /**
      * Reference to a prompt template and its variables.
      * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun prompt(): Optional<ResponsePrompt> = prompt.getOptional("prompt")
+    fun prompt(): java.util.Optional<ResponsePrompt> = prompt.getOptional("prompt")
 
     /**
-     * Configuration for reasoning-capable Realtime models such as `gpt-realtime-2`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun reasoning(): Optional<RealtimeReasoning> = reasoning.getOptional("reasoning")
+    fun promptOrThrow(): ResponsePrompt = prompt.getRequired("prompt")
+
+    /**
+     * Configuration for reasoning-capable Realtime models such as `gpt-realtime-2`. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun reasoning(): java.util.Optional<RealtimeReasoning> = reasoning.getOptional("reasoning")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun reasoningOrThrow(): RealtimeReasoning = reasoning.getRequired("reasoning")
 
     /**
      * How the model chooses tools. Provide one of the string modes or force a specific function/MCP
-     * tool.
+     * tool. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun toolChoice(): Optional<ToolChoice> = toolChoice.getOptional("tool_choice")
+    fun toolChoice(): java.util.Optional<ToolChoice> = toolChoice.getOptional("tool_choice")
 
     /**
-     * Tools available to the model.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun tools(): Optional<List<Tool>> = tools.getOptional("tools")
+    fun toolChoiceOrThrow(): ToolChoice = toolChoice.getRequired("tool_choice")
+
+    /**
+     * Tools available to the model. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun tools(): java.util.Optional<List<Tool>> = tools.getOptional("tools")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun toolsOrThrow(): List<Tool> = tools.getRequired("tools")
 
     /**
      * Returns the raw JSON value of [audio].

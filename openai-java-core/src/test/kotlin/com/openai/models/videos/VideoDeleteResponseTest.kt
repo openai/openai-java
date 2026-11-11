@@ -13,8 +13,8 @@ internal class VideoDeleteResponseTest {
     fun createAndRoundtrip() {
         val videoDeleteResponse = VideoDeleteResponse.builder().id("id").deleted(true).build()
 
-        assertThat(videoDeleteResponse.id()).isEqualTo("id")
-        assertThat(videoDeleteResponse.deleted()).isEqualTo(true)
+        assertThat(videoDeleteResponse.id()).contains("id")
+        assertThat(videoDeleteResponse.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

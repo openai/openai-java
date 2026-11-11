@@ -48,22 +48,17 @@ private constructor(
     /** The ID of the project */
     fun projectId(): Optional<String> = Optional.ofNullable(projectId)
 
-    /**
-     * Default tier for requests that omit service_tier or use auto.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun default_(): Optional<Default> = body.default_()
+    /** @see Body.default_ */
+    fun default_(): java.util.Optional<Default> = body.default_()
 
-    /**
-     * Additional service tiers enabled for this project. "all" includes future tiers. An empty
-     * array allows only Standard. Organization policy and eligibility still apply.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun enabledTiers(): Optional<EnabledTiers> = body.enabledTiers()
+    /** @see Body.default_OrThrow */
+    fun default_OrThrow(): Default = body.default_OrThrow()
+
+    /** @see Body.enabledTiers */
+    fun enabledTiers(): java.util.Optional<EnabledTiers> = body.enabledTiers()
+
+    /** @see Body.enabledTiersOrThrow */
+    fun enabledTiersOrThrow(): EnabledTiers = body.enabledTiersOrThrow()
 
     /**
      * Returns the raw JSON value of [default_].
@@ -334,21 +329,34 @@ private constructor(
         ) : this(default_, enabledTiers, mutableMapOf())
 
         /**
-         * Default tier for requests that omit service_tier or use auto.
+         * Default tier for requests that omit service_tier or use auto. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun default_(): Optional<Default> = default_.getOptional("default")
+        fun default_(): java.util.Optional<Default> = default_.getOptional("default")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun default_OrThrow(): Default = default_.getRequired("default")
 
         /**
          * Additional service tiers enabled for this project. "all" includes future tiers. An empty
-         * array allows only Standard. Organization policy and eligibility still apply.
+         * array allows only Standard. Organization policy and eligibility still apply. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun enabledTiers(): Optional<EnabledTiers> = enabledTiers.getOptional("enabled_tiers")
+        fun enabledTiers(): java.util.Optional<EnabledTiers> =
+            enabledTiers.getOptional("enabled_tiers")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun enabledTiersOrThrow(): EnabledTiers = enabledTiers.getRequired("enabled_tiers")
 
         /**
          * Returns the raw JSON value of [default_].

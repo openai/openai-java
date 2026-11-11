@@ -136,9 +136,9 @@ internal class AgentSessionInProgressEventTest {
                 )
                 .build()
 
-        assertThat(agentSessionInProgressEvent.eventId()).isEqualTo("event_id")
+        assertThat(agentSessionInProgressEvent.eventId()).contains("event_id")
         assertThat(agentSessionInProgressEvent.session())
-            .isEqualTo(
+            .contains(
                 AgentSession.builder()
                     .id("id")
                     .agent(

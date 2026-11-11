@@ -40,36 +40,56 @@ private constructor(
     ) : this(id, error, status, type, mutableMapOf())
 
     /**
-     * The public ID of the environment.
+     * The public ID of the environment. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The error reported while preparing the environment, if any.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun error(): Optional<Error> = error.getOptional("error")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The environment's connection status.
+     * The error reported while preparing the environment, if any. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): Status = status.getRequired("status")
+    fun error(): java.util.Optional<Error> = error.getOptional("error")
 
     /**
-     * The environment type.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun type(): String = type.getRequired("type")
+    fun errorOrThrow(): Error = error.getRequired("error")
+
+    /**
+     * The environment's connection status. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): Status = status.getRequired("status")
+
+    /**
+     * The environment type. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<String> = type.getOptional("type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): String = type.getRequired("type")
 
     /**
      * Returns the raw JSON value of [id].
@@ -269,10 +289,10 @@ private constructor(
             return@apply
         }
 
-        id()
+        idOrThrow()
         error().ifPresent { it.validate() }
-        status().validate()
-        type()
+        statusOrThrow().validate()
+        typeOrThrow()
         validated = true
     }
 
@@ -314,28 +334,46 @@ private constructor(
         ) : this(code, message, type, mutableMapOf())
 
         /**
-         * A machine-readable error code.
+         * A machine-readable error code. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun code(): String = code.getRequired("code")
+        fun code(): java.util.Optional<String> = code.getOptional("code")
 
         /**
-         * A human-readable error message.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun message(): String = message.getRequired("message")
+        fun codeOrThrow(): String = code.getRequired("code")
 
         /**
-         * The error type.
+         * A human-readable error message. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun type(): String = type.getRequired("type")
+        fun message(): java.util.Optional<String> = message.getOptional("message")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun messageOrThrow(): String = message.getRequired("message")
+
+        /**
+         * The error type. The schema requires this property. Returns empty if the JSON property is
+         * missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<String> = type.getOptional("type")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): String = type.getRequired("type")
 
         /**
          * Returns the raw JSON value of [code].
@@ -514,9 +552,9 @@ private constructor(
                 return@apply
             }
 
-            code()
-            message()
-            type()
+            codeOrThrow()
+            messageOrThrow()
+            typeOrThrow()
             validated = true
         }
 

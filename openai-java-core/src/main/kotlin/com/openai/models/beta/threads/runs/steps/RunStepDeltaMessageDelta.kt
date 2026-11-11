@@ -35,24 +35,40 @@ private constructor(
     ) : this(type, messageCreation, mutableMapOf())
 
     /**
-     * Always `message_creation`.
+     * Always `message_creation`. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("message_creation")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("message_creation")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun messageCreation(): Optional<MessageCreation> =
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun messageCreation(): java.util.Optional<MessageCreation> =
         messageCreation.getOptional("message_creation")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun messageCreationOrThrow(): MessageCreation = messageCreation.getRequired("message_creation")
 
     /**
      * Returns the raw JSON value of [messageCreation].
@@ -184,11 +200,7 @@ private constructor(
             return@apply
         }
 
-        _type().let {
-            if (it != JsonValue.from("message_creation")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        typeOrThrow()
         messageCreation().ifPresent { it.validate() }
         validated = true
     }
@@ -226,12 +238,18 @@ private constructor(
         ) : this(messageId, mutableMapOf())
 
         /**
-         * The ID of the message that was created by this run step.
+         * The ID of the message that was created by this run step. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun messageId(): Optional<String> = messageId.getOptional("message_id")
+        fun messageId(): java.util.Optional<String> = messageId.getOptional("message_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun messageIdOrThrow(): String = messageId.getRequired("message_id")
 
         /**
          * Returns the raw JSON value of [messageId].

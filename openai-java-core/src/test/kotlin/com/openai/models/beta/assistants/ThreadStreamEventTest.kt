@@ -44,7 +44,7 @@ internal class ThreadStreamEventTest {
                 .build()
 
         assertThat(threadStreamEvent.data())
-            .isEqualTo(
+            .contains(
                 Thread.builder()
                     .id("id")
                     .createdAt(0L)

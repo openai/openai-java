@@ -24,7 +24,8 @@ internal class ContainerNetworkPolicyAllowlistTest {
                 )
                 .build()
 
-        assertThat(containerNetworkPolicyAllowlist.allowedDomains()).containsExactly("string")
+        assertThat(containerNetworkPolicyAllowlist.allowedDomains().getOrNull())
+            .containsExactly("string")
         assertThat(containerNetworkPolicyAllowlist.domainSecrets().getOrNull())
             .containsExactly(
                 ContainerNetworkPolicyDomainSecret.builder()

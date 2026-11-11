@@ -56,7 +56,7 @@ internal class DecisionEventTest {
 
         assertThat(decisionEvent.delegationId()).contains("del_abc123")
         assertThat(decisionEvent.event())
-            .isEqualTo(
+            .contains(
                 DecisionEvent.Event.builder()
                     .decision(
                         Decision.builder()
@@ -89,7 +89,7 @@ internal class DecisionEventTest {
                     )
                     .build()
             )
-        assertThat(decisionEvent.eventId()).isEqualTo("evt_decision_1")
+        assertThat(decisionEvent.eventId()).contains("evt_decision_1")
         assertThat(decisionEvent.sourceEventId()).isEmpty
         assertThat(decisionEvent.sourceEventType()).isEmpty
         assertThat(decisionEvent.triggerId()).isEmpty

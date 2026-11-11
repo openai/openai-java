@@ -28,7 +28,7 @@ internal class BetaWebSearchToolTest {
                 )
                 .build()
 
-        assertThat(betaWebSearchTool.type()).isEqualTo(BetaWebSearchTool.Type.WEB_SEARCH)
+        assertThat(betaWebSearchTool.type()).contains(BetaWebSearchTool.Type.WEB_SEARCH)
         assertThat(betaWebSearchTool.externalWebAccess()).contains(true)
         assertThat(betaWebSearchTool.filters())
             .contains(BetaWebSearchTool.Filters.builder().addAllowedDomain("string").build())

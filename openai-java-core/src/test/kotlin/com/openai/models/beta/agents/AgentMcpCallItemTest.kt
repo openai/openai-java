@@ -24,14 +24,14 @@ internal class AgentMcpCallItemTest {
                 .turnId("turn_id")
                 .build()
 
-        assertThat(agentMcpCallItem.id()).isEqualTo("id")
+        assertThat(agentMcpCallItem.id()).contains("id")
         assertThat(agentMcpCallItem._arguments()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(agentMcpCallItem._error()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
-        assertThat(agentMcpCallItem.name()).isEqualTo("name")
+        assertThat(agentMcpCallItem.name()).contains("name")
         assertThat(agentMcpCallItem._output()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
-        assertThat(agentMcpCallItem.serverLabel()).isEqualTo("server_label")
-        assertThat(agentMcpCallItem.status()).isEqualTo(AgentFunctionCallStatus.IN_PROGRESS)
-        assertThat(agentMcpCallItem.turnId()).isEqualTo("turn_id")
+        assertThat(agentMcpCallItem.serverLabel()).contains("server_label")
+        assertThat(agentMcpCallItem.status()).contains(AgentFunctionCallStatus.IN_PROGRESS)
+        assertThat(agentMcpCallItem.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()
 

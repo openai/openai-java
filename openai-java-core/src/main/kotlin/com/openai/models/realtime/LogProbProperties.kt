@@ -37,28 +37,43 @@ private constructor(
     ) : this(token, bytes, logprob, mutableMapOf())
 
     /**
-     * The token that was used to generate the log probability.
+     * The token that was used to generate the log probability. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun token(): String = token.getRequired("token")
+    fun token(): java.util.Optional<String> = token.getOptional("token")
 
     /**
-     * The bytes that were used to generate the log probability.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun bytes(): List<Long> = bytes.getRequired("bytes")
+    fun tokenOrThrow(): String = token.getRequired("token")
 
     /**
-     * The log probability of the token.
+     * The bytes that were used to generate the log probability. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun logprob(): Double = logprob.getRequired("logprob")
+    fun bytes(): java.util.Optional<List<Long>> = bytes.getOptional("bytes")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun bytesOrThrow(): List<Long> = bytes.getRequired("bytes")
+
+    /**
+     * The log probability of the token. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun logprob(): java.util.Optional<Double> = logprob.getOptional("logprob")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun logprobOrThrow(): Double = logprob.getRequired("logprob")
 
     /**
      * Returns the raw JSON value of [token].
@@ -246,9 +261,9 @@ private constructor(
             return@apply
         }
 
-        token()
-        bytes()
-        logprob()
+        tokenOrThrow()
+        bytesOrThrow()
+        logprobOrThrow()
         validated = true
     }
 

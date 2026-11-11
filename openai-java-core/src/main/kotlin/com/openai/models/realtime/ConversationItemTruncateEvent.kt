@@ -54,50 +54,80 @@ private constructor(
 
     /**
      * Inclusive duration up to which audio is truncated, in milliseconds. If the audio_end_ms is
-     * greater than the actual audio duration, the server will respond with an error.
+     * greater than the actual audio duration, the server will respond with an error. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun audioEndMs(): Long = audioEndMs.getRequired("audio_end_ms")
+    fun audioEndMs(): java.util.Optional<Long> = audioEndMs.getOptional("audio_end_ms")
 
     /**
-     * The index of the content part to truncate. Set this to `0`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun contentIndex(): Long = contentIndex.getRequired("content_index")
+    fun audioEndMsOrThrow(): Long = audioEndMs.getRequired("audio_end_ms")
+
+    /**
+     * The index of the content part to truncate. Set this to `0`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun contentIndex(): java.util.Optional<Long> = contentIndex.getOptional("content_index")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun contentIndexOrThrow(): Long = contentIndex.getRequired("content_index")
 
     /**
      * The ID of the assistant message item to truncate. Only assistant message items can be
-     * truncated.
+     * truncated. The schema requires this property. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun itemId(): String = itemId.getRequired("item_id")
+    fun itemId(): java.util.Optional<String> = itemId.getOptional("item_id")
 
     /**
-     * The event type, must be `conversation.item.truncate`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("conversation.item.truncate")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun itemIdOrThrow(): String = itemId.getRequired("item_id")
 
     /**
-     * Optional client-generated ID used to identify this event.
+     * The event type, must be `conversation.item.truncate`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun eventId(): Optional<String> = eventId.getOptional("event_id")
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("conversation.item.truncate")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * Optional client-generated ID used to identify this event. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
      * Returns the raw JSON value of [audioEndMs].
@@ -322,14 +352,10 @@ private constructor(
             return@apply
         }
 
-        audioEndMs()
-        contentIndex()
-        itemId()
-        _type().let {
-            if (it != JsonValue.from("conversation.item.truncate")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        audioEndMsOrThrow()
+        contentIndexOrThrow()
+        itemIdOrThrow()
+        typeOrThrow()
         eventId()
         validated = true
     }

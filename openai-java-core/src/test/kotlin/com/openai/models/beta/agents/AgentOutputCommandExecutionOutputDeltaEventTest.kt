@@ -21,11 +21,11 @@ internal class AgentOutputCommandExecutionOutputDeltaEventTest {
                 .turnId("turn_id")
                 .build()
 
-        assertThat(agentOutputCommandExecutionOutputDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(agentOutputCommandExecutionOutputDeltaEvent.eventId()).isEqualTo("event_id")
-        assertThat(agentOutputCommandExecutionOutputDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(agentOutputCommandExecutionOutputDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(agentOutputCommandExecutionOutputDeltaEvent.sessionId()).isEqualTo("session_id")
+        assertThat(agentOutputCommandExecutionOutputDeltaEvent.delta()).contains("delta")
+        assertThat(agentOutputCommandExecutionOutputDeltaEvent.eventId()).contains("event_id")
+        assertThat(agentOutputCommandExecutionOutputDeltaEvent.itemId()).contains("item_id")
+        assertThat(agentOutputCommandExecutionOutputDeltaEvent.outputIndex()).contains(0L)
+        assertThat(agentOutputCommandExecutionOutputDeltaEvent.sessionId()).contains("session_id")
         assertThat(agentOutputCommandExecutionOutputDeltaEvent.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()

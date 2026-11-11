@@ -25,7 +25,7 @@ internal class FileCitationDeltaAnnotationTest {
                 .text("text")
                 .build()
 
-        assertThat(fileCitationDeltaAnnotation.index()).isEqualTo(0L)
+        assertThat(fileCitationDeltaAnnotation.index()).contains(0L)
         assertThat(fileCitationDeltaAnnotation.endIndex()).contains(0L)
         assertThat(fileCitationDeltaAnnotation.fileCitation())
             .contains(

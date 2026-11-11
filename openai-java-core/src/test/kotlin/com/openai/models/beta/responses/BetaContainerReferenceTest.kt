@@ -14,7 +14,7 @@ internal class BetaContainerReferenceTest {
         val betaContainerReference =
             BetaContainerReference.builder().containerId("cntr_123").build()
 
-        assertThat(betaContainerReference.containerId()).isEqualTo("cntr_123")
+        assertThat(betaContainerReference.containerId()).contains("cntr_123")
 
         val jsonMapper = jsonMapper()
 

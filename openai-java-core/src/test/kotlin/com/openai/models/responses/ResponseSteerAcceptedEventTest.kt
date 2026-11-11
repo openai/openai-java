@@ -23,9 +23,9 @@ internal class ResponseSteerAcceptedEventTest {
                 .streamId("stream_id")
                 .build()
 
-        assertThat(responseSteerAcceptedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseSteerAcceptedEvent.sequenceNumber()).contains(0L)
         assertThat(responseSteerAcceptedEvent.steer())
-            .isEqualTo(
+            .contains(
                 ResponseSteerAcceptedEvent.Steer.builder()
                     .id("id")
                     .previousResponseId("previous_response_id")

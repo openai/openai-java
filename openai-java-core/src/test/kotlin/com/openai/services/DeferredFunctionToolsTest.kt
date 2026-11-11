@@ -69,7 +69,7 @@ internal class DeferredFunctionToolsTest {
                         }
                     assertThat(
                             response
-                                .output()
+                                .outputOrThrow()
                                 .single()
                                 .asFunctionCall()
                                 .arguments(LookupItem::class.java)

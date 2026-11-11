@@ -33,13 +33,19 @@ private constructor(
     ) : this(hyperparameters, mutableMapOf())
 
     /**
-     * The hyperparameters used for the fine-tuning job.
+     * The hyperparameters used for the fine-tuning job. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun hyperparameters(): Optional<SupervisedHyperparameters> =
+    fun hyperparameters(): java.util.Optional<SupervisedHyperparameters> =
         hyperparameters.getOptional("hyperparameters")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun hyperparametersOrThrow(): SupervisedHyperparameters =
+        hyperparameters.getRequired("hyperparameters")
 
     /**
      * Returns the raw JSON value of [hyperparameters].

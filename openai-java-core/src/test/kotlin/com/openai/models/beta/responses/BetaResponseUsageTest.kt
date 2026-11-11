@@ -33,9 +33,9 @@ internal class BetaResponseUsageTest {
                 .totalTokens(0L)
                 .build()
 
-        assertThat(betaResponseUsage.inputTokens()).isEqualTo(0L)
+        assertThat(betaResponseUsage.inputTokens()).contains(0L)
         assertThat(betaResponseUsage.inputTokensDetails())
-            .isEqualTo(
+            .contains(
                 BetaResponseUsage.InputTokensDetails.builder()
                     .cacheWriteTokens(0L)
                     .cachedTokens(0L)
@@ -47,10 +47,10 @@ internal class BetaResponseUsageTest {
                     )
                     .build()
             )
-        assertThat(betaResponseUsage.outputTokens()).isEqualTo(0L)
+        assertThat(betaResponseUsage.outputTokens()).contains(0L)
         assertThat(betaResponseUsage.outputTokensDetails())
-            .isEqualTo(BetaResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
-        assertThat(betaResponseUsage.totalTokens()).isEqualTo(0L)
+            .contains(BetaResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
+        assertThat(betaResponseUsage.totalTokens()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

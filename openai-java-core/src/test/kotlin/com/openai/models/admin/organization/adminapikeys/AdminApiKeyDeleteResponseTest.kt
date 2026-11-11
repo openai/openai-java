@@ -14,8 +14,8 @@ internal class AdminApiKeyDeleteResponseTest {
         val adminApiKeyDeleteResponse =
             AdminApiKeyDeleteResponse.builder().id("key_abc").deleted(true).build()
 
-        assertThat(adminApiKeyDeleteResponse.id()).isEqualTo("key_abc")
-        assertThat(adminApiKeyDeleteResponse.deleted()).isEqualTo(true)
+        assertThat(adminApiKeyDeleteResponse.id()).contains("key_abc")
+        assertThat(adminApiKeyDeleteResponse.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

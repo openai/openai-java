@@ -13,7 +13,7 @@ internal class CertificateDeleteResponseTest {
     fun createAndRoundtrip() {
         val certificateDeleteResponse = CertificateDeleteResponse.builder().id("id").build()
 
-        assertThat(certificateDeleteResponse.id()).isEqualTo("id")
+        assertThat(certificateDeleteResponse.id()).contains("id")
 
         val jsonMapper = jsonMapper()
 

@@ -53,68 +53,109 @@ private constructor(
     ) : this(id, choices, created, model, object_, systemFingerprint, usage, mutableMapOf())
 
     /**
-     * A unique identifier for the completion.
+     * A unique identifier for the completion. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The list of completion choices the model generated for the input prompt.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun choices(): List<CompletionChoice> = choices.getRequired("choices")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The Unix timestamp (in seconds) of when the completion was created.
+     * The list of completion choices the model generated for the input prompt. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun created(): Long = created.getRequired("created")
+    fun choices(): java.util.Optional<List<CompletionChoice>> = choices.getOptional("choices")
 
     /**
-     * The model used for completion.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun model(): String = model.getRequired("model")
+    fun choicesOrThrow(): List<CompletionChoice> = choices.getRequired("choices")
 
     /**
-     * The object type, which is always "text_completion"
+     * The Unix timestamp (in seconds) of when the completion was created. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("text_completion")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun created(): java.util.Optional<Long> = created.getOptional("created")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun createdOrThrow(): Long = created.getRequired("created")
+
+    /**
+     * The model used for completion. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun model(): java.util.Optional<String> = model.getOptional("model")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun modelOrThrow(): String = model.getRequired("model")
+
+    /**
+     * The object type, which is always "text_completion" The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("text_completion")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * This fingerprint represents the backend configuration that the model runs with.
      *
      * Can be used in conjunction with the `seed` request parameter to understand when backend
-     * changes have been made that might impact determinism.
+     * changes have been made that might impact determinism. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun systemFingerprint(): Optional<String> = systemFingerprint.getOptional("system_fingerprint")
+    fun systemFingerprint(): java.util.Optional<String> =
+        systemFingerprint.getOptional("system_fingerprint")
 
     /**
-     * Usage statistics for the completion request.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun usage(): Optional<CompletionUsage> = usage.getOptional("usage")
+    fun systemFingerprintOrThrow(): String = systemFingerprint.getRequired("system_fingerprint")
+
+    /**
+     * Usage statistics for the completion request. Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun usage(): java.util.Optional<CompletionUsage> = usage.getOptional("usage")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun usageOrThrow(): CompletionUsage = usage.getRequired("usage")
 
     /**
      * Returns the raw JSON value of [id].
@@ -405,15 +446,11 @@ private constructor(
             return@apply
         }
 
-        id()
-        choices().forEach { it.validate() }
-        created()
-        model()
-        _object_().let {
-            if (it != JsonValue.from("text_completion")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
+        idOrThrow()
+        choicesOrThrow().forEach { it.validate() }
+        createdOrThrow()
+        modelOrThrow()
+        object_OrThrow()
         systemFingerprint()
         usage().ifPresent { it.validate() }
         validated = true

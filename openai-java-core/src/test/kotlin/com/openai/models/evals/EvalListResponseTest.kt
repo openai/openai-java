@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.graders.gradermodels.LabelModelGrader
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -45,10 +46,10 @@ internal class EvalListResponseTest {
                 )
                 .build()
 
-        assertThat(evalListResponse.id()).isEqualTo("id")
-        assertThat(evalListResponse.createdAt()).isEqualTo(0L)
+        assertThat(evalListResponse.id()).contains("id")
+        assertThat(evalListResponse.createdAt()).contains(0L)
         assertThat(evalListResponse.dataSourceConfig())
-            .isEqualTo(
+            .contains(
                 EvalListResponse.DataSourceConfig.ofCustom(
                     EvalCustomDataSourceConfig.builder()
                         .schema(
@@ -65,8 +66,8 @@ internal class EvalListResponseTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(evalListResponse.name()).isEqualTo("Chatbot effectiveness Evaluation")
-        assertThat(evalListResponse.testingCriteria())
+        assertThat(evalListResponse.name()).contains("Chatbot effectiveness Evaluation")
+        assertThat(evalListResponse.testingCriteria().getOrNull())
             .containsExactly(
                 EvalListResponse.TestingCriterion.ofLabelModelGrader(
                     LabelModelGrader.builder()

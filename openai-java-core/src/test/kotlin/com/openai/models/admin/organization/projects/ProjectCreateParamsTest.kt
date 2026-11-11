@@ -29,7 +29,7 @@ internal class ProjectCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.name()).isEqualTo("name")
+        assertThat(body.nameOrThrow()).isEqualTo("name")
         assertThat(body.externalKeyId()).contains("external_key_id")
         assertThat(body.geography()).contains("geography")
         assertThat(body.residency()).contains(ProjectResidency.GLOBAL)
@@ -41,6 +41,6 @@ internal class ProjectCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.name()).isEqualTo("name")
+        assertThat(body.nameOrThrow()).isEqualTo("name")
     }
 }

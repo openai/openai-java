@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.admin.organization.externalstorage.AwsExternalStorageProvider
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -490,7 +491,7 @@ internal class AuditLogListPageResponseTest {
                 .lastId("audit_log-hnbkd8s93s")
                 .build()
 
-        assertThat(auditLogListPageResponse.data())
+        assertThat(auditLogListPageResponse.data().getOrNull())
             .containsExactly(
                 AuditLogListResponse.builder()
                     .id("id")
@@ -941,7 +942,7 @@ internal class AuditLogListPageResponseTest {
                     )
                     .build()
             )
-        assertThat(auditLogListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(auditLogListPageResponse.hasMore()).contains(true)
         assertThat(auditLogListPageResponse.firstId()).contains("audit_log-defb456h8dks")
         assertThat(auditLogListPageResponse.lastId()).contains("audit_log-hnbkd8s93s")
 

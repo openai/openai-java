@@ -13,7 +13,7 @@ internal class TranslationTest {
     fun createAndRoundtrip() {
         val translation = Translation.builder().text("text").build()
 
-        assertThat(translation.text()).isEqualTo("text")
+        assertThat(translation.text()).contains("text")
 
         val jsonMapper = jsonMapper()
 

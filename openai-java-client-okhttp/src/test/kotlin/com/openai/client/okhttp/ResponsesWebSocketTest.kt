@@ -111,16 +111,22 @@ class ResponsesWebSocketTest {
                         val beforeCall = toolState.snapshot().get()
                         assertThat(
                                 beforeText
-                                    .output()
+                                    .outputOrThrow()
                                     .single()
                                     .asMessage()
-                                    .content()
+                                    .contentOrThrow()
                                     .single()
                                     .asOutputText()
-                                    .text()
+                                    .textOrThrow()
                             )
                             .isEqualTo("par")
-                        assertThat(beforeCall.output().single().asFunctionCall().arguments())
+                        assertThat(
+                                beforeCall
+                                    .outputOrThrow()
+                                    .single()
+                                    .asFunctionCall()
+                                    .argumentsOrThrow()
+                            )
                             .isEqualTo("{\"city\":")
                         assertThatThrownBy { textState.response() }
                             .isInstanceOf(IllegalStateException::class.java)
@@ -132,42 +138,48 @@ class ResponsesWebSocketTest {
                                 toolState
                                     .snapshot()
                                     .get()
-                                    .output()
+                                    .outputOrThrow()
                                     .single()
                                     .asFunctionCall()
-                                    .arguments()
+                                    .argumentsOrThrow()
                             )
                             .isEqualTo("{\"city\":\"Paris\"}")
                         assertThat(
                                 textState
                                     .snapshot()
                                     .get()
-                                    .output()
+                                    .outputOrThrow()
                                     .single()
                                     .asMessage()
-                                    .content()
+                                    .contentOrThrow()
                                     .single()
                                     .asOutputText()
-                                    .text()
+                                    .textOrThrow()
                             )
                             .isEqualTo("partial")
                         assertThat(
                                 beforeText
-                                    .output()
+                                    .outputOrThrow()
                                     .single()
                                     .asMessage()
-                                    .content()
+                                    .contentOrThrow()
                                     .single()
                                     .asOutputText()
-                                    .text()
+                                    .textOrThrow()
                             )
                             .isEqualTo("par")
-                        assertThat(beforeCall.output().single().asFunctionCall().arguments())
+                        assertThat(
+                                beforeCall
+                                    .outputOrThrow()
+                                    .single()
+                                    .asFunctionCall()
+                                    .argumentsOrThrow()
+                            )
                             .isEqualTo("{\"city\":")
                         val terminal = tool.receive()
                         toolState.accumulate(terminal)
                         assertThat(toolState.response())
-                            .isSameAs(terminal.asResponseIncomplete().response())
+                            .isSameAs(terminal.asResponseIncomplete().responseOrThrow())
                         assertThat(toolState.snapshot().get()).isSameAs(toolState.response())
                         val error = text.receive()
                         assertThat(textState.accumulate(error)).isSameAs(error)
@@ -176,13 +188,13 @@ class ResponsesWebSocketTest {
                                 textState
                                     .snapshot()
                                     .get()
-                                    .output()
+                                    .outputOrThrow()
                                     .single()
                                     .asMessage()
-                                    .content()
+                                    .contentOrThrow()
                                     .single()
                                     .asOutputText()
-                                    .text()
+                                    .textOrThrow()
                             )
                             .isEqualTo("partial")
                         assertThatThrownBy { textState.response() }
@@ -271,31 +283,39 @@ class ResponsesWebSocketTest {
                         connection.send(command())
                         repeat(3) { state.accumulate(connection.receive()) }
                         val replaced = state.snapshot().get()
-                        assertThat(replaced.output().single().asMessage().id()).isEqualTo("new")
+                        assertThat(replaced.outputOrThrow().single().asMessage().idOrThrow())
+                            .isEqualTo("new")
                         late.forEach { _ ->
                             state.accumulate(connection.receive())
                             assertThat(state.snapshot().get()).isSameAs(replaced)
                         }
                         repeat(2) { state.accumulate(connection.receive()) }
                         val contents =
-                            state.snapshot().get().output().single().asMessage().content()
+                            state
+                                .snapshot()
+                                .get()
+                                .outputOrThrow()
+                                .single()
+                                .asMessage()
+                                .contentOrThrow()
                         assertThat(contents).hasSize(2)
-                        assertThat(contents[0].asOutputText().text()).isEqualTo("base text")
-                        assertThat(contents[1].asRefusal().refusal()).isEqualTo("correct refusal")
+                        assertThat(contents[0].asOutputText().textOrThrow()).isEqualTo("base text")
+                        assertThat(contents[1].asRefusal().refusalOrThrow())
+                            .isEqualTo("correct refusal")
                         assertThat(
                                 replaced
-                                    .output()
+                                    .outputOrThrow()
                                     .single()
                                     .asMessage()
-                                    .content()[0]
+                                    .contentOrThrow()[0]
                                     .asOutputText()
-                                    .text()
+                                    .textOrThrow()
                             )
                             .isEqualTo("base")
                         val terminal = connection.receive()
                         state.accumulate(terminal)
                         assertThat(state.snapshot().get())
-                            .isSameAs(terminal.asResponseCompleted().response())
+                            .isSameAs(terminal.asResponseCompleted().responseOrThrow())
                     }
                     peer.await()
                 } finally {
@@ -345,7 +365,7 @@ class ResponsesWebSocketTest {
                         connection.send(command())
                         repeat(3) { state.accumulate(connection.receive()) }
                         val replaced = state.snapshot().get()
-                        assertThat(replaced.output().single().asFunctionCall().name())
+                        assertThat(replaced.outputOrThrow().single().asFunctionCall().nameOrThrow())
                             .isEqualTo("weather")
                         repeat(2) {
                             state.accumulate(connection.receive())
@@ -356,10 +376,10 @@ class ResponsesWebSocketTest {
                                 state
                                     .snapshot()
                                     .get()
-                                    .output()
+                                    .outputOrThrow()
                                     .single()
                                     .asFunctionCall()
-                                    .arguments()
+                                    .argumentsOrThrow()
                             )
                             .isEqualTo("start delta")
                         state.accumulate(connection.receive())
@@ -367,18 +387,24 @@ class ResponsesWebSocketTest {
                                 state
                                     .snapshot()
                                     .get()
-                                    .output()
+                                    .outputOrThrow()
                                     .single()
                                     .asFunctionCall()
-                                    .arguments()
+                                    .argumentsOrThrow()
                             )
                             .isEqualTo("corrected")
-                        assertThat(replaced.output().single().asFunctionCall().arguments())
+                        assertThat(
+                                replaced
+                                    .outputOrThrow()
+                                    .single()
+                                    .asFunctionCall()
+                                    .argumentsOrThrow()
+                            )
                             .isEqualTo("start")
                         val terminal = connection.receive()
                         state.accumulate(terminal)
                         assertThat(state.response())
-                            .isSameAs(terminal.asResponseIncomplete().response())
+                            .isSameAs(terminal.asResponseIncomplete().responseOrThrow())
                     }
                     peer.await()
                 } finally {
@@ -475,7 +501,7 @@ class ResponsesWebSocketTest {
                                                     "response.incomplete",
                                                 )
                                         ) {
-                                            assertThat(accumulator.response().id())
+                                            assertThat(accumulator.response().idOrThrow())
                                                 .isEqualTo(
                                                     frame.path("response").path("id").asText()
                                                 )
@@ -548,20 +574,20 @@ class ResponsesWebSocketTest {
                             val first =
                                 if (async) asynchronous!!.finalResponse().get(5, TimeUnit.SECONDS)
                                 else blocking!!.finalResponse()
-                            assertThat(first.output()).isEmpty()
+                            assertThat(first.outputOrThrow()).isEmpty()
                             val next =
                                 ResponsesClientEvent.ofResponseCreate(
                                     ResponsesClientEvent.ResponseCreate.builder()
                                         .model("gpt-4o-mini")
                                         .input("Continue")
-                                        .previousResponseId(first.id())
+                                        .previousResponseId(first.idOrThrow())
                                         .build()
                                 )
                             if (async) asynchronous!!.send(next) else blocking!!.send(next)
                             val second =
                                 if (async) asynchronous!!.finalResponse().get(5, TimeUnit.SECONDS)
                                 else blocking!!.finalResponse()
-                            assertThat(second.id()).isEqualTo("resp_followup")
+                            assertThat(second.idOrThrow()).isEqualTo("resp_followup")
                         } finally {
                             blocking?.close()
                             asynchronous?.close()
@@ -682,9 +708,9 @@ class ResponsesWebSocketTest {
                                 val resultA = a.finalResponse()
                                 val resultB = b.finalResponse()
                                 emit.countDown()
-                                assertThat(resultA.get(5, TimeUnit.SECONDS).id())
+                                assertThat(resultA.get(5, TimeUnit.SECONDS).idOrThrow())
                                     .isEqualTo("resp_123")
-                                assertThat(resultB.get(5, TimeUnit.SECONDS).id())
+                                assertThat(resultB.get(5, TimeUnit.SECONDS).idOrThrow())
                                     .isEqualTo("resp_123")
                             }
                         }
@@ -747,7 +773,9 @@ class ResponsesWebSocketTest {
                                         .asText()
                                 )
                                 .isEqualTo("retired")
-                            assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).id())
+                            assertThat(
+                                    connection.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow()
+                                )
                                 .isEqualTo("resp_late")
                             assertThat(
                                     mapper
@@ -758,7 +786,9 @@ class ResponsesWebSocketTest {
                                         .asText()
                                 )
                                 .isEqualTo("unregistered")
-                            assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).id())
+                            assertThat(
+                                    connection.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow()
+                                )
                                 .isEqualTo("resp_123")
                         }
                         peer.await()
@@ -792,7 +822,7 @@ class ResponsesWebSocketTest {
                                 assertThatThrownBy { connection.lane("a") }
                                     .isInstanceOf(IllegalStateException::class.java)
                                 lane.send(command())
-                                assertThat(lane.finalResponse().id()).isEqualTo("resp_123")
+                                assertThat(lane.finalResponse().idOrThrow()).isEqualTo("resp_123")
                             }
                         }
                     peer.await()
@@ -839,7 +869,8 @@ class ResponsesWebSocketTest {
                             for (id in listOf(longestId, "a")) {
                                 connection.lane(id).use { lane ->
                                     lane.send(command())
-                                    assertThat(lane.finalResponse().id()).isEqualTo("resp_123")
+                                    assertThat(lane.finalResponse().idOrThrow())
+                                        .isEqualTo("resp_123")
                                 }
                             }
                         }
@@ -916,10 +947,12 @@ class ResponsesWebSocketTest {
                             assertThatThrownBy { retired.receive().get(5, TimeUnit.SECONDS) }
                                 .hasCauseInstanceOf(IllegalStateException::class.java)
                             open.send(command())
-                            assertThat(open.finalResponse().get(5, TimeUnit.SECONDS).id())
+                            assertThat(open.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow())
                                 .isEqualTo("resp_123")
                             replacement.send(command())
-                            assertThat(replacement.finalResponse().get(5, TimeUnit.SECONDS).id())
+                            assertThat(
+                                    replacement.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow()
+                                )
                                 .isEqualTo("resp_new")
                         }
                     peer.await()
@@ -960,7 +993,7 @@ class ResponsesWebSocketTest {
                     OpenAIOkHttpClient.builder().apiKey("fake-key").baseUrl(peer.url).build()
                 try {
                     client.responses().connect().use { connection ->
-                        assertThat(connection.finalResponse().id()).isEqualTo("resp_123")
+                        assertThat(connection.finalResponse().idOrThrow()).isEqualTo("resp_123")
                     }
                     peer.await()
                 } finally {
@@ -1016,7 +1049,9 @@ class ResponsesWebSocketTest {
                                 .isInstanceOf(IllegalStateException::class.java)
                                 .hasMessageContaining("send buffer is full")
                             drain.countDown()
-                            assertThat(connection.finalResponse().get(10, TimeUnit.SECONDS).id())
+                            assertThat(
+                                    connection.finalResponse().get(10, TimeUnit.SECONDS).idOrThrow()
+                                )
                                 .isEqualTo("resp_123")
                         }
                         peer.await()
@@ -1602,10 +1637,10 @@ class ResponsesWebSocketTest {
                             assertThat(mapper.valueToTree<JsonNode>(received).path("index").asInt())
                                 .isEqualTo(index)
                         }
-                        assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).id())
+                        assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow())
                             .isEqualTo("resp_123")
                         connection.send(command())
-                        assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).id())
+                        assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow())
                             .isEqualTo("resp_123")
                     }
                     peer.await()
@@ -1665,7 +1700,7 @@ class ResponsesWebSocketTest {
                         secondSent.countDown()
                         connection.receive().get(5, TimeUnit.SECONDS)
                         connection.send(command())
-                        assertThat(connection.finalResponse().get(10, TimeUnit.SECONDS).id())
+                        assertThat(connection.finalResponse().get(10, TimeUnit.SECONDS).idOrThrow())
                             .isEqualTo("resp_123")
                     }
                     peer.await()
@@ -1733,7 +1768,7 @@ class ResponsesWebSocketTest {
                             .hasCauseInstanceOf(java.io.IOException::class.java)
                         connection.reconnect().get(5, TimeUnit.SECONDS)
                         connection.send(command())
-                        assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).id())
+                        assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow())
                             .isEqualTo("resp_123")
                     }
                     peer.await()
@@ -1912,7 +1947,7 @@ class ResponsesWebSocketTest {
                 try {
                     if (refreshBefore401) {
                         client.responses().connect().use {
-                            assertThat(it.finalResponse().id()).isEqualTo("resp_123")
+                            assertThat(it.finalResponse().idOrThrow()).isEqualTo("resp_123")
                         }
                     }
                     assertThatThrownBy { client.responses().connect() }
@@ -1920,7 +1955,7 @@ class ResponsesWebSocketTest {
                         .isInstanceOf(com.openai.errors.OpenAIException::class.java)
                         .hasMessage("WebSocket handshake failed (HTTP 401)")
                     client.responses().connect().use {
-                        assertThat(it.finalResponse().id()).isEqualTo("resp_123")
+                        assertThat(it.finalResponse().idOrThrow()).isEqualTo("resp_123")
                     }
                     assertThat(exchanges.get()).isEqualTo(2)
                     peer.await()
@@ -2153,13 +2188,13 @@ class ResponsesWebSocketTest {
                         val a = connection.lane("a").finalResponse()
                         val b = connection.lane("b").finalResponse()
                         emit.countDown()
-                        assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).id())
+                        assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow())
                             .isEqualTo("resp_absent")
-                        assertThat(a.get(5, TimeUnit.SECONDS).id()).isEqualTo("resp_a")
-                        assertThat(b.get(5, TimeUnit.SECONDS).id()).isEqualTo("resp_b")
-                        assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).id())
+                        assertThat(a.get(5, TimeUnit.SECONDS).idOrThrow()).isEqualTo("resp_a")
+                        assertThat(b.get(5, TimeUnit.SECONDS).idOrThrow()).isEqualTo("resp_b")
+                        assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow())
                             .isEqualTo("resp_null")
-                        assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).id())
+                        assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow())
                             .isEqualTo("resp_unknown")
                     }
                     peer.await()
@@ -2360,7 +2395,13 @@ class ResponsesWebSocketTest {
                                         .isInstanceOf(IllegalArgumentException::class.java)
                                         .hasMessage("Invalid WebSocket stream_id")
                                 else
-                                    assertThat(lane.receive().asResponseCompleted().response().id())
+                                    assertThat(
+                                            lane
+                                                .receive()
+                                                .asResponseCompleted()
+                                                .responseOrThrow()
+                                                .idOrThrow()
+                                        )
                                         .isEqualTo("resp_123")
                             }
                         }
@@ -2409,7 +2450,7 @@ class ResponsesWebSocketTest {
                             assertThat(received.path("stream_id").asText()).isEqualTo("nested")
                             assertThat(received.path("payload"))
                                 .isEqualTo(mapper.valueToTree<JsonNode>(payload))
-                            assertThat(connection.finalResponse().id()).isEqualTo("resp_123")
+                            assertThat(connection.finalResponse().idOrThrow()).isEqualTo("resp_123")
                         }
                     }
                     peer.await()
@@ -2568,7 +2609,7 @@ class ResponsesWebSocketTest {
                     )
                 try {
                     client.responses().connect().use {
-                        assertThat(it.finalResponse().id()).isEqualTo("resp_123")
+                        assertThat(it.finalResponse().idOrThrow()).isEqualTo("resp_123")
                     }
                     peer.await()
                 } finally {
@@ -2625,7 +2666,7 @@ class ResponsesWebSocketTest {
                 )
             try {
                 client.responses().connect().use {
-                    assertThat(it.finalResponse().id()).isEqualTo("resp_123")
+                    assertThat(it.finalResponse().idOrThrow()).isEqualTo("resp_123")
                 }
                 val request = server.takeRequest(5, TimeUnit.SECONDS)!!
                 assertThat(request.getHeader("Authorization")).isEqualTo("Bearer fake-key")
@@ -2696,7 +2737,7 @@ class ResponsesWebSocketTest {
                         assertThat(server.takeRequest(200, TimeUnit.MILLISECONDS)).isNull()
                     } else {
                         client.responses().connect().use {
-                            assertThat(it.finalResponse().id()).isEqualTo("resp_123")
+                            assertThat(it.finalResponse().idOrThrow()).isEqualTo("resp_123")
                         }
                         assertThat(server.takeRequest(5, TimeUnit.SECONDS)).isNotNull()
                     }
@@ -2783,7 +2824,8 @@ class ResponsesWebSocketTest {
                             )
                             .use { connection ->
                                 connection.send(command())
-                                assertThat(connection.finalResponse().id()).isEqualTo("resp_123")
+                                assertThat(connection.finalResponse().idOrThrow())
+                                    .isEqualTo("resp_123")
                             }
                         peer.await()
                         tunnel.get(5, TimeUnit.SECONDS)
@@ -2925,7 +2967,7 @@ class ResponsesWebSocketTest {
                     } else {
                         client.responses().connect().use { connection ->
                             connection.send(command())
-                            assertThat(connection.finalResponse().id()).isEqualTo("resp_123")
+                            assertThat(connection.finalResponse().idOrThrow()).isEqualTo("resp_123")
                         }
                         assertThat(
                                 server.takeRequest(5, TimeUnit.SECONDS)!!.getHeader("Authorization")
@@ -3146,7 +3188,7 @@ class ResponsesWebSocketTest {
                     client.responses().connect().get(5, TimeUnit.SECONDS).use { connection ->
                         connection.lane("steering").use { lane ->
                             lane.send(command)
-                            assertThat(lane.finalResponse().get(5, TimeUnit.SECONDS).id())
+                            assertThat(lane.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow())
                                 .isEqualTo("resp_123")
                             assertThat(
                                     mapper.valueToTree<com.fasterxml.jackson.databind.JsonNode>(
@@ -3209,7 +3251,9 @@ class ResponsesWebSocketTest {
                         .use { connection ->
                             connection.lane("lane").use { lane ->
                                 lane.send(command())
-                                assertThat(lane.finalResponse().get(5, TimeUnit.SECONDS).id())
+                                assertThat(
+                                        lane.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow()
+                                    )
                                     .isEqualTo("resp_123")
                                 connection
                                     .reconnect(
@@ -3220,7 +3264,9 @@ class ResponsesWebSocketTest {
                                     .get(5, TimeUnit.SECONDS)
                                 assertThat(checked.await(5, TimeUnit.SECONDS)).isTrue()
                                 lane.send(command())
-                                assertThat(lane.finalResponse().get(5, TimeUnit.SECONDS).id())
+                                assertThat(
+                                        lane.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow()
+                                    )
                                     .isEqualTo("resp_123")
                             }
                         }
@@ -3274,9 +3320,9 @@ class ResponsesWebSocketTest {
                 )
             try {
                 client.responses().connect().get(5, TimeUnit.SECONDS).use { connection ->
-                    assertThat(client.models().list().get(5, TimeUnit.SECONDS).data()).isEmpty()
+                    assertThat(client.models().list().get(5, TimeUnit.SECONDS).items()).isEmpty()
                     connection.send(command())
-                    assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).id())
+                    assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow())
                         .isEqualTo("resp_123")
                 }
                 reader.get().join(5000)
@@ -3539,7 +3585,7 @@ class ResponsesWebSocketTest {
                     )
                     .use { connection ->
                         connection.send(command())
-                        assertThat(connection.finalResponse().id()).isEqualTo("resp_123")
+                        assertThat(connection.finalResponse().idOrThrow()).isEqualTo("resp_123")
                     }
                 assertThat(server.requestCount).isEqualTo(2)
                 repeat(2) {
@@ -3709,7 +3755,12 @@ class ResponsesWebSocketTest {
                                     .isEqualTo(expected.first)
                                 assertThat(headers["x-stainless-timeout"])
                                     .isEqualTo(expected.second)
-                                assertThat(connection.finalResponse().get(5, TimeUnit.SECONDS).id())
+                                assertThat(
+                                        connection
+                                            .finalResponse()
+                                            .get(5, TimeUnit.SECONDS)
+                                            .idOrThrow()
+                                    )
                                     .isEqualTo("resp_123")
                             }
                         peer.await()
@@ -3772,7 +3823,7 @@ class ResponsesWebSocketTest {
                                 assertThatThrownBy { response.get(750, TimeUnit.MILLISECONDS) }
                                     .isInstanceOf(java.util.concurrent.TimeoutException::class.java)
                                 emit.countDown()
-                                assertThat(response.get(5, TimeUnit.SECONDS).id())
+                                assertThat(response.get(5, TimeUnit.SECONDS).idOrThrow())
                                     .isEqualTo("resp_123")
                             }
                         peer.await()
@@ -3855,7 +3906,7 @@ class ResponsesWebSocketTest {
                                 assertThat(
                                         (received.get(5, TimeUnit.SECONDS)
                                                 as com.openai.models.responses.Response)
-                                            .id()
+                                            .idOrThrow()
                                     )
                                     .isEqualTo("resp_123")
                             } else {
@@ -3906,7 +3957,8 @@ class ResponsesWebSocketTest {
                             callback.get(5, TimeUnit.SECONDS)
                             val next = connection.finalResponse()
                             connection.send(command())
-                            assertThat(next.get(5, TimeUnit.SECONDS).id()).isEqualTo("resp_123")
+                            assertThat(next.get(5, TimeUnit.SECONDS).idOrThrow())
+                                .isEqualTo("resp_123")
                         }
                         peer.await()
                     } finally {
@@ -4026,7 +4078,7 @@ class ResponsesWebSocketTest {
                         val next = connection.finalResponse()
                         connection.send(command())
                         finish(next)
-                        assertThat(next.get(5, TimeUnit.SECONDS).id()).isEqualTo("resp_new")
+                        assertThat(next.get(5, TimeUnit.SECONDS).idOrThrow()).isEqualTo("resp_new")
                     }
                     peer.await()
                 } finally {
@@ -4249,9 +4301,10 @@ class ResponsesWebSocketTest {
                                 com.openai.core.http.ResponseWebSocketException::class.java
                             )
                             .hasCauseInstanceOf(com.openai.errors.OpenAIException::class.java)
-                        assertThat(succeeded.get(5, TimeUnit.SECONDS).id()).isEqualTo("resp_123")
+                        assertThat(succeeded.get(5, TimeUnit.SECONDS).idOrThrow())
+                            .isEqualTo("resp_123")
                         a.send(command())
-                        assertThat(a.finalResponse().get(5, TimeUnit.SECONDS).id())
+                        assertThat(a.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow())
                             .isEqualTo("resp_123")
                     }
                     peer.await()
@@ -4292,7 +4345,7 @@ class ResponsesWebSocketTest {
                 val client = com.openai.client.OpenAIClientImpl(options)
                 try {
                     client.responses().connect().use {
-                        assertThat(it.finalResponse().id()).isEqualTo("resp_123")
+                        assertThat(it.finalResponse().idOrThrow()).isEqualTo("resp_123")
                     }
                     peer.await()
                 } finally {
@@ -4347,7 +4400,9 @@ class ResponsesWebSocketTest {
                             com.openai.models.responses.ResponseInputItem.ofFunctionCallOutput(
                                 com.openai.models.responses.ResponseInputItem.FunctionCallOutput
                                     .builder()
-                                    .callId(previous.output()[0].asFunctionCall().callId())
+                                    .callId(
+                                        previous.outputOrThrow()[0].asFunctionCall().callIdOrThrow()
+                                    )
                                     .output("42")
                                     .build()
                             )
@@ -4355,7 +4410,7 @@ class ResponsesWebSocketTest {
                             ResponsesClientEvent.ofResponseCreate(
                                 ResponsesClientEvent.ResponseCreate.builder()
                                     .model("gpt-4o-mini")
-                                    .previousResponseId(previous.id())
+                                    .previousResponseId(previous.idOrThrow())
                                     .inputOfResponse(listOf(output))
                                     .addContextManagement(
                                         ResponsesClientEvent.ResponseCreate.ContextManagement
@@ -4374,7 +4429,7 @@ class ResponsesWebSocketTest {
                                     ResponsesClientEvent.ResponseCreate.builder()
                                         .model("gpt-4o-mini")
                                         .store(false)
-                                        .previousResponseId(parent.id())
+                                        .previousResponseId(parent.idOrThrow())
                                         .input("Explore another approach.")
                                         .build()
                                 )
@@ -4394,7 +4449,7 @@ class ResponsesWebSocketTest {
                                 ResponsesClientEvent.ofResponseCreate(
                                     ResponsesClientEvent.ResponseCreate.builder()
                                         .model("gpt-4o-mini")
-                                        .previousResponseId(parent.id())
+                                        .previousResponseId(parent.idOrThrow())
                                         .input("Advance source")
                                         .build()
                                 )
@@ -4412,11 +4467,13 @@ class ResponsesWebSocketTest {
                             ResponsesClientEvent.ofResponseCreate(
                                 ResponsesClientEvent.ResponseCreate.builder()
                                     .model("gpt-4o-mini")
-                                    .input(com.openai.core.JsonValue.from(compacted.output()))
+                                    .input(
+                                        com.openai.core.JsonValue.from(compacted.outputOrThrow())
+                                    )
                                     .build()
                             )
                         )
-                        assertThat(connection.finalResponse().id()).isEqualTo("resp_fresh")
+                        assertThat(connection.finalResponse().idOrThrow()).isEqualTo("resp_fresh")
                     }
                     peer.await()
                 } finally {
@@ -4666,7 +4723,7 @@ class ResponsesWebSocketTest {
                                 .isInstanceOf(IllegalArgumentException::class.java)
                                 .hasMessage("WebSocket command exceeds maxMessageBytes")
                             connection.send(atLimit)
-                            assertThat(connection.finalResponse().id()).isEqualTo("resp_123")
+                            assertThat(connection.finalResponse().idOrThrow()).isEqualTo("resp_123")
                         }
                     peer.await()
                 } finally {
@@ -4709,9 +4766,9 @@ class ResponsesWebSocketTest {
                             .isInstanceOf(IllegalArgumentException::class.java)
                             .hasMessageContaining("16 MiB send limit")
                         connection.send(atLimit)
-                        assertThat(connection.finalResponse().id()).isEqualTo("resp_123")
+                        assertThat(connection.finalResponse().idOrThrow()).isEqualTo("resp_123")
                         connection.send(command())
-                        assertThat(connection.finalResponse().id()).isEqualTo("resp_123")
+                        assertThat(connection.finalResponse().idOrThrow()).isEqualTo("resp_123")
                     }
                     peer.await()
                 } finally {
@@ -4777,7 +4834,8 @@ class ResponsesWebSocketTest {
                                             .build()
                                     )
                                 )
-                                assertThat(connection.finalResponse().id()).isEqualTo(markers[3])
+                                assertThat(connection.finalResponse().idOrThrow())
+                                    .isEqualTo(markers[3])
                             }
                         peer.await()
                     } finally {

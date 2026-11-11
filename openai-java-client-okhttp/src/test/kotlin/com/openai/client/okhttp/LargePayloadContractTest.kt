@@ -110,10 +110,10 @@ internal class LargePayloadContractTest {
                 assertCompleteText(
                     accumulator
                         .response(String::class.java)
-                        .output()
+                        .outputOrThrow()
                         .single()
                         .asMessage()
-                        .content()
+                        .contentOrThrow()
                         .single()
                         .outputText()
                         .get(),
@@ -162,7 +162,7 @@ internal class LargePayloadContractTest {
                     .subscribe { chunk ->
                         if (chunks++ == 0) {
                             assertCompleteText(
-                                chunk.choices().single().delta().content().get(),
+                                chunk.choicesOrThrow().single().deltaOrThrow().content().get(),
                                 text,
                             )
                         }
@@ -172,7 +172,13 @@ internal class LargePayloadContractTest {
                     .get(30, TimeUnit.SECONDS)
                 assertThat(chunks).isEqualTo(2)
                 assertCompleteText(
-                    accumulator.chatCompletion().choices().single().message().content().get(),
+                    accumulator
+                        .chatCompletion()
+                        .choicesOrThrow()
+                        .single()
+                        .messageOrThrow()
+                        .content()
+                        .get(),
                     text + "end",
                 )
             } finally {
@@ -192,7 +198,14 @@ internal class LargePayloadContractTest {
         ResponseCreateParams.builder().model("gpt-4o-mini").input("Hello").build()
 
     private fun outputText(response: Response) =
-        response.output().single().asMessage().content().single().asOutputText().text()
+        response
+            .outputOrThrow()
+            .single()
+            .asMessage()
+            .contentOrThrow()
+            .single()
+            .asOutputText()
+            .textOrThrow()
 
     private fun responseJson(text: String): String {
         val escapedText = text.replace("\"", "\\\"")

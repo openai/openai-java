@@ -24,7 +24,8 @@ internal class BetaContainerNetworkPolicyAllowlistTest {
                 )
                 .build()
 
-        assertThat(betaContainerNetworkPolicyAllowlist.allowedDomains()).containsExactly("string")
+        assertThat(betaContainerNetworkPolicyAllowlist.allowedDomains().getOrNull())
+            .containsExactly("string")
         assertThat(betaContainerNetworkPolicyAllowlist.domainSecrets().getOrNull())
             .containsExactly(
                 BetaContainerNetworkPolicyDomainSecret.builder()

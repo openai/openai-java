@@ -14,7 +14,7 @@ internal class BetaResponseOutputRefusalTest {
         val betaResponseOutputRefusal =
             BetaResponseOutputRefusal.builder().refusal("refusal").build()
 
-        assertThat(betaResponseOutputRefusal.refusal()).isEqualTo("refusal")
+        assertThat(betaResponseOutputRefusal.refusal()).contains("refusal")
 
         val jsonMapper = jsonMapper()
 

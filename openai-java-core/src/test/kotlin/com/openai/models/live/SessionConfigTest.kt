@@ -66,7 +66,7 @@ internal class SessionConfigTest {
                 )
                 .build()
 
-        assertThat(sessionConfig.model()).isEqualTo(SessionConfig.Model.GPT_LIVE_1)
+        assertThat(sessionConfig.model()).contains(SessionConfig.Model.GPT_LIVE_1)
         assertThat(sessionConfig.audio())
             .contains(
                 SessionConfig.Audio.builder()

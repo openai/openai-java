@@ -35,21 +35,30 @@ private constructor(
     ) : this(type, responseEvent, mutableMapOf())
 
     /**
-     * The outer Live server event type. Use 'response.event' for Responses events.
+     * The outer Live server event type. Use 'response.event' for Responses events. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun type(): String = type.getRequired("type")
+    fun type(): java.util.Optional<String> = type.getOptional("type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): String = type.getRequired("type")
 
     /**
      * The nested Responses event type. Required when type is 'response.event'; forbidden for other
-     * event types.
+     * event types. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun responseEvent(): Optional<String> = responseEvent.getOptional("response_event")
+    fun responseEvent(): java.util.Optional<String> = responseEvent.getOptional("response_event")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun responseEventOrThrow(): String = responseEvent.getRequired("response_event")
 
     /**
      * Returns the raw JSON value of [type].
@@ -206,7 +215,7 @@ private constructor(
             return@apply
         }
 
-        type()
+        typeOrThrow()
         responseEvent()
         validated = true
     }

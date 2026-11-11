@@ -485,8 +485,8 @@ try (StreamResponse<ChatCompletionChunk> streamResponse =
         client.chat().completions().createStreaming(createParams)) {
     streamResponse.stream()
             .peek(chatCompletionAccumulator::accumulate)
-            .flatMap(completion -> completion.choices().stream())
-            .flatMap(choice -> choice.delta().content().stream())
+            .flatMap(completion -> completion.choicesOrThrow().stream())
+            .flatMap(choice -> choice.deltaOrThrow().content().stream())
             .forEach(System.out::print);
 }
 
@@ -504,8 +504,8 @@ ChatCompletionAccumulator chatCompletionAccumulator = ChatCompletionAccumulator.
 client.chat()
         .completions()
         .createStreaming(createParams)
-        .subscribe(chunk -> chatCompletionAccumulator.accumulate(chunk).choices().stream()
-                .flatMap(choice -> choice.delta().content().stream())
+        .subscribe(chunk -> chatCompletionAccumulator.accumulate(chunk).choicesOrThrow().stream()
+                .flatMap(choice -> choice.deltaOrThrow().content().stream())
                 .forEach(System.out::print))
         .onCompleteFuture()
         .join();
@@ -536,7 +536,7 @@ try (StreamResponse<ResponseStreamEvent> streamResponse =
     streamResponse.stream()
             .peek(responseAccumulator::accumulate)
             .flatMap(event -> event.outputTextDelta().stream())
-            .forEach(textEvent -> System.out.print(textEvent.delta()));
+            .forEach(textEvent -> System.out.print(textEvent.deltaOrThrow()));
 }
 
 Response response = responseAccumulator.response();
@@ -553,7 +553,7 @@ ResponseAccumulator responseAccumulator = ResponseAccumulator.create();
 client.responses()
         .createStreaming(createParams)
         .subscribe(event -> responseAccumulator.accumulate(event)
-                .outputTextDelta().ifPresent(textEvent -> System.out.print(textEvent.delta())))
+                .outputTextDelta().ifPresent(textEvent -> System.out.print(textEvent.deltaOrThrow())))
         .onCompleteFuture()
         .join();
 
@@ -609,8 +609,8 @@ StructuredChatCompletionCreateParams<BookList> params = ChatCompletionCreatePara
         .responseFormat(BookList.class)
         .build();
 
-client.chat().completions().create(params).choices().stream()
-        .flatMap(choice -> choice.message().content().stream())
+client.chat().completions().create(params).choicesOrThrow().stream()
+        .flatMap(choice -> choice.messageOrThrow().content().stream())
         .flatMap(bookList -> bookList.books.stream())
         .forEach(book -> System.out.println(book.title + " by " + book.author.name));
 ```
@@ -1012,8 +1012,8 @@ ChatCompletionCreateParams.Builder createParamsBuilder = ChatCompletionCreatePar
         .addUserMessage("How good are the following SDKs and what do reviewers say: "
                 + "OpenAI Java SDK, Unknown Company SDK.");
 
-client.chat().completions().create(createParamsBuilder.build()).choices().stream()
-        .map(ChatCompletion.Choice::message)
+client.chat().completions().create(createParamsBuilder.build()).choicesOrThrow().stream()
+        .map(ChatCompletion.Choice::messageOrThrow)
         // Add each assistant message onto the builder so that we keep track of the
         // conversation for asking a follow-up question later.
         .peek(createParamsBuilder::addMessage)
@@ -1022,28 +1022,28 @@ client.chat().completions().create(createParamsBuilder.build()).choices().stream
             return message.toolCalls().stream().flatMap(Collection::stream);
         })
         .forEach(toolCall -> {
-            Object result = callFunction(toolCall.function());
+            Object result = callFunction(toolCall.asFunction().functionOrThrow());
             // Add the tool call result to the conversation.
             createParamsBuilder.addMessage(ChatCompletionToolMessageParam.builder()
-                    .toolCallId(toolCall.id())
+                    .toolCallId(toolCall.asFunction().idOrThrow())
                     .contentAsJson(result)
                     .build());
         });
 
 // Ask a follow-up question about the function call result.
 createParamsBuilder.addUserMessage("Why do you say that?");
-client.chat().completions().create(createParamsBuilder.build()).choices().stream()
-        .flatMap(choice -> choice.message().content().stream())
+client.chat().completions().create(createParamsBuilder.build()).choicesOrThrow().stream()
+        .flatMap(choice -> choice.messageOrThrow().content().stream())
         .forEach(System.out::println);
 
-static Object callFunction(ChatCompletionMessageToolCall.Function function) {
-  switch (function.name()) {
+static Object callFunction(ChatCompletionMessageFunctionToolCall.Function function) {
+  switch (function.nameOrThrow()) {
     case "GetSdkQuality":
       return function.arguments(GetSdkQuality.class).execute();
     case "GetSdkScore":
       return function.arguments(GetSdkScore.class).execute();
     default:
-      throw new IllegalArgumentException("Unknown function: " + function.name());
+      throw new IllegalArgumentException("Unknown function: " + function.nameOrThrow());
   }
 }
 ```
@@ -1237,9 +1237,9 @@ public void handleWebhook(String body, Map<String, String> headers) {
         UnwrapWebhookEvent event = client.webhooks().unwrap(body, headersList, Optional.empty());
 
         if (event.isResponseCompletedWebhookEvent()) {
-            System.out.println("Response completed: " + event.asResponseCompletedWebhookEvent().data());
+            System.out.println("Response completed: " + event.asResponseCompletedWebhookEvent().dataOrThrow());
         } else if (event.isResponseFailed()) {
-            System.out.println("Response failed: " + event.asResponseFailed().data());
+            System.out.println("Response failed: " + event.asResponseFailed().dataOrThrow());
         } else {
             System.out.println("Unhandled event type: " + event.getClass().getSimpleName());
         }

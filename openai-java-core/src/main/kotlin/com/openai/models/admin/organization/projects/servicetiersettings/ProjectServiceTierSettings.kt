@@ -50,32 +50,53 @@ private constructor(
     ) : this(default_, enabledTiers, object_, mutableMapOf())
 
     /**
-     * Default tier for requests that omit service_tier or use auto.
+     * Default tier for requests that omit service_tier or use auto. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun default_(): Default = default_.getRequired("default")
+    fun default_(): java.util.Optional<Default> = default_.getOptional("default")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun default_OrThrow(): Default = default_.getRequired("default")
 
     /**
      * Additional service tiers enabled for this project. "all" includes future tiers. An empty
-     * array allows only Standard. Organization policy and eligibility still apply.
+     * array allows only Standard. Organization policy and eligibility still apply. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun enabledTiers(): EnabledTiers = enabledTiers.getRequired("enabled_tiers")
+    fun enabledTiers(): java.util.Optional<EnabledTiers> = enabledTiers.getOptional("enabled_tiers")
 
     /**
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("project.service_tier_settings")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun enabledTiersOrThrow(): EnabledTiers = enabledTiers.getRequired("enabled_tiers")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("project.service_tier_settings")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * Returns the raw JSON value of [default_].
@@ -264,13 +285,9 @@ private constructor(
             return@apply
         }
 
-        default_().validate()
-        enabledTiers().validate()
-        _object_().let {
-            if (it != JsonValue.from("project.service_tier_settings")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
+        default_OrThrow().validate()
+        enabledTiersOrThrow().validate()
+        object_OrThrow()
         validated = true
     }
 

@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.EvalService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see EvalService.list */
 class EvalListPage
@@ -18,22 +16,23 @@ private constructor(
     private val response: EvalListPageResponse,
 ) : Page<EvalListResponse> {
 
-    /**
-     * Delegates to [EvalListPageResponse], but gracefully handles missing data.
-     *
-     * @see EvalListPageResponse.data
-     */
-    fun data(): List<EvalListResponse> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see EvalListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [EvalListPageResponse], but gracefully handles missing data.
-     *
-     * @see EvalListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<EvalListResponse> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<EvalListResponse> = data()
+    fun _data() = response._data()
+
+    /** @see EvalListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<EvalListResponse> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

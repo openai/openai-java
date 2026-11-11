@@ -52,87 +52,155 @@ private constructor(
     ) : this(id, arguments, error, name, output, serverLabel, status, turnId, type, mutableMapOf())
 
     /**
-     * The ID of the MCP call item.
+     * The ID of the MCP call item. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The arguments passed to the MCP tool.
-     *
-     * This arbitrary value can be deserialized into a custom type using the `convert` method:
-     * ```java
-     * MyClass myObject = agentMcpCallItem.arguments().convert(MyClass.class);
-     * ```
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("arguments") @ExcludeMissing fun _arguments(): JsonValue = arguments
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The error returned by the MCP tool, if any.
+     * The arguments passed to the MCP tool. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * This arbitrary value can be deserialized into a custom type using the `convert` method:
-     * ```java
-     * MyClass myObject = agentMcpCallItem.error().convert(MyClass.class);
-     * ```
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("error") @ExcludeMissing fun _error(): JsonValue = error
+    fun arguments(): java.util.Optional<JsonValue> {
+        val raw = arguments
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The name of the MCP tool.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): String = name.getRequired("name")
+    fun argumentsOrThrow(): JsonValue = arguments().orElseGet { arguments.getRequired("arguments") }
+
+    @JsonProperty("arguments") @ExcludeMissing fun _arguments(): JsonField<JsonValue> = arguments
 
     /**
-     * The output returned by the MCP tool, if any.
+     * The error returned by the MCP tool, if any. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * This arbitrary value can be deserialized into a custom type using the `convert` method:
-     * ```java
-     * MyClass myObject = agentMcpCallItem.output().convert(MyClass.class);
-     * ```
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("output") @ExcludeMissing fun _output(): JsonValue = output
+    fun error(): java.util.Optional<JsonValue> {
+        val raw = error
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The label of the MCP server.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun serverLabel(): String = serverLabel.getRequired("server_label")
+    fun errorOrThrow(): JsonValue = error().orElseGet { error.getRequired("error") }
+
+    @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<JsonValue> = error
 
     /**
-     * The status of the MCP tool call.
+     * The name of the MCP tool. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): AgentFunctionCallStatus = status.getRequired("status")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
 
     /**
-     * The ID of the turn that contains this item.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun turnId(): String = turnId.getRequired("turn_id")
+    fun nameOrThrow(): String = name.getRequired("name")
 
     /**
-     * The item type. Always `mcp_call`.
+     * The output returned by the MCP tool, if any. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("mcp_call")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun output(): java.util.Optional<JsonValue> {
+        val raw = output
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun outputOrThrow(): JsonValue = output().orElseGet { output.getRequired("output") }
+
+    @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<JsonValue> = output
+
+    /**
+     * The label of the MCP server. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun serverLabel(): java.util.Optional<String> = serverLabel.getOptional("server_label")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun serverLabelOrThrow(): String = serverLabel.getRequired("server_label")
+
+    /**
+     * The status of the MCP tool call. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun status(): java.util.Optional<AgentFunctionCallStatus> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): AgentFunctionCallStatus = status.getRequired("status")
+
+    /**
+     * The ID of the turn that contains this item. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun turnId(): java.util.Optional<String> = turnId.getOptional("turn_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun turnIdOrThrow(): String = turnId.getRequired("turn_id")
+
+    /**
+     * The item type. Always `mcp_call`. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("mcp_call")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [id].
@@ -402,16 +470,12 @@ private constructor(
             return@apply
         }
 
-        id()
-        name()
-        serverLabel()
-        status().validate()
-        turnId()
-        _type().let {
-            if (it != JsonValue.from("mcp_call")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        idOrThrow()
+        nameOrThrow()
+        serverLabelOrThrow()
+        statusOrThrow().validate()
+        turnIdOrThrow()
+        typeOrThrow()
         validated = true
     }
 

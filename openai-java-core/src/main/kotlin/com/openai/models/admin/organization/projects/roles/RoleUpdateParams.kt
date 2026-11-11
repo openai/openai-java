@@ -37,29 +37,23 @@ private constructor(
 
     fun roleId(): Optional<String> = Optional.ofNullable(roleId)
 
-    /**
-     * New description for the role.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun description(): Optional<String> = body.description()
+    /** @see Body.description */
+    fun description(): java.util.Optional<String> = body.description()
 
-    /**
-     * Updated set of permissions for the role.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun permissions(): Optional<List<String>> = body.permissions()
+    /** @see Body.descriptionOrThrow */
+    fun descriptionOrThrow(): String = body.descriptionOrThrow()
 
-    /**
-     * New name for the role.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun roleName(): Optional<String> = body.roleName()
+    /** @see Body.permissions */
+    fun permissions(): java.util.Optional<List<String>> = body.permissions()
+
+    /** @see Body.permissionsOrThrow */
+    fun permissionsOrThrow(): List<String> = body.permissionsOrThrow()
+
+    /** @see Body.roleName */
+    fun roleName(): java.util.Optional<String> = body.roleName()
+
+    /** @see Body.roleNameOrThrow */
+    fun roleNameOrThrow(): String = body.roleNameOrThrow()
 
     /**
      * Returns the raw JSON value of [description].
@@ -370,28 +364,44 @@ private constructor(
         ) : this(description, permissions, roleName, mutableMapOf())
 
         /**
-         * New description for the role.
+         * New description for the role. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun description(): Optional<String> = description.getOptional("description")
+        fun description(): java.util.Optional<String> = description.getOptional("description")
 
         /**
-         * Updated set of permissions for the role.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun permissions(): Optional<List<String>> = permissions.getOptional("permissions")
+        fun descriptionOrThrow(): String = description.getRequired("description")
 
         /**
-         * New name for the role.
+         * Updated set of permissions for the role. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun roleName(): Optional<String> = roleName.getOptional("role_name")
+        fun permissions(): java.util.Optional<List<String>> = permissions.getOptional("permissions")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun permissionsOrThrow(): List<String> = permissions.getRequired("permissions")
+
+        /**
+         * New name for the role. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun roleName(): java.util.Optional<String> = roleName.getOptional("role_name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun roleNameOrThrow(): String = roleName.getRequired("role_name")
 
         /**
          * Returns the raw JSON value of [description].

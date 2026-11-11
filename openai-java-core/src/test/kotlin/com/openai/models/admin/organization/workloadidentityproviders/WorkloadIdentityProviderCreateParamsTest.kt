@@ -46,9 +46,9 @@ internal class WorkloadIdentityProviderCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.audience()).isEqualTo("x")
-        assertThat(body.issuer()).isEqualTo("x")
-        assertThat(body.name()).isEqualTo("x")
+        assertThat(body.audienceOrThrow()).isEqualTo("x")
+        assertThat(body.issuerOrThrow()).isEqualTo("x")
+        assertThat(body.nameOrThrow()).isEqualTo("x")
         assertThat(body.attributeTransformations().getOrNull())
             .containsExactly(
                 WorkloadIdentityProviderCreateParams.AttributeTransformation.builder()
@@ -79,8 +79,8 @@ internal class WorkloadIdentityProviderCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.audience()).isEqualTo("x")
-        assertThat(body.issuer()).isEqualTo("x")
-        assertThat(body.name()).isEqualTo("x")
+        assertThat(body.audienceOrThrow()).isEqualTo("x")
+        assertThat(body.issuerOrThrow()).isEqualTo("x")
+        assertThat(body.nameOrThrow()).isEqualTo("x")
     }
 }

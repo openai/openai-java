@@ -19,9 +19,9 @@ internal class BetaResponseFunctionShellCallOutputContentTest {
                 .build()
 
         assertThat(betaResponseFunctionShellCallOutputContent.outcome())
-            .isEqualTo(BetaResponseFunctionShellCallOutputContent.Outcome.ofTimeout())
-        assertThat(betaResponseFunctionShellCallOutputContent.stderr()).isEqualTo("stderr")
-        assertThat(betaResponseFunctionShellCallOutputContent.stdout()).isEqualTo("stdout")
+            .contains(BetaResponseFunctionShellCallOutputContent.Outcome.ofTimeout())
+        assertThat(betaResponseFunctionShellCallOutputContent.stderr()).contains("stderr")
+        assertThat(betaResponseFunctionShellCallOutputContent.stdout()).contains("stdout")
 
         val jsonMapper = jsonMapper()
 

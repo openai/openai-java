@@ -106,9 +106,9 @@ internal class ResponseDoneEventTest {
                 )
                 .build()
 
-        assertThat(responseDoneEvent.eventId()).isEqualTo("event_id")
+        assertThat(responseDoneEvent.eventId()).contains("event_id")
         assertThat(responseDoneEvent.response())
-            .isEqualTo(
+            .contains(
                 RealtimeResponse.builder()
                     .id("id")
                     .audio(

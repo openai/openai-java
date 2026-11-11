@@ -31,7 +31,7 @@ internal class FunctionToolTest {
                 .build()
 
         assertThat(functionTool.function())
-            .isEqualTo(
+            .contains(
                 FunctionDefinition.builder()
                     .name("name")
                     .description("description")

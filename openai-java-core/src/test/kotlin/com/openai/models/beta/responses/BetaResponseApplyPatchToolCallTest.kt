@@ -29,10 +29,10 @@ internal class BetaResponseApplyPatchToolCallTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(betaResponseApplyPatchToolCall.id()).isEqualTo("id")
-        assertThat(betaResponseApplyPatchToolCall.callId()).isEqualTo("call_id")
+        assertThat(betaResponseApplyPatchToolCall.id()).contains("id")
+        assertThat(betaResponseApplyPatchToolCall.callId()).contains("call_id")
         assertThat(betaResponseApplyPatchToolCall.operation())
-            .isEqualTo(
+            .contains(
                 BetaResponseApplyPatchToolCall.Operation.ofCreateFile(
                     BetaResponseApplyPatchToolCall.Operation.CreateFile.builder()
                         .diff("diff")
@@ -41,7 +41,7 @@ internal class BetaResponseApplyPatchToolCallTest {
                 )
             )
         assertThat(betaResponseApplyPatchToolCall.status())
-            .isEqualTo(BetaResponseApplyPatchToolCall.Status.IN_PROGRESS)
+            .contains(BetaResponseApplyPatchToolCall.Status.IN_PROGRESS)
         assertThat(betaResponseApplyPatchToolCall.agent())
             .contains(
                 BetaResponseApplyPatchToolCall.Agent.builder().agentName("agent_name").build()

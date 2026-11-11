@@ -10,7 +10,6 @@ import com.openai.services.async.ModelServiceAsync
 import java.util.Objects
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see ModelServiceAsync.list */
 class ModelListPageAsync
@@ -21,17 +20,22 @@ private constructor(
     private val response: ModelListPageResponse,
 ) : PageAsync<Model> {
 
-    /**
-     * Delegates to [ModelListPageResponse], but gracefully handles missing data.
-     *
-     * @see ModelListPageResponse.data
-     */
-    fun data(): List<Model> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see ModelListPageResponse.data */
+    fun data() = response.data()
+
+    fun dataOrThrow(): List<Model> = data().orElseGet { response._data().getRequired("data") }
+
+    fun _data() = response._data()
 
     /** @see ModelListPageResponse.object_ */
-    fun object_(): JsonValue = response._object_()
+    fun object_() = response.object_()
 
-    override fun items(): List<Model> = data()
+    fun object_OrThrow(): JsonValue =
+        object_().orElseGet { response._object_().getRequired("object") }
+
+    fun _object_() = response._object_()
+
+    override fun items(): List<Model> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = false
 

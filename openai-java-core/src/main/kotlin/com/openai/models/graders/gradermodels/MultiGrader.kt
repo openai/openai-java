@@ -51,42 +51,68 @@ private constructor(
     ) : this(calculateOutput, graders, name, type, mutableMapOf())
 
     /**
-     * A formula to calculate the output based on grader results.
+     * A formula to calculate the output based on grader results. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun calculateOutput(): String = calculateOutput.getRequired("calculate_output")
+    fun calculateOutput(): java.util.Optional<String> =
+        calculateOutput.getOptional("calculate_output")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun calculateOutputOrThrow(): String = calculateOutput.getRequired("calculate_output")
 
     /**
      * A StringCheckGrader object that performs a string comparison between input and reference
-     * using a specified operation.
+     * using a specified operation. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun graders(): Graders = graders.getRequired("graders")
+    fun graders(): java.util.Optional<Graders> = graders.getOptional("graders")
 
     /**
-     * The name of the grader.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): String = name.getRequired("name")
+    fun gradersOrThrow(): Graders = graders.getRequired("graders")
 
     /**
-     * The object type, which is always `multi`.
+     * The name of the grader. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("multi")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
+
+    /**
+     * The object type, which is always `multi`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("multi")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [calculateOutput].
@@ -309,14 +335,10 @@ private constructor(
             return@apply
         }
 
-        calculateOutput()
-        graders().validate()
-        name()
-        _type().let {
-            if (it != JsonValue.from("multi")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        calculateOutputOrThrow()
+        gradersOrThrow().validate()
+        nameOrThrow()
+        typeOrThrow()
         validated = true
     }
 

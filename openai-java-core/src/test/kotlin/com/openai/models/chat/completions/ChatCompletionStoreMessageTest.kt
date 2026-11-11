@@ -112,7 +112,7 @@ internal class ChatCompletionStoreMessageTest {
                         .build()
                 )
             )
-        assertThat(chatCompletionStoreMessage.id()).isEqualTo("id")
+        assertThat(chatCompletionStoreMessage.id()).contains("id")
         assertThat(chatCompletionStoreMessage.contentParts().getOrNull())
             .containsExactly(
                 ChatCompletionStoreMessage.ContentPart.ofChatCompletionContentPartText(

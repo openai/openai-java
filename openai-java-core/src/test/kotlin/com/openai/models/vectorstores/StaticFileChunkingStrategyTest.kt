@@ -17,8 +17,8 @@ internal class StaticFileChunkingStrategyTest {
                 .maxChunkSizeTokens(100L)
                 .build()
 
-        assertThat(staticFileChunkingStrategy.chunkOverlapTokens()).isEqualTo(0L)
-        assertThat(staticFileChunkingStrategy.maxChunkSizeTokens()).isEqualTo(100L)
+        assertThat(staticFileChunkingStrategy.chunkOverlapTokens()).contains(0L)
+        assertThat(staticFileChunkingStrategy.maxChunkSizeTokens()).contains(100L)
 
         val jsonMapper = jsonMapper()
 

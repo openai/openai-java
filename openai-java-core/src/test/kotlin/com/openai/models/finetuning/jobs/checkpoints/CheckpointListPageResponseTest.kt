@@ -4,6 +4,7 @@ package com.openai.models.finetuning.jobs.checkpoints
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -38,7 +39,7 @@ internal class CheckpointListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(checkpointListPageResponse.data())
+        assertThat(checkpointListPageResponse.data().getOrNull())
             .containsExactly(
                 FineTuningJobCheckpoint.builder()
                     .id("id")
@@ -59,7 +60,7 @@ internal class CheckpointListPageResponseTest {
                     .stepNumber(0L)
                     .build()
             )
-        assertThat(checkpointListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(checkpointListPageResponse.hasMore()).contains(true)
         assertThat(checkpointListPageResponse.firstId()).contains("first_id")
         assertThat(checkpointListPageResponse.lastId()).contains("last_id")
 

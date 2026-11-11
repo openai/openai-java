@@ -33,34 +33,23 @@ private constructor(
 
     fun vectorStoreId(): Optional<String> = Optional.ofNullable(vectorStoreId)
 
-    /**
-     * The expiration policy for a vector store.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun expiresAfter(): Optional<ExpiresAfter> = body.expiresAfter()
+    /** @see Body.expiresAfter */
+    fun expiresAfter(): java.util.Optional<ExpiresAfter> = body.expiresAfter()
 
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
-     *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun metadata(): Optional<Metadata> = body.metadata()
+    /** @see Body.expiresAfterOrThrow */
+    fun expiresAfterOrThrow(): ExpiresAfter = body.expiresAfterOrThrow()
 
-    /**
-     * The name of the vector store.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun name(): Optional<String> = body.name()
+    /** @see Body.metadata */
+    fun metadata(): java.util.Optional<Metadata> = body.metadata()
+
+    /** @see Body.metadataOrThrow */
+    fun metadataOrThrow(): Metadata = body.metadataOrThrow()
+
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
+
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
 
     /**
      * Returns the raw JSON value of [expiresAfter].
@@ -352,12 +341,19 @@ private constructor(
         ) : this(expiresAfter, metadata, name, mutableMapOf())
 
         /**
-         * The expiration policy for a vector store.
+         * The expiration policy for a vector store. Returns empty if the JSON property is missing
+         * or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun expiresAfter(): Optional<ExpiresAfter> = expiresAfter.getOptional("expires_after")
+        fun expiresAfter(): java.util.Optional<ExpiresAfter> =
+            expiresAfter.getOptional("expires_after")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun expiresAfterOrThrow(): ExpiresAfter = expiresAfter.getRequired("expires_after")
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -365,20 +361,30 @@ private constructor(
          * objects via API or the dashboard.
          *
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * maximum length of 512 characters. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+        fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
-         * The name of the vector store.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun name(): Optional<String> = name.getOptional("name")
+        fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
+
+        /**
+         * The name of the vector store. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
 
         /**
          * Returns the raw JSON value of [expiresAfter].
@@ -622,25 +628,42 @@ private constructor(
 
         /**
          * Anchor timestamp after which the expiration policy applies. Supported anchors:
-         * `last_active_at`.
+         * `last_active_at`. The schema requires this property. Returns empty if the JSON property
+         * is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("last_active_at")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonValue = anchor
+        fun anchor(): java.util.Optional<JsonValue> {
+            val raw = anchor
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("last_active_at")) ->
+                    throw OpenAIInvalidDataException("`anchor` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
 
         /**
-         * The number of days after the anchor time that the vector store will expire.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun days(): Long = days.getRequired("days")
+        fun anchorOrThrow(): JsonValue = anchor().orElseGet { anchor.getRequired("anchor") }
+
+        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonField<JsonValue> = anchor
+
+        /**
+         * The number of days after the anchor time that the vector store will expire. The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun days(): java.util.Optional<Long> = days.getOptional("days")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun daysOrThrow(): Long = days.getRequired("days")
 
         /**
          * Returns the raw JSON value of [days].
@@ -783,12 +806,8 @@ private constructor(
                 return@apply
             }
 
-            _anchor().let {
-                if (it != JsonValue.from("last_active_at")) {
-                    throw OpenAIInvalidDataException("'anchor' is invalid, received $it")
-                }
-            }
-            days()
+            anchorOrThrow()
+            daysOrThrow()
             validated = true
         }
 

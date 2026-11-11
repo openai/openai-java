@@ -67,13 +67,15 @@ private constructor(
             .build()
 
     fun checkIdle(session: AgentSession) {
-        require(session.status() == AgentSession.Status.IDLE) {
+        require(session.statusOrThrow() == AgentSession.Status.IDLE) {
             "stream requires an idle session; use events().streamStreaming() to follow an active session"
         }
     }
 
     fun accept(event: AgentSessionEvent): Boolean {
-        event.created().getOrNull()?.let { if (sessionId == null) sessionId = it.session().id() }
+        event.created().getOrNull()?.let {
+            if (sessionId == null) sessionId = it.sessionOrThrow().idOrThrow()
+        }
         val id = mapper.valueToTree<JsonNode>(event).path("event_id").asText()
         if (!eventIds.add(id)) return false
         if (eventIds.size > 1024)
@@ -82,12 +84,13 @@ private constructor(
                 it.remove()
             }
         event.turnCreated().getOrNull()?.let {
-            if (turnId == null && !it.turn().subagentId().isPresent) turnId = it.turnId()
+            if (turnId == null && !it.turnOrThrow().subagentId().isPresent)
+                turnId = it.turnIdOrThrow()
         }
         val ended =
-            event.turnCompleted().getOrNull()?.turnId()
-                ?: event.turnFailed().getOrNull()?.turnId()
-                ?: event.turnCancelled().getOrNull()?.turnId()
+            event.turnCompleted().getOrNull()?.turnIdOrThrow()
+                ?: event.turnFailed().getOrNull()?.turnIdOrThrow()
+                ?: event.turnCancelled().getOrNull()?.turnIdOrThrow()
         if (turnId != null && ended == turnId) turnEnded = true
         return true
     }
@@ -97,11 +100,11 @@ private constructor(
 
     fun result(event: AgentSessionEvent): CompletableFuture<EventCreateParams?> {
         val call =
-            event.turnItemAdded().getOrNull()?.item()?.functionCall()?.getOrNull()
+            event.turnItemAdded().getOrNull()?.itemOrThrow()?.functionCall()?.getOrNull()
                 ?: return CompletableFuture.completedFuture(null)
-        val handler = handlers[call.name()] ?: return CompletableFuture.completedFuture(null)
+        val handler = handlers[call.nameOrThrow()] ?: return CompletableFuture.completedFuture(null)
         checkNotNull(sessionId) { "Creation stream has not identified its session" }
-        if (!handledCalls.add(call.turnId() to call.callId()))
+        if (!handledCalls.add(call.turnIdOrThrow() to call.callIdOrThrow()))
             return CompletableFuture.completedFuture(null)
         var stage = AgentToolError.Stage.ARGUMENTS
         val output =
@@ -121,8 +124,8 @@ private constructor(
             output.handle { value, error ->
                 val result =
                     AgentSessionInputParam.AgentSessionInputToolResult.builder()
-                        .turnId(call.turnId())
-                        .callId(call.callId())
+                        .turnId(call.turnIdOrThrow())
+                        .callId(call.callIdOrThrow())
                 var failure = error?.let(::unwrap)
                 if (failure == null)
                     try {
@@ -159,10 +162,10 @@ private constructor(
                         onToolError?.accept(
                             AgentToolError(
                                 original,
-                                call.name(),
+                                call.nameOrThrow(),
                                 checkNotNull(sessionId),
-                                call.turnId(),
-                                call.callId(),
+                                call.turnIdOrThrow(),
+                                call.callIdOrThrow(),
                                 failureStage,
                             )
                         )
@@ -193,7 +196,7 @@ private constructor(
         val body = mapper.valueToTree<JsonNode>(cause.body())
         return body.path("code").asText() == "invalid_request_error" &&
             body.path("message").asText() ==
-                "Unknown pending tool call: ${result.events().single().asAgentSessionInputToolResult().callId()}"
+                "Unknown pending tool call: ${result.eventsOrThrow().single().asAgentSessionInputToolResult().callIdOrThrow()}"
     }
 
     fun unexpectedEnd() =

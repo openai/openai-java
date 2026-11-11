@@ -21,11 +21,11 @@ internal class FileCitationAnnotationTest {
                 .text("text")
                 .build()
 
-        assertThat(fileCitationAnnotation.endIndex()).isEqualTo(0L)
+        assertThat(fileCitationAnnotation.endIndex()).contains(0L)
         assertThat(fileCitationAnnotation.fileCitation())
-            .isEqualTo(FileCitationAnnotation.FileCitation.builder().fileId("file_id").build())
-        assertThat(fileCitationAnnotation.startIndex()).isEqualTo(0L)
-        assertThat(fileCitationAnnotation.text()).isEqualTo("text")
+            .contains(FileCitationAnnotation.FileCitation.builder().fileId("file_id").build())
+        assertThat(fileCitationAnnotation.startIndex()).contains(0L)
+        assertThat(fileCitationAnnotation.text()).contains("text")
 
         val jsonMapper = jsonMapper()
 

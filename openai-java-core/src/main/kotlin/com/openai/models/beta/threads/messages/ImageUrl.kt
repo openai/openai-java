@@ -35,20 +35,30 @@ private constructor(
 
     /**
      * The external URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun url(): String = url.getRequired("url")
+    fun url(): java.util.Optional<String> = url.getOptional("url")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun urlOrThrow(): String = url.getRequired("url")
 
     /**
      * Specifies the detail level of the image. `low` uses fewer tokens, you can opt in to high
-     * resolution using `high`. Default value is `auto`
+     * resolution using `high`. Default value is `auto` Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun detail(): Optional<Detail> = detail.getOptional("detail")
+    fun detail(): java.util.Optional<Detail> = detail.getOptional("detail")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun detailOrThrow(): Detail = detail.getRequired("detail")
 
     /**
      * Returns the raw JSON value of [url].
@@ -195,7 +205,7 @@ private constructor(
             return@apply
         }
 
-        url()
+        urlOrThrow()
         detail().ifPresent { it.validate() }
         validated = true
     }

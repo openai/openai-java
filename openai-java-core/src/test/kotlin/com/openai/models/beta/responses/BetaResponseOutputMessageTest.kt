@@ -4,6 +4,7 @@ package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -45,8 +46,8 @@ internal class BetaResponseOutputMessageTest {
                 .phase(BetaResponseOutputMessage.Phase.COMMENTARY)
                 .build()
 
-        assertThat(betaResponseOutputMessage.id()).isEqualTo("id")
-        assertThat(betaResponseOutputMessage.content())
+        assertThat(betaResponseOutputMessage.id()).contains("id")
+        assertThat(betaResponseOutputMessage.content().getOrNull())
             .containsExactly(
                 BetaResponseOutputMessage.Content.ofOutputText(
                     BetaResponseOutputText.builder()
@@ -76,7 +77,7 @@ internal class BetaResponseOutputMessageTest {
                 )
             )
         assertThat(betaResponseOutputMessage.status())
-            .isEqualTo(BetaResponseOutputMessage.Status.IN_PROGRESS)
+            .contains(BetaResponseOutputMessage.Status.IN_PROGRESS)
         assertThat(betaResponseOutputMessage.agent())
             .contains(BetaResponseOutputMessage.Agent.builder().agentName("agent_name").build())
         assertThat(betaResponseOutputMessage.phase())

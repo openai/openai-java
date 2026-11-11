@@ -5,6 +5,7 @@ package com.openai.models.beta.threads.runs.steps
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -58,7 +59,7 @@ internal class StepListPageResponseTest {
                 .object_("list")
                 .build()
 
-        assertThat(stepListPageResponse.data())
+        assertThat(stepListPageResponse.data().getOrNull())
             .containsExactly(
                 RunStep.builder()
                     .id("id")
@@ -97,10 +98,10 @@ internal class StepListPageResponseTest {
                     )
                     .build()
             )
-        assertThat(stepListPageResponse.firstId()).isEqualTo("step_abc123")
-        assertThat(stepListPageResponse.hasMore()).isEqualTo(false)
-        assertThat(stepListPageResponse.lastId()).isEqualTo("step_abc456")
-        assertThat(stepListPageResponse.object_()).isEqualTo("list")
+        assertThat(stepListPageResponse.firstId()).contains("step_abc123")
+        assertThat(stepListPageResponse.hasMore()).contains(false)
+        assertThat(stepListPageResponse.lastId()).contains("step_abc456")
+        assertThat(stepListPageResponse.object_()).contains("list")
 
         val jsonMapper = jsonMapper()
 

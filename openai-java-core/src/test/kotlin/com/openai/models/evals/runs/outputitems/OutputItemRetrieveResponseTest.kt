@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.evals.runs.EvalApiError
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -72,17 +73,17 @@ internal class OutputItemRetrieveResponseTest {
                 .status("status")
                 .build()
 
-        assertThat(outputItemRetrieveResponse.id()).isEqualTo("id")
-        assertThat(outputItemRetrieveResponse.createdAt()).isEqualTo(0L)
+        assertThat(outputItemRetrieveResponse.id()).contains("id")
+        assertThat(outputItemRetrieveResponse.createdAt()).contains(0L)
         assertThat(outputItemRetrieveResponse.datasourceItem())
-            .isEqualTo(
+            .contains(
                 OutputItemRetrieveResponse.DatasourceItem.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-        assertThat(outputItemRetrieveResponse.datasourceItemId()).isEqualTo(0L)
-        assertThat(outputItemRetrieveResponse.evalId()).isEqualTo("eval_id")
-        assertThat(outputItemRetrieveResponse.results())
+        assertThat(outputItemRetrieveResponse.datasourceItemId()).contains(0L)
+        assertThat(outputItemRetrieveResponse.evalId()).contains("eval_id")
+        assertThat(outputItemRetrieveResponse.results().getOrNull())
             .containsExactly(
                 OutputItemRetrieveResponse.Result.builder()
                     .name("name")
@@ -96,9 +97,9 @@ internal class OutputItemRetrieveResponseTest {
                     .type("type")
                     .build()
             )
-        assertThat(outputItemRetrieveResponse.runId()).isEqualTo("run_id")
+        assertThat(outputItemRetrieveResponse.runId()).contains("run_id")
         assertThat(outputItemRetrieveResponse.sample())
-            .isEqualTo(
+            .contains(
                 OutputItemRetrieveResponse.Sample.builder()
                     .error(EvalApiError.builder().code("code").message("message").build())
                     .finishReason("finish_reason")
@@ -129,7 +130,7 @@ internal class OutputItemRetrieveResponseTest {
                     )
                     .build()
             )
-        assertThat(outputItemRetrieveResponse.status()).isEqualTo("status")
+        assertThat(outputItemRetrieveResponse.status()).contains("status")
 
         val jsonMapper = jsonMapper()
 

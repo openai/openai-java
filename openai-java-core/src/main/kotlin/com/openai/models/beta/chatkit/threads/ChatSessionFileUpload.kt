@@ -39,28 +39,43 @@ private constructor(
     ) : this(enabled, maxFileSize, maxFiles, mutableMapOf())
 
     /**
-     * Indicates if uploads are enabled for the session.
+     * Indicates if uploads are enabled for the session. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun enabled(): Boolean = enabled.getRequired("enabled")
+    fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
 
     /**
-     * Maximum upload size in megabytes.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun maxFileSize(): Optional<Long> = maxFileSize.getOptional("max_file_size")
+    fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
 
     /**
-     * Maximum number of uploads allowed during the session.
+     * Maximum upload size in megabytes. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun maxFiles(): Optional<Long> = maxFiles.getOptional("max_files")
+    fun maxFileSize(): java.util.Optional<Long> = maxFileSize.getOptional("max_file_size")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun maxFileSizeOrThrow(): Long = maxFileSize.getRequired("max_file_size")
+
+    /**
+     * Maximum number of uploads allowed during the session. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun maxFiles(): java.util.Optional<Long> = maxFiles.getOptional("max_files")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun maxFilesOrThrow(): Long = maxFiles.getRequired("max_files")
 
     /**
      * Returns the raw JSON value of [enabled].
@@ -252,7 +267,7 @@ private constructor(
             return@apply
         }
 
-        enabled()
+        enabledOrThrow()
         maxFileSize()
         maxFiles()
         validated = true

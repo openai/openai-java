@@ -18,9 +18,9 @@ internal class SessionForkResponseTest {
                 .build()
 
         assertThat(sessionForkResponse.session())
-            .isEqualTo(SessionForkResponse.Session.builder().id("id").build())
+            .contains(SessionForkResponse.Session.builder().id("id").build())
         assertThat(sessionForkResponse.transport())
-            .isEqualTo(SessionForkResponse.Transport.builder().sdp("x").build())
+            .contains(SessionForkResponse.Transport.builder().sdp("x").build())
 
         val jsonMapper = jsonMapper()
 

@@ -36,43 +36,76 @@ private constructor(
     ) : this(fileSearch, index, type, id, mutableMapOf())
 
     /**
-     * For now, this is always going to be an empty object.
+     * For now, this is always going to be an empty object. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * This arbitrary value can be deserialized into a custom type using the `convert` method:
-     * ```java
-     * MyClass myObject = fileSearchToolCallDelta.fileSearch().convert(MyClass.class);
-     * ```
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("file_search") @ExcludeMissing fun _fileSearch(): JsonValue = fileSearch
+    fun fileSearch(): java.util.Optional<JsonValue> {
+        val raw = fileSearch
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The index of the tool call in the tool calls array.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun index(): Long = index.getRequired("index")
+    fun fileSearchOrThrow(): JsonValue =
+        fileSearch().orElseGet { fileSearch.getRequired("file_search") }
+
+    @JsonProperty("file_search")
+    @ExcludeMissing
+    fun _fileSearch(): JsonField<JsonValue> = fileSearch
+
+    /**
+     * The index of the tool call in the tool calls array. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun index(): java.util.Optional<Long> = index.getOptional("index")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun indexOrThrow(): Long = index.getRequired("index")
 
     /**
      * The type of tool call. This is always going to be `file_search` for this type of tool call.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("file_search")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("file_search")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The ID of the tool call object.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun id(): Optional<String> = id.getOptional("id")
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The ID of the tool call object. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun id(): java.util.Optional<String> = id.getOptional("id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
      * Returns the raw JSON value of [index].
@@ -248,12 +281,8 @@ private constructor(
             return@apply
         }
 
-        index()
-        _type().let {
-            if (it != JsonValue.from("file_search")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        indexOrThrow()
+        typeOrThrow()
         id()
         validated = true
     }

@@ -8,8 +8,6 @@ import com.openai.core.checkRequired
 import com.openai.models.beta.agents.AgentSession
 import com.openai.services.blocking.beta.agents.SessionService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see SessionService.list */
 class SessionListPage
@@ -19,21 +17,23 @@ private constructor(
     private val response: SessionListPageResponse,
 ) : Page<AgentSession> {
 
-    /**
-     * Delegates to [SessionListPageResponse], but gracefully handles missing data.
-     *
-     * @see SessionListPageResponse.data
-     */
-    fun data(): List<AgentSession> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see SessionListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [SessionListPageResponse], but gracefully handles missing data.
-     *
-     * @see SessionListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<AgentSession> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<AgentSession> = data()
+    fun _data() = response._data()
+
+    /** @see SessionListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<AgentSession> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

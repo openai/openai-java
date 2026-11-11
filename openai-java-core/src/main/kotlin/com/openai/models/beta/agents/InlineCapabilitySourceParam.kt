@@ -34,38 +34,64 @@ private constructor(
     ) : this(data, mediaType, type, mutableMapOf())
 
     /**
-     * Standard-base64 encoded ZIP archive bytes.
+     * Standard-base64 encoded ZIP archive bytes. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun data(): String = data.getRequired("data")
+    fun data(): java.util.Optional<String> = data.getOptional("data")
 
     /**
-     * The archive media type, always `application/zip`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("application/zip")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("media_type") @ExcludeMissing fun _mediaType(): JsonValue = mediaType
+    fun dataOrThrow(): String = data.getRequired("data")
 
     /**
-     * The type of the object. Always `base64`.
+     * The archive media type, always `application/zip`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("base64")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun mediaType(): java.util.Optional<JsonValue> {
+        val raw = mediaType
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("application/zip")) ->
+                throw OpenAIInvalidDataException("`media_type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun mediaTypeOrThrow(): JsonValue =
+        mediaType().orElseGet { mediaType.getRequired("media_type") }
+
+    @JsonProperty("media_type") @ExcludeMissing fun _mediaType(): JsonField<JsonValue> = mediaType
+
+    /**
+     * The type of the object. Always `base64`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("base64")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [data].
@@ -228,17 +254,9 @@ private constructor(
             return@apply
         }
 
-        data()
-        _mediaType().let {
-            if (it != JsonValue.from("application/zip")) {
-                throw OpenAIInvalidDataException("'mediaType' is invalid, received $it")
-            }
-        }
-        _type().let {
-            if (it != JsonValue.from("base64")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        dataOrThrow()
+        mediaTypeOrThrow()
+        typeOrThrow()
         validated = true
     }
 

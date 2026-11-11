@@ -20,9 +20,9 @@ internal class ModelTest {
                 .shutdownDate(LocalDate.parse("2019-12-27"))
                 .build()
 
-        assertThat(model.id()).isEqualTo("id")
-        assertThat(model.created()).isEqualTo(0L)
-        assertThat(model.ownedBy()).isEqualTo("owned_by")
+        assertThat(model.id()).contains("id")
+        assertThat(model.created()).contains(0L)
+        assertThat(model.ownedBy()).contains("owned_by")
         assertThat(model.shutdownDate()).contains(LocalDate.parse("2019-12-27"))
 
         val jsonMapper = jsonMapper()

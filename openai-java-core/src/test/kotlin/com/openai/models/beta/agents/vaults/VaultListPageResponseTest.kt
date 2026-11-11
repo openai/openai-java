@@ -5,6 +5,7 @@ package com.openai.models.beta.agents.vaults
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -31,7 +32,7 @@ internal class VaultListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(vaultListPageResponse.data())
+        assertThat(vaultListPageResponse.data().getOrNull())
             .containsExactly(
                 Vault.builder()
                     .id("id")
@@ -45,7 +46,7 @@ internal class VaultListPageResponseTest {
                     .build()
             )
         assertThat(vaultListPageResponse.firstId()).contains("first_id")
-        assertThat(vaultListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(vaultListPageResponse.hasMore()).contains(true)
         assertThat(vaultListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

@@ -7,7 +7,6 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.beta.chatkit.ThreadServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
@@ -21,29 +20,30 @@ private constructor(
     private val response: ThreadListPageResponse,
 ) : PageAsync<ChatKitThread> {
 
-    /**
-     * Delegates to [ThreadListPageResponse], but gracefully handles missing data.
-     *
-     * @see ThreadListPageResponse.data
-     */
-    fun data(): List<ChatKitThread> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see ThreadListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [ThreadListPageResponse], but gracefully handles missing data.
-     *
-     * @see ThreadListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<ChatKitThread> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    /**
-     * Delegates to [ThreadListPageResponse], but gracefully handles missing data.
-     *
-     * @see ThreadListPageResponse.lastId
-     */
-    fun lastId(): Optional<String> = response._lastId().getOptional("last_id")
+    fun _data() = response._data()
 
-    override fun items(): List<ChatKitThread> = data()
+    /** @see ThreadListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    /** @see ThreadListPageResponse.lastId */
+    fun lastId() = response.lastId()
+
+    fun lastIdOrThrow(): String = lastId().orElseGet { response._lastId().getRequired("last_id") }
+
+    fun _lastId() = response._lastId()
+
+    override fun items(): List<ChatKitThread> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean =
         hasMore().orElse(true) && items().isNotEmpty() && lastId().isPresent

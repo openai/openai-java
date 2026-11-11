@@ -74,90 +74,140 @@ private constructor(
     )
 
     /**
-     * The identifier, which can be referenced in API endpoints.
+     * The identifier, which can be referenced in API endpoints. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The Unix timestamp (in seconds) for when the vector store file was created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun idOrThrow(): String = id.getRequired("id")
+
+    /**
+     * The Unix timestamp (in seconds) for when the vector store file was created. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
     /**
      * The last error associated with this vector store file. Will be `null` if there are no errors.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun lastError(): Optional<LastError> = lastError.getOptional("last_error")
+    fun lastError(): java.util.Optional<LastError> = lastError.getOptional("last_error")
 
     /**
-     * The object type, which is always `vector_store.file`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("vector_store.file")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun lastErrorOrThrow(): LastError = lastError.getRequired("last_error")
+
+    /**
+     * The object type, which is always `vector_store.file`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("vector_store.file")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * The status of the vector store file, which can be either `in_progress`, `completed`,
      * `cancelled`, or `failed`. The status `completed` indicates that the vector store file is
-     * ready for use.
+     * ready for use. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): Status = status.getRequired("status")
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): Status = status.getRequired("status")
 
     /**
      * The total vector store usage in bytes. Note that this may be different from the original file
-     * size.
+     * size. The schema requires this property. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun usageBytes(): Long = usageBytes.getRequired("usage_bytes")
+    fun usageBytes(): java.util.Optional<Long> = usageBytes.getOptional("usage_bytes")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun usageBytesOrThrow(): Long = usageBytes.getRequired("usage_bytes")
 
     /**
      * The ID of the
      * [vector store](https://developers.openai.com/api/reference/resources/vector_stores) that the
-     * [File](https://developers.openai.com/api/reference/resources/files) is attached to.
+     * [File](https://developers.openai.com/api/reference/resources/files) is attached to. The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun vectorStoreId(): String = vectorStoreId.getRequired("vector_store_id")
+    fun vectorStoreId(): java.util.Optional<String> = vectorStoreId.getOptional("vector_store_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun vectorStoreIdOrThrow(): String = vectorStoreId.getRequired("vector_store_id")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
      * additional information about the object in a structured format, and querying for objects via
      * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
-     * strings with a maximum length of 512 characters, booleans, or numbers.
+     * strings with a maximum length of 512 characters, booleans, or numbers. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun attributes(): Optional<Attributes> = attributes.getOptional("attributes")
+    fun attributes(): java.util.Optional<Attributes> = attributes.getOptional("attributes")
 
     /**
-     * The strategy used to chunk the file.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun chunkingStrategy(): Optional<FileChunkingStrategy> =
+    fun attributesOrThrow(): Attributes = attributes.getRequired("attributes")
+
+    /**
+     * The strategy used to chunk the file. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun chunkingStrategy(): java.util.Optional<FileChunkingStrategy> =
         chunkingStrategy.getOptional("chunking_strategy")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun chunkingStrategyOrThrow(): FileChunkingStrategy =
+        chunkingStrategy.getRequired("chunking_strategy")
 
     /**
      * Returns the raw JSON value of [id].
@@ -525,17 +575,13 @@ private constructor(
             return@apply
         }
 
-        id()
-        createdAt()
+        idOrThrow()
+        createdAtOrThrow()
         lastError().ifPresent { it.validate() }
-        _object_().let {
-            if (it != JsonValue.from("vector_store.file")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        status().validate()
-        usageBytes()
-        vectorStoreId()
+        object_OrThrow()
+        statusOrThrow().validate()
+        usageBytesOrThrow()
+        vectorStoreIdOrThrow()
         attributes().ifPresent { it.validate() }
         chunkingStrategy().ifPresent { it.validate() }
         validated = true
@@ -584,20 +630,32 @@ private constructor(
         ) : this(code, message, mutableMapOf())
 
         /**
-         * One of `server_error`, `unsupported_file`, or `invalid_file`.
+         * One of `server_error`, `unsupported_file`, or `invalid_file`. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun code(): Code = code.getRequired("code")
+        fun code(): java.util.Optional<Code> = code.getOptional("code")
 
         /**
-         * A human-readable description of the error.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun message(): String = message.getRequired("message")
+        fun codeOrThrow(): Code = code.getRequired("code")
+
+        /**
+         * A human-readable description of the error. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun message(): java.util.Optional<String> = message.getOptional("message")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun messageOrThrow(): String = message.getRequired("message")
 
         /**
          * Returns the raw JSON value of [code].
@@ -751,8 +809,8 @@ private constructor(
                 return@apply
             }
 
-            code().validate()
-            message()
+            codeOrThrow().validate()
+            messageOrThrow()
             validated = true
         }
 

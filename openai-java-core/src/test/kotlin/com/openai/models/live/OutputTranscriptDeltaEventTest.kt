@@ -21,10 +21,10 @@ internal class OutputTranscriptDeltaEventTest {
                 .build()
 
         assertThat(outputTranscriptDeltaEvent.delta())
-            .isEqualTo("Would you like me to reserve that table?")
-        assertThat(outputTranscriptDeltaEvent.endMs()).isEqualTo(7200L)
-        assertThat(outputTranscriptDeltaEvent.eventId()).isEqualTo("evt_output_transcript_001")
-        assertThat(outputTranscriptDeltaEvent.startMs()).isEqualTo(5400L)
+            .contains("Would you like me to reserve that table?")
+        assertThat(outputTranscriptDeltaEvent.endMs()).contains(7200L)
+        assertThat(outputTranscriptDeltaEvent.eventId()).contains("evt_output_transcript_001")
+        assertThat(outputTranscriptDeltaEvent.startMs()).contains(5400L)
         assertThat(outputTranscriptDeltaEvent.clientEventId()).contains("client_event_id")
 
         val jsonMapper = jsonMapper()

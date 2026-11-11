@@ -403,7 +403,7 @@ class OkHttpConfigurationTest {
             first.close();
             try {
                 assertThatThrownBy(() -> first.models().list()).isInstanceOf(IllegalStateException.class);
-                assertThat(second.models().list().data()).isEmpty();
+                assertThat(second.models().list().items()).isEmpty();
             } finally {
                 second.close();
             }

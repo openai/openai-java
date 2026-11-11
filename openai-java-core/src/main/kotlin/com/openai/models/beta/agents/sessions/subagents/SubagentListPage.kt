@@ -8,8 +8,6 @@ import com.openai.core.checkRequired
 import com.openai.models.beta.agents.Subagent
 import com.openai.services.blocking.beta.agents.sessions.SubagentService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see SubagentService.list */
 class SubagentListPage
@@ -19,21 +17,22 @@ private constructor(
     private val response: SubagentListPageResponse,
 ) : Page<Subagent> {
 
-    /**
-     * Delegates to [SubagentListPageResponse], but gracefully handles missing data.
-     *
-     * @see SubagentListPageResponse.data
-     */
-    fun data(): List<Subagent> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see SubagentListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [SubagentListPageResponse], but gracefully handles missing data.
-     *
-     * @see SubagentListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<Subagent> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<Subagent> = data()
+    fun _data() = response._data()
+
+    /** @see SubagentListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<Subagent> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

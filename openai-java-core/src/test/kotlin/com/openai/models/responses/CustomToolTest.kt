@@ -23,7 +23,7 @@ internal class CustomToolTest {
                 .formatText()
                 .build()
 
-        assertThat(customTool.name()).isEqualTo("name")
+        assertThat(customTool.name()).contains("name")
         assertThat(customTool.allowedCallers().getOrNull())
             .containsExactly(CustomTool.AllowedCaller.DIRECT)
         assertThat(customTool.async()).contains(true)

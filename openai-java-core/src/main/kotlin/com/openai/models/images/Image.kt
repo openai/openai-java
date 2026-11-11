@@ -37,30 +37,44 @@ private constructor(
 
     /**
      * The base64-encoded JSON of the generated image. Returned by default for GPT image models, or
-     * when `response_format` is set to `b64_json` for models that support that parameter.
+     * when `response_format` is set to `b64_json` for models that support that parameter. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun b64Json(): Optional<String> = b64Json.getOptional("b64_json")
+    fun b64Json(): java.util.Optional<String> = b64Json.getOptional("b64_json")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun b64JsonOrThrow(): String = b64Json.getRequired("b64_json")
 
     /**
      * The revised prompt used to generate the image, for models that support prompt revision. Not
-     * returned by GPT image models.
+     * returned by GPT image models. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun revisedPrompt(): Optional<String> = revisedPrompt.getOptional("revised_prompt")
+    fun revisedPrompt(): java.util.Optional<String> = revisedPrompt.getOptional("revised_prompt")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun revisedPromptOrThrow(): String = revisedPrompt.getRequired("revised_prompt")
 
     /**
      * The URL of the generated image when `response_format` is set to `url` for models that support
-     * that parameter. Unsupported for GPT image models.
+     * that parameter. Unsupported for GPT image models. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun url(): Optional<String> = url.getOptional("url")
+    fun url(): java.util.Optional<String> = url.getOptional("url")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun urlOrThrow(): String = url.getRequired("url")
 
     /**
      * Returns the raw JSON value of [b64Json].

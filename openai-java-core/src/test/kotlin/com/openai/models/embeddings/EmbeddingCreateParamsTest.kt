@@ -31,11 +31,11 @@ internal class EmbeddingCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.input())
+        assertThat(body.inputOrThrow())
             .isEqualTo(
                 EmbeddingCreateParams.Input.ofString("The quick brown fox jumped over the lazy dog")
             )
-        assertThat(body.model()).isEqualTo(EmbeddingModel.TEXT_EMBEDDING_3_SMALL)
+        assertThat(body.modelOrThrow()).isEqualTo(EmbeddingModel.TEXT_EMBEDDING_3_SMALL)
         assertThat(body.dimensions()).contains(1L)
         assertThat(body.encodingFormat()).contains(EmbeddingCreateParams.EncodingFormat.FLOAT)
         assertThat(body.user()).contains("user-1234")
@@ -51,10 +51,10 @@ internal class EmbeddingCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.input())
+        assertThat(body.inputOrThrow())
             .isEqualTo(
                 EmbeddingCreateParams.Input.ofString("The quick brown fox jumped over the lazy dog")
             )
-        assertThat(body.model()).isEqualTo(EmbeddingModel.TEXT_EMBEDDING_3_SMALL)
+        assertThat(body.modelOrThrow()).isEqualTo(EmbeddingModel.TEXT_EMBEDDING_3_SMALL)
     }
 }

@@ -49,7 +49,7 @@ internal class FileCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.fileId()).isEqualTo("file_id")
+        assertThat(body.fileIdOrThrow()).isEqualTo("file_id")
         assertThat(body.attributes())
             .contains(
                 FileCreateParams.Attributes.builder()
@@ -68,6 +68,6 @@ internal class FileCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.fileId()).isEqualTo("file_id")
+        assertThat(body.fileIdOrThrow()).isEqualTo("file_id")
     }
 }

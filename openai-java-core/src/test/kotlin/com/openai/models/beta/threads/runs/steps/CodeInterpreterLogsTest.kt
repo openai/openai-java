@@ -13,7 +13,7 @@ internal class CodeInterpreterLogsTest {
     fun createAndRoundtrip() {
         val codeInterpreterLogs = CodeInterpreterLogs.builder().index(0L).logs("logs").build()
 
-        assertThat(codeInterpreterLogs.index()).isEqualTo(0L)
+        assertThat(codeInterpreterLogs.index()).contains(0L)
         assertThat(codeInterpreterLogs.logs()).contains("logs")
 
         val jsonMapper = jsonMapper()

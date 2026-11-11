@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.adminapikeys
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -38,7 +39,7 @@ internal class AdminApiKeyListPageResponseTest {
                 .lastId("key_xyz")
                 .build()
 
-        assertThat(adminApiKeyListPageResponse.data())
+        assertThat(adminApiKeyListPageResponse.data().getOrNull())
             .containsExactly(
                 AdminApiKey.builder()
                     .id("key_abc")
@@ -59,7 +60,7 @@ internal class AdminApiKeyListPageResponseTest {
                     .name("Administration Key")
                     .build()
             )
-        assertThat(adminApiKeyListPageResponse.hasMore()).isEqualTo(false)
+        assertThat(adminApiKeyListPageResponse.hasMore()).contains(false)
         assertThat(adminApiKeyListPageResponse.firstId()).contains("key_abc")
         assertThat(adminApiKeyListPageResponse.lastId()).contains("key_xyz")
 

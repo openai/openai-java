@@ -5,5 +5,8 @@ object AgentSessionMessages {
     /** Concatenates output_text blocks in order, without phase filtering or network requests. */
     @JvmStatic
     fun outputText(message: AgentSessionMessage): String =
-        message.content().filter { it.isOutputText() }.joinToString("") { it.asOutputText().text() }
+        message
+            .contentOrThrow()
+            .filter { it.isOutputText() }
+            .joinToString("") { it.asOutputText().textOrThrow() }
 }

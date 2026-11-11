@@ -4,6 +4,7 @@ package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -33,10 +34,10 @@ internal class BetaResponseTextDeltaEventTest {
                 .agent(BetaResponseTextDeltaEvent.Agent.builder().agentName("agent_name").build())
                 .build()
 
-        assertThat(betaResponseTextDeltaEvent.contentIndex()).isEqualTo(0L)
-        assertThat(betaResponseTextDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(betaResponseTextDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseTextDeltaEvent.logprobs())
+        assertThat(betaResponseTextDeltaEvent.contentIndex()).contains(0L)
+        assertThat(betaResponseTextDeltaEvent.delta()).contains("delta")
+        assertThat(betaResponseTextDeltaEvent.itemId()).contains("item_id")
+        assertThat(betaResponseTextDeltaEvent.logprobs().getOrNull())
             .containsExactly(
                 BetaResponseTextDeltaEvent.Logprob.builder()
                     .token("token")
@@ -49,8 +50,8 @@ internal class BetaResponseTextDeltaEventTest {
                     )
                     .build()
             )
-        assertThat(betaResponseTextDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseTextDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseTextDeltaEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseTextDeltaEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseTextDeltaEvent.agent())
             .contains(BetaResponseTextDeltaEvent.Agent.builder().agentName("agent_name").build())
 

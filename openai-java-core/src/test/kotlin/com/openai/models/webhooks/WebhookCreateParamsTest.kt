@@ -27,8 +27,9 @@ internal class WebhookCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.eventTypes()).containsExactly(WebhookCreateParams.EventType.BATCH_COMPLETED)
-        assertThat(body.name()).isEqualTo("x")
-        assertThat(body.url()).isEqualTo("https://")
+        assertThat(body.eventTypesOrThrow())
+            .containsExactly(WebhookCreateParams.EventType.BATCH_COMPLETED)
+        assertThat(body.nameOrThrow()).isEqualTo("x")
+        assertThat(body.urlOrThrow()).isEqualTo("https://")
     }
 }

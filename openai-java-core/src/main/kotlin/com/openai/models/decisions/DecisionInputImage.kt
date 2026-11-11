@@ -44,41 +44,68 @@ private constructor(
     ) : this(imageUrl, type, detail, promptCacheBreakpoint, mutableMapOf())
 
     /**
-     * A base64-encoded image in a data URL or a publicly accessible HTTP(S) image URL.
+     * A base64-encoded image in a data URL or a publicly accessible HTTP(S) image URL. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun imageUrl(): String = imageUrl.getRequired("image_url")
+    fun imageUrl(): java.util.Optional<String> = imageUrl.getOptional("image_url")
 
     /**
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("input_image")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun imageUrlOrThrow(): String = imageUrl.getRequired("image_url")
 
     /**
-     * The image detail level, using the selected model's image profile. Defaults to auto.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun detail(): Optional<Detail> = detail.getOptional("detail")
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("input_image")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The image detail level, using the selected model's image profile. Defaults to auto. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun detail(): java.util.Optional<Detail> = detail.getOptional("detail")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun detailOrThrow(): Detail = detail.getRequired("detail")
 
     /**
      * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the
-     * request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block.
+     * request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun promptCacheBreakpoint(): Optional<DecisionPromptCacheBreakpoint> =
+    fun promptCacheBreakpoint(): java.util.Optional<DecisionPromptCacheBreakpoint> =
         promptCacheBreakpoint.getOptional("prompt_cache_breakpoint")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun promptCacheBreakpointOrThrow(): DecisionPromptCacheBreakpoint =
+        promptCacheBreakpoint.getRequired("prompt_cache_breakpoint")
 
     /**
      * Returns the raw JSON value of [imageUrl].
@@ -289,12 +316,8 @@ private constructor(
             return@apply
         }
 
-        imageUrl()
-        _type().let {
-            if (it != JsonValue.from("input_image")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        imageUrlOrThrow()
+        typeOrThrow()
         detail().ifPresent { it.validate() }
         promptCacheBreakpoint().ifPresent { it.validate() }
         validated = true

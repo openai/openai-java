@@ -11,6 +11,7 @@ import com.openai.core.X
 import com.openai.core.checkAllDelegation
 import com.openai.core.checkAllDelegatorReadFunctionsAreTested
 import com.openai.core.checkOneDelegationRead
+import com.openai.core.withJsonGetters
 import com.openai.errors.OpenAIInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -52,45 +53,49 @@ internal class StructuredChatCompletionTest {
         @JvmStatic
         private fun delegationTestCases() =
             listOf(
-                DelegationReadTestCase("id", STRING),
-                // `choices()` is a special case and has its own test function.
-                DelegationReadTestCase("created", LONG),
-                DelegationReadTestCase("model", STRING),
-                DelegationReadTestCase("metadata", OPTIONAL),
-                DelegationReadTestCase("moderation", OPTIONAL),
-                DelegationReadTestCase("_object_", JSON_VALUE),
-                DelegationReadTestCase("serviceTier", OPTIONAL),
-                DelegationReadTestCase("systemFingerprint", OPTIONAL),
-                DelegationReadTestCase("usage", OPTIONAL),
-                DelegationReadTestCase("_id", JSON_FIELD),
-                // `_choices()` is a special case and has its own test function.
-                DelegationReadTestCase("_created", JSON_FIELD),
-                DelegationReadTestCase("_model", JSON_FIELD),
-                DelegationReadTestCase("_metadata", JSON_FIELD),
-                DelegationReadTestCase("_moderation", JSON_FIELD),
-                DelegationReadTestCase("_serviceTier", JSON_FIELD),
-                DelegationReadTestCase("_systemFingerprint", JSON_FIELD),
-                DelegationReadTestCase("_usage", JSON_FIELD),
-                DelegationReadTestCase("_allProperties", mapOf("key" to JSON_VALUE)),
-                // `validate()` and `isValid()` (which calls `validate()`) are tested separately,
-                // as they require special handling.
-            )
+                    DelegationReadTestCase("id", STRING),
+                    // `choices()` is a special case and has its own test function.
+                    DelegationReadTestCase("created", LONG),
+                    DelegationReadTestCase("model", STRING),
+                    DelegationReadTestCase("metadata", OPTIONAL),
+                    DelegationReadTestCase("moderation", OPTIONAL),
+                    DelegationReadTestCase("_object_", JSON_VALUE),
+                    DelegationReadTestCase("serviceTier", OPTIONAL),
+                    DelegationReadTestCase("systemFingerprint", OPTIONAL),
+                    DelegationReadTestCase("usage", OPTIONAL),
+                    DelegationReadTestCase("_id", JSON_FIELD),
+                    // `_choices()` is a special case and has its own test function.
+                    DelegationReadTestCase("_created", JSON_FIELD),
+                    DelegationReadTestCase("_model", JSON_FIELD),
+                    DelegationReadTestCase("_metadata", JSON_FIELD),
+                    DelegationReadTestCase("_moderation", JSON_FIELD),
+                    DelegationReadTestCase("_serviceTier", JSON_FIELD),
+                    DelegationReadTestCase("_systemFingerprint", JSON_FIELD),
+                    DelegationReadTestCase("_usage", JSON_FIELD),
+                    DelegationReadTestCase("_allProperties", mapOf("key" to JSON_VALUE)),
+                    // `validate()` and `isValid()` (which calls `validate()`) are tested
+                    // separately,
+                    // as they require special handling.
+                )
+                .withJsonGetters(ChatCompletion::class.java)
 
         @JvmStatic
         private fun choiceDelegationTestCases() =
             listOf(
-                DelegationReadTestCase("finishReason", FINISH_REASON),
-                DelegationReadTestCase("index", LONG),
-                DelegationReadTestCase("logprobs", OPTIONAL),
-                DelegationReadTestCase("_finishReason", JSON_FIELD),
-                // `message()` is a special case and has its own test function.
-                DelegationReadTestCase("_index", JSON_FIELD),
-                DelegationReadTestCase("_logprobs", JSON_FIELD),
-                // `_message()` is a special case and has its own test function.
-                DelegationReadTestCase("_allProperties", mapOf("key" to JSON_VALUE)),
-                // `validate()` and `isValid()` (which calls `validate()`) are tested separately,
-                // as they require special handling.
-            )
+                    DelegationReadTestCase("finishReason", FINISH_REASON),
+                    DelegationReadTestCase("index", LONG),
+                    DelegationReadTestCase("logprobs", OPTIONAL),
+                    DelegationReadTestCase("_finishReason", JSON_FIELD),
+                    // `message()` is a special case and has its own test function.
+                    DelegationReadTestCase("_index", JSON_FIELD),
+                    DelegationReadTestCase("_logprobs", JSON_FIELD),
+                    // `_message()` is a special case and has its own test function.
+                    DelegationReadTestCase("_allProperties", mapOf("key" to JSON_VALUE)),
+                    // `validate()` and `isValid()` (which calls `validate()`) are tested
+                    // separately,
+                    // as they require special handling.
+                )
+                .withJsonGetters(ChatCompletion.Choice::class.java)
     }
 
     // New instances of the `mockDelegate` and `delegator` are required for each test case (each
@@ -130,7 +135,8 @@ internal class StructuredChatCompletionTest {
         checkAllDelegatorReadFunctionsAreTested(
             delegator::class,
             delegationTestCases(),
-            exceptionalTestedFns = setOf("choices", "_choices", "validate", "isValid"),
+            exceptionalTestedFns =
+                setOf("choices", "choicesOrThrow", "_choices", "validate", "isValid"),
             nonDelegatingFns = setOf("equals", "hashCode", "toString"),
         )
     }
@@ -140,7 +146,8 @@ internal class StructuredChatCompletionTest {
         checkAllDelegatorReadFunctionsAreTested(
             choiceDelegator::class,
             choiceDelegationTestCases(),
-            exceptionalTestedFns = setOf("message", "_message", "validate", "isValid"),
+            exceptionalTestedFns =
+                setOf("message", "messageOrThrow", "_message", "validate", "isValid"),
             nonDelegatingFns = setOf("equals", "hashCode", "toString"),
         )
     }
@@ -164,7 +171,8 @@ internal class StructuredChatCompletionTest {
         // indirectly via the `choices` field initializer.
         val input = JsonField.of(listOf(CHOICE))
         `when`(mockDelegate._choices()).thenReturn(input)
-        val output = delegator.choices() // Without an underscore.
+        val output = delegator.choicesOrThrow() // Without an underscore.
+        assertThat(delegator.choices()).contains(output)
 
         verify(mockDelegate, times(1))._choices()
         verifyNoMoreInteractions(mockDelegate)
@@ -240,7 +248,8 @@ internal class StructuredChatCompletionTest {
         // indirectly via the `message` field initializer.
         val input = JsonField.of(MESSAGE)
         `when`(mockChoiceDelegate._message()).thenReturn(input)
-        val output = choiceDelegator.message() // Without an underscore.
+        val output = choiceDelegator.messageOrThrow() // Without an underscore.
+        assertThat(choiceDelegator.message()).contains(output)
 
         verify(mockChoiceDelegate, times(1))._message()
         verifyNoMoreInteractions(mockChoiceDelegate)

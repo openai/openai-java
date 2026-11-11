@@ -47,44 +47,68 @@ private constructor(
     ) : this(delta, type, logprobs, segmentId, mutableMapOf())
 
     /**
-     * The text delta that was additionally transcribed.
+     * The text delta that was additionally transcribed. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun delta(): String = delta.getRequired("delta")
+    fun delta(): java.util.Optional<String> = delta.getOptional("delta")
 
     /**
-     * The type of the event. Always `transcript.text.delta`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("transcript.text.delta")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun deltaOrThrow(): String = delta.getRequired("delta")
+
+    /**
+     * The type of the event. Always `transcript.text.delta`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("transcript.text.delta")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * The log probabilities of the delta. Only included if you
      * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
-     * with the `include[]` parameter set to `logprobs`.
+     * with the `include[]` parameter set to `logprobs`. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun logprobs(): Optional<List<Logprob>> = logprobs.getOptional("logprobs")
+    fun logprobs(): java.util.Optional<List<Logprob>> = logprobs.getOptional("logprobs")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun logprobsOrThrow(): List<Logprob> = logprobs.getRequired("logprobs")
 
     /**
      * Identifier of the diarized segment that this delta belongs to. Only present when using
-     * `gpt-4o-transcribe-diarize`.
+     * `gpt-4o-transcribe-diarize`. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun segmentId(): Optional<String> = segmentId.getOptional("segment_id")
+    fun segmentId(): java.util.Optional<String> = segmentId.getOptional("segment_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun segmentIdOrThrow(): String = segmentId.getRequired("segment_id")
 
     /**
      * Returns the raw JSON value of [delta].
@@ -296,12 +320,8 @@ private constructor(
             return@apply
         }
 
-        delta()
-        _type().let {
-            if (it != JsonValue.from("transcript.text.delta")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        deltaOrThrow()
+        typeOrThrow()
         logprobs().ifPresent { it.forEach { it.validate() } }
         segmentId()
         validated = true
@@ -344,28 +364,45 @@ private constructor(
         ) : this(token, bytes, logprob, mutableMapOf())
 
         /**
-         * The token that was used to generate the log probability.
+         * The token that was used to generate the log probability. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun token(): Optional<String> = token.getOptional("token")
+        fun token(): java.util.Optional<String> = token.getOptional("token")
 
         /**
-         * The bytes that were used to generate the log probability.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun bytes(): Optional<List<Long>> = bytes.getOptional("bytes")
+        fun tokenOrThrow(): String = token.getRequired("token")
 
         /**
-         * The log probability of the token.
+         * The bytes that were used to generate the log probability. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun logprob(): Optional<Double> = logprob.getOptional("logprob")
+        fun bytes(): java.util.Optional<List<Long>> = bytes.getOptional("bytes")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun bytesOrThrow(): List<Long> = bytes.getRequired("bytes")
+
+        /**
+         * The log probability of the token. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun logprob(): java.util.Optional<Double> = logprob.getOptional("logprob")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun logprobOrThrow(): Double = logprob.getRequired("logprob")
 
         /**
          * Returns the raw JSON value of [token].

@@ -51,7 +51,7 @@ internal class ResponseOutputItemAddedEventTest {
                 .build()
 
         assertThat(responseOutputItemAddedEvent.item())
-            .isEqualTo(
+            .contains(
                 ResponseOutputItem.ofMessage(
                     ResponseOutputMessage.builder()
                         .id("id")
@@ -86,8 +86,8 @@ internal class ResponseOutputItemAddedEventTest {
                         .build()
                 )
             )
-        assertThat(responseOutputItemAddedEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseOutputItemAddedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseOutputItemAddedEvent.outputIndex()).contains(0L)
+        assertThat(responseOutputItemAddedEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

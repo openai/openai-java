@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.spendalerts
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -32,7 +33,7 @@ internal class SpendAlertListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(spendAlertListPageResponse.data())
+        assertThat(spendAlertListPageResponse.data().getOrNull())
             .containsExactly(
                 OrganizationSpendAlert.builder()
                     .id("id")
@@ -48,7 +49,7 @@ internal class SpendAlertListPageResponseTest {
                     .build()
             )
         assertThat(spendAlertListPageResponse.firstId()).contains("first_id")
-        assertThat(spendAlertListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(spendAlertListPageResponse.hasMore()).contains(true)
         assertThat(spendAlertListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

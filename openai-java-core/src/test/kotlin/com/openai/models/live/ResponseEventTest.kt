@@ -34,7 +34,7 @@ internal class ResponseEventTest {
                 .build()
 
         assertThat(responseEvent.event())
-            .isEqualTo(
+            .contains(
                 ResponseEvent.Event.builder()
                     .putAdditionalProperty("type", JsonValue.from("response.output_text.delta"))
                     .putAdditionalProperty("item_id", JsonValue.from("msg_abc123"))
@@ -48,7 +48,7 @@ internal class ResponseEventTest {
                     .putAdditionalProperty("logprobs", JsonValue.from(listOf<Any?>()))
                     .build()
             )
-        assertThat(responseEvent.eventId()).isEqualTo("evt_response_002")
+        assertThat(responseEvent.eventId()).contains("evt_response_002")
         assertThat(responseEvent.clientEventId()).contains("client_event_id")
         assertThat(responseEvent.delegationId()).contains("del_responses123")
 

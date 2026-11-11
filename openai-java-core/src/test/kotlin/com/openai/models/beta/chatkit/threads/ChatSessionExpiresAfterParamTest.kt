@@ -14,7 +14,7 @@ internal class ChatSessionExpiresAfterParamTest {
         val chatSessionExpiresAfterParam =
             ChatSessionExpiresAfterParam.builder().seconds(1L).build()
 
-        assertThat(chatSessionExpiresAfterParam.seconds()).isEqualTo(1L)
+        assertThat(chatSessionExpiresAfterParam.seconds()).contains(1L)
 
         val jsonMapper = jsonMapper()
 

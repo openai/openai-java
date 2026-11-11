@@ -17,7 +17,7 @@ internal class DecisionInputTextTest {
                 .promptCacheBreakpoint(DecisionPromptCacheBreakpoint.builder().build())
                 .build()
 
-        assertThat(decisionInputText.text()).isEqualTo("text")
+        assertThat(decisionInputText.text()).contains("text")
         assertThat(decisionInputText.promptCacheBreakpoint())
             .contains(DecisionPromptCacheBreakpoint.builder().build())
 

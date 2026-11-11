@@ -27,13 +27,13 @@ internal class ChatSessionChatKitConfigurationTest {
                 .build()
 
         assertThat(chatSessionChatKitConfiguration.automaticThreadTitling())
-            .isEqualTo(ChatSessionAutomaticThreadTitling.builder().enabled(true).build())
+            .contains(ChatSessionAutomaticThreadTitling.builder().enabled(true).build())
         assertThat(chatSessionChatKitConfiguration.fileUpload())
-            .isEqualTo(
+            .contains(
                 ChatSessionFileUpload.builder().enabled(true).maxFileSize(0L).maxFiles(0L).build()
             )
         assertThat(chatSessionChatKitConfiguration.history())
-            .isEqualTo(ChatSessionHistory.builder().enabled(true).recentThreads(0L).build())
+            .contains(ChatSessionHistory.builder().enabled(true).recentThreads(0L).build())
 
         val jsonMapper = jsonMapper()
 

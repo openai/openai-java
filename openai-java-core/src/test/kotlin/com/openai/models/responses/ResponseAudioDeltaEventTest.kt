@@ -14,8 +14,8 @@ internal class ResponseAudioDeltaEventTest {
         val responseAudioDeltaEvent =
             ResponseAudioDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
 
-        assertThat(responseAudioDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(responseAudioDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseAudioDeltaEvent.delta()).contains("delta")
+        assertThat(responseAudioDeltaEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

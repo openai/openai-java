@@ -36,21 +36,17 @@ private constructor(
 
     fun serviceAccountId(): Optional<String> = Optional.ofNullable(serviceAccountId)
 
-    /**
-     * The updated service account name.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun name(): Optional<String> = body.name()
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
 
-    /**
-     * The updated service account role.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun role(): Optional<Role> = body.role()
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
+
+    /** @see Body.role */
+    fun role(): java.util.Optional<Role> = body.role()
+
+    /** @see Body.roleOrThrow */
+    fun roleOrThrow(): Role = body.roleOrThrow()
 
     /**
      * Returns the raw JSON value of [name].
@@ -317,20 +313,30 @@ private constructor(
         ) : this(name, role, mutableMapOf())
 
         /**
-         * The updated service account name.
+         * The updated service account name. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): Optional<String> = name.getOptional("name")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
 
         /**
-         * The updated service account role.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun role(): Optional<Role> = role.getOptional("role")
+        fun nameOrThrow(): String = name.getRequired("name")
+
+        /**
+         * The updated service account role. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun role(): java.util.Optional<Role> = role.getOptional("role")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun roleOrThrow(): Role = role.getRequired("role")
 
         /**
          * Returns the raw JSON value of [name].

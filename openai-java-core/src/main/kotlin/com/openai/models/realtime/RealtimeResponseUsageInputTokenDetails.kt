@@ -59,45 +59,71 @@ private constructor(
     )
 
     /**
-     * The number of audio tokens used as input for the Response.
+     * The number of audio tokens used as input for the Response. Returns empty if the JSON property
+     * is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun audioTokens(): Optional<Long> = audioTokens.getOptional("audio_tokens")
+    fun audioTokens(): java.util.Optional<Long> = audioTokens.getOptional("audio_tokens")
 
     /**
-     * The number of cached tokens used as input for the Response.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun cachedTokens(): Optional<Long> = cachedTokens.getOptional("cached_tokens")
+    fun audioTokensOrThrow(): Long = audioTokens.getRequired("audio_tokens")
 
     /**
-     * Details about the cached tokens used as input for the Response.
+     * The number of cached tokens used as input for the Response. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun cachedTokensDetails(): Optional<CachedTokensDetails> =
+    fun cachedTokens(): java.util.Optional<Long> = cachedTokens.getOptional("cached_tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun cachedTokensOrThrow(): Long = cachedTokens.getRequired("cached_tokens")
+
+    /**
+     * Details about the cached tokens used as input for the Response. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun cachedTokensDetails(): java.util.Optional<CachedTokensDetails> =
         cachedTokensDetails.getOptional("cached_tokens_details")
 
     /**
-     * The number of image tokens used as input for the Response.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun imageTokens(): Optional<Long> = imageTokens.getOptional("image_tokens")
+    fun cachedTokensDetailsOrThrow(): CachedTokensDetails =
+        cachedTokensDetails.getRequired("cached_tokens_details")
 
     /**
-     * The number of text tokens used as input for the Response.
+     * The number of image tokens used as input for the Response. Returns empty if the JSON property
+     * is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun textTokens(): Optional<Long> = textTokens.getOptional("text_tokens")
+    fun imageTokens(): java.util.Optional<Long> = imageTokens.getOptional("image_tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun imageTokensOrThrow(): Long = imageTokens.getRequired("image_tokens")
+
+    /**
+     * The number of text tokens used as input for the Response. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun textTokens(): java.util.Optional<Long> = textTokens.getOptional("text_tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun textTokensOrThrow(): Long = textTokens.getRequired("text_tokens")
 
     /**
      * Returns the raw JSON value of [audioTokens].
@@ -369,28 +395,46 @@ private constructor(
         ) : this(audioTokens, imageTokens, textTokens, mutableMapOf())
 
         /**
-         * The number of cached audio tokens used as input for the Response.
+         * The number of cached audio tokens used as input for the Response. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun audioTokens(): Optional<Long> = audioTokens.getOptional("audio_tokens")
+        fun audioTokens(): java.util.Optional<Long> = audioTokens.getOptional("audio_tokens")
 
         /**
-         * The number of cached image tokens used as input for the Response.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun imageTokens(): Optional<Long> = imageTokens.getOptional("image_tokens")
+        fun audioTokensOrThrow(): Long = audioTokens.getRequired("audio_tokens")
 
         /**
-         * The number of cached text tokens used as input for the Response.
+         * The number of cached image tokens used as input for the Response. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun textTokens(): Optional<Long> = textTokens.getOptional("text_tokens")
+        fun imageTokens(): java.util.Optional<Long> = imageTokens.getOptional("image_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun imageTokensOrThrow(): Long = imageTokens.getRequired("image_tokens")
+
+        /**
+         * The number of cached text tokens used as input for the Response. Returns empty if the
+         * JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun textTokens(): java.util.Optional<Long> = textTokens.getOptional("text_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun textTokensOrThrow(): Long = textTokens.getRequired("text_tokens")
 
         /**
          * Returns the raw JSON value of [audioTokens].

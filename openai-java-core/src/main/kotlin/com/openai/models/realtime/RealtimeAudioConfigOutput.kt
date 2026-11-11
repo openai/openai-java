@@ -49,12 +49,16 @@ private constructor(
     ) : this(format, speed, voice, mutableMapOf())
 
     /**
-     * The format of the output audio.
+     * The format of the output audio. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun format(): Optional<RealtimeAudioFormats> = format.getOptional("format")
+    fun format(): java.util.Optional<RealtimeAudioFormats> = format.getOptional("format")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun formatOrThrow(): RealtimeAudioFormats = format.getRequired("format")
 
     /**
      * The speed of the model's spoken response as a multiple of the original speed. 1.0 is the
@@ -62,12 +66,17 @@ private constructor(
      * changed in between model turns, not while a response is in progress.
      *
      * This parameter is a post-processing adjustment to the audio after it is generated, it's also
-     * possible to prompt the model to speak faster or slower.
+     * possible to prompt the model to speak faster or slower. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun speed(): Optional<Double> = speed.getOptional("speed")
+    fun speed(): java.util.Optional<Double> = speed.getOptional("speed")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun speedOrThrow(): Double = speed.getRequired("speed")
 
     /**
      * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`, `ballad`,
@@ -75,12 +84,17 @@ private constructor(
      * custom voice object with an `id`, for example `{ "id": "voice_1234" }`. Voice cannot be
      * changed during the session once the model has responded with audio at least once. Custom
      * voices must be created from audio samples. Voices created from text prompts are supported
-     * only in Live. We recommend `marin` and `cedar` for best quality.
+     * only in Live. We recommend `marin` and `cedar` for best quality. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun voice(): Optional<Voice> = voice.getOptional("voice")
+    fun voice(): java.util.Optional<Voice> = voice.getOptional("voice")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun voiceOrThrow(): Voice = voice.getRequired("voice")
 
     /**
      * Returns the raw JSON value of [format].
@@ -754,13 +768,18 @@ private constructor(
             ) : this(id, mutableMapOf())
 
             /**
-             * The custom voice ID, e.g. `voice_1234`.
+             * The custom voice ID, e.g. `voice_1234`. The schema requires this property. Returns
+             * empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun id(): String = id.getRequired("id")
+            fun id(): java.util.Optional<String> = id.getOptional("id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun idOrThrow(): String = id.getRequired("id")
 
             /**
              * Returns the raw JSON value of [id].
@@ -886,7 +905,7 @@ private constructor(
                     return@apply
                 }
 
-                id()
+                idOrThrow()
                 validated = true
             }
 

@@ -27,14 +27,14 @@ internal class BetaResponseReasoningSummaryPartAddedEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseReasoningSummaryPartAddedEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseReasoningSummaryPartAddedEvent.outputIndex()).isEqualTo(0L)
+        assertThat(betaResponseReasoningSummaryPartAddedEvent.itemId()).contains("item_id")
+        assertThat(betaResponseReasoningSummaryPartAddedEvent.outputIndex()).contains(0L)
         assertThat(betaResponseReasoningSummaryPartAddedEvent.part())
-            .isEqualTo(
+            .contains(
                 BetaResponseReasoningSummaryPartAddedEvent.Part.builder().text("text").build()
             )
-        assertThat(betaResponseReasoningSummaryPartAddedEvent.sequenceNumber()).isEqualTo(0L)
-        assertThat(betaResponseReasoningSummaryPartAddedEvent.summaryIndex()).isEqualTo(0L)
+        assertThat(betaResponseReasoningSummaryPartAddedEvent.sequenceNumber()).contains(0L)
+        assertThat(betaResponseReasoningSummaryPartAddedEvent.summaryIndex()).contains(0L)
         assertThat(betaResponseReasoningSummaryPartAddedEvent.agent())
             .contains(
                 BetaResponseReasoningSummaryPartAddedEvent.Agent.builder()

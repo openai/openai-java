@@ -569,9 +569,10 @@ private constructor(
                                     val response =
                                         when (type) {
                                             "response.completed" ->
-                                                event.asResponseCompleted().response()
-                                            "response.failed" -> event.asResponseFailed().response()
-                                            else -> event.asResponseIncomplete().response()
+                                                event.asResponseCompleted().responseOrThrow()
+                                            "response.failed" ->
+                                                event.asResponseFailed().responseOrThrow()
+                                            else -> event.asResponseIncomplete().responseOrThrow()
                                         }
                                     result.complete(response)
                                 }

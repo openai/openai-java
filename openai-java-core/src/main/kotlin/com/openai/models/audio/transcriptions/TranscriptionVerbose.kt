@@ -50,52 +50,83 @@ private constructor(
     ) : this(duration, language, text, segments, usage, words, mutableMapOf())
 
     /**
-     * The duration of the input audio.
+     * The duration of the input audio. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun duration(): Double = duration.getRequired("duration")
+    fun duration(): java.util.Optional<Double> = duration.getOptional("duration")
 
     /**
-     * The language of the input audio.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun language(): String = language.getRequired("language")
+    fun durationOrThrow(): Double = duration.getRequired("duration")
 
     /**
-     * The transcribed text.
+     * The language of the input audio. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun text(): String = text.getRequired("text")
+    fun language(): java.util.Optional<String> = language.getOptional("language")
 
     /**
-     * Segments of the transcribed text and their corresponding details.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun segments(): Optional<List<TranscriptionSegment>> = segments.getOptional("segments")
+    fun languageOrThrow(): String = language.getRequired("language")
 
     /**
-     * Usage statistics for models billed by audio input duration.
+     * The transcribed text. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun usage(): Optional<Usage> = usage.getOptional("usage")
+    fun text(): java.util.Optional<String> = text.getOptional("text")
 
     /**
-     * Extracted words and their corresponding timestamps.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun words(): Optional<List<TranscriptionWord>> = words.getOptional("words")
+    fun textOrThrow(): String = text.getRequired("text")
+
+    /**
+     * Segments of the transcribed text and their corresponding details. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun segments(): java.util.Optional<List<TranscriptionSegment>> =
+        segments.getOptional("segments")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun segmentsOrThrow(): List<TranscriptionSegment> = segments.getRequired("segments")
+
+    /**
+     * Usage statistics for models billed by audio input duration. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun usage(): java.util.Optional<Usage> = usage.getOptional("usage")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun usageOrThrow(): Usage = usage.getRequired("usage")
+
+    /**
+     * Extracted words and their corresponding timestamps. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun words(): java.util.Optional<List<TranscriptionWord>> = words.getOptional("words")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun wordsOrThrow(): List<TranscriptionWord> = words.getRequired("words")
 
     /**
      * Returns the raw JSON value of [duration].
@@ -368,9 +399,9 @@ private constructor(
             return@apply
         }
 
-        duration()
-        language()
-        text()
+        durationOrThrow()
+        languageOrThrow()
+        textOrThrow()
         segments().ifPresent { it.forEach { it.validate() } }
         usage().ifPresent { it.validate() }
         words().ifPresent { it.forEach { it.validate() } }
@@ -415,25 +446,42 @@ private constructor(
         ) : this(seconds, type, mutableMapOf())
 
         /**
-         * Duration of the input audio in seconds.
+         * Duration of the input audio in seconds. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun seconds(): Double = seconds.getRequired("seconds")
+        fun seconds(): java.util.Optional<Double> = seconds.getOptional("seconds")
 
         /**
-         * The type of the usage object. Always `duration` for this variant.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("duration")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun secondsOrThrow(): Double = seconds.getRequired("seconds")
+
+        /**
+         * The type of the usage object. Always `duration` for this variant. The schema requires
+         * this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("duration")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [seconds].
@@ -576,12 +624,8 @@ private constructor(
                 return@apply
             }
 
-            seconds()
-            _type().let {
-                if (it != JsonValue.from("duration")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            secondsOrThrow()
+            typeOrThrow()
             validated = true
         }
 

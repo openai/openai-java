@@ -3,6 +3,7 @@
 package com.openai.models.realtime
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -21,12 +22,12 @@ internal class RealtimeTranslationOutputAudioDeltaEventTest {
                 .sampleRate(0L)
                 .build()
 
-        assertThat(realtimeTranslationOutputAudioDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(realtimeTranslationOutputAudioDeltaEvent.eventId()).isEqualTo("event_id")
+        assertThat(realtimeTranslationOutputAudioDeltaEvent.delta()).contains("delta")
+        assertThat(realtimeTranslationOutputAudioDeltaEvent.eventId()).contains("event_id")
         assertThat(realtimeTranslationOutputAudioDeltaEvent.channels()).contains(0L)
         assertThat(realtimeTranslationOutputAudioDeltaEvent.elapsedMs()).contains(0L)
         assertThat(realtimeTranslationOutputAudioDeltaEvent.format())
-            .contains(RealtimeTranslationOutputAudioDeltaEvent.Format.PCM16)
+            .contains(JsonValue.from("pcm16"))
         assertThat(realtimeTranslationOutputAudioDeltaEvent.sampleRate()).contains(0L)
 
         val jsonMapper = jsonMapper()

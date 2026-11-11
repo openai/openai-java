@@ -23,12 +23,12 @@ internal class FileObjectTest {
                 .statusDetails("status_details")
                 .build()
 
-        assertThat(fileObject.id()).isEqualTo("id")
-        assertThat(fileObject.bytes()).isEqualTo(0L)
-        assertThat(fileObject.createdAt()).isEqualTo(0L)
-        assertThat(fileObject.filename()).isEqualTo("filename")
-        assertThat(fileObject.purpose()).isEqualTo(FileObject.Purpose.ASSISTANTS)
-        assertThat(fileObject.status()).isEqualTo(FileObject.Status.UPLOADED)
+        assertThat(fileObject.id()).contains("id")
+        assertThat(fileObject.bytes()).contains(0L)
+        assertThat(fileObject.createdAt()).contains(0L)
+        assertThat(fileObject.filename()).contains("filename")
+        assertThat(fileObject.purpose()).contains(FileObject.Purpose.ASSISTANTS)
+        assertThat(fileObject.status()).contains(FileObject.Status.UPLOADED)
         assertThat(fileObject.expiresAt()).contains(0L)
         assertThat(fileObject.statusDetails()).contains("status_details")
 

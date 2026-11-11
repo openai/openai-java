@@ -47,49 +47,80 @@ private constructor(
     ) : this(eventId, type, usage, clientEventId, contextWindow, mutableMapOf())
 
     /**
-     * The unique ID of the Live server event.
+     * The unique ID of the Live server event. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
     /**
-     * The event type, always `session.usage.updated`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("session.usage.updated")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
-     * The cumulative Live audio usage so far.
+     * The event type, always `session.usage.updated`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun usage(): SessionUsage = usage.getRequired("usage")
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("session.usage.updated")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The event_id of the client command associated with this server event, when supplied.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun clientEventId(): Optional<String> = clientEventId.getOptional("client_event_id")
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The cumulative Live audio usage so far. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun usage(): java.util.Optional<SessionUsage> = usage.getOptional("usage")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun usageOrThrow(): SessionUsage = usage.getRequired("usage")
+
+    /**
+     * The event_id of the client command associated with this server event, when supplied. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun clientEventId(): java.util.Optional<String> = clientEventId.getOptional("client_event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun clientEventIdOrThrow(): String = clientEventId.getRequired("client_event_id")
 
     /**
      * The latest measured Live context-window usage. Omitted when the context limit is unknown.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun contextWindow(): Optional<ContextWindow> = contextWindow.getOptional("context_window")
+    fun contextWindow(): java.util.Optional<ContextWindow> =
+        contextWindow.getOptional("context_window")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun contextWindowOrThrow(): ContextWindow = contextWindow.getRequired("context_window")
 
     /**
      * Returns the raw JSON value of [eventId].
@@ -315,13 +346,9 @@ private constructor(
             return@apply
         }
 
-        eventId()
-        _type().let {
-            if (it != JsonValue.from("session.usage.updated")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        usage().validate()
+        eventIdOrThrow()
+        typeOrThrow()
+        usageOrThrow().validate()
         clientEventId()
         contextWindow().ifPresent { it.validate() }
         validated = true
@@ -365,12 +392,18 @@ private constructor(
 
         /**
          * The latest active context token count divided by the Live model context limit. Can
-         * decrease after compaction and may lag between measured audio frames.
+         * decrease after compaction and may lag between measured audio frames. The schema requires
+         * this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun usageRatio(): Double = usageRatio.getRequired("usage_ratio")
+        fun usageRatio(): java.util.Optional<Double> = usageRatio.getOptional("usage_ratio")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun usageRatioOrThrow(): Double = usageRatio.getRequired("usage_ratio")
 
         /**
          * Returns the raw JSON value of [usageRatio].
@@ -501,7 +534,7 @@ private constructor(
                 return@apply
             }
 
-            usageRatio()
+            usageRatioOrThrow()
             validated = true
         }
 

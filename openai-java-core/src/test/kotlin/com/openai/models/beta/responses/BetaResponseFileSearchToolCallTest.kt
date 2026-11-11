@@ -36,10 +36,10 @@ internal class BetaResponseFileSearchToolCallTest {
                 )
                 .build()
 
-        assertThat(betaResponseFileSearchToolCall.id()).isEqualTo("id")
-        assertThat(betaResponseFileSearchToolCall.queries()).containsExactly("string")
+        assertThat(betaResponseFileSearchToolCall.id()).contains("id")
+        assertThat(betaResponseFileSearchToolCall.queries().getOrNull()).containsExactly("string")
         assertThat(betaResponseFileSearchToolCall.status())
-            .isEqualTo(BetaResponseFileSearchToolCall.Status.IN_PROGRESS)
+            .contains(BetaResponseFileSearchToolCall.Status.IN_PROGRESS)
         assertThat(betaResponseFileSearchToolCall.agent())
             .contains(
                 BetaResponseFileSearchToolCall.Agent.builder().agentName("agent_name").build()

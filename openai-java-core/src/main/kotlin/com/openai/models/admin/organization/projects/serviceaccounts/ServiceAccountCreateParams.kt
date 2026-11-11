@@ -35,32 +35,23 @@ private constructor(
 
     fun projectId(): Optional<String> = Optional.ofNullable(projectId)
 
-    /**
-     * The name of the service account being created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = body.name()
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
 
-    /**
-     * Create the service account without default roles or an API key.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun createServiceAccountOnly(): Optional<Boolean> = body.createServiceAccountOnly()
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
 
-    /**
-     * Number of seconds until the initial API key expires. If omitted or null, the key does not
-     * expire unless the effective organization or project policy requires an expiration. When a
-     * policy sets a maximum lifetime, this value must be provided and must not exceed that limit. A
-     * non-null value cannot be used when `create_service_account_only` is true.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun expiresInSeconds(): Optional<Long> = body.expiresInSeconds()
+    /** @see Body.createServiceAccountOnly */
+    fun createServiceAccountOnly(): java.util.Optional<Boolean> = body.createServiceAccountOnly()
+
+    /** @see Body.createServiceAccountOnlyOrThrow */
+    fun createServiceAccountOnlyOrThrow(): Boolean = body.createServiceAccountOnlyOrThrow()
+
+    /** @see Body.expiresInSeconds */
+    fun expiresInSeconds(): java.util.Optional<Long> = body.expiresInSeconds()
+
+    /** @see Body.expiresInSecondsOrThrow */
+    fun expiresInSecondsOrThrow(): Long = body.expiresInSecondsOrThrow()
 
     /**
      * Returns the raw JSON value of [name].
@@ -385,32 +376,52 @@ private constructor(
         ) : this(name, createServiceAccountOnly, expiresInSeconds, mutableMapOf())
 
         /**
-         * The name of the service account being created.
+         * The name of the service account being created. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): String = name.getRequired("name")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
 
         /**
-         * Create the service account without default roles or an API key.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun createServiceAccountOnly(): Optional<Boolean> =
+        fun nameOrThrow(): String = name.getRequired("name")
+
+        /**
+         * Create the service account without default roles or an API key. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun createServiceAccountOnly(): java.util.Optional<Boolean> =
             createServiceAccountOnly.getOptional("create_service_account_only")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun createServiceAccountOnlyOrThrow(): Boolean =
+            createServiceAccountOnly.getRequired("create_service_account_only")
 
         /**
          * Number of seconds until the initial API key expires. If omitted or null, the key does not
          * expire unless the effective organization or project policy requires an expiration. When a
          * policy sets a maximum lifetime, this value must be provided and must not exceed that
          * limit. A non-null value cannot be used when `create_service_account_only` is true.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun expiresInSeconds(): Optional<Long> = expiresInSeconds.getOptional("expires_in_seconds")
+        fun expiresInSeconds(): java.util.Optional<Long> =
+            expiresInSeconds.getOptional("expires_in_seconds")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun expiresInSecondsOrThrow(): Long = expiresInSeconds.getRequired("expires_in_seconds")
 
         /**
          * Returns the raw JSON value of [name].
@@ -632,7 +643,7 @@ private constructor(
                 return@apply
             }
 
-            name()
+            nameOrThrow()
             createServiceAccountOnly()
             expiresInSeconds()
             validated = true

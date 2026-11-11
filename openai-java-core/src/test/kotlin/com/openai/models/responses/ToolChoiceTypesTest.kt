@@ -14,7 +14,7 @@ internal class ToolChoiceTypesTest {
         val toolChoiceTypes =
             ToolChoiceTypes.builder().type(ToolChoiceTypes.Type.FILE_SEARCH).build()
 
-        assertThat(toolChoiceTypes.type()).isEqualTo(ToolChoiceTypes.Type.FILE_SEARCH)
+        assertThat(toolChoiceTypes.type()).contains(ToolChoiceTypes.Type.FILE_SEARCH)
 
         val jsonMapper = jsonMapper()
 

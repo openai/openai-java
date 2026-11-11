@@ -13,8 +13,8 @@ internal class VaultDeletedTest {
     fun createAndRoundtrip() {
         val vaultDeleted = VaultDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(vaultDeleted.id()).isEqualTo("id")
-        assertThat(vaultDeleted.deleted()).isEqualTo(true)
+        assertThat(vaultDeleted.id()).contains("id")
+        assertThat(vaultDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

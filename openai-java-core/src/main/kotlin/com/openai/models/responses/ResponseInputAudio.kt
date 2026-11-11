@@ -36,23 +36,39 @@ private constructor(
     ) : this(inputAudio, type, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun inputAudio(): InputAudio = inputAudio.getRequired("input_audio")
+    fun inputAudio(): java.util.Optional<InputAudio> = inputAudio.getOptional("input_audio")
 
     /**
-     * The type of the input item. Always `input_audio`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("input_audio")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun inputAudioOrThrow(): InputAudio = inputAudio.getRequired("input_audio")
+
+    /**
+     * The type of the input item. Always `input_audio`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("input_audio")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [inputAudio].
@@ -199,12 +215,8 @@ private constructor(
             return@apply
         }
 
-        inputAudio().validate()
-        _type().let {
-            if (it != JsonValue.from("input_audio")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        inputAudioOrThrow().validate()
+        typeOrThrow()
         validated = true
     }
 
@@ -241,20 +253,32 @@ private constructor(
         ) : this(data, format, mutableMapOf())
 
         /**
-         * Base64-encoded audio data.
+         * Base64-encoded audio data. The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun data(): String = data.getRequired("data")
+        fun data(): java.util.Optional<String> = data.getOptional("data")
 
         /**
-         * The format of the audio data. Currently supported formats are `mp3` and `wav`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun format(): Format = format.getRequired("format")
+        fun dataOrThrow(): String = data.getRequired("data")
+
+        /**
+         * The format of the audio data. Currently supported formats are `mp3` and `wav`. The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun format(): java.util.Optional<Format> = format.getOptional("format")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun formatOrThrow(): Format = format.getRequired("format")
 
         /**
          * Returns the raw JSON value of [data].
@@ -404,8 +428,8 @@ private constructor(
                 return@apply
             }
 
-            data()
-            format().validate()
+            dataOrThrow()
+            formatOrThrow().validate()
             validated = true
         }
 

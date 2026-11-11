@@ -18,10 +18,10 @@ internal class BetaInlineSkillTest {
                 .source(BetaInlineSkillSource.builder().data("x").build())
                 .build()
 
-        assertThat(betaInlineSkill.description()).isEqualTo("description")
-        assertThat(betaInlineSkill.name()).isEqualTo("name")
+        assertThat(betaInlineSkill.description()).contains("description")
+        assertThat(betaInlineSkill.name()).contains("name")
         assertThat(betaInlineSkill.source())
-            .isEqualTo(BetaInlineSkillSource.builder().data("x").build())
+            .contains(BetaInlineSkillSource.builder().data("x").build())
 
         val jsonMapper = jsonMapper()
 

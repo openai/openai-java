@@ -53,9 +53,9 @@ internal class DecisionCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.input()).isEqualTo(DecisionCreateParams.Input.ofString("string"))
-        assertThat(body.model()).isEqualTo("model")
-        assertThat(body.questions())
+        assertThat(body.inputOrThrow()).isEqualTo(DecisionCreateParams.Input.ofString("string"))
+        assertThat(body.modelOrThrow()).isEqualTo("model")
+        assertThat(body.questionsOrThrow())
             .containsExactly(
                 DecisionCreateParams.Question.ofPredicate(
                     DecisionCreateParams.Question.Predicate.builder()
@@ -86,9 +86,9 @@ internal class DecisionCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.input()).isEqualTo(DecisionCreateParams.Input.ofString("string"))
-        assertThat(body.model()).isEqualTo("model")
-        assertThat(body.questions())
+        assertThat(body.inputOrThrow()).isEqualTo(DecisionCreateParams.Input.ofString("string"))
+        assertThat(body.modelOrThrow()).isEqualTo("model")
+        assertThat(body.questionsOrThrow())
             .containsExactly(
                 DecisionCreateParams.Question.ofPredicate(
                     DecisionCreateParams.Question.Predicate.builder().instructions("string").build()

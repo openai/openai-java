@@ -221,7 +221,7 @@ internal class ThreadCreateAndRunParamsTest {
 
         val body = params._body()
 
-        assertThat(body.assistantId()).isEqualTo("assistant_id")
+        assertThat(body.assistantIdOrThrow()).isEqualTo("assistant_id")
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.maxCompletionTokens()).contains(256L)
         assertThat(body.maxPromptTokens()).contains(256L)
@@ -332,6 +332,6 @@ internal class ThreadCreateAndRunParamsTest {
 
         val body = params._body()
 
-        assertThat(body.assistantId()).isEqualTo("assistant_id")
+        assertThat(body.assistantIdOrThrow()).isEqualTo("assistant_id")
     }
 }

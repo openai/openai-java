@@ -11,17 +11,22 @@ internal class ApiKeyUpdateCompatibilityTest {
     private fun builder() = ApiKeyUpdateParams.builder().projectId("proj_test").apiKeyId("key_test")
 
     @Test
-    fun expiryOnlyRetainsPrimitiveGettersAndWireBody() {
+    fun expirySupportsOptionalPrimitiveAndRawGetters() {
         val params = builder().expiresInSeconds(3600L).build()
-        val ttl: Long = params.expiresInSeconds()
-        val bodyTtl: Long = params._body().expiresInSeconds()
+        val ttl: Long = params.expiresInSecondsOrThrow()
+        val bodyTtl: Long = params._body().expiresInSecondsOrThrow()
+        assertThat(params.expiresInSeconds()).contains(3600L)
+        assertThat(params._body().expiresInSeconds()).contains(3600L)
+        assertThat(params._expiresInSeconds().asKnown()).contains(3600L)
         assertThat(ttl).isEqualTo(3600L)
         assertThat(bodyTtl).isEqualTo(3600L)
         assertThat(params.expiresInSecondsOptional()).contains(3600L)
         assertThat(params._body().expiresInSecondsOptional()).contains(3600L)
-        assertThat(ApiKeyUpdateParams::class.java.getMethod("expiresInSeconds").returnType)
+        assertThat(ApiKeyUpdateParams::class.java.getMethod("expiresInSecondsOrThrow").returnType)
             .isEqualTo(java.lang.Long.TYPE)
-        assertThat(ApiKeyUpdateParams.Body::class.java.getMethod("expiresInSeconds").returnType)
+        assertThat(
+                ApiKeyUpdateParams.Body::class.java.getMethod("expiresInSecondsOrThrow").returnType
+            )
             .isEqualTo(java.lang.Long.TYPE)
         assertThat(jsonMapper().readTree(jsonMapper().writeValueAsString(params._body())))
             .isEqualTo(jsonMapper().readTree("""{"expires_in_seconds":3600}"""))
@@ -32,11 +37,13 @@ internal class ApiKeyUpdateCompatibilityTest {
     fun scopeOnlyValidatesWithoutSendingExpiry() {
         val params = builder().addScope("api.all.read").build()
         params._body().validate()
+        assertThat(params.expiresInSeconds()).isEmpty()
+        assertThat(params._expiresInSeconds().isMissing()).isTrue()
         assertThat(params.expiresInSecondsOptional()).isEmpty()
         assertThat(params._body().expiresInSecondsOptional()).isEmpty()
-        assertThatThrownBy { params.expiresInSeconds() }
+        assertThatThrownBy { params.expiresInSecondsOrThrow() }
             .isInstanceOf(OpenAIInvalidDataException::class.java)
-        assertThatThrownBy { params._body().expiresInSeconds() }
+        assertThatThrownBy { params._body().expiresInSecondsOrThrow() }
             .isInstanceOf(OpenAIInvalidDataException::class.java)
         assertThat(jsonMapper().readTree(jsonMapper().writeValueAsString(params._body())))
             .isEqualTo(jsonMapper().readTree("""{"scopes":["api.all.read"]}"""))
@@ -50,7 +57,7 @@ internal class ApiKeyUpdateCompatibilityTest {
             .isEqualTo(jsonMapper().readTree("""{"scopes":[]}"""))
         val combined = scopesOnly.toBuilder().expiresInSeconds(60L).build()
         combined._body().validate()
-        assertThat(combined.expiresInSeconds()).isEqualTo(60L)
+        assertThat(combined.expiresInSecondsOrThrow()).isEqualTo(60L)
         assertThat(jsonMapper().readTree(jsonMapper().writeValueAsString(combined._body())))
             .isEqualTo(jsonMapper().readTree("""{"expires_in_seconds":60,"scopes":[]}"""))
     }

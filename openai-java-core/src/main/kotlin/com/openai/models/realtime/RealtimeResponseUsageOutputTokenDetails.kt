@@ -34,20 +34,30 @@ private constructor(
     ) : this(audioTokens, textTokens, mutableMapOf())
 
     /**
-     * The number of audio tokens used in the Response.
+     * The number of audio tokens used in the Response. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun audioTokens(): Optional<Long> = audioTokens.getOptional("audio_tokens")
+    fun audioTokens(): java.util.Optional<Long> = audioTokens.getOptional("audio_tokens")
 
     /**
-     * The number of text tokens used in the Response.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun textTokens(): Optional<Long> = textTokens.getOptional("text_tokens")
+    fun audioTokensOrThrow(): Long = audioTokens.getRequired("audio_tokens")
+
+    /**
+     * The number of text tokens used in the Response. Returns empty if the JSON property is missing
+     * or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun textTokens(): java.util.Optional<Long> = textTokens.getOptional("text_tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun textTokensOrThrow(): Long = textTokens.getRequired("text_tokens")
 
     /**
      * Returns the raw JSON value of [audioTokens].

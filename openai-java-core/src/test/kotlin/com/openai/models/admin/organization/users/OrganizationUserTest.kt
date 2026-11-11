@@ -50,8 +50,8 @@ internal class OrganizationUserTest {
                 )
                 .build()
 
-        assertThat(organizationUser.id()).isEqualTo("id")
-        assertThat(organizationUser.addedAt()).isEqualTo(0L)
+        assertThat(organizationUser.id()).contains("id")
+        assertThat(organizationUser.addedAt()).contains(0L)
         assertThat(organizationUser.apiKeyLastUsedAt()).contains(0L)
         assertThat(organizationUser.created()).contains(0L)
         assertThat(organizationUser.developerPersona()).contains("developer_persona")

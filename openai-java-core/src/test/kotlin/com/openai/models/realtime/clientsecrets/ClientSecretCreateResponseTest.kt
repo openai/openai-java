@@ -123,9 +123,9 @@ internal class ClientSecretCreateResponseTest {
                 .value("value")
                 .build()
 
-        assertThat(clientSecretCreateResponse.expiresAt()).isEqualTo(0L)
+        assertThat(clientSecretCreateResponse.expiresAt()).contains(0L)
         assertThat(clientSecretCreateResponse.session())
-            .isEqualTo(
+            .contains(
                 ClientSecretCreateResponse.Session.ofRealtime(
                     RealtimeSessionCreateResponse.builder()
                         .id("id")
@@ -223,7 +223,7 @@ internal class ClientSecretCreateResponseTest {
                         .build()
                 )
             )
-        assertThat(clientSecretCreateResponse.value()).isEqualTo("value")
+        assertThat(clientSecretCreateResponse.value()).contains("value")
 
         val jsonMapper = jsonMapper()
 

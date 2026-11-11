@@ -25,10 +25,10 @@ internal class BetaResponseShellCallCommandDeltaEventTest {
                 .obfuscation("obfuscation")
                 .build()
 
-        assertThat(betaResponseShellCallCommandDeltaEvent.commandIndex()).isEqualTo(0L)
-        assertThat(betaResponseShellCallCommandDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(betaResponseShellCallCommandDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseShellCallCommandDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseShellCallCommandDeltaEvent.commandIndex()).contains(0L)
+        assertThat(betaResponseShellCallCommandDeltaEvent.delta()).contains("delta")
+        assertThat(betaResponseShellCallCommandDeltaEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseShellCallCommandDeltaEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseShellCallCommandDeltaEvent.agent())
             .contains(
                 BetaResponseShellCallCommandDeltaEvent.Agent.builder()

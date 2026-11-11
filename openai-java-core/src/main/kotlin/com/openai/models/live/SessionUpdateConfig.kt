@@ -50,22 +50,31 @@ private constructor(
 
     /**
      * Delegation settings to update. The delegation type must match the current session; omitted
-     * settings retain their values.
+     * settings retain their values. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun delegation(): Optional<Delegation> = delegation.getOptional("delegation")
+    fun delegation(): java.util.Optional<Delegation> = delegation.getOptional("delegation")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun delegationOrThrow(): Delegation = delegation.getRequired("delegation")
 
     /**
      * At most one Decisions trigger per transcript event type. Triggers run independently of
      * delegation. On update, omit triggers to keep the current configuration, send a list to
-     * replace it, or send an empty list to disable triggers.
+     * replace it, or send an empty list to disable triggers. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun triggers(): Optional<List<DecisionTrigger>> = triggers.getOptional("triggers")
+    fun triggers(): java.util.Optional<List<DecisionTrigger>> = triggers.getOptional("triggers")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun triggersOrThrow(): List<DecisionTrigger> = triggers.getRequired("triggers")
 
     /**
      * Returns the raw JSON value of [delegation].
@@ -561,17 +570,28 @@ private constructor(
             ) : this(type, acknowledgementDelayMs, responses, mutableMapOf())
 
             /**
-             * The delegation owner. Always `responses` for tasks handled by the Responses API.
+             * The delegation owner. Always `responses` for tasks handled by the Responses API. The
+             * schema requires this property. Returns empty if the JSON property is missing or null.
              *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("responses")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("responses")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
             /**
              * Milliseconds to wait before requesting an automatic spoken acknowledgement for a
@@ -579,22 +599,36 @@ private constructor(
              * appended to the session cancels all pending acknowledgements, including those for
              * other delegations. Defaults to 400 for Decisions sessions and 0 (request immediately)
              * for other sessions. Omission in a session update preserves the current value. Updates
-             * apply to subsequent delegations.
+             * apply to subsequent delegations. Returns empty if the JSON property is missing or
+             * null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun acknowledgementDelayMs(): Optional<Long> =
+            fun acknowledgementDelayMs(): java.util.Optional<Long> =
                 acknowledgementDelayMs.getOptional("acknowledgement_delay_ms")
 
             /**
-             * Responses backend settings to update. Omitted settings keep their existing values.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun responses(): Optional<ResponsesDelegationUpdateConfig> =
+            fun acknowledgementDelayMsOrThrow(): Long =
+                acknowledgementDelayMs.getRequired("acknowledgement_delay_ms")
+
+            /**
+             * Responses backend settings to update. Omitted settings keep their existing values.
+             * Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun responses(): java.util.Optional<ResponsesDelegationUpdateConfig> =
                 responses.getOptional("responses")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun responsesOrThrow(): ResponsesDelegationUpdateConfig =
+                responses.getRequired("responses")
 
             /**
              * Returns the raw JSON value of [acknowledgementDelayMs].
@@ -776,11 +810,7 @@ private constructor(
                     return@apply
                 }
 
-                _type().let {
-                    if (it != JsonValue.from("responses")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
+                typeOrThrow()
                 acknowledgementDelayMs()
                 responses().ifPresent { it.validate() }
                 validated = true
@@ -849,15 +879,28 @@ private constructor(
             ) : this(type, acknowledgementDelayMs, decisions, mutableMapOf())
 
             /**
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("decisions")
-             * ```
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
              *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("decisions")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
             /**
              * Milliseconds to wait before requesting an automatic spoken acknowledgement for a
@@ -865,20 +908,35 @@ private constructor(
              * appended to the session cancels all pending acknowledgements, including those for
              * other delegations. Defaults to 400 for Decisions sessions and 0 (request immediately)
              * for other sessions. Omission in a session update preserves the current value. Updates
-             * apply to subsequent delegations.
+             * apply to subsequent delegations. Returns empty if the JSON property is missing or
+             * null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun acknowledgementDelayMs(): Optional<Long> =
+            fun acknowledgementDelayMs(): java.util.Optional<Long> =
                 acknowledgementDelayMs.getOptional("acknowledgement_delay_ms")
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun decisions(): Optional<DecisionsDelegationUpdateConfig> =
+            fun acknowledgementDelayMsOrThrow(): Long =
+                acknowledgementDelayMs.getRequired("acknowledgement_delay_ms")
+
+            /**
+             * Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun decisions(): java.util.Optional<DecisionsDelegationUpdateConfig> =
                 decisions.getOptional("decisions")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun decisionsOrThrow(): DecisionsDelegationUpdateConfig =
+                decisions.getRequired("decisions")
 
             /**
              * Returns the raw JSON value of [acknowledgementDelayMs].
@@ -1056,11 +1114,7 @@ private constructor(
                     return@apply
                 }
 
-                _type().let {
-                    if (it != JsonValue.from("decisions")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
+                typeOrThrow()
                 acknowledgementDelayMs()
                 decisions().ifPresent { it.validate() }
                 validated = true

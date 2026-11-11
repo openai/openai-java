@@ -42,7 +42,7 @@ internal class RoleListResponseTest {
                 .updatedAt(0L)
                 .build()
 
-        assertThat(roleListResponse.id()).isEqualTo("id")
+        assertThat(roleListResponse.id()).contains("id")
         assertThat(roleListResponse.assignmentSources().getOrNull())
             .containsExactly(
                 RoleListResponse.AssignmentSource.builder()
@@ -65,10 +65,10 @@ internal class RoleListResponseTest {
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-        assertThat(roleListResponse.name()).isEqualTo("name")
-        assertThat(roleListResponse.permissions()).containsExactly("string")
-        assertThat(roleListResponse.predefinedRole()).isEqualTo(true)
-        assertThat(roleListResponse.resourceType()).isEqualTo("resource_type")
+        assertThat(roleListResponse.name()).contains("name")
+        assertThat(roleListResponse.permissions().getOrNull()).containsExactly("string")
+        assertThat(roleListResponse.predefinedRole()).contains(true)
+        assertThat(roleListResponse.resourceType()).contains("resource_type")
         assertThat(roleListResponse.updatedAt()).contains(0L)
 
         val jsonMapper = jsonMapper()

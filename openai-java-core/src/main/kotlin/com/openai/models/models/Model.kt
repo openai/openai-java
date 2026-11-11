@@ -43,49 +43,79 @@ private constructor(
     ) : this(id, created, object_, ownedBy, shutdownDate, mutableMapOf())
 
     /**
-     * The model identifier, which can be referenced in the API endpoints.
+     * The model identifier, which can be referenced in the API endpoints. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The Unix timestamp (in seconds) when the model was created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun created(): Long = created.getRequired("created")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The object type, which is always "model".
+     * The Unix timestamp (in seconds) when the model was created. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("model")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun created(): java.util.Optional<Long> = created.getOptional("created")
 
     /**
-     * The organization that owns the model.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun ownedBy(): String = ownedBy.getRequired("owned_by")
+    fun createdOrThrow(): Long = created.getRequired("created")
 
     /**
-     * The date when the model will shut down, or null if not announced.
+     * The object type, which is always "model". The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun shutdownDate(): Optional<LocalDate> = shutdownDate.getOptional("shutdown_date")
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("model")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * The organization that owns the model. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun ownedBy(): java.util.Optional<String> = ownedBy.getOptional("owned_by")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun ownedByOrThrow(): String = ownedBy.getRequired("owned_by")
+
+    /**
+     * The date when the model will shut down, or null if not announced. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun shutdownDate(): java.util.Optional<LocalDate> = shutdownDate.getOptional("shutdown_date")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun shutdownDateOrThrow(): LocalDate = shutdownDate.getRequired("shutdown_date")
 
     /**
      * Returns the raw JSON value of [id].
@@ -309,14 +339,10 @@ private constructor(
             return@apply
         }
 
-        id()
-        created()
-        _object_().let {
-            if (it != JsonValue.from("model")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        ownedBy()
+        idOrThrow()
+        createdOrThrow()
+        object_OrThrow()
+        ownedByOrThrow()
         shutdownDate()
         validated = true
     }

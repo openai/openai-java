@@ -5,6 +5,7 @@ package com.openai.models.beta.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -44,13 +45,13 @@ internal class BetaResponseToolSearchOutputItemTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(betaResponseToolSearchOutputItem.id()).isEqualTo("id")
+        assertThat(betaResponseToolSearchOutputItem.id()).contains("id")
         assertThat(betaResponseToolSearchOutputItem.callId()).contains("call_id")
         assertThat(betaResponseToolSearchOutputItem.execution())
-            .isEqualTo(BetaResponseToolSearchOutputItem.Execution.SERVER)
+            .contains(BetaResponseToolSearchOutputItem.Execution.SERVER)
         assertThat(betaResponseToolSearchOutputItem.status())
-            .isEqualTo(BetaResponseToolSearchOutputItem.Status.IN_PROGRESS)
-        assertThat(betaResponseToolSearchOutputItem.tools())
+            .contains(BetaResponseToolSearchOutputItem.Status.IN_PROGRESS)
+        assertThat(betaResponseToolSearchOutputItem.tools().getOrNull())
             .containsExactly(
                 BetaTool.ofFunction(
                     BetaFunctionTool.builder()

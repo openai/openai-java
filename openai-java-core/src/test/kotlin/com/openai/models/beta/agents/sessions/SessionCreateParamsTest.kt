@@ -136,7 +136,7 @@ internal class SessionCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.environment()).isEqualTo(EnvironmentParam.ofNone())
+        assertThat(body.environmentOrThrow()).isEqualTo(EnvironmentParam.ofNone())
         assertThat(body.agent())
             .contains(
                 SessionCreateParams.Agent.builder()
@@ -199,6 +199,6 @@ internal class SessionCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.environment()).isEqualTo(EnvironmentParam.ofNone())
+        assertThat(body.environmentOrThrow()).isEqualTo(EnvironmentParam.ofNone())
     }
 }

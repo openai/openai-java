@@ -27,8 +27,8 @@ internal class DecisionItemCreatedEventCompatibility {
                 .clientEventId("browser_1")
                 .build()
 
-        assertThat(decisionItemCreatedEvent.eventId()).isEqualTo("evt_item_1")
-        assertThat(decisionItemCreatedEvent.item())
+        assertThat(decisionItemCreatedEvent.eventIdOrThrow()).isEqualTo("evt_item_1")
+        assertThat(decisionItemCreatedEvent.itemOrThrow())
             .isEqualTo(
                 jsonMapper()
                     .readValue(

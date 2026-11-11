@@ -21,7 +21,7 @@ internal class ModerationImageUrlInputTest {
                 .build()
 
         assertThat(moderationImageUrlInput.imageUrl())
-            .isEqualTo(
+            .contains(
                 ModerationImageUrlInput.ImageUrl.builder()
                     .url("https://example.com/image.jpg")
                     .build()

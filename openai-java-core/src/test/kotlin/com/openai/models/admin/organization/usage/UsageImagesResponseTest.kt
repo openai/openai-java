@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.usage
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -57,7 +58,7 @@ internal class UsageImagesResponseTest {
                 .nextPage("next_page")
                 .build()
 
-        assertThat(usageImagesResponse.data())
+        assertThat(usageImagesResponse.data().getOrNull())
             .containsExactly(
                 UsageImagesResponse.Data.builder()
                     .endTime(0L)
@@ -96,7 +97,7 @@ internal class UsageImagesResponseTest {
                     .startTime(0L)
                     .build()
             )
-        assertThat(usageImagesResponse.hasMore()).isEqualTo(true)
+        assertThat(usageImagesResponse.hasMore()).contains(true)
         assertThat(usageImagesResponse.nextPage()).contains("next_page")
 
         val jsonMapper = jsonMapper()

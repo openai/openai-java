@@ -37,8 +37,8 @@ internal class ThreadTest {
                 )
                 .build()
 
-        assertThat(thread.id()).isEqualTo("id")
-        assertThat(thread.createdAt()).isEqualTo(0L)
+        assertThat(thread.id()).contains("id")
+        assertThat(thread.createdAt()).contains(0L)
         assertThat(thread.metadata())
             .contains(
                 Thread.Metadata.builder()

@@ -10,6 +10,7 @@ import com.openai.models.chat.completions.ChatCompletionContentPartText
 import com.openai.models.chat.completions.ChatCompletionMessage
 import com.openai.models.chat.completions.ChatCompletionMessageFunctionToolCall
 import com.openai.models.chat.completions.ChatCompletionStoreMessage
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -78,7 +79,7 @@ internal class MessageListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(messageListPageResponse.data())
+        assertThat(messageListPageResponse.data().getOrNull())
             .containsExactly(
                 ChatCompletionStoreMessage.builder()
                     .content("content")
@@ -133,9 +134,9 @@ internal class MessageListPageResponseTest {
                     )
                     .build()
             )
-        assertThat(messageListPageResponse.firstId()).isEqualTo("first_id")
-        assertThat(messageListPageResponse.hasMore()).isEqualTo(true)
-        assertThat(messageListPageResponse.lastId()).isEqualTo("last_id")
+        assertThat(messageListPageResponse.firstId()).contains("first_id")
+        assertThat(messageListPageResponse.hasMore()).contains(true)
+        assertThat(messageListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()
 

@@ -31,62 +31,35 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * The time frame within which the batch should be processed. Currently only `24h` is supported.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun completionWindow(): CompletionWindow = body.completionWindow()
+    /** @see Body.completionWindow */
+    fun completionWindow(): java.util.Optional<CompletionWindow> = body.completionWindow()
 
-    /**
-     * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
-     * `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`, `/v1/moderations`,
-     * `/v1/images/generations`, `/v1/images/edits`, and `/v1/videos` are supported. Note that
-     * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs across
-     * all requests in the batch.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun endpoint(): Endpoint = body.endpoint()
+    /** @see Body.completionWindowOrThrow */
+    fun completionWindowOrThrow(): CompletionWindow = body.completionWindowOrThrow()
 
-    /**
-     * The ID of an uploaded file that contains requests for the new batch.
-     *
-     * See [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
-     * for how to upload a file.
-     *
-     * Your input file must be formatted as a
-     * [JSONL file](https://developers.openai.com/api/docs/guides/batch#1-prepare-your-batch-file),
-     * and must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests,
-     * and can be up to 200 MB in size.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun inputFileId(): String = body.inputFileId()
+    /** @see Body.endpoint */
+    fun endpoint(): java.util.Optional<Endpoint> = body.endpoint()
 
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
-     *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun metadata(): Optional<Metadata> = body.metadata()
+    /** @see Body.endpointOrThrow */
+    fun endpointOrThrow(): Endpoint = body.endpointOrThrow()
 
-    /**
-     * The expiration policy for the output and/or error file that are generated for a batch.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun outputExpiresAfter(): Optional<OutputExpiresAfter> = body.outputExpiresAfter()
+    /** @see Body.inputFileId */
+    fun inputFileId(): java.util.Optional<String> = body.inputFileId()
+
+    /** @see Body.inputFileIdOrThrow */
+    fun inputFileIdOrThrow(): String = body.inputFileIdOrThrow()
+
+    /** @see Body.metadata */
+    fun metadata(): java.util.Optional<Metadata> = body.metadata()
+
+    /** @see Body.metadataOrThrow */
+    fun metadataOrThrow(): Metadata = body.metadataOrThrow()
+
+    /** @see Body.outputExpiresAfter */
+    fun outputExpiresAfter(): java.util.Optional<OutputExpiresAfter> = body.outputExpiresAfter()
+
+    /** @see Body.outputExpiresAfterOrThrow */
+    fun outputExpiresAfterOrThrow(): OutputExpiresAfter = body.outputExpiresAfterOrThrow()
 
     /**
      * Returns the raw JSON value of [completionWindow].
@@ -462,24 +435,38 @@ private constructor(
 
         /**
          * The time frame within which the batch should be processed. Currently only `24h` is
-         * supported.
+         * supported. The schema requires this property. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun completionWindow(): CompletionWindow = completionWindow.getRequired("completion_window")
+        fun completionWindow(): java.util.Optional<CompletionWindow> =
+            completionWindow.getOptional("completion_window")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun completionWindowOrThrow(): CompletionWindow =
+            completionWindow.getRequired("completion_window")
 
         /**
          * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
          * `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`, `/v1/moderations`,
          * `/v1/images/generations`, `/v1/images/edits`, and `/v1/videos` are supported. Note that
          * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs
-         * across all requests in the batch.
+         * across all requests in the batch. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun endpoint(): Endpoint = endpoint.getRequired("endpoint")
+        fun endpoint(): java.util.Optional<Endpoint> = endpoint.getOptional("endpoint")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun endpointOrThrow(): Endpoint = endpoint.getRequired("endpoint")
 
         /**
          * The ID of an uploaded file that contains requests for the new batch.
@@ -491,12 +478,18 @@ private constructor(
          * Your input file must be formatted as a
          * [JSONL file](https://developers.openai.com/api/docs/guides/batch#1-prepare-your-batch-file),
          * and must be uploaded with the purpose `batch`. The file can contain up to 50,000
-         * requests, and can be up to 200 MB in size.
+         * requests, and can be up to 200 MB in size. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun inputFileId(): String = inputFileId.getRequired("input_file_id")
+        fun inputFileId(): java.util.Optional<String> = inputFileId.getOptional("input_file_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun inputFileIdOrThrow(): String = inputFileId.getRequired("input_file_id")
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -504,21 +497,33 @@ private constructor(
          * objects via API or the dashboard.
          *
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * maximum length of 512 characters. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+        fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
 
         /**
          * The expiration policy for the output and/or error file that are generated for a batch.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun outputExpiresAfter(): Optional<OutputExpiresAfter> =
+        fun outputExpiresAfter(): java.util.Optional<OutputExpiresAfter> =
             outputExpiresAfter.getOptional("output_expires_after")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun outputExpiresAfterOrThrow(): OutputExpiresAfter =
+            outputExpiresAfter.getRequired("output_expires_after")
 
         /**
          * Returns the raw JSON value of [completionWindow].
@@ -792,9 +797,9 @@ private constructor(
                 return@apply
             }
 
-            completionWindow().validate()
-            endpoint().validate()
-            inputFileId()
+            completionWindowOrThrow().validate()
+            endpointOrThrow().validate()
+            inputFileIdOrThrow()
             metadata().ifPresent { it.validate() }
             outputExpiresAfter().ifPresent { it.validate() }
             validated = true
@@ -1325,26 +1330,43 @@ private constructor(
         /**
          * Anchor timestamp after which the expiration policy applies. Supported anchors:
          * `created_at`. Note that the anchor is the file creation time, not the time the batch is
-         * created.
+         * created. The schema requires this property. Returns empty if the JSON property is missing
+         * or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("created_at")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonValue = anchor
+        fun anchor(): java.util.Optional<JsonValue> {
+            val raw = anchor
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("created_at")) ->
+                    throw OpenAIInvalidDataException("`anchor` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun anchorOrThrow(): JsonValue = anchor().orElseGet { anchor.getRequired("anchor") }
+
+        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonField<JsonValue> = anchor
 
         /**
          * The number of seconds after the anchor time that the file will expire. Must be between
-         * 3600 (1 hour) and 2592000 (30 days).
+         * 3600 (1 hour) and 2592000 (30 days). The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun seconds(): Long = seconds.getRequired("seconds")
+        fun seconds(): java.util.Optional<Long> = seconds.getOptional("seconds")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun secondsOrThrow(): Long = seconds.getRequired("seconds")
 
         /**
          * Returns the raw JSON value of [seconds].
@@ -1494,12 +1516,8 @@ private constructor(
                 return@apply
             }
 
-            _anchor().let {
-                if (it != JsonValue.from("created_at")) {
-                    throw OpenAIInvalidDataException("'anchor' is invalid, received $it")
-                }
-            }
-            seconds()
+            anchorOrThrow()
+            secondsOrThrow()
             validated = true
         }
 

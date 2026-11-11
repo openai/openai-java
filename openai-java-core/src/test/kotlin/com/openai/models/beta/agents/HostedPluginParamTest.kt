@@ -18,10 +18,10 @@ internal class HostedPluginParamTest {
                 .source(InlineCapabilitySourceParam.builder().data("x").build())
                 .build()
 
-        assertThat(hostedPluginParam.description()).isEqualTo("description")
-        assertThat(hostedPluginParam.name()).isEqualTo("x")
+        assertThat(hostedPluginParam.description()).contains("description")
+        assertThat(hostedPluginParam.name()).contains("x")
         assertThat(hostedPluginParam.source())
-            .isEqualTo(InlineCapabilitySourceParam.builder().data("x").build())
+            .contains(InlineCapabilitySourceParam.builder().data("x").build())
 
         val jsonMapper = jsonMapper()
 

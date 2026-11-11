@@ -30,9 +30,9 @@ internal class ConversationItemCreatedEventTest {
                 .previousItemId("previous_item_id")
                 .build()
 
-        assertThat(conversationItemCreatedEvent.eventId()).isEqualTo("event_id")
+        assertThat(conversationItemCreatedEvent.eventId()).contains("event_id")
         assertThat(conversationItemCreatedEvent.item())
-            .isEqualTo(
+            .contains(
                 ConversationItem.ofRealtimeConversationItemSystemMessage(
                     RealtimeConversationItemSystemMessage.builder()
                         .addContent(

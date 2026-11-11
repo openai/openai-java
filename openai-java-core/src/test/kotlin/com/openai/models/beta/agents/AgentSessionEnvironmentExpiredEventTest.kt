@@ -33,7 +33,7 @@ internal class AgentSessionEnvironmentExpiredEventTest {
                 .build()
 
         assertThat(agentSessionEnvironmentExpiredEvent.environment())
-            .isEqualTo(
+            .contains(
                 AgentSessionEnvironmentState.builder()
                     .id("id")
                     .error(
@@ -47,8 +47,8 @@ internal class AgentSessionEnvironmentExpiredEventTest {
                     .type("type")
                     .build()
             )
-        assertThat(agentSessionEnvironmentExpiredEvent.eventId()).isEqualTo("event_id")
-        assertThat(agentSessionEnvironmentExpiredEvent.sessionId()).isEqualTo("session_id")
+        assertThat(agentSessionEnvironmentExpiredEvent.eventId()).contains("event_id")
+        assertThat(agentSessionEnvironmentExpiredEvent.sessionId()).contains("session_id")
         assertThat(agentSessionEnvironmentExpiredEvent.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()

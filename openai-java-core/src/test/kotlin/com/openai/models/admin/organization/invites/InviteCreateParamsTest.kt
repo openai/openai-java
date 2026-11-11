@@ -38,8 +38,8 @@ internal class InviteCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.email()).isEqualTo("email")
-        assertThat(body.role()).isEqualTo(InviteCreateParams.Role.READER)
+        assertThat(body.emailOrThrow()).isEqualTo("email")
+        assertThat(body.roleOrThrow()).isEqualTo(InviteCreateParams.Role.READER)
         assertThat(body.projects().getOrNull())
             .containsExactly(
                 InviteCreateParams.Project.builder()
@@ -56,7 +56,7 @@ internal class InviteCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.email()).isEqualTo("email")
-        assertThat(body.role()).isEqualTo(InviteCreateParams.Role.READER)
+        assertThat(body.emailOrThrow()).isEqualTo("email")
+        assertThat(body.roleOrThrow()).isEqualTo(InviteCreateParams.Role.READER)
     }
 }

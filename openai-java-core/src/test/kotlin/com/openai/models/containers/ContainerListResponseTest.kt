@@ -34,11 +34,11 @@ internal class ContainerListResponseTest {
                 )
                 .build()
 
-        assertThat(containerListResponse.id()).isEqualTo("id")
-        assertThat(containerListResponse.createdAt()).isEqualTo(0L)
-        assertThat(containerListResponse.name()).isEqualTo("name")
-        assertThat(containerListResponse.object_()).isEqualTo("object")
-        assertThat(containerListResponse.status()).isEqualTo("status")
+        assertThat(containerListResponse.id()).contains("id")
+        assertThat(containerListResponse.createdAt()).contains(0L)
+        assertThat(containerListResponse.name()).contains("name")
+        assertThat(containerListResponse.object_()).contains("object")
+        assertThat(containerListResponse.status()).contains("status")
         assertThat(containerListResponse.expiresAfter())
             .contains(
                 ContainerListResponse.ExpiresAfter.builder()

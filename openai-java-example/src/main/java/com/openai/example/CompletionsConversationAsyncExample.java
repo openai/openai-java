@@ -34,8 +34,8 @@ public final class CompletionsConversationAsyncExample {
             future = future.thenComposeAsync(
                             unused -> client.chat().completions().create(createParamsBuilder.build()))
                     .thenAccept(completion -> {
-                        List<ChatCompletionMessage> messages = completion.choices().stream()
-                                .map(ChatCompletion.Choice::message)
+                        List<ChatCompletionMessage> messages = completion.choicesOrThrow().stream()
+                                .map(ChatCompletion.Choice::messageOrThrow)
                                 .collect(toList());
 
                         messages.stream()

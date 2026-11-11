@@ -5,6 +5,7 @@ package com.openai.models.beta.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
 import com.openai.models.PromptCacheBreakpointTtl
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -30,8 +31,8 @@ internal class BetaResponseInputMessageItemTest {
                 .status(BetaResponseInputMessageItem.Status.IN_PROGRESS)
                 .build()
 
-        assertThat(betaResponseInputMessageItem.id()).isEqualTo("id")
-        assertThat(betaResponseInputMessageItem.content())
+        assertThat(betaResponseInputMessageItem.id()).contains("id")
+        assertThat(betaResponseInputMessageItem.content().getOrNull())
             .containsExactly(
                 BetaResponseInputContent.ofInputText(
                     BetaResponseInputText.builder()
@@ -45,7 +46,7 @@ internal class BetaResponseInputMessageItemTest {
                 )
             )
         assertThat(betaResponseInputMessageItem.role())
-            .isEqualTo(BetaResponseInputMessageItem.Role.USER)
+            .contains(BetaResponseInputMessageItem.Role.USER)
         assertThat(betaResponseInputMessageItem.agent())
             .contains(BetaResponseInputMessageItem.Agent.builder().agentName("agent_name").build())
         assertThat(betaResponseInputMessageItem.status())

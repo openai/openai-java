@@ -99,7 +99,7 @@ internal class AgentCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo("model")
+        assertThat(body.modelOrThrow()).isEqualTo("model")
         assertThat(body.compaction())
             .contains(AgentCreateParams.Compaction.builder().async(true).build())
         assertThat(body.experimental())
@@ -154,6 +154,6 @@ internal class AgentCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo("model")
+        assertThat(body.modelOrThrow()).isEqualTo("model")
     }
 }

@@ -26,14 +26,12 @@ internal class BetaResponseReasoningSummaryPartDoneEventTest {
                 .status(BetaResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
                 .build()
 
-        assertThat(betaResponseReasoningSummaryPartDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseReasoningSummaryPartDoneEvent.outputIndex()).isEqualTo(0L)
+        assertThat(betaResponseReasoningSummaryPartDoneEvent.itemId()).contains("item_id")
+        assertThat(betaResponseReasoningSummaryPartDoneEvent.outputIndex()).contains(0L)
         assertThat(betaResponseReasoningSummaryPartDoneEvent.part())
-            .isEqualTo(
-                BetaResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build()
-            )
-        assertThat(betaResponseReasoningSummaryPartDoneEvent.sequenceNumber()).isEqualTo(0L)
-        assertThat(betaResponseReasoningSummaryPartDoneEvent.summaryIndex()).isEqualTo(0L)
+            .contains(BetaResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
+        assertThat(betaResponseReasoningSummaryPartDoneEvent.sequenceNumber()).contains(0L)
+        assertThat(betaResponseReasoningSummaryPartDoneEvent.summaryIndex()).contains(0L)
         assertThat(betaResponseReasoningSummaryPartDoneEvent.agent())
             .contains(
                 BetaResponseReasoningSummaryPartDoneEvent.Agent.builder()

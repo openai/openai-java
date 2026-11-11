@@ -22,7 +22,7 @@ internal class ResponseInputTextContentTest {
                 )
                 .build()
 
-        assertThat(responseInputTextContent.text()).isEqualTo("text")
+        assertThat(responseInputTextContent.text()).contains("text")
         assertThat(responseInputTextContent.promptCacheBreakpoint())
             .contains(
                 ResponseInputTextContent.PromptCacheBreakpoint.builder()

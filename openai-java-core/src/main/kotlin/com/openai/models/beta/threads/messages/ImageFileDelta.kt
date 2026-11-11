@@ -34,22 +34,31 @@ private constructor(
 
     /**
      * Specifies the detail level of the image if specified by the user. `low` uses fewer tokens,
-     * you can opt in to high resolution using `high`.
+     * you can opt in to high resolution using `high`. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun detail(): Optional<Detail> = detail.getOptional("detail")
+    fun detail(): java.util.Optional<Detail> = detail.getOptional("detail")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun detailOrThrow(): Detail = detail.getRequired("detail")
 
     /**
      * The [File](https://developers.openai.com/api/reference/resources/files) ID of the image in
      * the message content. Set `purpose="vision"` when uploading the File if you need to later
-     * display the file content.
+     * display the file content. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun fileId(): Optional<String> = fileId.getOptional("file_id")
+    fun fileId(): java.util.Optional<String> = fileId.getOptional("file_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun fileIdOrThrow(): String = fileId.getRequired("file_id")
 
     /**
      * Returns the raw JSON value of [detail].

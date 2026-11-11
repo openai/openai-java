@@ -298,32 +298,53 @@ private constructor(
 
         /**
          * The group id to attach to this trace to enable filtering and grouping in the Traces
-         * Dashboard.
+         * Dashboard. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun groupId(): Optional<String> = groupId.getOptional("group_id")
+        fun groupId(): java.util.Optional<String> = groupId.getOptional("group_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun groupIdOrThrow(): String = groupId.getRequired("group_id")
 
         /**
          * The arbitrary metadata to attach to this trace to enable filtering in the Traces
-         * Dashboard.
+         * Dashboard. Returns empty if the JSON property is missing or null.
          *
-         * This arbitrary value can be deserialized into a custom type using the `convert` method:
-         * ```java
-         * MyClass myObject = tracingConfiguration.metadata().convert(MyClass.class);
-         * ```
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+        fun metadata(): java.util.Optional<JsonValue> {
+            val raw = metadata
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun metadataOrThrow(): JsonValue = metadata().orElseGet { metadata.getRequired("metadata") }
+
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<JsonValue> = metadata
 
         /**
          * The name of the workflow to attach to this trace. This is used to name the trace in the
-         * Traces Dashboard.
+         * Traces Dashboard. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun workflowName(): Optional<String> = workflowName.getOptional("workflow_name")
+        fun workflowName(): java.util.Optional<String> = workflowName.getOptional("workflow_name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun workflowNameOrThrow(): String = workflowName.getRequired("workflow_name")
 
         /**
          * Returns the raw JSON value of [groupId].

@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.FileService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see FileService.list */
 class FileListPage
@@ -18,21 +16,22 @@ private constructor(
     private val response: FileListPageResponse,
 ) : Page<FileObject> {
 
-    /**
-     * Delegates to [FileListPageResponse], but gracefully handles missing data.
-     *
-     * @see FileListPageResponse.data
-     */
-    fun data(): List<FileObject> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see FileListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [FileListPageResponse], but gracefully handles missing data.
-     *
-     * @see FileListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<FileObject> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<FileObject> = data()
+    fun _data() = response._data()
+
+    /** @see FileListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<FileObject> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

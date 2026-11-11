@@ -36,18 +36,29 @@ private constructor(
     ) : this(annotations, value, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun annotations(): List<Annotation> = annotations.getRequired("annotations")
+    fun annotations(): java.util.Optional<List<Annotation>> = annotations.getOptional("annotations")
 
     /**
-     * The data that makes up the text.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun value(): String = value.getRequired("value")
+    fun annotationsOrThrow(): List<Annotation> = annotations.getRequired("annotations")
+
+    /**
+     * The data that makes up the text. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun value(): java.util.Optional<String> = value.getOptional("value")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun valueOrThrow(): String = value.getRequired("value")
 
     /**
      * Returns the raw JSON value of [annotations].
@@ -222,8 +233,8 @@ private constructor(
             return@apply
         }
 
-        annotations().forEach { it.validate() }
-        value()
+        annotationsOrThrow().forEach { it.validate() }
+        valueOrThrow()
         validated = true
     }
 

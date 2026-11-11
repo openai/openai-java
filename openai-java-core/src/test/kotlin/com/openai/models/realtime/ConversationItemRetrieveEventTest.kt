@@ -14,7 +14,7 @@ internal class ConversationItemRetrieveEventTest {
         val conversationItemRetrieveEvent =
             ConversationItemRetrieveEvent.builder().itemId("item_id").eventId("event_id").build()
 
-        assertThat(conversationItemRetrieveEvent.itemId()).isEqualTo("item_id")
+        assertThat(conversationItemRetrieveEvent.itemId()).contains("item_id")
         assertThat(conversationItemRetrieveEvent.eventId()).contains("event_id")
 
         val jsonMapper = jsonMapper()

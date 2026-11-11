@@ -26,10 +26,10 @@ internal class BetaResponseApplyPatchToolCallOutputTest {
                 .output("output")
                 .build()
 
-        assertThat(betaResponseApplyPatchToolCallOutput.id()).isEqualTo("id")
-        assertThat(betaResponseApplyPatchToolCallOutput.callId()).isEqualTo("call_id")
+        assertThat(betaResponseApplyPatchToolCallOutput.id()).contains("id")
+        assertThat(betaResponseApplyPatchToolCallOutput.callId()).contains("call_id")
         assertThat(betaResponseApplyPatchToolCallOutput.status())
-            .isEqualTo(BetaResponseApplyPatchToolCallOutput.Status.COMPLETED)
+            .contains(BetaResponseApplyPatchToolCallOutput.Status.COMPLETED)
         assertThat(betaResponseApplyPatchToolCallOutput.agent())
             .contains(
                 BetaResponseApplyPatchToolCallOutput.Agent.builder().agentName("agent_name").build()

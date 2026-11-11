@@ -17,7 +17,7 @@ internal class OutputAudioFixturePlayingEventTest {
                 .clientEventId("evt_play_001")
                 .build()
 
-        assertThat(outputAudioFixturePlayingEvent.eventId()).isEqualTo("evt_playing_001")
+        assertThat(outputAudioFixturePlayingEvent.eventId()).contains("evt_playing_001")
         assertThat(outputAudioFixturePlayingEvent.clientEventId()).contains("evt_play_001")
 
         val jsonMapper = jsonMapper()

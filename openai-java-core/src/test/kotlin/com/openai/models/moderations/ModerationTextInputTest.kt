@@ -14,7 +14,7 @@ internal class ModerationTextInputTest {
         val moderationTextInput =
             ModerationTextInput.builder().text("...text to classify goes here...").build()
 
-        assertThat(moderationTextInput.text()).isEqualTo("...text to classify goes here...")
+        assertThat(moderationTextInput.text()).contains("...text to classify goes here...")
 
         val jsonMapper = jsonMapper()
 

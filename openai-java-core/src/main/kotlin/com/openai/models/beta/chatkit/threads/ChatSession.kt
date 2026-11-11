@@ -74,91 +74,149 @@ private constructor(
     )
 
     /**
-     * Identifier for the ChatKit session.
+     * Identifier for the ChatKit session. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * Resolved ChatKit feature configuration for the session.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun chatkitConfiguration(): ChatSessionChatKitConfiguration =
+    fun idOrThrow(): String = id.getRequired("id")
+
+    /**
+     * Resolved ChatKit feature configuration for the session. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun chatkitConfiguration(): java.util.Optional<ChatSessionChatKitConfiguration> =
+        chatkitConfiguration.getOptional("chatkit_configuration")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun chatkitConfigurationOrThrow(): ChatSessionChatKitConfiguration =
         chatkitConfiguration.getRequired("chatkit_configuration")
 
     /**
-     * Ephemeral client secret that authenticates session requests.
+     * Ephemeral client secret that authenticates session requests. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun clientSecret(): String = clientSecret.getRequired("client_secret")
+    fun clientSecret(): java.util.Optional<String> = clientSecret.getOptional("client_secret")
 
     /**
-     * Unix timestamp (in seconds) for when the session expires.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun expiresAt(): Long = expiresAt.getRequired("expires_at")
+    fun clientSecretOrThrow(): String = clientSecret.getRequired("client_secret")
 
     /**
-     * Convenience copy of the per-minute request limit.
+     * Unix timestamp (in seconds) for when the session expires. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun maxRequestsPer1Minute(): Long =
+    fun expiresAt(): java.util.Optional<Long> = expiresAt.getOptional("expires_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun expiresAtOrThrow(): Long = expiresAt.getRequired("expires_at")
+
+    /**
+     * Convenience copy of the per-minute request limit. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun maxRequestsPer1Minute(): java.util.Optional<Long> =
+        maxRequestsPer1Minute.getOptional("max_requests_per_1_minute")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun maxRequestsPer1MinuteOrThrow(): Long =
         maxRequestsPer1Minute.getRequired("max_requests_per_1_minute")
 
     /**
-     * Type discriminator that is always `chatkit.session`.
+     * Type discriminator that is always `chatkit.session`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("chatkit.session")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("chatkit.session")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * Resolved rate limit values.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun rateLimits(): ChatSessionRateLimits = rateLimits.getRequired("rate_limits")
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
-     * Current lifecycle state of the session.
+     * Resolved rate limit values. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): ChatSessionStatus = status.getRequired("status")
+    fun rateLimits(): java.util.Optional<ChatSessionRateLimits> =
+        rateLimits.getOptional("rate_limits")
 
     /**
-     * User identifier associated with the session.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun user(): String = user.getRequired("user")
+    fun rateLimitsOrThrow(): ChatSessionRateLimits = rateLimits.getRequired("rate_limits")
 
     /**
-     * Workflow metadata for the session.
+     * Current lifecycle state of the session. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun workflow(): ChatKitWorkflow = workflow.getRequired("workflow")
+    fun status(): java.util.Optional<ChatSessionStatus> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): ChatSessionStatus = status.getRequired("status")
+
+    /**
+     * User identifier associated with the session. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun user(): java.util.Optional<String> = user.getOptional("user")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun userOrThrow(): String = user.getRequired("user")
+
+    /**
+     * Workflow metadata for the session. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun workflow(): java.util.Optional<ChatKitWorkflow> = workflow.getOptional("workflow")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun workflowOrThrow(): ChatKitWorkflow = workflow.getRequired("workflow")
 
     /**
      * Returns the raw JSON value of [id].
@@ -522,20 +580,16 @@ private constructor(
             return@apply
         }
 
-        id()
-        chatkitConfiguration().validate()
-        clientSecret()
-        expiresAt()
-        maxRequestsPer1Minute()
-        _object_().let {
-            if (it != JsonValue.from("chatkit.session")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        rateLimits().validate()
-        status().validate()
-        user()
-        workflow().validate()
+        idOrThrow()
+        chatkitConfigurationOrThrow().validate()
+        clientSecretOrThrow()
+        expiresAtOrThrow()
+        maxRequestsPer1MinuteOrThrow()
+        object_OrThrow()
+        rateLimitsOrThrow().validate()
+        statusOrThrow().validate()
+        userOrThrow()
+        workflowOrThrow().validate()
         validated = true
     }
 

@@ -10,6 +10,7 @@ import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import com.openai.models.ResponsesModel
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -291,14 +292,14 @@ internal class ResponseTest {
                 .user("user-1234")
                 .build()
 
-        assertThat(response.id()).isEqualTo("id")
+        assertThat(response.id()).contains("id")
         assertThat(response.accessPrograms())
             .contains(
                 Response.AccessPrograms.builder()
                     .cyber(Response.AccessPrograms.Cyber.STANDARD)
                     .build()
             )
-        assertThat(response.createdAt()).isEqualTo(0.0)
+        assertThat(response.createdAt()).contains(0.0)
         assertThat(response.error())
             .contains(
                 ResponseError.builder()
@@ -336,8 +337,8 @@ internal class ResponseTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(response.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_6_ASTRA))
-        assertThat(response.output())
+        assertThat(response.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_6_ASTRA))
+        assertThat(response.output().getOrNull())
             .containsExactly(
                 ResponseOutputItem.ofMessage(
                     ResponseOutputMessage.builder()
@@ -373,11 +374,11 @@ internal class ResponseTest {
                         .build()
                 )
             )
-        assertThat(response.parallelToolCalls()).isEqualTo(true)
+        assertThat(response.parallelToolCalls()).contains(true)
         assertThat(response.temperature()).contains(1.0)
         assertThat(response.toolChoice())
-            .isEqualTo(Response.ToolChoice.ofOptions(ToolChoiceOptions.NONE))
-        assertThat(response.tools())
+            .contains(Response.ToolChoice.ofOptions(ToolChoiceOptions.NONE))
+        assertThat(response.tools().getOrNull())
             .containsExactly(
                 Tool.ofFunction(
                     FunctionTool.builder()

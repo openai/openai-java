@@ -55,22 +55,31 @@ private constructor(
      *
      * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the message
      * the model generates is valid JSON. Using `json_schema` is preferred for models that support
-     * it.
+     * it. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun format(): Optional<BetaResponseFormatTextConfig> = format.getOptional("format")
+    fun format(): java.util.Optional<BetaResponseFormatTextConfig> = format.getOptional("format")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun formatOrThrow(): BetaResponseFormatTextConfig = format.getRequired("format")
 
     /**
      * Constrains the verbosity of the model's response. Lower values will result in more concise
      * responses, while higher values will result in more verbose responses. Currently supported
-     * values are `low`, `medium`, and `high`. The default is `medium`.
+     * values are `low`, `medium`, and `high`. The default is `medium`. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun verbosity(): Optional<Verbosity> = verbosity.getOptional("verbosity")
+    fun verbosity(): java.util.Optional<Verbosity> = verbosity.getOptional("verbosity")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun verbosityOrThrow(): Verbosity = verbosity.getRequired("verbosity")
 
     /**
      * Returns the raw JSON value of [format].

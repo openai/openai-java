@@ -5,6 +5,7 @@ package com.openai.models.beta.agents.sessions.traces
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -31,7 +32,7 @@ internal class TraceListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(traceListPageResponse.data())
+        assertThat(traceListPageResponse.data().getOrNull())
             .containsExactly(
                 SessionTrace.builder()
                     .id("id")
@@ -45,7 +46,7 @@ internal class TraceListPageResponseTest {
                     .build()
             )
         assertThat(traceListPageResponse.firstId()).contains("first_id")
-        assertThat(traceListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(traceListPageResponse.hasMore()).contains(true)
         assertThat(traceListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

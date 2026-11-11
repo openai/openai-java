@@ -7,10 +7,8 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.admin.organization.WorkloadIdentityProviderServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see WorkloadIdentityProviderServiceAsync.list */
 class WorkloadIdentityProviderListPageAsync
@@ -21,22 +19,23 @@ private constructor(
     private val response: WorkloadIdentityProviderListPageResponse,
 ) : PageAsync<WorkloadIdentityProvider> {
 
-    /**
-     * Delegates to [WorkloadIdentityProviderListPageResponse], but gracefully handles missing data.
-     *
-     * @see WorkloadIdentityProviderListPageResponse.data
-     */
-    fun data(): List<WorkloadIdentityProvider> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see WorkloadIdentityProviderListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [WorkloadIdentityProviderListPageResponse], but gracefully handles missing data.
-     *
-     * @see WorkloadIdentityProviderListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<WorkloadIdentityProvider> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<WorkloadIdentityProvider> = data()
+    fun _data() = response._data()
+
+    /** @see WorkloadIdentityProviderListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<WorkloadIdentityProvider> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

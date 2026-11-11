@@ -37,22 +37,33 @@ private constructor(
     ) : this(enabled, maxConcurrentSubagents, mutableMapOf())
 
     /**
-     * Whether subagent tools are enabled. Defaults to false.
+     * Whether subagent tools are enabled. Defaults to false. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun enabled(): Boolean = enabled.getRequired("enabled")
+    fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
 
     /**
      * Maximum number of subagents that may run concurrently, or null when disabled. Defaults to 6
-     * when enabled.
+     * when enabled. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun maxConcurrentSubagents(): Optional<Long> =
+    fun maxConcurrentSubagents(): java.util.Optional<Long> =
         maxConcurrentSubagents.getOptional("max_concurrent_subagents")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun maxConcurrentSubagentsOrThrow(): Long =
+        maxConcurrentSubagents.getRequired("max_concurrent_subagents")
 
     /**
      * Returns the raw JSON value of [enabled].
@@ -226,7 +237,7 @@ private constructor(
             return@apply
         }
 
-        enabled()
+        enabledOrThrow()
         maxConcurrentSubagents()
         validated = true
     }

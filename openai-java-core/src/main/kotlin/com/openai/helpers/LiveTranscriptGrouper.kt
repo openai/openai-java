@@ -352,10 +352,22 @@ private constructor(
     }
 
     fun push(event: InputTranscriptDeltaEvent) =
-        receive(event.eventId(), Speaker.USER, event.delta(), event.startMs(), event.endMs())
+        receive(
+            event.eventIdOrThrow(),
+            Speaker.USER,
+            event.deltaOrThrow(),
+            event.startMsOrThrow(),
+            event.endMsOrThrow(),
+        )
 
     fun push(event: OutputTranscriptDeltaEvent) =
-        receive(event.eventId(), Speaker.ASSISTANT, event.delta(), event.startMs(), event.endMs())
+        receive(
+            event.eventIdOrThrow(),
+            Speaker.ASSISTANT,
+            event.deltaOrThrow(),
+            event.startMsOrThrow(),
+            event.endMsOrThrow(),
+        )
 
     private fun receive(id: String, speaker: Speaker, text: String, start: Long, end: Long) {
         synchronized(lock) {

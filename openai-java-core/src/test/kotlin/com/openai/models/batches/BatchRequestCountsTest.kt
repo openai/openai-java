@@ -14,9 +14,9 @@ internal class BatchRequestCountsTest {
         val batchRequestCounts =
             BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build()
 
-        assertThat(batchRequestCounts.completed()).isEqualTo(0L)
-        assertThat(batchRequestCounts.failed()).isEqualTo(0L)
-        assertThat(batchRequestCounts.total()).isEqualTo(0L)
+        assertThat(batchRequestCounts.completed()).contains(0L)
+        assertThat(batchRequestCounts.failed()).contains(0L)
+        assertThat(batchRequestCounts.total()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

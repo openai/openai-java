@@ -38,6 +38,6 @@ internal class WebhookTestParamsTest {
 
         val body = params._body()
 
-        assertThat(body.eventType()).isEqualTo(WebhookTestParams.EventType.BATCH_COMPLETED)
+        assertThat(body.eventTypeOrThrow()).isEqualTo(WebhookTestParams.EventType.BATCH_COMPLETED)
     }
 }

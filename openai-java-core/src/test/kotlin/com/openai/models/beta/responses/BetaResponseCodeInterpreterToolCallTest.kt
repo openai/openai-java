@@ -26,9 +26,9 @@ internal class BetaResponseCodeInterpreterToolCallTest {
                 )
                 .build()
 
-        assertThat(betaResponseCodeInterpreterToolCall.id()).isEqualTo("id")
+        assertThat(betaResponseCodeInterpreterToolCall.id()).contains("id")
         assertThat(betaResponseCodeInterpreterToolCall.code()).contains("code")
-        assertThat(betaResponseCodeInterpreterToolCall.containerId()).isEqualTo("container_id")
+        assertThat(betaResponseCodeInterpreterToolCall.containerId()).contains("container_id")
         assertThat(betaResponseCodeInterpreterToolCall.outputs().getOrNull())
             .containsExactly(
                 BetaResponseCodeInterpreterToolCall.Output.ofLogs(
@@ -36,7 +36,7 @@ internal class BetaResponseCodeInterpreterToolCallTest {
                 )
             )
         assertThat(betaResponseCodeInterpreterToolCall.status())
-            .isEqualTo(BetaResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+            .contains(BetaResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
         assertThat(betaResponseCodeInterpreterToolCall.agent())
             .contains(
                 BetaResponseCodeInterpreterToolCall.Agent.builder().agentName("agent_name").build()

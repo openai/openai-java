@@ -45,49 +45,79 @@ private constructor(
     ) : this(input, name, operation, reference, type, mutableMapOf())
 
     /**
-     * The input text. This may include template strings.
+     * The input text. This may include template strings. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun input(): String = input.getRequired("input")
+    fun input(): java.util.Optional<String> = input.getOptional("input")
 
     /**
-     * The name of the grader.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): String = name.getRequired("name")
+    fun inputOrThrow(): String = input.getRequired("input")
 
     /**
-     * The string check operation to perform. One of `eq`, `ne`, `like`, or `ilike`.
+     * The name of the grader. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun operation(): Operation = operation.getRequired("operation")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
 
     /**
-     * The reference text. This may include template strings.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun reference(): String = reference.getRequired("reference")
+    fun nameOrThrow(): String = name.getRequired("name")
 
     /**
-     * The object type, which is always `string_check`.
+     * The string check operation to perform. One of `eq`, `ne`, `like`, or `ilike`. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("string_check")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun operation(): java.util.Optional<Operation> = operation.getOptional("operation")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun operationOrThrow(): Operation = operation.getRequired("operation")
+
+    /**
+     * The reference text. This may include template strings. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun reference(): java.util.Optional<String> = reference.getOptional("reference")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun referenceOrThrow(): String = reference.getRequired("reference")
+
+    /**
+     * The object type, which is always `string_check`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("string_check")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [input].
@@ -306,15 +336,11 @@ private constructor(
             return@apply
         }
 
-        input()
-        name()
-        operation().validate()
-        reference()
-        _type().let {
-            if (it != JsonValue.from("string_check")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        inputOrThrow()
+        nameOrThrow()
+        operationOrThrow().validate()
+        referenceOrThrow()
+        typeOrThrow()
         validated = true
     }
 

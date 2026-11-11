@@ -176,7 +176,7 @@ internal class AudioTranscriptionResponseTest {
                         server.enqueue(MockResponse().setBody(body))
                         val response =
                             create(client, params(declared, JsonValue.from(effective)), async)
-                        assertThat(response.asTranscription().text()).isEqualTo(text)
+                        assertThat(response.asTranscription().textOrThrow()).isEqualTo(text)
                         val multipart = server.takeRequest(5, TimeUnit.SECONDS)!!.body.readUtf8()
                         val wireFormat =
                             Regex("(?s)name=\"response_format\"\r\n.*?\r\n\r\n(.*?)\r\n--")
@@ -309,12 +309,12 @@ internal class AudioTranscriptionResponseTest {
                         }
                         assertThat(events).hasSize(1)
                         if (format == "json")
-                            assertThat(events.single().asTranscriptTextDelta().delta())
+                            assertThat(events.single().asTranscriptTextDelta().deltaOrThrow())
                                 .isEqualTo("hello")
                         else {
-                            assertThat(events.single().asTranscriptTextSegment().id())
+                            assertThat(events.single().asTranscriptTextSegment().idOrThrow())
                                 .isEqualTo("seg_1")
-                            assertThat(events.single().asTranscriptTextSegment().speaker())
+                            assertThat(events.single().asTranscriptTextSegment().speakerOrThrow())
                                 .isEqualTo("speaker_1")
                         }
                     }
@@ -334,26 +334,27 @@ internal class AudioTranscriptionResponseTest {
         when (case.kind) {
             "diarized" -> {
                 val model = response.asDiarized()
-                assertThat(model.text()).isEqualTo("hello")
-                assertThat(model.duration()).isEqualTo(1.0)
+                assertThat(model.textOrThrow()).isEqualTo("hello")
+                assertThat(model.durationOrThrow()).isEqualTo(1.0)
                 assertThat(model._allProperties())
                     .containsEntry("future_field", JsonValue.from(mapOf("retained" to true)))
-                model.segments().forEach {
-                    assertThat(it.id()).isEqualTo("seg_1")
-                    assertThat(it.speaker()).isEqualTo("speaker_1")
+                model.segmentsOrThrow().forEach {
+                    assertThat(it.idOrThrow()).isEqualTo("seg_1")
+                    assertThat(it.speakerOrThrow()).isEqualTo("speaker_1")
                     assertThat(it._allProperties())
                         .containsEntry("future_segment", JsonValue.from(true))
                 }
-                assertThat(model.segments()).hasSize(if (case.body == emptyDiarized) 0 else 1)
+                assertThat(model.segmentsOrThrow())
+                    .hasSize(if (case.body == emptyDiarized) 0 else 1)
                 assertThat(response._json()).isEmpty()
             }
             "verbose" -> {
                 val model = response.asVerbose()
-                assertThat(model.text()).isEqualTo("hello")
-                assertThat(model.language()).isEqualTo("english")
+                assertThat(model.textOrThrow()).isEqualTo("hello")
+                assertThat(model.languageOrThrow()).isEqualTo("english")
                 assertThat(model._allProperties()).containsKey("future_field")
                 model.segments().get().forEach {
-                    assertThat(it.id()).isEqualTo(7L)
+                    assertThat(it.idOrThrow()).isEqualTo(7L)
                     assertThat(it._allProperties())
                         .containsEntry("future_segment", JsonValue.from(true))
                 }
@@ -361,11 +362,11 @@ internal class AudioTranscriptionResponseTest {
                 assertThat(response._json()).isEmpty()
             }
             "basic" -> {
-                assertThat(response.asTranscription().text()).isEqualTo("hello")
+                assertThat(response.asTranscription().textOrThrow()).isEqualTo("hello")
                 assertThat(response.asTranscription()._allProperties()).containsKey("future_field")
                 assertThat(response._json()).isPresent()
             }
-            else -> assertThat(response.asTranscription().text()).isEqualTo(case.body)
+            else -> assertThat(response.asTranscription().textOrThrow()).isEqualTo(case.body)
         }
     }
 

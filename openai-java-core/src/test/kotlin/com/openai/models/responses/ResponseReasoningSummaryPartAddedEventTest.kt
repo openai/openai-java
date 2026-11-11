@@ -20,12 +20,12 @@ internal class ResponseReasoningSummaryPartAddedEventTest {
                 .summaryIndex(0L)
                 .build()
 
-        assertThat(responseReasoningSummaryPartAddedEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseReasoningSummaryPartAddedEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseReasoningSummaryPartAddedEvent.itemId()).contains("item_id")
+        assertThat(responseReasoningSummaryPartAddedEvent.outputIndex()).contains(0L)
         assertThat(responseReasoningSummaryPartAddedEvent.part())
-            .isEqualTo(ResponseReasoningSummaryPartAddedEvent.Part.builder().text("text").build())
-        assertThat(responseReasoningSummaryPartAddedEvent.sequenceNumber()).isEqualTo(0L)
-        assertThat(responseReasoningSummaryPartAddedEvent.summaryIndex()).isEqualTo(0L)
+            .contains(ResponseReasoningSummaryPartAddedEvent.Part.builder().text("text").build())
+        assertThat(responseReasoningSummaryPartAddedEvent.sequenceNumber()).contains(0L)
+        assertThat(responseReasoningSummaryPartAddedEvent.summaryIndex()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

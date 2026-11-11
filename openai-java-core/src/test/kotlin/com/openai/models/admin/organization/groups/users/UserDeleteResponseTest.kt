@@ -13,7 +13,7 @@ internal class UserDeleteResponseTest {
     fun createAndRoundtrip() {
         val userDeleteResponse = UserDeleteResponse.builder().deleted(true).build()
 
-        assertThat(userDeleteResponse.deleted()).isEqualTo(true)
+        assertThat(userDeleteResponse.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

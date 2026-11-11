@@ -13,8 +13,8 @@ internal class HostedPluginTest {
     fun createAndRoundtrip() {
         val hostedPlugin = HostedPlugin.builder().description("description").name("name").build()
 
-        assertThat(hostedPlugin.description()).isEqualTo("description")
-        assertThat(hostedPlugin.name()).isEqualTo("name")
+        assertThat(hostedPlugin.description()).contains("description")
+        assertThat(hostedPlugin.name()).contains("name")
 
         val jsonMapper = jsonMapper()
 

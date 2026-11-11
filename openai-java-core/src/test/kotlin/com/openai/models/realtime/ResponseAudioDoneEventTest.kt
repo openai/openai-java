@@ -20,11 +20,11 @@ internal class ResponseAudioDoneEventTest {
                 .responseId("response_id")
                 .build()
 
-        assertThat(responseAudioDoneEvent.contentIndex()).isEqualTo(0L)
-        assertThat(responseAudioDoneEvent.eventId()).isEqualTo("event_id")
-        assertThat(responseAudioDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseAudioDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseAudioDoneEvent.responseId()).isEqualTo("response_id")
+        assertThat(responseAudioDoneEvent.contentIndex()).contains(0L)
+        assertThat(responseAudioDoneEvent.eventId()).contains("event_id")
+        assertThat(responseAudioDoneEvent.itemId()).contains("item_id")
+        assertThat(responseAudioDoneEvent.outputIndex()).contains(0L)
+        assertThat(responseAudioDoneEvent.responseId()).contains("response_id")
 
         val jsonMapper = jsonMapper()
 

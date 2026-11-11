@@ -77,14 +77,14 @@ public final class StructuredOutputsStreamingExample {
                 client.chat().completions().createStreaming(createParams)) {
             streamResponse.stream()
                     .peek(accumulator::accumulate)
-                    .flatMap(completion -> completion.choices().stream())
-                    .flatMap(choice -> choice.delta().content().stream())
+                    .flatMap(completion -> completion.choicesOrThrow().stream())
+                    .flatMap(choice -> choice.deltaOrThrow().content().stream())
                     .forEach(System.out::print);
             System.out.println();
         }
 
-        accumulator.chatCompletion(BookList.class).choices().stream()
-                .flatMap(choice -> choice.message().content().stream())
+        accumulator.chatCompletion(BookList.class).choicesOrThrow().stream()
+                .flatMap(choice -> choice.messageOrThrow().content().stream())
                 .flatMap(bookList -> bookList.books.stream())
                 .forEach(book -> System.out.println(" - " + book));
     }

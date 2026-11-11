@@ -23,13 +23,13 @@ internal class ConversationCreatedEventTest {
                 .build()
 
         assertThat(conversationCreatedEvent.conversation())
-            .isEqualTo(
+            .contains(
                 ConversationCreatedEvent.Conversation.builder()
                     .id("id")
                     .object_(ConversationCreatedEvent.Conversation.Object.REALTIME_CONVERSATION)
                     .build()
             )
-        assertThat(conversationCreatedEvent.eventId()).isEqualTo("event_id")
+        assertThat(conversationCreatedEvent.eventId()).contains("event_id")
 
         val jsonMapper = jsonMapper()
 

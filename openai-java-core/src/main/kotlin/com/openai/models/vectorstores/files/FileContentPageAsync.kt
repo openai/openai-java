@@ -10,7 +10,6 @@ import com.openai.services.async.vectorstores.FileServiceAsync
 import java.util.Objects
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see FileServiceAsync.content */
 class FileContentPageAsync
@@ -21,18 +20,23 @@ private constructor(
     private val response: FileContentPageResponse,
 ) : PageAsync<FileContentResponse> {
 
-    /**
-     * Delegates to [FileContentPageResponse], but gracefully handles missing data.
-     *
-     * @see FileContentPageResponse.data
-     */
-    fun data(): List<FileContentResponse> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see FileContentPageResponse.data */
+    fun data() = response.data()
+
+    fun dataOrThrow(): List<FileContentResponse> =
+        data().orElseGet { response._data().getRequired("data") }
+
+    fun _data() = response._data()
 
     /** @see FileContentPageResponse.object_ */
-    fun object_(): JsonValue = response._object_()
+    fun object_() = response.object_()
 
-    override fun items(): List<FileContentResponse> = data()
+    fun object_OrThrow(): JsonValue =
+        object_().orElseGet { response._object_().getRequired("object") }
+
+    fun _object_() = response._object_()
+
+    override fun items(): List<FileContentResponse> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = false
 

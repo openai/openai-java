@@ -46,14 +46,14 @@ public final class BedrockRuntimeChatExample {
                 try (StreamResponse<ChatCompletionChunk> stream =
                         client.chat().completions().createStreaming(params)) {
                     stream.stream()
-                            .flatMap(chunk -> chunk.choices().stream())
-                            .flatMap(choice -> choice.delta().content().stream())
+                            .flatMap(chunk -> chunk.choicesOrThrow().stream())
+                            .flatMap(choice -> choice.deltaOrThrow().content().stream())
                             .forEach(System.out::print);
                 }
                 System.out.println();
             } else {
-                client.chat().completions().create(params).choices().stream()
-                        .flatMap(choice -> choice.message().content().stream())
+                client.chat().completions().create(params).choicesOrThrow().stream()
+                        .flatMap(choice -> choice.messageOrThrow().content().stream())
                         .forEach(System.out::println);
             }
         } finally {

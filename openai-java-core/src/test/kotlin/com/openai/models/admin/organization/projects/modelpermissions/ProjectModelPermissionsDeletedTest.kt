@@ -14,7 +14,7 @@ internal class ProjectModelPermissionsDeletedTest {
         val projectModelPermissionsDeleted =
             ProjectModelPermissionsDeleted.builder().deleted(true).build()
 
-        assertThat(projectModelPermissionsDeleted.deleted()).isEqualTo(true)
+        assertThat(projectModelPermissionsDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

@@ -24,7 +24,7 @@ internal class BetaResponseInputImageTest {
                 )
                 .build()
 
-        assertThat(betaResponseInputImage.detail()).isEqualTo(BetaResponseInputImage.Detail.LOW)
+        assertThat(betaResponseInputImage.detail()).contains(BetaResponseInputImage.Detail.LOW)
         assertThat(betaResponseInputImage.fileId()).contains("file_id")
         assertThat(betaResponseInputImage.imageUrl()).contains("https://example.com")
         assertThat(betaResponseInputImage.promptCacheBreakpoint())

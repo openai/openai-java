@@ -17,7 +17,7 @@ internal class InputAudioAppendEventTest {
                 .eventId("event_id")
                 .build()
 
-        assertThat(inputAudioAppendEvent.audio()).isEqualTo("AACAAIAAAIAAAP9/AIAAgA==")
+        assertThat(inputAudioAppendEvent.audio()).contains("AACAAIAAAIAAAP9/AIAAgA==")
         assertThat(inputAudioAppendEvent.eventId()).contains("event_id")
 
         val jsonMapper = jsonMapper()

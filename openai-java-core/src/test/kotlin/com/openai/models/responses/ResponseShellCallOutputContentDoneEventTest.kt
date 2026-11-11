@@ -4,6 +4,7 @@ package com.openai.models.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -27,9 +28,9 @@ internal class ResponseShellCallOutputContentDoneEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseShellCallOutputContentDoneEvent.commandIndex()).isEqualTo(0L)
-        assertThat(responseShellCallOutputContentDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseShellCallOutputContentDoneEvent.output())
+        assertThat(responseShellCallOutputContentDoneEvent.commandIndex()).contains(0L)
+        assertThat(responseShellCallOutputContentDoneEvent.itemId()).contains("item_id")
+        assertThat(responseShellCallOutputContentDoneEvent.output().getOrNull())
             .containsExactly(
                 ResponseShellCallOutputContentDoneEvent.Output.builder()
                     .outcomeTimeout()
@@ -38,8 +39,8 @@ internal class ResponseShellCallOutputContentDoneEventTest {
                     .createdBy("created_by")
                     .build()
             )
-        assertThat(responseShellCallOutputContentDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseShellCallOutputContentDoneEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseShellCallOutputContentDoneEvent.outputIndex()).contains(0L)
+        assertThat(responseShellCallOutputContentDoneEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

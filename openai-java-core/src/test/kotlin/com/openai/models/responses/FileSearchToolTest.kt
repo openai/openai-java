@@ -5,6 +5,7 @@ package com.openai.models.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
 import com.openai.models.ComparisonFilter
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -37,7 +38,7 @@ internal class FileSearchToolTest {
                 )
                 .build()
 
-        assertThat(fileSearchTool.vectorStoreIds()).containsExactly("string")
+        assertThat(fileSearchTool.vectorStoreIds().getOrNull()).containsExactly("string")
         assertThat(fileSearchTool.filters())
             .contains(
                 FileSearchTool.Filters.ofComparisonFilter(

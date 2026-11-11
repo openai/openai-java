@@ -62,73 +62,119 @@ private constructor(
     )
 
     /**
-     * Base64-encoded partial image data, suitable for rendering as an image.
+     * Base64-encoded partial image data, suitable for rendering as an image. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun b64Json(): String = b64Json.getRequired("b64_json")
+    fun b64Json(): java.util.Optional<String> = b64Json.getOptional("b64_json")
 
     /**
-     * The background setting for the requested edited image.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun background(): Background = background.getRequired("background")
+    fun b64JsonOrThrow(): String = b64Json.getRequired("b64_json")
 
     /**
-     * The Unix timestamp when the event was created.
+     * The background setting for the requested edited image. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun background(): java.util.Optional<Background> = background.getOptional("background")
 
     /**
-     * The output format for the requested edited image.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun outputFormat(): OutputFormat = outputFormat.getRequired("output_format")
+    fun backgroundOrThrow(): Background = background.getRequired("background")
 
     /**
-     * 0-based index for the partial image (streaming).
+     * The Unix timestamp when the event was created. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun partialImageIndex(): Long = partialImageIndex.getRequired("partial_image_index")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * The quality setting for the requested edited image.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun quality(): Quality = quality.getRequired("quality")
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
     /**
-     * The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`.
+     * The output format for the requested edited image. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun size(): Size = size.getRequired("size")
+    fun outputFormat(): java.util.Optional<OutputFormat> = outputFormat.getOptional("output_format")
 
     /**
-     * The type of the event. Always `image_edit.partial_image`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("image_edit.partial_image")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun outputFormatOrThrow(): OutputFormat = outputFormat.getRequired("output_format")
+
+    /**
+     * 0-based index for the partial image (streaming). The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun partialImageIndex(): java.util.Optional<Long> =
+        partialImageIndex.getOptional("partial_image_index")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun partialImageIndexOrThrow(): Long = partialImageIndex.getRequired("partial_image_index")
+
+    /**
+     * The quality setting for the requested edited image. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun quality(): java.util.Optional<Quality> = quality.getOptional("quality")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun qualityOrThrow(): Quality = quality.getRequired("quality")
+
+    /**
+     * The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun size(): java.util.Optional<Size> = size.getOptional("size")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sizeOrThrow(): Size = size.getRequired("size")
+
+    /**
+     * The type of the event. Always `image_edit.partial_image`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("image_edit.partial_image")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [b64Json].
@@ -440,18 +486,14 @@ private constructor(
             return@apply
         }
 
-        b64Json()
-        background().validate()
-        createdAt()
-        outputFormat().validate()
-        partialImageIndex()
-        quality().validate()
-        size()
-        _type().let {
-            if (it != JsonValue.from("image_edit.partial_image")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        b64JsonOrThrow()
+        backgroundOrThrow().validate()
+        createdAtOrThrow()
+        outputFormatOrThrow().validate()
+        partialImageIndexOrThrow()
+        qualityOrThrow().validate()
+        sizeOrThrow()
+        typeOrThrow()
         validated = true
     }
 

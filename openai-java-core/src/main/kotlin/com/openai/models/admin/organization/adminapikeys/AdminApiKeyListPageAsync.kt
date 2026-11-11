@@ -7,10 +7,8 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.admin.organization.AdminApiKeyServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see AdminApiKeyServiceAsync.list */
 class AdminApiKeyListPageAsync
@@ -21,21 +19,22 @@ private constructor(
     private val response: AdminApiKeyListPageResponse,
 ) : PageAsync<AdminApiKey> {
 
-    /**
-     * Delegates to [AdminApiKeyListPageResponse], but gracefully handles missing data.
-     *
-     * @see AdminApiKeyListPageResponse.data
-     */
-    fun data(): List<AdminApiKey> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see AdminApiKeyListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [AdminApiKeyListPageResponse], but gracefully handles missing data.
-     *
-     * @see AdminApiKeyListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<AdminApiKey> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<AdminApiKey> = data()
+    fun _data() = response._data()
+
+    /** @see AdminApiKeyListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<AdminApiKey> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

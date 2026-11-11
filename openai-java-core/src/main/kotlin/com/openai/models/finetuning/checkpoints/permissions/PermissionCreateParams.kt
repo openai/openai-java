@@ -40,13 +40,11 @@ private constructor(
 
     fun fineTunedModelCheckpoint(): Optional<String> = Optional.ofNullable(fineTunedModelCheckpoint)
 
-    /**
-     * The project identifiers to grant access to.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun projectIds(): List<String> = body.projectIds()
+    /** @see Body.projectIds */
+    fun projectIds(): java.util.Optional<List<String>> = body.projectIds()
+
+    /** @see Body.projectIdsOrThrow */
+    fun projectIdsOrThrow(): List<String> = body.projectIdsOrThrow()
 
     /**
      * Returns the raw JSON value of [projectIds].
@@ -298,12 +296,18 @@ private constructor(
         ) : this(projectIds, mutableMapOf())
 
         /**
-         * The project identifiers to grant access to.
+         * The project identifiers to grant access to. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun projectIds(): List<String> = projectIds.getRequired("project_ids")
+        fun projectIds(): java.util.Optional<List<String>> = projectIds.getOptional("project_ids")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun projectIdsOrThrow(): List<String> = projectIds.getRequired("project_ids")
 
         /**
          * Returns the raw JSON value of [projectIds].
@@ -444,7 +448,7 @@ private constructor(
                 return@apply
             }
 
-            projectIds()
+            projectIdsOrThrow()
             validated = true
         }
 

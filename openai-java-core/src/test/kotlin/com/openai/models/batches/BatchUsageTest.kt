@@ -24,13 +24,13 @@ internal class BatchUsageTest {
                 .totalTokens(0L)
                 .build()
 
-        assertThat(batchUsage.inputTokens()).isEqualTo(0L)
+        assertThat(batchUsage.inputTokens()).contains(0L)
         assertThat(batchUsage.inputTokensDetails())
-            .isEqualTo(BatchUsage.InputTokensDetails.builder().cachedTokens(0L).build())
-        assertThat(batchUsage.outputTokens()).isEqualTo(0L)
+            .contains(BatchUsage.InputTokensDetails.builder().cachedTokens(0L).build())
+        assertThat(batchUsage.outputTokens()).contains(0L)
         assertThat(batchUsage.outputTokensDetails())
-            .isEqualTo(BatchUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
-        assertThat(batchUsage.totalTokens()).isEqualTo(0L)
+            .contains(BatchUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
+        assertThat(batchUsage.totalTokens()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

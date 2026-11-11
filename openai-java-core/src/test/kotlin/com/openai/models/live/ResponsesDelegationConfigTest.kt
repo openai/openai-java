@@ -46,7 +46,7 @@ internal class ResponsesDelegationConfigTest {
                 )
                 .build()
 
-        assertThat(responsesDelegationConfig.model()).isEqualTo("model")
+        assertThat(responsesDelegationConfig.model()).contains("model")
         assertThat(responsesDelegationConfig.instructions()).contains("instructions")
         assertThat(responsesDelegationConfig.maxOutputTokens()).contains(16L)
         assertThat(responsesDelegationConfig.parallelToolCalls()).contains(true)

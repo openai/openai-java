@@ -22,13 +22,13 @@ internal class SessionArtifactTest {
                 .turnId("turn_id")
                 .build()
 
-        assertThat(sessionArtifact.id()).isEqualTo("id")
-        assertThat(sessionArtifact.createdAt()).isEqualTo(0L)
-        assertThat(sessionArtifact.environmentId()).isEqualTo("environment_id")
-        assertThat(sessionArtifact.path()).isEqualTo("path")
-        assertThat(sessionArtifact.sessionId()).isEqualTo("session_id")
-        assertThat(sessionArtifact.sizeBytes()).isEqualTo(0L)
-        assertThat(sessionArtifact.turnId()).isEqualTo("turn_id")
+        assertThat(sessionArtifact.id()).contains("id")
+        assertThat(sessionArtifact.createdAt()).contains(0L)
+        assertThat(sessionArtifact.environmentId()).contains("environment_id")
+        assertThat(sessionArtifact.path()).contains("path")
+        assertThat(sessionArtifact.sessionId()).contains("session_id")
+        assertThat(sessionArtifact.sizeBytes()).contains(0L)
+        assertThat(sessionArtifact.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()
 

@@ -35,7 +35,7 @@ internal class VertexLiveTest {
                             .store(false)
                             .build()
                     )
-            check(response.id().isNotBlank())
+            check(response.idOrThrow().isNotBlank())
             check(response.status().orElse(null) == ResponseStatus.COMPLETED)
         }
     }
@@ -77,14 +77,17 @@ internal class VertexLiveTest {
                                 .build()
                         )
                         .also {
-                            val id = it.id()
+                            val id = it.idOrThrow()
                             check(id.isNotBlank())
                             storedResponseId = id
                             check(it.status().orElse(null) == ResponseStatus.COMPLETED)
                         }
                 }
             evidence.probe("store-retrieve") {
-                check(client.responses().retrieve(response.id()).id() == response.id())
+                check(
+                    client.responses().retrieve(response.idOrThrow()).idOrThrow() ==
+                        response.idOrThrow()
+                )
             }
             evidence.probe("previous-response-id") {
                 val followup =
@@ -93,12 +96,12 @@ internal class VertexLiveTest {
                         .create(
                             ResponseCreateParams.builder()
                                 .model(model)
-                                .previousResponseId(response.id())
+                                .previousResponseId(response.idOrThrow())
                                 .input("Which number did I give you?")
                                 .store(false)
                                 .build()
                         )
-                check(followup.id().isNotBlank())
+                check(followup.idOrThrow().isNotBlank())
                 check(followup.status().orElse(null) == ResponseStatus.COMPLETED)
             }
         } finally {
@@ -142,17 +145,17 @@ internal class VertexLiveTest {
                     )
                     .also {
                         check(it.status().orElse(null) == ResponseStatus.COMPLETED)
-                        check(it.output().any { item -> item.isFunctionCall() })
+                        check(it.outputOrThrow().any { item -> item.isFunctionCall() })
                     }
             }
         val messages = mutableListOf<ResponseInputItem>()
-        first.output().forEach { item ->
+        first.outputOrThrow().forEach { item ->
             messages.add(jsonMapper().convertValue(item, ResponseInputItem::class.java))
             if (item.isFunctionCall()) {
                 messages.add(
                     ResponseInputItem.ofFunctionCallOutput(
                         ResponseInputItem.FunctionCallOutput.builder()
-                            .callId(item.asFunctionCall().callId())
+                            .callId(item.asFunctionCall().callIdOrThrow())
                             .output("ok")
                             .build()
                     )
@@ -170,9 +173,9 @@ internal class VertexLiveTest {
                             .store(false)
                             .build()
                     )
-            check(second.id().isNotBlank())
+            check(second.idOrThrow().isNotBlank())
             check(second.status().orElse(null) == ResponseStatus.COMPLETED)
-            check(second.output().none { it.isFunctionCall() })
+            check(second.outputOrThrow().none { it.isFunctionCall() })
         }
     }
 
@@ -188,10 +191,10 @@ internal class VertexLiveTest {
                             .input("Reply briefly with a greeting.")
                             .build()
                     )
-            check(compacted.id().isNotBlank())
+            check(compacted.idOrThrow().isNotBlank())
             // Parse the actual typed compacted-output envelope, without inspecting or saving
             // its opaque contents.
-            compacted.output()
+            compacted.outputOrThrow()
         }
     }
 

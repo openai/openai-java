@@ -28,7 +28,7 @@ internal class WebSearchPreviewToolTest {
                 .build()
 
         assertThat(webSearchPreviewTool.type())
-            .isEqualTo(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
+            .contains(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
         assertThat(webSearchPreviewTool.searchContentTypes().getOrNull())
             .containsExactly(WebSearchPreviewTool.SearchContentType.TEXT)
         assertThat(webSearchPreviewTool.searchContextSize())

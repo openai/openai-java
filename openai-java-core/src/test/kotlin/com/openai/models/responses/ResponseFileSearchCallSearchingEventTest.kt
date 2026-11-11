@@ -18,9 +18,9 @@ internal class ResponseFileSearchCallSearchingEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseFileSearchCallSearchingEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseFileSearchCallSearchingEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseFileSearchCallSearchingEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseFileSearchCallSearchingEvent.itemId()).contains("item_id")
+        assertThat(responseFileSearchCallSearchingEvent.outputIndex()).contains(0L)
+        assertThat(responseFileSearchCallSearchingEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

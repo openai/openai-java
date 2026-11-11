@@ -33,14 +33,14 @@ public final class ResponsesConversationExample {
                 .build();
 
         for (int i = 0; i < 4; i++) {
-            List<ResponseOutputMessage> messages = client.responses().create(createParams).output().stream()
+            List<ResponseOutputMessage> messages = client.responses().create(createParams).outputOrThrow().stream()
                     .flatMap(item -> item.message().stream())
                     .collect(toList());
 
             messages.stream()
-                    .flatMap(message -> message.content().stream())
+                    .flatMap(message -> message.contentOrThrow().stream())
                     .flatMap(content -> content.outputText().stream())
-                    .forEach(outputText -> System.out.println(outputText.text()));
+                    .forEach(outputText -> System.out.println(outputText.textOrThrow()));
 
             System.out.println("\n-----------------------------------\n");
 

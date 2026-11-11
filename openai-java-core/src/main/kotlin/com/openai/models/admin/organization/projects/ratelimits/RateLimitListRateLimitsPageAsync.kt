@@ -7,7 +7,6 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.admin.organization.projects.RateLimitServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
@@ -21,29 +20,30 @@ private constructor(
     private val response: RateLimitListRateLimitsPageResponse,
 ) : PageAsync<ProjectRateLimit> {
 
-    /**
-     * Delegates to [RateLimitListRateLimitsPageResponse], but gracefully handles missing data.
-     *
-     * @see RateLimitListRateLimitsPageResponse.data
-     */
-    fun data(): List<ProjectRateLimit> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see RateLimitListRateLimitsPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [RateLimitListRateLimitsPageResponse], but gracefully handles missing data.
-     *
-     * @see RateLimitListRateLimitsPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<ProjectRateLimit> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    /**
-     * Delegates to [RateLimitListRateLimitsPageResponse], but gracefully handles missing data.
-     *
-     * @see RateLimitListRateLimitsPageResponse.lastId
-     */
-    fun lastId(): Optional<String> = response._lastId().getOptional("last_id")
+    fun _data() = response._data()
 
-    override fun items(): List<ProjectRateLimit> = data()
+    /** @see RateLimitListRateLimitsPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    /** @see RateLimitListRateLimitsPageResponse.lastId */
+    fun lastId() = response.lastId()
+
+    fun lastIdOrThrow(): String = lastId().orElseGet { response._lastId().getRequired("last_id") }
+
+    fun _lastId() = response._lastId()
+
+    override fun items(): List<ProjectRateLimit> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean =
         hasMore().orElse(true) && items().isNotEmpty() && lastId().isPresent

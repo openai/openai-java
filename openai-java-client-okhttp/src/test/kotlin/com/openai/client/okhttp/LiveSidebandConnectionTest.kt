@@ -127,10 +127,23 @@ class LiveSidebandConnectionTest {
                     assertThat(result.sourceEventType())
                         .contains(DecisionEvent.SourceEventType.SESSION_INPUT_TRANSCRIPT_DELTA)
                     assertThat(
-                            result.event().decision().answers().single().asPredicate().probability()
+                            result
+                                .eventOrThrow()
+                                .decisionOrThrow()
+                                .answersOrThrow()
+                                .single()
+                                .asPredicate()
+                                .probabilityOrThrow()
                         )
                         .isEqualTo(0.75)
-                    assertThat(result.event().decision().usage().totalTokens()).isEqualTo(3L)
+                    assertThat(
+                            result
+                                .eventOrThrow()
+                                .decisionOrThrow()
+                                .usageOrThrow()
+                                .totalTokensOrThrow()
+                        )
+                        .isEqualTo(3L)
                 }
             }
         }
@@ -284,14 +297,14 @@ class LiveSidebandConnectionTest {
                             .receiveAsync()
                             .get(8, TimeUnit.SECONDS)
                             .asSessionOutputAudioFixturePlaying()
-                    assertThat(playing.eventId()).isEqualTo("playing-1")
+                    assertThat(playing.eventIdOrThrow()).isEqualTo("playing-1")
                     assertThat(playing.clientEventId()).contains(clientEventId)
                     val played =
                         sideband
                             .receiveAsync()
                             .get(8, TimeUnit.SECONDS)
                             .asSessionOutputAudioFixturePlayed()
-                    assertThat(played.eventId()).isEqualTo("played-1")
+                    assertThat(played.eventIdOrThrow()).isEqualTo("played-1")
                     assertThat(played.clientEventId()).contains(clientEventId)
                 }
             }
@@ -377,7 +390,9 @@ class LiveSidebandConnectionTest {
                         peer.socket
                             .get(8, TimeUnit.SECONDS)
                             .send("""{"type":"session.updated","event_id":"next","session":{}}""")
-                        assertThat(next.get(8, TimeUnit.SECONDS).asSessionUpdated().eventId())
+                        assertThat(
+                                next.get(8, TimeUnit.SECONDS).asSessionUpdated().eventIdOrThrow()
+                            )
                             .isEqualTo("next")
                     }
                 LiveSidebandConnection.connect(client, "signaling", selected).use {}

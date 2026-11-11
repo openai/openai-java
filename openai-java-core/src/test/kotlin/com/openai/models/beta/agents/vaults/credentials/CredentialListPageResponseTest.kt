@@ -5,6 +5,7 @@ package com.openai.models.beta.agents.vaults.credentials
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -48,7 +49,7 @@ internal class CredentialListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(credentialListPageResponse.data())
+        assertThat(credentialListPageResponse.data().getOrNull())
             .containsExactly(
                 Credential.builder()
                     .id("id")
@@ -79,7 +80,7 @@ internal class CredentialListPageResponseTest {
                     .build()
             )
         assertThat(credentialListPageResponse.firstId()).contains("first_id")
-        assertThat(credentialListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(credentialListPageResponse.hasMore()).contains(true)
         assertThat(credentialListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

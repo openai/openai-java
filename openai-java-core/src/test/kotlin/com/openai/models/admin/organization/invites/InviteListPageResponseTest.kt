@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.invites
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -35,7 +36,7 @@ internal class InviteListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(inviteListPageResponse.data())
+        assertThat(inviteListPageResponse.data().getOrNull())
             .containsExactly(
                 Invite.builder()
                     .id("id")
@@ -50,7 +51,7 @@ internal class InviteListPageResponseTest {
                     .expiresAt(0L)
                     .build()
             )
-        assertThat(inviteListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(inviteListPageResponse.hasMore()).contains(true)
         assertThat(inviteListPageResponse.firstId()).contains("first_id")
         assertThat(inviteListPageResponse.lastId()).contains("last_id")
 

@@ -42,41 +42,66 @@ private constructor(
     ) : this(data, hasMore, nextPage, object_, mutableMapOf())
 
     /**
-     * Parsed content of the file.
+     * Parsed content of the file. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun data(): List<FileContentResponse> = data.getRequired("data")
+    fun data(): java.util.Optional<List<FileContentResponse>> = data.getOptional("data")
 
     /**
-     * Indicates if there are more content pages to fetch.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun hasMore(): Boolean = hasMore.getRequired("has_more")
+    fun dataOrThrow(): List<FileContentResponse> = data.getRequired("data")
 
     /**
-     * The token for the next page, if any.
+     * Indicates if there are more content pages to fetch. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun nextPage(): Optional<String> = nextPage.getOptional("next_page")
+    fun hasMore(): java.util.Optional<Boolean> = hasMore.getOptional("has_more")
 
     /**
-     * The object type, which is always `vector_store.file_content.page`
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("vector_store.file_content.page")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun hasMoreOrThrow(): Boolean = hasMore.getRequired("has_more")
+
+    /**
+     * The token for the next page, if any. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun nextPage(): java.util.Optional<String> = nextPage.getOptional("next_page")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nextPageOrThrow(): String = nextPage.getRequired("next_page")
+
+    /**
+     * The object type, which is always `vector_store.file_content.page` The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("vector_store.file_content.page")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * Returns the raw JSON value of [data].
@@ -287,14 +312,10 @@ private constructor(
             return@apply
         }
 
-        data().forEach { it.validate() }
-        hasMore()
+        dataOrThrow().forEach { it.validate() }
+        hasMoreOrThrow()
         nextPage()
-        _object_().let {
-            if (it != JsonValue.from("vector_store.file_content.page")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
+        object_OrThrow()
         validated = true
     }
 

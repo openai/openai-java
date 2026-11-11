@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.completions.CompletionUsage
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -212,8 +213,8 @@ internal class ChatCompletionTest {
                 )
                 .build()
 
-        assertThat(chatCompletion.id()).isEqualTo("id")
-        assertThat(chatCompletion.choices())
+        assertThat(chatCompletion.id()).contains("id")
+        assertThat(chatCompletion.choices().getOrNull())
             .containsExactly(
                 ChatCompletion.Choice.builder()
                     .finishReason(ChatCompletion.Choice.FinishReason.STOP)
@@ -295,8 +296,8 @@ internal class ChatCompletionTest {
                     )
                     .build()
             )
-        assertThat(chatCompletion.created()).isEqualTo(0L)
-        assertThat(chatCompletion.model()).isEqualTo("model")
+        assertThat(chatCompletion.created()).contains(0L)
+        assertThat(chatCompletion.model()).contains("model")
         assertThat(chatCompletion.metadata())
             .contains(
                 ChatCompletion.Metadata.builder()

@@ -33,28 +33,43 @@ private constructor(
     ) : this(domain, name, value, mutableMapOf())
 
     /**
-     * The domain associated with the secret.
+     * The domain associated with the secret. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun domain(): String = domain.getRequired("domain")
+    fun domain(): java.util.Optional<String> = domain.getOptional("domain")
 
     /**
-     * The name of the secret to inject for the domain.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): String = name.getRequired("name")
+    fun domainOrThrow(): String = domain.getRequired("domain")
 
     /**
-     * The secret value to inject for the domain.
+     * The name of the secret to inject for the domain. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun value(): String = value.getRequired("value")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
+
+    /**
+     * The secret value to inject for the domain. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun value(): java.util.Optional<String> = value.getOptional("value")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun valueOrThrow(): String = value.getRequired("value")
 
     /**
      * Returns the raw JSON value of [domain].
@@ -233,9 +248,9 @@ private constructor(
             return@apply
         }
 
-        domain()
-        name()
-        value()
+        domainOrThrow()
+        nameOrThrow()
+        valueOrThrow()
         validated = true
     }
 

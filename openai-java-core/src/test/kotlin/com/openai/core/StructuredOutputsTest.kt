@@ -1712,17 +1712,17 @@ internal class StructuredOutputsTest {
 
         // The "strict" flag _must_ be set to ensure that the model's output will _always_ conform
         // to the JSON schema.
-        assertThat(jsonSchema.jsonSchema().strict()).isPresent
-        assertThat(jsonSchema.jsonSchema().strict().get()).isTrue
+        assertThat(jsonSchema.jsonSchemaOrThrow().strict()).isPresent
+        assertThat(jsonSchema.jsonSchemaOrThrow().strict().get()).isTrue
 
         // The `schema()` accessor cannot be called successfully because of the way the field was
         // set to a schema. This is OK, as the serialization will still work. Just confirm the
         // expected failure, so if the conditions change, they will be noticed.
-        assertThatThrownBy { jsonSchema.jsonSchema().schema() }
+        assertThatThrownBy { jsonSchema.jsonSchemaOrThrow().schema() }
             .isExactlyInstanceOf(OpenAIInvalidDataException::class.java)
 
         // Use the `_schema()` accessor instead and check that the value is not null or missing.
-        assertThat(jsonSchema.jsonSchema()._schema())
+        assertThat(jsonSchema.jsonSchemaOrThrow()._schema())
             .isNotInstanceOfAny(JsonMissing::class.java, JsonNull::class.java)
     }
 
@@ -1817,7 +1817,7 @@ internal class StructuredOutputsTest {
         // The `schema()` accessor cannot be called successfully because of the way the field was
         // set to a schema. This is OK, as the serialization will still work. Just confirm the
         // expected failure, so if the conditions change, they will be noticed.
-        assertThatThrownBy { jsonSchema.schema() }
+        assertThatThrownBy { jsonSchema.schemaOrThrow() }
             .isExactlyInstanceOf(OpenAIInvalidDataException::class.java)
 
         // Use the `_schema()` accessor instead and check that the value is not null or missing.
@@ -1939,7 +1939,7 @@ internal class StructuredOutputsTest {
         @Suppress("unused") @JsonClassDescription("Something about X") class X(val s: String)
 
         val functionTool = functionToolFromClass(X::class.java)
-        val fnDef = functionTool.function().get().function()
+        val fnDef = functionTool.function().get().functionOrThrow()
 
         // The "strict" flag _must_ be set to ensure that the model's output will _always_ conform
         // to the JSON schema.
@@ -1947,7 +1947,7 @@ internal class StructuredOutputsTest {
         assertThat(fnDef.strict().get()).isTrue
         // Test here that the name, description and parameters (schema) are applied. There is no
         // need to test these again for the other cases.
-        assertThat(fnDef.name()).isEqualTo("X")
+        assertThat(fnDef.nameOrThrow()).isEqualTo("X")
         assertThat(fnDef.description()).isPresent
         assertThat(fnDef.description().get()).isEqualTo("Something about X")
 
@@ -2051,7 +2051,7 @@ internal class StructuredOutputsTest {
         assertThat(fnTool.strict().get()).isTrue
         // Test here that the name, description and parameters (schema) are applied. There is no
         // need to test these again for the other cases.
-        assertThat(fnTool.name()).isEqualTo("X")
+        assertThat(fnTool.nameOrThrow()).isEqualTo("X")
         assertThat(fnTool.description()).isPresent
         assertThat(fnTool.description().get()).isEqualTo("Something about X")
 

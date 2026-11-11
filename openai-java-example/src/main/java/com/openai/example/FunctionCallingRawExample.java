@@ -44,8 +44,8 @@ public final class FunctionCallingRawExample {
                         .build())
                 .addUserMessage("How good are the following SDKs: OpenAI Java SDK, Unknown Company SDK");
 
-        client.chat().completions().create(createParamsBuilder.build()).choices().stream()
-                .map(ChatCompletion.Choice::message)
+        client.chat().completions().create(createParamsBuilder.build()).choicesOrThrow().stream()
+                .map(ChatCompletion.Choice::messageOrThrow)
                 // Add each assistant message onto the builder so that we keep track of the conversation for asking a
                 // follow-up question later.
                 .peek(createParamsBuilder::addMessage)
@@ -54,10 +54,10 @@ public final class FunctionCallingRawExample {
                     return message.toolCalls().stream().flatMap(Collection::stream);
                 })
                 .forEach(toolCall -> {
-                    String result = callFunction(toolCall.asFunction().function());
+                    String result = callFunction(toolCall.asFunction().functionOrThrow());
                     // Add the tool call result to the conversation.
                     createParamsBuilder.addMessage(ChatCompletionToolMessageParam.builder()
-                            .toolCallId(toolCall.asFunction().id())
+                            .toolCallId(toolCall.asFunction().idOrThrow())
                             .content(result)
                             .build());
                     System.out.println(result);
@@ -66,19 +66,19 @@ public final class FunctionCallingRawExample {
 
         // Ask a follow-up question about the function call result.
         createParamsBuilder.addUserMessage("Why do you say that?");
-        client.chat().completions().create(createParamsBuilder.build()).choices().stream()
-                .flatMap(choice -> choice.message().content().stream())
+        client.chat().completions().create(createParamsBuilder.build()).choicesOrThrow().stream()
+                .flatMap(choice -> choice.messageOrThrow().content().stream())
                 .forEach(System.out::println);
     }
 
     private static String callFunction(ChatCompletionMessageFunctionToolCall.Function function) {
-        if (!function.name().equals("get-sdk-quality")) {
-            throw new IllegalArgumentException("Unknown function: " + function.name());
+        if (!function.nameOrThrow().equals("get-sdk-quality")) {
+            throw new IllegalArgumentException("Unknown function: " + function.nameOrThrow());
         }
 
         JsonValue arguments;
         try {
-            arguments = JsonValue.from(jsonMapper().readTree(function.arguments()));
+            arguments = JsonValue.from(jsonMapper().readTree(function.argumentsOrThrow()));
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Bad function arguments", e);
         }

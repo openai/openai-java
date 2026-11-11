@@ -52,21 +52,32 @@ private constructor(
     ) : this(grader, hyperparameters, mutableMapOf())
 
     /**
-     * The grader used for the fine-tuning job.
+     * The grader used for the fine-tuning job. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun grader(): Grader = grader.getRequired("grader")
+    fun grader(): java.util.Optional<Grader> = grader.getOptional("grader")
 
     /**
-     * The hyperparameters used for the reinforcement fine-tuning job.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun hyperparameters(): Optional<ReinforcementHyperparameters> =
+    fun graderOrThrow(): Grader = grader.getRequired("grader")
+
+    /**
+     * The hyperparameters used for the reinforcement fine-tuning job. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun hyperparameters(): java.util.Optional<ReinforcementHyperparameters> =
         hyperparameters.getOptional("hyperparameters")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun hyperparametersOrThrow(): ReinforcementHyperparameters =
+        hyperparameters.getRequired("hyperparameters")
 
     /**
      * Returns the raw JSON value of [grader].
@@ -237,7 +248,7 @@ private constructor(
             return@apply
         }
 
-        grader().validate()
+        graderOrThrow().validate()
         hyperparameters().ifPresent { it.validate() }
         validated = true
     }

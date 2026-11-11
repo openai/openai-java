@@ -33,17 +33,17 @@ internal class ResponseComputerToolCallOutputItemTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(responseComputerToolCallOutputItem.id()).isEqualTo("id")
-        assertThat(responseComputerToolCallOutputItem.callId()).isEqualTo("call_id")
+        assertThat(responseComputerToolCallOutputItem.id()).contains("id")
+        assertThat(responseComputerToolCallOutputItem.callId()).contains("call_id")
         assertThat(responseComputerToolCallOutputItem.output())
-            .isEqualTo(
+            .contains(
                 ResponseComputerToolCallOutputScreenshot.builder()
                     .fileId("file_id")
                     .imageUrl("https://example.com")
                     .build()
             )
         assertThat(responseComputerToolCallOutputItem.status())
-            .isEqualTo(ResponseComputerToolCallOutputItem.Status.COMPLETED)
+            .contains(ResponseComputerToolCallOutputItem.Status.COMPLETED)
         assertThat(responseComputerToolCallOutputItem.acknowledgedSafetyChecks().getOrNull())
             .containsExactly(
                 ResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()

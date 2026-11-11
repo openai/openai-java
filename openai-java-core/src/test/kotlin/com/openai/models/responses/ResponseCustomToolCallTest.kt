@@ -22,9 +22,9 @@ internal class ResponseCustomToolCallTest {
                 .namespace("namespace")
                 .build()
 
-        assertThat(responseCustomToolCall.callId()).isEqualTo("call_id")
-        assertThat(responseCustomToolCall.input()).isEqualTo("input")
-        assertThat(responseCustomToolCall.name()).isEqualTo("name")
+        assertThat(responseCustomToolCall.callId()).contains("call_id")
+        assertThat(responseCustomToolCall.input()).contains("input")
+        assertThat(responseCustomToolCall.name()).contains("name")
         assertThat(responseCustomToolCall.id()).contains("id")
         assertThat(responseCustomToolCall.async()).contains(true)
         assertThat(responseCustomToolCall.caller())

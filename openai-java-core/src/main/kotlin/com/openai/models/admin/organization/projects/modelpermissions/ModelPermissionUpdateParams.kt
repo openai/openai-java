@@ -35,21 +35,17 @@ private constructor(
 
     fun projectId(): Optional<String> = Optional.ofNullable(projectId)
 
-    /**
-     * The model permissions mode to apply.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun mode(): Mode = body.mode()
+    /** @see Body.mode */
+    fun mode(): java.util.Optional<Mode> = body.mode()
 
-    /**
-     * The model IDs included in this permissions policy.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun modelIds(): List<String> = body.modelIds()
+    /** @see Body.modeOrThrow */
+    fun modeOrThrow(): Mode = body.modeOrThrow()
+
+    /** @see Body.modelIds */
+    fun modelIds(): java.util.Optional<List<String>> = body.modelIds()
+
+    /** @see Body.modelIdsOrThrow */
+    fun modelIdsOrThrow(): List<String> = body.modelIdsOrThrow()
 
     /**
      * Returns the raw JSON value of [mode].
@@ -318,20 +314,32 @@ private constructor(
         ) : this(mode, modelIds, mutableMapOf())
 
         /**
-         * The model permissions mode to apply.
+         * The model permissions mode to apply. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun mode(): Mode = mode.getRequired("mode")
+        fun mode(): java.util.Optional<Mode> = mode.getOptional("mode")
 
         /**
-         * The model IDs included in this permissions policy.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun modelIds(): List<String> = modelIds.getRequired("model_ids")
+        fun modeOrThrow(): Mode = mode.getRequired("mode")
+
+        /**
+         * The model IDs included in this permissions policy. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun modelIds(): java.util.Optional<List<String>> = modelIds.getOptional("model_ids")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun modelIdsOrThrow(): List<String> = modelIds.getRequired("model_ids")
 
         /**
          * Returns the raw JSON value of [mode].
@@ -500,8 +508,8 @@ private constructor(
                 return@apply
             }
 
-            mode().validate()
-            modelIds()
+            modeOrThrow().validate()
+            modelIdsOrThrow()
             validated = true
         }
 

@@ -25,15 +25,15 @@ internal class ProjectHostedToolPermissionsTest {
                 .build()
 
         assertThat(projectHostedToolPermissions.codeInterpreter())
-            .isEqualTo(ProjectHostedToolPermissions.CodeInterpreter.builder().enabled(true).build())
+            .contains(ProjectHostedToolPermissions.CodeInterpreter.builder().enabled(true).build())
         assertThat(projectHostedToolPermissions.fileSearch())
-            .isEqualTo(ProjectHostedToolPermissions.FileSearch.builder().enabled(true).build())
+            .contains(ProjectHostedToolPermissions.FileSearch.builder().enabled(true).build())
         assertThat(projectHostedToolPermissions.imageGeneration())
-            .isEqualTo(ProjectHostedToolPermissions.ImageGeneration.builder().enabled(true).build())
+            .contains(ProjectHostedToolPermissions.ImageGeneration.builder().enabled(true).build())
         assertThat(projectHostedToolPermissions.mcp())
-            .isEqualTo(ProjectHostedToolPermissions.Mcp.builder().enabled(true).build())
+            .contains(ProjectHostedToolPermissions.Mcp.builder().enabled(true).build())
         assertThat(projectHostedToolPermissions.webSearch())
-            .isEqualTo(ProjectHostedToolPermissions.WebSearch.builder().enabled(true).build())
+            .contains(ProjectHostedToolPermissions.WebSearch.builder().enabled(true).build())
 
         val jsonMapper = jsonMapper()
 

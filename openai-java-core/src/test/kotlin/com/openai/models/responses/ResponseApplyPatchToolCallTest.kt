@@ -26,10 +26,10 @@ internal class ResponseApplyPatchToolCallTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(responseApplyPatchToolCall.id()).isEqualTo("id")
-        assertThat(responseApplyPatchToolCall.callId()).isEqualTo("call_id")
+        assertThat(responseApplyPatchToolCall.id()).contains("id")
+        assertThat(responseApplyPatchToolCall.callId()).contains("call_id")
         assertThat(responseApplyPatchToolCall.operation())
-            .isEqualTo(
+            .contains(
                 ResponseApplyPatchToolCall.Operation.ofCreateFile(
                     ResponseApplyPatchToolCall.Operation.CreateFile.builder()
                         .diff("diff")
@@ -38,7 +38,7 @@ internal class ResponseApplyPatchToolCallTest {
                 )
             )
         assertThat(responseApplyPatchToolCall.status())
-            .isEqualTo(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
+            .contains(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
         assertThat(responseApplyPatchToolCall.caller())
             .contains(ResponseApplyPatchToolCall.Caller.ofDirect())
         assertThat(responseApplyPatchToolCall.createdBy()).contains("created_by")

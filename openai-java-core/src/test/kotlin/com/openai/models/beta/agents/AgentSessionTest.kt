@@ -5,6 +5,7 @@ package com.openai.models.beta.agents
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -121,9 +122,9 @@ internal class AgentSessionTest {
                 .spendControl(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
                 .build()
 
-        assertThat(agentSession.id()).isEqualTo("id")
+        assertThat(agentSession.id()).contains("id")
         assertThat(agentSession.agent())
-            .isEqualTo(
+            .contains(
                 AgentSession.Agent.builder()
                     .id("id")
                     .instructions("instructions")
@@ -160,17 +161,17 @@ internal class AgentSessionTest {
                     )
                     .build()
             )
-        assertThat(agentSession.createdAt()).isEqualTo(0L)
-        assertThat(agentSession.environment()).isEqualTo(Environment.ofNone())
+        assertThat(agentSession.createdAt()).contains(0L)
+        assertThat(agentSession.environment()).contains(Environment.ofNone())
         assertThat(agentSession.error()).contains("error")
-        assertThat(agentSession.lastActiveAt()).isEqualTo(0L)
+        assertThat(agentSession.lastActiveAt()).contains(0L)
         assertThat(agentSession.metadata())
-            .isEqualTo(
+            .contains(
                 AgentSession.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(agentSession.requiredActions())
+        assertThat(agentSession.requiredActions().getOrNull())
             .containsExactly(
                 AgentSession.RequiredAction.ofComputerUseApprovalRequest(
                     AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
@@ -208,7 +209,7 @@ internal class AgentSessionTest {
                         .build()
                 )
             )
-        assertThat(agentSession.status()).isEqualTo(AgentSession.Status.IDLE)
+        assertThat(agentSession.status()).contains(AgentSession.Status.IDLE)
         assertThat(agentSession.usage())
             .contains(
                 TokenUsage.builder()
@@ -223,7 +224,7 @@ internal class AgentSessionTest {
                     .totalTokens(0L)
                     .build()
             )
-        assertThat(agentSession.vaultIds()).containsExactly("string")
+        assertThat(agentSession.vaultIds().getOrNull()).containsExactly("string")
         assertThat(agentSession.review()).contains(AgentSession.Review.NONE)
         assertThat(agentSession.spendControl())
             .contains(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())

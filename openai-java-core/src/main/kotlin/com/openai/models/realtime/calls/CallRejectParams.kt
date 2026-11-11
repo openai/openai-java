@@ -31,13 +31,11 @@ private constructor(
 
     fun callId(): Optional<String> = Optional.ofNullable(callId)
 
-    /**
-     * SIP response code to send back to the caller. Defaults to `603` (Decline) when omitted.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun statusCode(): Optional<Long> = body.statusCode()
+    /** @see Body.statusCode */
+    fun statusCode(): java.util.Optional<Long> = body.statusCode()
+
+    /** @see Body.statusCodeOrThrow */
+    fun statusCodeOrThrow(): Long = body.statusCodeOrThrow()
 
     /**
      * Returns the raw JSON value of [statusCode].
@@ -267,11 +265,17 @@ private constructor(
 
         /**
          * SIP response code to send back to the caller. Defaults to `603` (Decline) when omitted.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun statusCode(): Optional<Long> = statusCode.getOptional("status_code")
+        fun statusCode(): java.util.Optional<Long> = statusCode.getOptional("status_code")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun statusCodeOrThrow(): Long = statusCode.getRequired("status_code")
 
         /**
          * Returns the raw JSON value of [statusCode].

@@ -54,49 +54,79 @@ private constructor(
     ) : this(data, firstId, hasMore, lastId, object_, mutableMapOf())
 
     /**
-     * A list of items
+     * A list of items The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun data(): List<Data> = data.getRequired("data")
+    fun data(): java.util.Optional<List<Data>> = data.getOptional("data")
 
     /**
-     * The ID of the first item in the list.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun firstId(): Optional<String> = firstId.getOptional("first_id")
+    fun dataOrThrow(): List<Data> = data.getRequired("data")
 
     /**
-     * Whether there are more items available.
+     * The ID of the first item in the list. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun hasMore(): Boolean = hasMore.getRequired("has_more")
+    fun firstId(): java.util.Optional<String> = firstId.getOptional("first_id")
 
     /**
-     * The ID of the last item in the list.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun lastId(): Optional<String> = lastId.getOptional("last_id")
+    fun firstIdOrThrow(): String = firstId.getRequired("first_id")
 
     /**
-     * The type of object returned, must be `list`.
+     * Whether there are more items available. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("list")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun hasMore(): java.util.Optional<Boolean> = hasMore.getOptional("has_more")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun hasMoreOrThrow(): Boolean = hasMore.getRequired("has_more")
+
+    /**
+     * The ID of the last item in the list. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun lastId(): java.util.Optional<String> = lastId.getOptional("last_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun lastIdOrThrow(): String = lastId.getRequired("last_id")
+
+    /**
+     * The type of object returned, must be `list`. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("list")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * Returns the raw JSON value of [data].
@@ -356,15 +386,11 @@ private constructor(
             return@apply
         }
 
-        data().forEach { it.validate() }
+        dataOrThrow().forEach { it.validate() }
         firstId()
-        hasMore()
+        hasMoreOrThrow()
         lastId()
-        _object_().let {
-            if (it != JsonValue.from("list")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
+        object_OrThrow()
         validated = true
     }
 
@@ -850,102 +876,165 @@ private constructor(
             )
 
             /**
-             * Identifier of the thread item.
+             * Identifier of the thread item. The schema requires this property. Returns empty if
+             * the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun id(): String = id.getRequired("id")
+            fun id(): java.util.Optional<String> = id.getOptional("id")
 
             /**
-             * JSON-encoded arguments that were sent to the tool.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun arguments(): String = arguments.getRequired("arguments")
+            fun idOrThrow(): String = id.getRequired("id")
 
             /**
-             * Identifier for the client tool call.
+             * JSON-encoded arguments that were sent to the tool. The schema requires this property.
+             * Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun callId(): String = callId.getRequired("call_id")
+            fun arguments(): java.util.Optional<String> = arguments.getOptional("arguments")
 
             /**
-             * Unix timestamp (in seconds) for when the item was created.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun createdAt(): Long = createdAt.getRequired("created_at")
+            fun argumentsOrThrow(): String = arguments.getRequired("arguments")
 
             /**
-             * Tool name that was invoked.
+             * Identifier for the client tool call. The schema requires this property. Returns empty
+             * if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun name(): String = name.getRequired("name")
+            fun callId(): java.util.Optional<String> = callId.getOptional("call_id")
 
             /**
-             * Type discriminator that is always `chatkit.thread_item`.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("chatkit.thread_item")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+            fun callIdOrThrow(): String = callId.getRequired("call_id")
+
+            /**
+             * Unix timestamp (in seconds) for when the item was created. The schema requires this
+             * property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+            /**
+             * Tool name that was invoked. The schema requires this property. Returns empty if the
+             * JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun name(): java.util.Optional<String> = name.getOptional("name")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun nameOrThrow(): String = name.getRequired("name")
+
+            /**
+             * Type discriminator that is always `chatkit.thread_item`. The schema requires this
+             * property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun object_(): java.util.Optional<JsonValue> {
+                val raw = object_
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("chatkit.thread_item")) ->
+                        throw OpenAIInvalidDataException("`object` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+            @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
             /**
              * JSON-encoded output captured from the tool. Defaults to null while execution is in
-             * progress.
+             * progress. The schema requires this property. Returns empty if the JSON property is
+             * missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun output(): Optional<String> = output.getOptional("output")
+            fun output(): java.util.Optional<String> = output.getOptional("output")
 
             /**
-             * Execution status for the tool call.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun status(): Status = status.getRequired("status")
+            fun outputOrThrow(): String = output.getRequired("output")
 
             /**
-             * Identifier of the parent thread.
+             * Execution status for the tool call. The schema requires this property. Returns empty
+             * if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun threadId(): String = threadId.getRequired("thread_id")
+            fun status(): java.util.Optional<Status> = status.getOptional("status")
 
             /**
-             * Type discriminator that is always `chatkit.client_tool_call`.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("chatkit.client_tool_call")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun statusOrThrow(): Status = status.getRequired("status")
+
+            /**
+             * Identifier of the parent thread. The schema requires this property. Returns empty if
+             * the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun threadId(): java.util.Optional<String> = threadId.getOptional("thread_id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun threadIdOrThrow(): String = threadId.getRequired("thread_id")
+
+            /**
+             * Type discriminator that is always `chatkit.client_tool_call`. The schema requires
+             * this property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("chatkit.client_tool_call")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
             /**
              * Returns the raw JSON value of [id].
@@ -1301,24 +1390,16 @@ private constructor(
                     return@apply
                 }
 
-                id()
-                arguments()
-                callId()
-                createdAt()
-                name()
-                _object_().let {
-                    if (it != JsonValue.from("chatkit.thread_item")) {
-                        throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                    }
-                }
+                idOrThrow()
+                argumentsOrThrow()
+                callIdOrThrow()
+                createdAtOrThrow()
+                nameOrThrow()
+                object_OrThrow()
                 output()
-                status().validate()
-                threadId()
-                _type().let {
-                    if (it != JsonValue.from("chatkit.client_tool_call")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
+                statusOrThrow().validate()
+                threadIdOrThrow()
+                typeOrThrow()
                 validated = true
             }
 
@@ -1584,82 +1665,136 @@ private constructor(
             )
 
             /**
-             * Identifier of the thread item.
+             * Identifier of the thread item. The schema requires this property. Returns empty if
+             * the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun id(): String = id.getRequired("id")
+            fun id(): java.util.Optional<String> = id.getOptional("id")
 
             /**
-             * Unix timestamp (in seconds) for when the item was created.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun createdAt(): Long = createdAt.getRequired("created_at")
+            fun idOrThrow(): String = id.getRequired("id")
 
             /**
-             * Optional heading for the task. Defaults to null when not provided.
+             * Unix timestamp (in seconds) for when the item was created. The schema requires this
+             * property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun heading(): Optional<String> = heading.getOptional("heading")
+            fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
             /**
-             * Type discriminator that is always `chatkit.thread_item`.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("chatkit.thread_item")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+            fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
             /**
-             * Optional summary that describes the task. Defaults to null when omitted.
+             * Optional heading for the task. Defaults to null when not provided. The schema
+             * requires this property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun summary(): Optional<String> = summary.getOptional("summary")
+            fun heading(): java.util.Optional<String> = heading.getOptional("heading")
 
             /**
-             * Subtype for the task.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun taskType(): TaskType = taskType.getRequired("task_type")
+            fun headingOrThrow(): String = heading.getRequired("heading")
 
             /**
-             * Identifier of the parent thread.
+             * Type discriminator that is always `chatkit.thread_item`. The schema requires this
+             * property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun threadId(): String = threadId.getRequired("thread_id")
+            fun object_(): java.util.Optional<JsonValue> {
+                val raw = object_
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("chatkit.thread_item")) ->
+                        throw OpenAIInvalidDataException("`object` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
 
             /**
-             * Type discriminator that is always `chatkit.task`.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("chatkit.task")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+            @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+            /**
+             * Optional summary that describes the task. Defaults to null when omitted. The schema
+             * requires this property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun summary(): java.util.Optional<String> = summary.getOptional("summary")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun summaryOrThrow(): String = summary.getRequired("summary")
+
+            /**
+             * Subtype for the task. The schema requires this property. Returns empty if the JSON
+             * property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun taskType(): java.util.Optional<TaskType> = taskType.getOptional("task_type")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun taskTypeOrThrow(): TaskType = taskType.getRequired("task_type")
+
+            /**
+             * Identifier of the parent thread. The schema requires this property. Returns empty if
+             * the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun threadId(): java.util.Optional<String> = threadId.getOptional("thread_id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun threadIdOrThrow(): String = threadId.getRequired("thread_id")
+
+            /**
+             * Type discriminator that is always `chatkit.task`. The schema requires this property.
+             * Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("chatkit.task")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
             /**
              * Returns the raw JSON value of [id].
@@ -1962,22 +2097,14 @@ private constructor(
                     return@apply
                 }
 
-                id()
-                createdAt()
+                idOrThrow()
+                createdAtOrThrow()
                 heading()
-                _object_().let {
-                    if (it != JsonValue.from("chatkit.thread_item")) {
-                        throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                    }
-                }
+                object_OrThrow()
                 summary()
-                taskType().validate()
-                threadId()
-                _type().let {
-                    if (it != JsonValue.from("chatkit.task")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
+                taskTypeOrThrow().validate()
+                threadIdOrThrow()
+                typeOrThrow()
                 validated = true
             }
 
@@ -2219,66 +2346,108 @@ private constructor(
             ) : this(id, createdAt, object_, tasks, threadId, type, mutableMapOf())
 
             /**
-             * Identifier of the thread item.
+             * Identifier of the thread item. The schema requires this property. Returns empty if
+             * the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun id(): String = id.getRequired("id")
+            fun id(): java.util.Optional<String> = id.getOptional("id")
 
             /**
-             * Unix timestamp (in seconds) for when the item was created.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun createdAt(): Long = createdAt.getRequired("created_at")
+            fun idOrThrow(): String = id.getRequired("id")
 
             /**
-             * Type discriminator that is always `chatkit.thread_item`.
+             * Unix timestamp (in seconds) for when the item was created. The schema requires this
+             * property. Returns empty if the JSON property is missing or null.
              *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("chatkit.thread_item")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+            fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
             /**
-             * Tasks included in the group.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun tasks(): List<Task> = tasks.getRequired("tasks")
+            fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
             /**
-             * Identifier of the parent thread.
+             * Type discriminator that is always `chatkit.thread_item`. The schema requires this
+             * property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun threadId(): String = threadId.getRequired("thread_id")
+            fun object_(): java.util.Optional<JsonValue> {
+                val raw = object_
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("chatkit.thread_item")) ->
+                        throw OpenAIInvalidDataException("`object` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
 
             /**
-             * Type discriminator that is always `chatkit.task_group`.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("chatkit.task_group")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+            @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+            /**
+             * Tasks included in the group. The schema requires this property. Returns empty if the
+             * JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun tasks(): java.util.Optional<List<Task>> = tasks.getOptional("tasks")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun tasksOrThrow(): List<Task> = tasks.getRequired("tasks")
+
+            /**
+             * Identifier of the parent thread. The schema requires this property. Returns empty if
+             * the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun threadId(): java.util.Optional<String> = threadId.getOptional("thread_id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun threadIdOrThrow(): String = threadId.getRequired("thread_id")
+
+            /**
+             * Type discriminator that is always `chatkit.task_group`. The schema requires this
+             * property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("chatkit.task_group")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
             /**
              * Returns the raw JSON value of [id].
@@ -2540,20 +2709,12 @@ private constructor(
                     return@apply
                 }
 
-                id()
-                createdAt()
-                _object_().let {
-                    if (it != JsonValue.from("chatkit.thread_item")) {
-                        throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                    }
-                }
-                tasks().forEach { it.validate() }
-                threadId()
-                _type().let {
-                    if (it != JsonValue.from("chatkit.task_group")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
+                idOrThrow()
+                createdAtOrThrow()
+                object_OrThrow()
+                tasksOrThrow().forEach { it.validate() }
+                threadIdOrThrow()
+                typeOrThrow()
                 validated = true
             }
 
@@ -2602,29 +2763,48 @@ private constructor(
                 ) : this(heading, summary, type, mutableMapOf())
 
                 /**
-                 * Optional heading for the grouped task. Defaults to null when not provided.
+                 * Optional heading for the grouped task. Defaults to null when not provided. The
+                 * schema requires this property. Returns empty if the JSON property is missing or
+                 * null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun heading(): Optional<String> = heading.getOptional("heading")
+                fun heading(): java.util.Optional<String> = heading.getOptional("heading")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun headingOrThrow(): String = heading.getRequired("heading")
 
                 /**
                  * Optional summary that describes the grouped task. Defaults to null when omitted.
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun summary(): Optional<String> = summary.getOptional("summary")
+                fun summary(): java.util.Optional<String> = summary.getOptional("summary")
 
                 /**
-                 * Subtype for the grouped task.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun type(): Type = type.getRequired("type")
+                fun summaryOrThrow(): String = summary.getRequired("summary")
+
+                /**
+                 * Subtype for the grouped task. The schema requires this property. Returns empty if
+                 * the JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun typeOrThrow(): Type = type.getRequired("type")
 
                 /**
                  * Returns the raw JSON value of [heading].
@@ -2819,7 +2999,7 @@ private constructor(
 
                     heading()
                     summary()
-                    type().validate()
+                    typeOrThrow().validate()
                     validated = true
                 }
 

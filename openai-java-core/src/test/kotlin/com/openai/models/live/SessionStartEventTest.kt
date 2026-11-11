@@ -75,7 +75,7 @@ internal class SessionStartEventTest {
                 .build()
 
         assertThat(sessionStartEvent.session())
-            .isEqualTo(
+            .contains(
                 SessionConfig.builder()
                     .model(SessionConfig.Model.GPT_LIVE_1)
                     .audio(

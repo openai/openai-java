@@ -24,7 +24,7 @@ internal class FunctionToolTest {
                 .strict(true)
                 .build()
 
-        assertThat(functionTool.name()).isEqualTo("name")
+        assertThat(functionTool.name()).contains("name")
         assertThat(functionTool.description()).contains("description")
         assertThat(functionTool.parameters())
             .contains(

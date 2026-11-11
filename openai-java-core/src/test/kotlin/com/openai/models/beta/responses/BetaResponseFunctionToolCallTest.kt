@@ -24,9 +24,9 @@ internal class BetaResponseFunctionToolCallTest {
                 .status(BetaResponseFunctionToolCall.Status.IN_PROGRESS)
                 .build()
 
-        assertThat(betaResponseFunctionToolCall.arguments()).isEqualTo("arguments")
-        assertThat(betaResponseFunctionToolCall.callId()).isEqualTo("call_id")
-        assertThat(betaResponseFunctionToolCall.name()).isEqualTo("name")
+        assertThat(betaResponseFunctionToolCall.arguments()).contains("arguments")
+        assertThat(betaResponseFunctionToolCall.callId()).contains("call_id")
+        assertThat(betaResponseFunctionToolCall.name()).contains("name")
         assertThat(betaResponseFunctionToolCall.id()).contains("id")
         assertThat(betaResponseFunctionToolCall.agent())
             .contains(BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build())

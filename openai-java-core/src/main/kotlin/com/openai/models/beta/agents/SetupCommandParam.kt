@@ -34,20 +34,30 @@ private constructor(
     ) : this(command, cwd, mutableMapOf())
 
     /**
-     * The shell command to execute.
+     * The shell command to execute. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun command(): String = command.getRequired("command")
+    fun command(): java.util.Optional<String> = command.getOptional("command")
 
     /**
-     * The absolute working directory. Defaults to `/workspace`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun cwd(): Optional<String> = cwd.getOptional("cwd")
+    fun commandOrThrow(): String = command.getRequired("command")
+
+    /**
+     * The absolute working directory. Defaults to `/workspace`. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun cwd(): java.util.Optional<String> = cwd.getOptional("cwd")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun cwdOrThrow(): String = cwd.getRequired("cwd")
 
     /**
      * Returns the raw JSON value of [command].
@@ -195,7 +205,7 @@ private constructor(
             return@apply
         }
 
-        command()
+        commandOrThrow()
         cwd()
         validated = true
     }

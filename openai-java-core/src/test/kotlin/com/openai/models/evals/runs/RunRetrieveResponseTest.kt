@@ -5,6 +5,7 @@ package com.openai.models.evals.runs
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -72,10 +73,10 @@ internal class RunRetrieveResponseTest {
                 .status("status")
                 .build()
 
-        assertThat(runRetrieveResponse.id()).isEqualTo("id")
-        assertThat(runRetrieveResponse.createdAt()).isEqualTo(0L)
+        assertThat(runRetrieveResponse.id()).contains("id")
+        assertThat(runRetrieveResponse.createdAt()).contains(0L)
         assertThat(runRetrieveResponse.dataSource())
-            .isEqualTo(
+            .contains(
                 RunRetrieveResponse.DataSource.ofJsonl(
                     CreateEvalJsonlRunDataSource.builder()
                         .fileContentSource(
@@ -101,17 +102,17 @@ internal class RunRetrieveResponseTest {
                 )
             )
         assertThat(runRetrieveResponse.error())
-            .isEqualTo(EvalApiError.builder().code("code").message("message").build())
-        assertThat(runRetrieveResponse.evalId()).isEqualTo("eval_id")
+            .contains(EvalApiError.builder().code("code").message("message").build())
+        assertThat(runRetrieveResponse.evalId()).contains("eval_id")
         assertThat(runRetrieveResponse.metadata())
             .contains(
                 RunRetrieveResponse.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(runRetrieveResponse.model()).isEqualTo("model")
-        assertThat(runRetrieveResponse.name()).isEqualTo("name")
-        assertThat(runRetrieveResponse.perModelUsage())
+        assertThat(runRetrieveResponse.model()).contains("model")
+        assertThat(runRetrieveResponse.name()).contains("name")
+        assertThat(runRetrieveResponse.perModelUsage().getOrNull())
             .containsExactly(
                 RunRetrieveResponse.PerModelUsage.builder()
                     .cachedTokens(0L)
@@ -122,7 +123,7 @@ internal class RunRetrieveResponseTest {
                     .totalTokens(0L)
                     .build()
             )
-        assertThat(runRetrieveResponse.perTestingCriteriaResults())
+        assertThat(runRetrieveResponse.perTestingCriteriaResults().getOrNull())
             .containsExactly(
                 RunRetrieveResponse.PerTestingCriteriaResult.builder()
                     .failed(0L)
@@ -130,9 +131,9 @@ internal class RunRetrieveResponseTest {
                     .testingCriteria("testing_criteria")
                     .build()
             )
-        assertThat(runRetrieveResponse.reportUrl()).isEqualTo("https://example.com")
+        assertThat(runRetrieveResponse.reportUrl()).contains("https://example.com")
         assertThat(runRetrieveResponse.resultCounts())
-            .isEqualTo(
+            .contains(
                 RunRetrieveResponse.ResultCounts.builder()
                     .errored(0L)
                     .failed(0L)
@@ -140,7 +141,7 @@ internal class RunRetrieveResponseTest {
                     .total(0L)
                     .build()
             )
-        assertThat(runRetrieveResponse.status()).isEqualTo("status")
+        assertThat(runRetrieveResponse.status()).contains("status")
 
         val jsonMapper = jsonMapper()
 

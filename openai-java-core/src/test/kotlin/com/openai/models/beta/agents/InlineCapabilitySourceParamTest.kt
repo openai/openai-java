@@ -13,7 +13,7 @@ internal class InlineCapabilitySourceParamTest {
     fun createAndRoundtrip() {
         val inlineCapabilitySourceParam = InlineCapabilitySourceParam.builder().data("x").build()
 
-        assertThat(inlineCapabilitySourceParam.data()).isEqualTo("x")
+        assertThat(inlineCapabilitySourceParam.data()).contains("x")
 
         val jsonMapper = jsonMapper()
 

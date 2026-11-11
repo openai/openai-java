@@ -57,39 +57,69 @@ private constructor(
 
     /**
      * Text, image, or audio input to the model, used to generate a response. Can also contain
-     * previous assistant responses.
+     * previous assistant responses. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun content(): Content = content.getRequired("content")
+    fun content(): java.util.Optional<Content> = content.getOptional("content")
 
     /**
-     * The role of the message input. One of `user`, `assistant`, `system`, or `developer`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun role(): Role = role.getRequired("role")
+    fun contentOrThrow(): Content = content.getRequired("content")
+
+    /**
+     * The role of the message input. One of `user`, `assistant`, `system`, or `developer`. The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun role(): java.util.Optional<Role> = role.getOptional("role")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun roleOrThrow(): Role = role.getRequired("role")
 
     /**
      * Labels an `assistant` message as intermediate commentary (`commentary`) or the final answer
      * (`final_answer`). For models like `gpt-5.3-codex` and beyond, when sending follow-up
      * requests, preserve and resend phase on all assistant messages — dropping it can degrade
-     * performance. Not used for user messages.
+     * performance. Not used for user messages. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun phase(): Optional<Phase> = phase.getOptional("phase")
+    fun phase(): java.util.Optional<Phase> = phase.getOptional("phase")
 
     /**
-     * The type of the message input. Always `message`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun type(): Optional<Type> = type.getOptional("type")
+    fun phaseOrThrow(): Phase = phase.getRequired("phase")
+
+    /**
+     * The type of the message input. Always `message`. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = JsonValue.from(type)
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("message")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { JsonValue.from(type).getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = JsonValue.from(type)
 
     /**
      * Returns the raw JSON value of [content].
@@ -111,13 +141,6 @@ private constructor(
      * Unlike [phase], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("phase") @ExcludeMissing fun _phase(): JsonField<Phase> = phase
-
-    /**
-     * Returns the raw JSON value of [type].
-     *
-     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -306,10 +329,10 @@ private constructor(
             return@apply
         }
 
-        content().validate()
-        role().validate()
+        contentOrThrow().validate()
+        roleOrThrow().validate()
         phase().ifPresent { it.validate() }
-        type().ifPresent { it.validate() }
+        type()
         validated = true
     }
 

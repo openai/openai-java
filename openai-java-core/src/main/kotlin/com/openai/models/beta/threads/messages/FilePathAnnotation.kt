@@ -42,43 +42,76 @@ private constructor(
     ) : this(endIndex, filePath, startIndex, text, type, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun endIndex(): Long = endIndex.getRequired("end_index")
-
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun filePath(): FilePath = filePath.getRequired("file_path")
-
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun startIndex(): Long = startIndex.getRequired("start_index")
-
-    /**
-     * The text in the message content that needs to be replaced.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun text(): String = text.getRequired("text")
+    fun endIndex(): java.util.Optional<Long> = endIndex.getOptional("end_index")
 
     /**
-     * Always `file_path`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("file_path")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun endIndexOrThrow(): Long = endIndex.getRequired("end_index")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun filePath(): java.util.Optional<FilePath> = filePath.getOptional("file_path")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun filePathOrThrow(): FilePath = filePath.getRequired("file_path")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun startIndex(): java.util.Optional<Long> = startIndex.getOptional("start_index")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun startIndexOrThrow(): Long = startIndex.getRequired("start_index")
+
+    /**
+     * The text in the message content that needs to be replaced. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun text(): java.util.Optional<String> = text.getOptional("text")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun textOrThrow(): String = text.getRequired("text")
+
+    /**
+     * Always `file_path`. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("file_path")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [endIndex].
@@ -293,15 +326,11 @@ private constructor(
             return@apply
         }
 
-        endIndex()
-        filePath().validate()
-        startIndex()
-        text()
-        _type().let {
-            if (it != JsonValue.from("file_path")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        endIndexOrThrow()
+        filePathOrThrow().validate()
+        startIndexOrThrow()
+        textOrThrow()
+        typeOrThrow()
         validated = true
     }
 
@@ -339,12 +368,18 @@ private constructor(
         ) : this(fileId, mutableMapOf())
 
         /**
-         * The ID of the file that was generated.
+         * The ID of the file that was generated. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun fileId(): String = fileId.getRequired("file_id")
+        fun fileId(): java.util.Optional<String> = fileId.getOptional("file_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun fileIdOrThrow(): String = fileId.getRequired("file_id")
 
         /**
          * Returns the raw JSON value of [fileId].
@@ -467,7 +502,7 @@ private constructor(
                 return@apply
             }
 
-            fileId()
+            fileIdOrThrow()
             validated = true
         }
 

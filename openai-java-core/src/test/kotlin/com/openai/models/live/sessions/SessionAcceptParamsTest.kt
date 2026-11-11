@@ -134,7 +134,7 @@ internal class SessionAcceptParamsTest {
 
         val body = params._body()
 
-        assertThat(body.session())
+        assertThat(body.sessionOrThrow())
             .isEqualTo(
                 SessionAcceptParams.Session.builder()
                     .model(SessionAcceptParams.Session.Model.GPT_LIVE_1)
@@ -196,7 +196,7 @@ internal class SessionAcceptParamsTest {
 
         val body = params._body()
 
-        assertThat(body.session())
+        assertThat(body.sessionOrThrow())
             .isEqualTo(
                 SessionAcceptParams.Session.builder()
                     .model(SessionAcceptParams.Session.Model.GPT_LIVE_1)

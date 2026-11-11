@@ -20,11 +20,11 @@ internal class SafetyCaseTest {
                 .reason("reason")
                 .build()
 
-        assertThat(safetyCase.id()).isEqualTo("id")
-        assertThat(safetyCase.createdAt()).isEqualTo(0L)
-        assertThat(safetyCase.entityIdentifier()).isEqualTo("entity_identifier")
+        assertThat(safetyCase.id()).contains("id")
+        assertThat(safetyCase.createdAt()).contains(0L)
+        assertThat(safetyCase.entityIdentifier()).contains("entity_identifier")
         assertThat(safetyCase.notice())
-            .isEqualTo(SafetyCase.Notice.builder().type(SafetyCase.Notice.Type.WARNING).build())
+            .contains(SafetyCase.Notice.builder().type(SafetyCase.Notice.Type.WARNING).build())
         assertThat(safetyCase.reason()).contains("reason")
 
         val jsonMapper = jsonMapper()

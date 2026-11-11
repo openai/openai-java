@@ -143,7 +143,7 @@ internal class ResponseStreamEventValidationTest {
 
     private data class ConsumeResult(val events: List<ResponseStreamEvent>, val error: Throwable?) {
         fun outputTextDeltas(): List<String> =
-            events.filter { it.isOutputTextDelta() }.map { it.asOutputTextDelta().delta() }
+            events.filter { it.isOutputTextDelta() }.map { it.asOutputTextDelta().deltaOrThrow() }
     }
 
     internal enum class StreamingCall {

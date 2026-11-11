@@ -22,8 +22,8 @@ internal class BetaResponseReasoningItemTest {
                 .status(BetaResponseReasoningItem.Status.IN_PROGRESS)
                 .build()
 
-        assertThat(betaResponseReasoningItem.id()).isEqualTo("id")
-        assertThat(betaResponseReasoningItem.summary())
+        assertThat(betaResponseReasoningItem.id()).contains("id")
+        assertThat(betaResponseReasoningItem.summary().getOrNull())
             .containsExactly(BetaResponseReasoningItem.Summary.builder().text("text").build())
         assertThat(betaResponseReasoningItem.agent())
             .contains(BetaResponseReasoningItem.Agent.builder().agentName("agent_name").build())

@@ -45,33 +45,53 @@ private constructor(
     ) : this(eventId, rateLimits, type, mutableMapOf())
 
     /**
-     * The unique ID of the server event.
+     * The unique ID of the server event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
     /**
-     * List of rate limit information.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun rateLimits(): List<RateLimit> = rateLimits.getRequired("rate_limits")
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
-     * The event type, must be `rate_limits.updated`.
+     * List of rate limit information. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("rate_limits.updated")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun rateLimits(): java.util.Optional<List<RateLimit>> = rateLimits.getOptional("rate_limits")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun rateLimitsOrThrow(): List<RateLimit> = rateLimits.getRequired("rate_limits")
+
+    /**
+     * The event type, must be `rate_limits.updated`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("rate_limits.updated")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [eventId].
@@ -257,13 +277,9 @@ private constructor(
             return@apply
         }
 
-        eventId()
-        rateLimits().forEach { it.validate() }
-        _type().let {
-            if (it != JsonValue.from("rate_limits.updated")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        eventIdOrThrow()
+        rateLimitsOrThrow().forEach { it.validate() }
+        typeOrThrow()
         validated = true
     }
 
@@ -309,36 +325,60 @@ private constructor(
         ) : this(limit, name, remaining, resetSeconds, mutableMapOf())
 
         /**
-         * The maximum allowed value for the rate limit.
+         * The maximum allowed value for the rate limit. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun limit(): Optional<Long> = limit.getOptional("limit")
+        fun limit(): java.util.Optional<Long> = limit.getOptional("limit")
 
         /**
-         * The name of the rate limit (`requests`, `tokens`).
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun name(): Optional<Name> = name.getOptional("name")
+        fun limitOrThrow(): Long = limit.getRequired("limit")
 
         /**
-         * The remaining value before the limit is reached.
+         * The name of the rate limit (`requests`, `tokens`). Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun remaining(): Optional<Long> = remaining.getOptional("remaining")
+        fun name(): java.util.Optional<Name> = name.getOptional("name")
 
         /**
-         * Seconds until the rate limit resets.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun resetSeconds(): Optional<Double> = resetSeconds.getOptional("reset_seconds")
+        fun nameOrThrow(): Name = name.getRequired("name")
+
+        /**
+         * The remaining value before the limit is reached. Returns empty if the JSON property is
+         * missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun remaining(): java.util.Optional<Long> = remaining.getOptional("remaining")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun remainingOrThrow(): Long = remaining.getRequired("remaining")
+
+        /**
+         * Seconds until the rate limit resets. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun resetSeconds(): java.util.Optional<Double> = resetSeconds.getOptional("reset_seconds")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun resetSecondsOrThrow(): Double = resetSeconds.getRequired("reset_seconds")
 
         /**
          * Returns the raw JSON value of [limit].

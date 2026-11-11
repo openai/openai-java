@@ -38,7 +38,7 @@ internal class BetaResponseOutputTextTest {
                 )
                 .build()
 
-        assertThat(betaResponseOutputText.annotations())
+        assertThat(betaResponseOutputText.annotations().getOrNull())
             .containsExactly(
                 BetaResponseOutputText.Annotation.ofFileCitation(
                     BetaResponseOutputText.Annotation.FileCitation.builder()
@@ -48,7 +48,7 @@ internal class BetaResponseOutputTextTest {
                         .build()
                 )
             )
-        assertThat(betaResponseOutputText.text()).isEqualTo("text")
+        assertThat(betaResponseOutputText.text()).contains("text")
         assertThat(betaResponseOutputText.logprobs().getOrNull())
             .containsExactly(
                 BetaResponseOutputText.Logprob.builder()

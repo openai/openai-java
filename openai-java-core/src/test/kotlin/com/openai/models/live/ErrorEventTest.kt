@@ -27,7 +27,7 @@ internal class ErrorEventTest {
                 .build()
 
         assertThat(errorEvent.error())
-            .isEqualTo(
+            .contains(
                 Error.builder()
                     .code("unknown_parameter")
                     .message("Unknown parameter: 'session.voice'.")
@@ -36,7 +36,7 @@ internal class ErrorEventTest {
                     .param("session.voice")
                     .build()
             )
-        assertThat(errorEvent.eventId()).isEqualTo("evt_error_001")
+        assertThat(errorEvent.eventId()).contains("evt_error_001")
         assertThat(errorEvent.clientEventId()).contains("client_event_id")
 
         val jsonMapper = jsonMapper()

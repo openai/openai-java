@@ -4,6 +4,7 @@ package com.openai.models.skills.versions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -28,7 +29,7 @@ internal class SkillVersionListTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(skillVersionList.data())
+        assertThat(skillVersionList.data().getOrNull())
             .containsExactly(
                 SkillVersion.builder()
                     .id("id")
@@ -40,7 +41,7 @@ internal class SkillVersionListTest {
                     .build()
             )
         assertThat(skillVersionList.firstId()).contains("first_id")
-        assertThat(skillVersionList.hasMore()).isEqualTo(true)
+        assertThat(skillVersionList.hasMore()).contains(true)
         assertThat(skillVersionList.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

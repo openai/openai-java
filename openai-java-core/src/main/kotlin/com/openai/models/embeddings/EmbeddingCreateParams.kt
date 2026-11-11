@@ -42,58 +42,35 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in a
-     * single request, pass an array of strings or array of token arrays. The input must not exceed
-     * the max input tokens for the model (8192 tokens for all embedding models), cannot be an empty
-     * string, and any array must be 2048 dimensions or less.
-     * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
-     * for counting tokens. In addition to the per-input token limit, all embedding models enforce a
-     * maximum of 300,000 tokens summed across all inputs in a single request.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun input(): Input = body.input()
+    /** @see Body.input */
+    fun input(): java.util.Optional<Input> = body.input()
 
-    /**
-     * ID of the model to use. You can use the
-     * [List models](https://developers.openai.com/api/reference/resources/models/methods/list) API
-     * to see all of your available models, or see our
-     * [Model overview](https://developers.openai.com/api/docs/models) for descriptions of them.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun model(): EmbeddingModel = body.model()
+    /** @see Body.inputOrThrow */
+    fun inputOrThrow(): Input = body.inputOrThrow()
 
-    /**
-     * The number of dimensions the resulting output embeddings should have. Only supported in
-     * `text-embedding-3` and later models.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun dimensions(): Optional<Long> = body.dimensions()
+    /** @see Body.model */
+    fun model(): java.util.Optional<EmbeddingModel> = body.model()
 
-    /**
-     * The format to return the embeddings in. Can be either `float` or
-     * [`base64`](https://pypi.org/project/pybase64/).
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun encodingFormat(): Optional<EncodingFormat> = body.encodingFormat()
+    /** @see Body.modelOrThrow */
+    fun modelOrThrow(): EmbeddingModel = body.modelOrThrow()
 
-    /**
-     * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
-     * abuse.
-     * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun user(): Optional<String> = body.user()
+    /** @see Body.dimensions */
+    fun dimensions(): java.util.Optional<Long> = body.dimensions()
+
+    /** @see Body.dimensionsOrThrow */
+    fun dimensionsOrThrow(): Long = body.dimensionsOrThrow()
+
+    /** @see Body.encodingFormat */
+    fun encodingFormat(): java.util.Optional<EncodingFormat> = body.encodingFormat()
+
+    /** @see Body.encodingFormatOrThrow */
+    fun encodingFormatOrThrow(): EncodingFormat = body.encodingFormatOrThrow()
+
+    /** @see Body.user */
+    fun user(): java.util.Optional<String> = body.user()
+
+    /** @see Body.userOrThrow */
+    fun userOrThrow(): String = body.userOrThrow()
 
     /**
      * Returns the raw JSON value of [input].
@@ -469,52 +446,82 @@ private constructor(
          * be an empty string, and any array must be 2048 dimensions or less.
          * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
          * for counting tokens. In addition to the per-input token limit, all embedding models
-         * enforce a maximum of 300,000 tokens summed across all inputs in a single request.
+         * enforce a maximum of 300,000 tokens summed across all inputs in a single request. The
+         * schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun input(): Input = input.getRequired("input")
+        fun input(): java.util.Optional<Input> = input.getOptional("input")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun inputOrThrow(): Input = input.getRequired("input")
 
         /**
          * ID of the model to use. You can use the
          * [List models](https://developers.openai.com/api/reference/resources/models/methods/list)
          * API to see all of your available models, or see our
          * [Model overview](https://developers.openai.com/api/docs/models) for descriptions of them.
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun model(): EmbeddingModel = model.getRequired("model")
+        fun model(): java.util.Optional<EmbeddingModel> = model.getOptional("model")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun modelOrThrow(): EmbeddingModel = model.getRequired("model")
 
         /**
          * The number of dimensions the resulting output embeddings should have. Only supported in
-         * `text-embedding-3` and later models.
+         * `text-embedding-3` and later models. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun dimensions(): Optional<Long> = dimensions.getOptional("dimensions")
+        fun dimensions(): java.util.Optional<Long> = dimensions.getOptional("dimensions")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun dimensionsOrThrow(): Long = dimensions.getRequired("dimensions")
 
         /**
          * The format to return the embeddings in. Can be either `float` or
-         * [`base64`](https://pypi.org/project/pybase64/).
+         * [`base64`](https://pypi.org/project/pybase64/). Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun encodingFormat(): Optional<EncodingFormat> =
+        fun encodingFormat(): java.util.Optional<EncodingFormat> =
             encodingFormat.getOptional("encoding_format")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun encodingFormatOrThrow(): EncodingFormat = encodingFormat.getRequired("encoding_format")
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun user(): Optional<String> = user.getOptional("user")
+        fun user(): java.util.Optional<String> = user.getOptional("user")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun userOrThrow(): String = user.getRequired("user")
 
         /**
          * Returns the raw JSON value of [input].
@@ -792,8 +799,8 @@ private constructor(
                 return@apply
             }
 
-            input().validate()
-            model().validate()
+            inputOrThrow().validate()
+            modelOrThrow().validate()
             dimensions()
             encodingFormat().ifPresent { it.validate() }
             user()

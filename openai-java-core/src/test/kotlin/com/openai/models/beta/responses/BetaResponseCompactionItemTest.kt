@@ -19,8 +19,8 @@ internal class BetaResponseCompactionItemTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(betaResponseCompactionItem.id()).isEqualTo("id")
-        assertThat(betaResponseCompactionItem.encryptedContent()).isEqualTo("encrypted_content")
+        assertThat(betaResponseCompactionItem.id()).contains("id")
+        assertThat(betaResponseCompactionItem.encryptedContent()).contains("encrypted_content")
         assertThat(betaResponseCompactionItem.agent())
             .contains(BetaResponseCompactionItem.Agent.builder().agentName("agent_name").build())
         assertThat(betaResponseCompactionItem.createdBy()).contains("created_by")

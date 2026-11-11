@@ -39,28 +39,43 @@ private constructor(
     ) : this(id, model, results, mutableMapOf())
 
     /**
-     * The unique identifier for the moderation request.
+     * The unique identifier for the moderation request. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The model used to generate the moderation results.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun model(): String = model.getRequired("model")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * A list of moderation objects.
+     * The model used to generate the moderation results. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun results(): List<Moderation> = results.getRequired("results")
+    fun model(): java.util.Optional<String> = model.getOptional("model")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun modelOrThrow(): String = model.getRequired("model")
+
+    /**
+     * A list of moderation objects. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun results(): java.util.Optional<List<Moderation>> = results.getOptional("results")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun resultsOrThrow(): List<Moderation> = results.getRequired("results")
 
     /**
      * Returns the raw JSON value of [id].
@@ -250,9 +265,9 @@ private constructor(
             return@apply
         }
 
-        id()
-        model()
-        results().forEach { it.validate() }
+        idOrThrow()
+        modelOrThrow()
+        resultsOrThrow().forEach { it.validate() }
         validated = true
     }
 

@@ -20,11 +20,11 @@ internal class AwsExternalStorageProviderTest {
                 .roleArn("role_arn")
                 .build()
 
-        assertThat(awsExternalStorageProvider.accountId()).isEqualTo("account_id")
-        assertThat(awsExternalStorageProvider.bucket()).isEqualTo("bucket")
-        assertThat(awsExternalStorageProvider.externalId()).isEqualTo("external_id")
-        assertThat(awsExternalStorageProvider.region()).isEqualTo("region")
-        assertThat(awsExternalStorageProvider.roleArn()).isEqualTo("role_arn")
+        assertThat(awsExternalStorageProvider.accountId()).contains("account_id")
+        assertThat(awsExternalStorageProvider.bucket()).contains("bucket")
+        assertThat(awsExternalStorageProvider.externalId()).contains("external_id")
+        assertThat(awsExternalStorageProvider.region()).contains("region")
+        assertThat(awsExternalStorageProvider.roleArn()).contains("role_arn")
 
         val jsonMapper = jsonMapper()
 

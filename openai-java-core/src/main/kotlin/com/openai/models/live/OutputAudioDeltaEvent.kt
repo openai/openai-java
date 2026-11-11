@@ -42,43 +42,67 @@ private constructor(
 
     /**
      * Base64-encoded raw audio. Primary WebSocket events use the session's configured format;
-     * reflected sideband events use mono PCM16LE at 24 kHz.
+     * reflected sideband events use mono PCM16LE at 24 kHz. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun delta(): String = delta.getRequired("delta")
+    fun delta(): java.util.Optional<String> = delta.getOptional("delta")
 
     /**
-     * The event type, always `session.output_audio.delta`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("session.output_audio.delta")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun deltaOrThrow(): String = delta.getRequired("delta")
+
+    /**
+     * The event type, always `session.output_audio.delta`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("session.output_audio.delta")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Exclusive session-relative end in milliseconds. Required on reflected sideband events;
      * omitted on the primary WebSocket. Dropped output frames leave gaps between reflected ranges.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun endMs(): Optional<Long> = endMs.getOptional("end_ms")
+    fun endMs(): java.util.Optional<Long> = endMs.getOptional("end_ms")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun endMsOrThrow(): Long = endMs.getRequired("end_ms")
 
     /**
      * Inclusive session-relative start in milliseconds. Required on reflected sideband events;
-     * omitted on the primary WebSocket.
+     * omitted on the primary WebSocket. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun startMs(): Optional<Long> = startMs.getOptional("start_ms")
+    fun startMs(): java.util.Optional<Long> = startMs.getOptional("start_ms")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun startMsOrThrow(): Long = startMs.getRequired("start_ms")
 
     /**
      * Returns the raw JSON value of [delta].
@@ -277,12 +301,8 @@ private constructor(
             return@apply
         }
 
-        delta()
-        _type().let {
-            if (it != JsonValue.from("session.output_audio.delta")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        deltaOrThrow()
+        typeOrThrow()
         endMs()
         startMs()
         validated = true

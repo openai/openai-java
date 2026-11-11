@@ -21,12 +21,12 @@ internal class FileListResponseTest {
                 .source("source")
                 .build()
 
-        assertThat(fileListResponse.id()).isEqualTo("id")
-        assertThat(fileListResponse.bytes()).isEqualTo(0L)
-        assertThat(fileListResponse.containerId()).isEqualTo("container_id")
-        assertThat(fileListResponse.createdAt()).isEqualTo(0L)
-        assertThat(fileListResponse.path()).isEqualTo("path")
-        assertThat(fileListResponse.source()).isEqualTo("source")
+        assertThat(fileListResponse.id()).contains("id")
+        assertThat(fileListResponse.bytes()).contains(0L)
+        assertThat(fileListResponse.containerId()).contains("container_id")
+        assertThat(fileListResponse.createdAt()).contains(0L)
+        assertThat(fileListResponse.path()).contains("path")
+        assertThat(fileListResponse.source()).contains("source")
 
         val jsonMapper = jsonMapper()
 

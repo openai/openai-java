@@ -75,7 +75,8 @@ internal class CompletionCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
+        assertThat(body.modelOrThrow())
+            .isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
         assertThat(body.prompt())
             .contains(CompletionCreateParams.Prompt.ofString("This is a test."))
         assertThat(body.bestOf()).contains(0L)
@@ -116,7 +117,8 @@ internal class CompletionCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
+        assertThat(body.modelOrThrow())
+            .isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
         assertThat(body.prompt())
             .contains(CompletionCreateParams.Prompt.ofString("This is a test."))
     }

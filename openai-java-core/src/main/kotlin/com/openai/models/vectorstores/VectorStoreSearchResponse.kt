@@ -50,44 +50,69 @@ private constructor(
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
      * additional information about the object in a structured format, and querying for objects via
      * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
-     * strings with a maximum length of 512 characters, booleans, or numbers.
+     * strings with a maximum length of 512 characters, booleans, or numbers. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun attributes(): Optional<Attributes> = attributes.getOptional("attributes")
+    fun attributes(): java.util.Optional<Attributes> = attributes.getOptional("attributes")
 
     /**
-     * Content chunks from the file.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun content(): List<Content> = content.getRequired("content")
+    fun attributesOrThrow(): Attributes = attributes.getRequired("attributes")
 
     /**
-     * The ID of the vector store file.
+     * Content chunks from the file. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun fileId(): String = fileId.getRequired("file_id")
+    fun content(): java.util.Optional<List<Content>> = content.getOptional("content")
 
     /**
-     * The name of the vector store file.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun filename(): String = filename.getRequired("filename")
+    fun contentOrThrow(): List<Content> = content.getRequired("content")
 
     /**
-     * The similarity score for the result.
+     * The ID of the vector store file. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun score(): Double = score.getRequired("score")
+    fun fileId(): java.util.Optional<String> = fileId.getOptional("file_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun fileIdOrThrow(): String = fileId.getRequired("file_id")
+
+    /**
+     * The name of the vector store file. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun filename(): java.util.Optional<String> = filename.getOptional("filename")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun filenameOrThrow(): String = filename.getRequired("filename")
+
+    /**
+     * The similarity score for the result. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun score(): java.util.Optional<Double> = score.getOptional("score")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun scoreOrThrow(): Double = score.getRequired("score")
 
     /**
      * Returns the raw JSON value of [attributes].
@@ -336,10 +361,10 @@ private constructor(
         }
 
         attributes().ifPresent { it.validate() }
-        content().forEach { it.validate() }
-        fileId()
-        filename()
-        score()
+        contentOrThrow().forEach { it.validate() }
+        fileIdOrThrow()
+        filenameOrThrow()
+        scoreOrThrow()
         validated = true
     }
 
@@ -506,20 +531,32 @@ private constructor(
         ) : this(text, type, mutableMapOf())
 
         /**
-         * The text content returned from search.
+         * The text content returned from search. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun text(): String = text.getRequired("text")
+        fun text(): java.util.Optional<String> = text.getOptional("text")
 
         /**
-         * The type of content.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun type(): Type = type.getRequired("type")
+        fun textOrThrow(): String = text.getRequired("text")
+
+        /**
+         * The type of content. The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): Type = type.getRequired("type")
 
         /**
          * Returns the raw JSON value of [text].
@@ -669,8 +706,8 @@ private constructor(
                 return@apply
             }
 
-            text()
-            type().validate()
+            textOrThrow()
+            typeOrThrow().validate()
             validated = true
         }
 

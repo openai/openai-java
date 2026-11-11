@@ -28,23 +28,41 @@ internal constructor(
     /** @see ChatCompletionMessage.content */
     fun content(): Optional<T> = content.getOptional("content")
 
+    fun contentOrThrow(): T = content.getRequired("content")
+
     /** @see ChatCompletionMessage.refusal */
     fun refusal(): Optional<String> = rawMessage.refusal()
 
+    fun refusalOrThrow(): String = rawMessage.refusalOrThrow()
+
     /** @see ChatCompletionMessage._role */
-    fun _role(): JsonValue = rawMessage._role()
+    fun _role(): JsonField<JsonValue> = rawMessage._role()
+
+    fun role(): Optional<JsonValue> = rawMessage.role()
+
+    fun roleOrThrow(): JsonValue = rawMessage.roleOrThrow()
 
     /** @see ChatCompletionMessage.annotations */
     fun annotations(): Optional<List<ChatCompletionMessage.Annotation>> = rawMessage.annotations()
 
+    fun annotationsOrThrow(): List<ChatCompletionMessage.Annotation> =
+        rawMessage.annotationsOrThrow()
+
     /** @see ChatCompletionMessage.audio */
     fun audio(): Optional<ChatCompletionAudio> = rawMessage.audio()
+
+    fun audioOrThrow(): ChatCompletionAudio = rawMessage.audioOrThrow()
 
     /** @see ChatCompletionMessage.functionCall */
     @Deprecated("deprecated") fun functionCall(): Optional<FunctionCall> = rawMessage.functionCall()
 
+    @Deprecated("deprecated")
+    fun functionCallOrThrow(): FunctionCall = rawMessage.functionCallOrThrow()
+
     /** @see ChatCompletionMessage.toolCalls */
     fun toolCalls(): Optional<List<ChatCompletionMessageToolCall>> = rawMessage.toolCalls()
+
+    fun toolCallsOrThrow(): List<ChatCompletionMessageToolCall> = rawMessage.toolCallsOrThrow()
 
     /** @see ChatCompletionMessage._content */
     fun _content(): JsonField<T> = content

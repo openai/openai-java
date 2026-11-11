@@ -24,7 +24,7 @@ internal class ResponseInputImageTest {
                 )
                 .build()
 
-        assertThat(responseInputImage.detail()).isEqualTo(ResponseInputImage.Detail.LOW)
+        assertThat(responseInputImage.detail()).contains(ResponseInputImage.Detail.LOW)
         assertThat(responseInputImage.fileId()).contains("file_id")
         assertThat(responseInputImage.imageUrl()).contains("https://example.com")
         assertThat(responseInputImage.promptCacheBreakpoint())

@@ -89,7 +89,7 @@ internal class CredentialCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.auth())
+        assertThat(body.authOrThrow())
             .isEqualTo(
                 CredentialAuthCreateParam.ofMcpOAuth(
                     CredentialAuthCreateParam.McpOAuth.builder()
@@ -109,7 +109,7 @@ internal class CredentialCreateParamsTest {
                         .build()
                 )
             )
-        assertThat(body.name()).isEqualTo("x")
+        assertThat(body.nameOrThrow()).isEqualTo("x")
         assertThat(body.metadata())
             .contains(
                 CredentialCreateParams.Metadata.builder()
@@ -134,7 +134,7 @@ internal class CredentialCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.auth())
+        assertThat(body.authOrThrow())
             .isEqualTo(
                 CredentialAuthCreateParam.ofMcpOAuth(
                     CredentialAuthCreateParam.McpOAuth.builder()
@@ -143,6 +143,6 @@ internal class CredentialCreateParamsTest {
                         .build()
                 )
             )
-        assertThat(body.name()).isEqualTo("x")
+        assertThat(body.nameOrThrow()).isEqualTo("x")
     }
 }

@@ -5,6 +5,7 @@ package com.openai.models.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -22,8 +23,8 @@ internal class ToolChoiceAllowedTest {
                 )
                 .build()
 
-        assertThat(toolChoiceAllowed.mode()).isEqualTo(ToolChoiceAllowed.Mode.AUTO)
-        assertThat(toolChoiceAllowed.tools())
+        assertThat(toolChoiceAllowed.mode()).contains(ToolChoiceAllowed.Mode.AUTO)
+        assertThat(toolChoiceAllowed.tools().getOrNull())
             .containsExactly(
                 ToolChoiceAllowed.Tool.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))

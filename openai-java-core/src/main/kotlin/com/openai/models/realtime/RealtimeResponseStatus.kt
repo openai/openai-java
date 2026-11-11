@@ -39,32 +39,46 @@ private constructor(
 
     /**
      * A description of the error that caused the response to fail, populated when the `status` is
-     * `failed`.
+     * `failed`. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun error(): Optional<Error> = error.getOptional("error")
+    fun error(): java.util.Optional<Error> = error.getOptional("error")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun errorOrThrow(): Error = error.getRequired("error")
 
     /**
      * The reason the Response did not complete. For a `cancelled` Response, one of `turn_detected`
      * (the server VAD detected a new start of speech) or `client_cancelled` (the client sent a
      * cancel event). For an `incomplete` Response, one of `max_output_tokens` or `content_filter`
-     * (the server-side safety filter activated and cut off the response).
+     * (the server-side safety filter activated and cut off the response). Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun reason(): Optional<Reason> = reason.getOptional("reason")
+    fun reason(): java.util.Optional<Reason> = reason.getOptional("reason")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun reasonOrThrow(): Reason = reason.getRequired("reason")
 
     /**
      * The type of error that caused the response to fail, corresponding with the `status` field
-     * (`completed`, `cancelled`, `incomplete`, `failed`).
+     * (`completed`, `cancelled`, `incomplete`, `failed`). Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun type(): Optional<Type> = type.getOptional("type")
+    fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): Type = type.getRequired("type")
 
     /**
      * Returns the raw JSON value of [error].
@@ -274,28 +288,43 @@ private constructor(
         ) : this(code, message, type, mutableMapOf())
 
         /**
-         * Error code, if any.
+         * Error code, if any. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun code(): Optional<String> = code.getOptional("code")
+        fun code(): java.util.Optional<String> = code.getOptional("code")
 
         /**
-         * A human-readable error message.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun message(): Optional<String> = message.getOptional("message")
+        fun codeOrThrow(): String = code.getRequired("code")
 
         /**
-         * The type of error.
+         * A human-readable error message. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun type(): Optional<String> = type.getOptional("type")
+        fun message(): java.util.Optional<String> = message.getOptional("message")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun messageOrThrow(): String = message.getRequired("message")
+
+        /**
+         * The type of error. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<String> = type.getOptional("type")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): String = type.getRequired("type")
 
         /**
          * Returns the raw JSON value of [code].

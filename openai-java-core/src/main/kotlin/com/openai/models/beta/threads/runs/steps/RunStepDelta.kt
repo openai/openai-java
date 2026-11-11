@@ -43,12 +43,16 @@ private constructor(
     ) : this(stepDetails, mutableMapOf())
 
     /**
-     * The details of the run step.
+     * The details of the run step. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun stepDetails(): Optional<StepDetails> = stepDetails.getOptional("step_details")
+    fun stepDetails(): java.util.Optional<StepDetails> = stepDetails.getOptional("step_details")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun stepDetailsOrThrow(): StepDetails = stepDetails.getRequired("step_details")
 
     /**
      * Returns the raw JSON value of [stepDetails].

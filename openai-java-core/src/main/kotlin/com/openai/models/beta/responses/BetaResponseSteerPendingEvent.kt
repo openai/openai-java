@@ -68,61 +68,97 @@ private constructor(
      * An extensible enum describing why accepted steering input is still queued. Clients should
      * handle unknown values because additional reasons may be introduced. Known values include:
      * - `waiting_for_required_input`: The response is waiting for the tool results or approval
-     *   decisions identified by `required_input`.
+     *   decisions identified by `required_input`. The schema requires this property. Returns empty
+     *   if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun reason(): BetaResponseSteerPendingReason = reason.getRequired("reason")
+    fun reason(): java.util.Optional<BetaResponseSteerPendingReason> = reason.getOptional("reason")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun reasonOrThrow(): BetaResponseSteerPendingReason = reason.getRequired("reason")
 
     /**
      * Input stubs identifying outstanding client-owned tool results or approval decisions. Each
      * stub contains identifying fields only; the client supplies the result before including it in
-     * `response.create`.
+     * `response.create`. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun requiredInput(): List<BetaResponseSteerRequiredInput> =
+    fun requiredInput(): java.util.Optional<List<BetaResponseSteerRequiredInput>> =
+        requiredInput.getOptional("required_input")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun requiredInputOrThrow(): List<BetaResponseSteerRequiredInput> =
         requiredInput.getRequired("required_input")
 
     /**
-     * The sequence number for this event.
+     * The sequence number for this event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
+    fun sequenceNumber(): java.util.Optional<Long> = sequenceNumber.getOptional("sequence_number")
 
     /**
-     * The steering submission that remains queued.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun steer(): Steer = steer.getRequired("steer")
+    fun sequenceNumberOrThrow(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
-     * The event discriminator. Always `response.steer.pending`.
+     * The steering submission that remains queued. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.steer.pending")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun steer(): java.util.Optional<Steer> = steer.getOptional("steer")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun steerOrThrow(): Steer = steer.getRequired("steer")
+
+    /**
+     * The event discriminator. Always `response.steer.pending`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.steer.pending")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * The WebSocket lane that emitted this event. This field is present when the target response's
-     * `response.create` event supplied a `stream_id`.
+     * `response.create` event supplied a `stream_id`. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun streamId(): Optional<String> = streamId.getOptional("stream_id")
+    fun streamId(): java.util.Optional<String> = streamId.getOptional("stream_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun streamIdOrThrow(): String = streamId.getRequired("stream_id")
 
     /**
      * Returns the raw JSON value of [reason].
@@ -560,15 +596,11 @@ private constructor(
             return@apply
         }
 
-        reason()
-        requiredInput().forEach { it.validate() }
-        sequenceNumber()
-        steer().validate()
-        _type().let {
-            if (it != JsonValue.from("response.steer.pending")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        reasonOrThrow()
+        requiredInputOrThrow().forEach { it.validate() }
+        sequenceNumberOrThrow()
+        steerOrThrow().validate()
+        typeOrThrow()
         streamId()
         validated = true
     }
@@ -613,20 +645,34 @@ private constructor(
         ) : this(id, previousResponseId, mutableMapOf())
 
         /**
-         * The ID assigned to the steering submission.
+         * The ID assigned to the steering submission. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun id(): String = id.getRequired("id")
+        fun id(): java.util.Optional<String> = id.getOptional("id")
 
         /**
-         * The ID of the response being steered.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun previousResponseId(): String = previousResponseId.getRequired("previous_response_id")
+        fun idOrThrow(): String = id.getRequired("id")
+
+        /**
+         * The ID of the response being steered. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun previousResponseId(): java.util.Optional<String> =
+            previousResponseId.getOptional("previous_response_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun previousResponseIdOrThrow(): String =
+            previousResponseId.getRequired("previous_response_id")
 
         /**
          * Returns the raw JSON value of [id].
@@ -786,8 +832,8 @@ private constructor(
                 return@apply
             }
 
-            id()
-            previousResponseId()
+            idOrThrow()
+            previousResponseIdOrThrow()
             validated = true
         }
 

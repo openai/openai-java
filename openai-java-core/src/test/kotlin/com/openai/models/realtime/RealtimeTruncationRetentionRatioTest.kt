@@ -21,7 +21,7 @@ internal class RealtimeTruncationRetentionRatioTest {
                 )
                 .build()
 
-        assertThat(realtimeTruncationRetentionRatio.retentionRatio()).isEqualTo(0.0)
+        assertThat(realtimeTruncationRetentionRatio.retentionRatio()).contains(0.0)
         assertThat(realtimeTruncationRetentionRatio.tokenLimits())
             .contains(
                 RealtimeTruncationRetentionRatio.TokenLimits.builder().postInstructions(0L).build()

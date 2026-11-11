@@ -26,10 +26,10 @@ internal class ChatCompletionTokenLogprobTest {
                 )
                 .build()
 
-        assertThat(chatCompletionTokenLogprob.token()).isEqualTo("token")
+        assertThat(chatCompletionTokenLogprob.token()).contains("token")
         assertThat(chatCompletionTokenLogprob.bytes().getOrNull()).containsExactly(0L)
-        assertThat(chatCompletionTokenLogprob.logprob()).isEqualTo(0.0)
-        assertThat(chatCompletionTokenLogprob.topLogprobs())
+        assertThat(chatCompletionTokenLogprob.logprob()).contains(0.0)
+        assertThat(chatCompletionTokenLogprob.topLogprobs().getOrNull())
             .containsExactly(
                 ChatCompletionTokenLogprob.TopLogprob.builder()
                     .token("token")

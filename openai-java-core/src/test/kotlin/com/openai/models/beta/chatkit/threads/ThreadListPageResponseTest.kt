@@ -4,6 +4,7 @@ package com.openai.models.beta.chatkit.threads
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -27,7 +28,7 @@ internal class ThreadListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(threadListPageResponse.data())
+        assertThat(threadListPageResponse.data().getOrNull())
             .containsExactly(
                 ChatKitThread.builder()
                     .id("cthr_def456")
@@ -38,7 +39,7 @@ internal class ThreadListPageResponseTest {
                     .build()
             )
         assertThat(threadListPageResponse.firstId()).contains("first_id")
-        assertThat(threadListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(threadListPageResponse.hasMore()).contains(true)
         assertThat(threadListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

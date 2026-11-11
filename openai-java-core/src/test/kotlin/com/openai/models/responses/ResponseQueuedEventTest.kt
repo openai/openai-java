@@ -308,7 +308,7 @@ internal class ResponseQueuedEventTest {
                 .build()
 
         assertThat(responseQueuedEvent.response())
-            .isEqualTo(
+            .contains(
                 Response.builder()
                     .id("id")
                     .accessPrograms(
@@ -588,7 +588,7 @@ internal class ResponseQueuedEventTest {
                     .user("user-1234")
                     .build()
             )
-        assertThat(responseQueuedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseQueuedEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

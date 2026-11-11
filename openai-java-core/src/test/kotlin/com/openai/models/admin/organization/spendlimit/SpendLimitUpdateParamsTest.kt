@@ -27,8 +27,8 @@ internal class SpendLimitUpdateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.currency()).isEqualTo(SpendLimitUpdateParams.Currency.USD)
-        assertThat(body.interval()).isEqualTo(SpendLimitUpdateParams.Interval.MONTH)
-        assertThat(body.thresholdAmount()).isEqualTo(1L)
+        assertThat(body.currencyOrThrow()).isEqualTo(SpendLimitUpdateParams.Currency.USD)
+        assertThat(body.intervalOrThrow()).isEqualTo(SpendLimitUpdateParams.Interval.MONTH)
+        assertThat(body.thresholdAmountOrThrow()).isEqualTo(1L)
     }
 }

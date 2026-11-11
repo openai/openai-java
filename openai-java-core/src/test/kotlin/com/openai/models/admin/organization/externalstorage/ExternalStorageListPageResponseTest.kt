@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.externalstorage
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -36,7 +37,7 @@ internal class ExternalStorageListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(externalStorageListPageResponse.data())
+        assertThat(externalStorageListPageResponse.data().getOrNull())
             .containsExactly(
                 ExternalStorageConfiguration.builder()
                     .id("id")
@@ -56,7 +57,7 @@ internal class ExternalStorageListPageResponseTest {
                     .build()
             )
         assertThat(externalStorageListPageResponse.firstId()).contains("first_id")
-        assertThat(externalStorageListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(externalStorageListPageResponse.hasMore()).contains(true)
         assertThat(externalStorageListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

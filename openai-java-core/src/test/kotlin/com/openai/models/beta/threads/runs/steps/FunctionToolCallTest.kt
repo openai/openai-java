@@ -23,9 +23,9 @@ internal class FunctionToolCallTest {
                 )
                 .build()
 
-        assertThat(functionToolCall.id()).isEqualTo("id")
+        assertThat(functionToolCall.id()).contains("id")
         assertThat(functionToolCall.function())
-            .isEqualTo(
+            .contains(
                 FunctionToolCall.Function.builder()
                     .arguments("arguments")
                     .name("name")

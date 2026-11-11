@@ -19,10 +19,10 @@ internal class ResponseCustomToolCallInputDoneEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseCustomToolCallInputDoneEvent.input()).isEqualTo("input")
-        assertThat(responseCustomToolCallInputDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseCustomToolCallInputDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseCustomToolCallInputDoneEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseCustomToolCallInputDoneEvent.input()).contains("input")
+        assertThat(responseCustomToolCallInputDoneEvent.itemId()).contains("item_id")
+        assertThat(responseCustomToolCallInputDoneEvent.outputIndex()).contains(0L)
+        assertThat(responseCustomToolCallInputDoneEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

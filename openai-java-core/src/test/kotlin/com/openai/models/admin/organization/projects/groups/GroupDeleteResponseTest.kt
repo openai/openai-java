@@ -13,7 +13,7 @@ internal class GroupDeleteResponseTest {
     fun createAndRoundtrip() {
         val groupDeleteResponse = GroupDeleteResponse.builder().deleted(true).build()
 
-        assertThat(groupDeleteResponse.deleted()).isEqualTo(true)
+        assertThat(groupDeleteResponse.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

@@ -4,6 +4,7 @@ package com.openai.models
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -23,7 +24,7 @@ internal class CompoundFilterTest {
                 .type(CompoundFilter.Type.AND)
                 .build()
 
-        assertThat(compoundFilter.filters())
+        assertThat(compoundFilter.filters().getOrNull())
             .containsExactly(
                 CompoundFilter.Filter.ofComparison(
                     ComparisonFilter.builder()
@@ -33,7 +34,7 @@ internal class CompoundFilterTest {
                         .build()
                 )
             )
-        assertThat(compoundFilter.type()).isEqualTo(CompoundFilter.Type.AND)
+        assertThat(compoundFilter.type()).contains(CompoundFilter.Type.AND)
 
         val jsonMapper = jsonMapper()
 

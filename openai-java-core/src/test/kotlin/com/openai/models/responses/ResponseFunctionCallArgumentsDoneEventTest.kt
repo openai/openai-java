@@ -19,10 +19,10 @@ internal class ResponseFunctionCallArgumentsDoneEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseFunctionCallArgumentsDoneEvent.arguments()).isEqualTo("arguments")
-        assertThat(responseFunctionCallArgumentsDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseFunctionCallArgumentsDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseFunctionCallArgumentsDoneEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseFunctionCallArgumentsDoneEvent.arguments()).contains("arguments")
+        assertThat(responseFunctionCallArgumentsDoneEvent.itemId()).contains("item_id")
+        assertThat(responseFunctionCallArgumentsDoneEvent.outputIndex()).contains(0L)
+        assertThat(responseFunctionCallArgumentsDoneEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

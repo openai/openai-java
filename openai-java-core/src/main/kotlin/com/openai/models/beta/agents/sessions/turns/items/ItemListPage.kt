@@ -8,7 +8,6 @@ import com.openai.core.checkRequired
 import com.openai.models.beta.agents.AgentSessionItem
 import com.openai.services.blocking.beta.agents.sessions.turns.ItemService
 import java.util.Objects
-import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** @see ItemService.list */
@@ -19,29 +18,30 @@ private constructor(
     private val response: ItemListPageResponse,
 ) : Page<AgentSessionItem> {
 
-    /**
-     * Delegates to [ItemListPageResponse], but gracefully handles missing data.
-     *
-     * @see ItemListPageResponse.data
-     */
-    fun data(): List<AgentSessionItem> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see ItemListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [ItemListPageResponse], but gracefully handles missing data.
-     *
-     * @see ItemListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<AgentSessionItem> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    /**
-     * Delegates to [ItemListPageResponse], but gracefully handles missing data.
-     *
-     * @see ItemListPageResponse.lastId
-     */
-    fun lastId(): Optional<String> = response._lastId().getOptional("last_id")
+    fun _data() = response._data()
 
-    override fun items(): List<AgentSessionItem> = data()
+    /** @see ItemListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    /** @see ItemListPageResponse.lastId */
+    fun lastId() = response.lastId()
+
+    fun lastIdOrThrow(): String = lastId().orElseGet { response._lastId().getRequired("last_id") }
+
+    fun _lastId() = response._lastId()
+
+    override fun items(): List<AgentSessionItem> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean =
         hasMore().orElse(true) && items().isNotEmpty() && lastId().isPresent

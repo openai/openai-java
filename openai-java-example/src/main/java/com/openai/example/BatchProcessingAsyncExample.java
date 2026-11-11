@@ -38,7 +38,7 @@ public final class BatchProcessingAsyncExample {
 
         CompletableFuture<Batch> batchFuture = fileFuture.thenComposeAsync(file -> {
             BatchCreateParams batchParams = BatchCreateParams.builder()
-                    .inputFileId(file.id())
+                    .inputFileId(file.idOrThrow())
                     .endpoint(Endpoint.V1_CHAT_COMPLETIONS)
                     .completionWindow(CompletionWindow._24H)
                     .build();
@@ -72,7 +72,7 @@ public final class BatchProcessingAsyncExample {
             return pollBatch(
                     client,
                     CompletableFuture.supplyAsync(() -> null, delayedExecutor)
-                            .thenComposeAsync((unused) -> client.batches().retrieve(batch.id())),
+                            .thenComposeAsync((unused) -> client.batches().retrieve(batch.idOrThrow())),
                     delayedExecutor);
         });
     }

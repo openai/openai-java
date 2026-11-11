@@ -32,13 +32,11 @@ private constructor(
 
     fun groupId(): Optional<String> = Optional.ofNullable(groupId)
 
-    /**
-     * New display name for the group.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = body.name()
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
+
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
 
     /**
      * Returns the raw JSON value of [name].
@@ -275,12 +273,18 @@ private constructor(
         ) : this(name, mutableMapOf())
 
         /**
-         * New display name for the group.
+         * New display name for the group. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): String = name.getRequired("name")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
 
         /**
          * Returns the raw JSON value of [name].
@@ -403,7 +407,7 @@ private constructor(
                 return@apply
             }
 
-            name()
+            nameOrThrow()
             validated = true
         }
 

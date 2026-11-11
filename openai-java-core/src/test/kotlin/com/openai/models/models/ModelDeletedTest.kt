@@ -13,9 +13,9 @@ internal class ModelDeletedTest {
     fun createAndRoundtrip() {
         val modelDeleted = ModelDeleted.builder().id("id").deleted(true).object_("object").build()
 
-        assertThat(modelDeleted.id()).isEqualTo("id")
-        assertThat(modelDeleted.deleted()).isEqualTo(true)
-        assertThat(modelDeleted.object_()).isEqualTo("object")
+        assertThat(modelDeleted.id()).contains("id")
+        assertThat(modelDeleted.deleted()).contains(true)
+        assertThat(modelDeleted.object_()).contains("object")
 
         val jsonMapper = jsonMapper()
 

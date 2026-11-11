@@ -22,7 +22,7 @@ internal class ImageFileDeltaBlockTest {
                 )
                 .build()
 
-        assertThat(imageFileDeltaBlock.index()).isEqualTo(0L)
+        assertThat(imageFileDeltaBlock.index()).contains(0L)
         assertThat(imageFileDeltaBlock.imageFile())
             .contains(
                 ImageFileDelta.builder()

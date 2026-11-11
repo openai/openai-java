@@ -213,7 +213,7 @@ internal class EnvironmentCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.environment())
+        assertThat(body.environmentOrThrow())
             .isEqualTo(
                 EnvironmentCreateParams.Environment.builder()
                     .addCapabilityDirectory("string")
@@ -273,7 +273,7 @@ internal class EnvironmentCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.environment())
+        assertThat(body.environmentOrThrow())
             .isEqualTo(EnvironmentCreateParams.Environment.builder().build())
     }
 }

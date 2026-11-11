@@ -65,9 +65,9 @@ internal class SessionStartedEventTest {
                 .clientEventId("evt_start_001")
                 .build()
 
-        assertThat(sessionStartedEvent.eventId()).isEqualTo("evt_started_001")
+        assertThat(sessionStartedEvent.eventId()).contains("evt_started_001")
         assertThat(sessionStartedEvent.session())
-            .isEqualTo(
+            .contains(
                 SessionResource.builder()
                     .id("live_abc123")
                     .expiresAt(1788555600L)

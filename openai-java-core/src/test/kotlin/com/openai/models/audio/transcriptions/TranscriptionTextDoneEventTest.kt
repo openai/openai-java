@@ -38,7 +38,7 @@ internal class TranscriptionTextDoneEventTest {
                 )
                 .build()
 
-        assertThat(transcriptionTextDoneEvent.text()).isEqualTo("text")
+        assertThat(transcriptionTextDoneEvent.text()).contains("text")
         assertThat(transcriptionTextDoneEvent.languages().getOrNull())
             .containsExactly(TranscriptionLanguage.builder().code("code").build())
         assertThat(transcriptionTextDoneEvent.logprobs().getOrNull())

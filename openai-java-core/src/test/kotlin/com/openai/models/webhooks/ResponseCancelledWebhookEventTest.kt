@@ -3,6 +3,7 @@
 package com.openai.models.webhooks
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -19,12 +20,11 @@ internal class ResponseCancelledWebhookEventTest {
                 .object_(ResponseCancelledWebhookEvent.Object.EVENT)
                 .build()
 
-        assertThat(responseCancelledWebhookEvent.id()).isEqualTo("id")
-        assertThat(responseCancelledWebhookEvent.createdAt()).isEqualTo(0L)
+        assertThat(responseCancelledWebhookEvent.id()).contains("id")
+        assertThat(responseCancelledWebhookEvent.createdAt()).contains(0L)
         assertThat(responseCancelledWebhookEvent.data())
-            .isEqualTo(ResponseCancelledWebhookEvent.Data.builder().id("id").build())
-        assertThat(responseCancelledWebhookEvent.object_())
-            .contains(ResponseCancelledWebhookEvent.Object.EVENT)
+            .contains(ResponseCancelledWebhookEvent.Data.builder().id("id").build())
+        assertThat(responseCancelledWebhookEvent.object_()).contains(JsonValue.from("event"))
 
         val jsonMapper = jsonMapper()
 

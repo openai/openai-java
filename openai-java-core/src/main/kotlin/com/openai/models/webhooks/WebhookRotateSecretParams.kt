@@ -31,14 +31,13 @@ private constructor(
 
     fun webhookEndpointId(): Optional<String> = Optional.ofNullable(webhookEndpointId)
 
-    /**
-     * Whether to keep the previous signing secret valid for 24 hours after rotation. Defaults to
-     * false, which invalidates the previous secret immediately.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun keepOldSecretActiveFor24Hours(): Optional<Boolean> = body.keepOldSecretActiveFor24Hours()
+    /** @see Body.keepOldSecretActiveFor24Hours */
+    fun keepOldSecretActiveFor24Hours(): java.util.Optional<Boolean> =
+        body.keepOldSecretActiveFor24Hours()
+
+    /** @see Body.keepOldSecretActiveFor24HoursOrThrow */
+    fun keepOldSecretActiveFor24HoursOrThrow(): Boolean =
+        body.keepOldSecretActiveFor24HoursOrThrow()
 
     /**
      * Returns the raw JSON value of [keepOldSecretActiveFor24Hours].
@@ -280,13 +279,20 @@ private constructor(
 
         /**
          * Whether to keep the previous signing secret valid for 24 hours after rotation. Defaults
-         * to false, which invalidates the previous secret immediately.
+         * to false, which invalidates the previous secret immediately. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun keepOldSecretActiveFor24Hours(): Optional<Boolean> =
+        fun keepOldSecretActiveFor24Hours(): java.util.Optional<Boolean> =
             keepOldSecretActiveFor24Hours.getOptional("keep_old_secret_active_for_24_hours")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun keepOldSecretActiveFor24HoursOrThrow(): Boolean =
+            keepOldSecretActiveFor24Hours.getRequired("keep_old_secret_active_for_24_hours")
 
         /**
          * Returns the raw JSON value of [keepOldSecretActiveFor24Hours].

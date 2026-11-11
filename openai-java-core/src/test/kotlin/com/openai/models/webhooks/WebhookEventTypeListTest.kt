@@ -4,6 +4,7 @@ package com.openai.models.webhooks
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -13,7 +14,7 @@ internal class WebhookEventTypeListTest {
     fun createAndRoundtrip() {
         val webhookEventTypeList = WebhookEventTypeList.builder().addData("string").build()
 
-        assertThat(webhookEventTypeList.data()).containsExactly("string")
+        assertThat(webhookEventTypeList.data().getOrNull()).containsExactly("string")
 
         val jsonMapper = jsonMapper()
 

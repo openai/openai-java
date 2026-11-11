@@ -18,6 +18,6 @@ internal class GroupCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.name()).isEqualTo("x")
+        assertThat(body.nameOrThrow()).isEqualTo("x")
     }
 }

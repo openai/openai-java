@@ -3,6 +3,7 @@
 package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -20,10 +21,10 @@ internal class BetaEasyInputMessageTest {
                 .build()
 
         assertThat(betaEasyInputMessage.content())
-            .isEqualTo(BetaEasyInputMessage.Content.ofTextInput("string"))
-        assertThat(betaEasyInputMessage.role()).isEqualTo(BetaEasyInputMessage.Role.USER)
+            .contains(BetaEasyInputMessage.Content.ofTextInput("string"))
+        assertThat(betaEasyInputMessage.role()).contains(BetaEasyInputMessage.Role.USER)
         assertThat(betaEasyInputMessage.phase()).contains(BetaEasyInputMessage.Phase.COMMENTARY)
-        assertThat(betaEasyInputMessage.type()).contains(BetaEasyInputMessage.Type.MESSAGE)
+        assertThat(betaEasyInputMessage.type()).contains(JsonValue.from("message"))
 
         val jsonMapper = jsonMapper()
 

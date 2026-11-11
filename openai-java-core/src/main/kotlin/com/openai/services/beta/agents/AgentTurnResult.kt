@@ -17,15 +17,15 @@ internal constructor(private val turn: Turn, messages: List<AgentSessionMessage>
     /** Final answers in output order, excluding commentary and child turns. */
     fun messages(): List<AgentSessionMessage> = messages
 
-    fun sessionId(): String = turn.sessionId()
+    fun sessionId(): String = turn.sessionIdOrThrow()
 
-    fun turnId(): String = turn.id()
+    fun turnId(): String = turn.idOrThrow()
 
     /** Joins output-text blocks without separators. Reading the result never makes a request. */
     fun outputText(): String =
         messages.joinToString("") { message ->
-            message.content().joinToString("") {
-                it.outputText().map { text -> text.text() }.orElse("")
+            message.contentOrThrow().joinToString("") {
+                it.outputText().map { text -> text.textOrThrow() }.orElse("")
             }
         }
 }

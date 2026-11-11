@@ -169,8 +169,8 @@ class LiveConnectionTest {
                             val image =
                                 receive()
                                     .asDecisionItemCreated()
-                                    .item()
-                                    .content()
+                                    .itemOrThrow()
+                                    .contentOrThrow()
                                     .asDecisionItemCreatedEventItemContentItems()
                                     .single()
                                     .asInputImage()
@@ -197,12 +197,12 @@ class LiveConnectionTest {
                                     )
                                 )
                                 .isTrue()
-                            val session = receive().asSessionStarted().session()
+                            val session = receive().asSessionStarted().sessionOrThrow()
                             softly
                                 .assertThat(
                                     session
                                         .delegation()
-                                        .map { it.asDecisions().decisions().model() }
+                                        .map { it.asDecisions().decisionsOrThrow().modelOrThrow() }
                                         .orElse(null)
                                 )
                                 .describedAs(
@@ -264,7 +264,7 @@ class LiveConnectionTest {
                             if (async) conn.receiveAsync().get(8, TimeUnit.SECONDS)
                             else conn.receive()
                         assertThat(ready.isSessionStarted()).isTrue()
-                        assertThat(ready.asSessionStarted().eventId()).isEqualTo("ready")
+                        assertThat(ready.asSessionStarted().eventIdOrThrow()).isEqualTo("ready")
                         conn.send(finish())
                         assertThat(
                                 mapper
@@ -417,7 +417,7 @@ class LiveConnectionTest {
                         .send(
                             """{"type":"session.started","event_id":"after-cancel","session":{}}"""
                         )
-                    assertThat(next.get(8, TimeUnit.SECONDS).asSessionStarted().eventId())
+                    assertThat(next.get(8, TimeUnit.SECONDS).asSessionStarted().eventIdOrThrow())
                         .isEqualTo("after-cancel")
                 }
             }
@@ -469,7 +469,8 @@ class LiveConnectionTest {
                         .isEqualTo(payload)
                     socket.send("""{"type":"session.closed","event_id":"terminal","session":{}}""")
                     socket.close(1000, "done")
-                    assertThat(live.receive().asSessionClosed().eventId()).isEqualTo("terminal")
+                    assertThat(live.receive().asSessionClosed().eventIdOrThrow())
+                        .isEqualTo("terminal")
                     assertThatThrownBy { live.receive() }.hasMessageContaining("WebSocket")
                 }
             }
@@ -543,7 +544,9 @@ class LiveConnectionTest {
                         socket.send(
                             """{"type":"session.started","event_id":"second","session":{}}"""
                         )
-                        assertThat(second.get(3, TimeUnit.SECONDS).asSessionStarted().eventId())
+                        assertThat(
+                                second.get(3, TimeUnit.SECONDS).asSessionStarted().eventIdOrThrow()
+                            )
                             .isEqualTo("second")
                     }
                 } finally {

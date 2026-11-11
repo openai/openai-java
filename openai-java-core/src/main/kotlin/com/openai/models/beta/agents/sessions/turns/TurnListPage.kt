@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.beta.agents.sessions.TurnService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see TurnService.list */
 class TurnListPage
@@ -18,21 +16,22 @@ private constructor(
     private val response: TurnListPageResponse,
 ) : Page<Turn> {
 
-    /**
-     * Delegates to [TurnListPageResponse], but gracefully handles missing data.
-     *
-     * @see TurnListPageResponse.data
-     */
-    fun data(): List<Turn> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see TurnListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [TurnListPageResponse], but gracefully handles missing data.
-     *
-     * @see TurnListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<Turn> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<Turn> = data()
+    fun _data() = response._data()
+
+    /** @see TurnListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<Turn> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

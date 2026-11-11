@@ -35,29 +35,23 @@ private constructor(
 
     fun projectId(): Optional<String> = Optional.ofNullable(projectId)
 
-    /**
-     * `owner` or `member`
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun role(): String = body.role()
+    /** @see Body.role */
+    fun role(): java.util.Optional<String> = body.role()
 
-    /**
-     * Email of the user to add.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun email(): Optional<String> = body.email()
+    /** @see Body.roleOrThrow */
+    fun roleOrThrow(): String = body.roleOrThrow()
 
-    /**
-     * The ID of the user.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun userId(): Optional<String> = body.userId()
+    /** @see Body.email */
+    fun email(): java.util.Optional<String> = body.email()
+
+    /** @see Body.emailOrThrow */
+    fun emailOrThrow(): String = body.emailOrThrow()
+
+    /** @see Body.userId */
+    fun userId(): java.util.Optional<String> = body.userId()
+
+    /** @see Body.userIdOrThrow */
+    fun userIdOrThrow(): String = body.userIdOrThrow()
 
     /**
      * Returns the raw JSON value of [role].
@@ -341,28 +335,44 @@ private constructor(
         ) : this(role, email, userId, mutableMapOf())
 
         /**
-         * `owner` or `member`
+         * `owner` or `member` The schema requires this property. Returns empty if the JSON property
+         * is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun role(): String = role.getRequired("role")
+        fun role(): java.util.Optional<String> = role.getOptional("role")
 
         /**
-         * Email of the user to add.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun email(): Optional<String> = email.getOptional("email")
+        fun roleOrThrow(): String = role.getRequired("role")
 
         /**
-         * The ID of the user.
+         * Email of the user to add. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun userId(): Optional<String> = userId.getOptional("user_id")
+        fun email(): java.util.Optional<String> = email.getOptional("email")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun emailOrThrow(): String = email.getRequired("email")
+
+        /**
+         * The ID of the user. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun userId(): java.util.Optional<String> = userId.getOptional("user_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun userIdOrThrow(): String = userId.getRequired("user_id")
 
         /**
          * Returns the raw JSON value of [role].
@@ -543,7 +553,7 @@ private constructor(
                 return@apply
             }
 
-            role()
+            roleOrThrow()
             email()
             userId()
             validated = true

@@ -19,11 +19,11 @@ internal class FilePathAnnotationTest {
                 .text("text")
                 .build()
 
-        assertThat(filePathAnnotation.endIndex()).isEqualTo(0L)
+        assertThat(filePathAnnotation.endIndex()).contains(0L)
         assertThat(filePathAnnotation.filePath())
-            .isEqualTo(FilePathAnnotation.FilePath.builder().fileId("file_id").build())
-        assertThat(filePathAnnotation.startIndex()).isEqualTo(0L)
-        assertThat(filePathAnnotation.text()).isEqualTo("text")
+            .contains(FilePathAnnotation.FilePath.builder().fileId("file_id").build())
+        assertThat(filePathAnnotation.startIndex()).contains(0L)
+        assertThat(filePathAnnotation.text()).contains("text")
 
         val jsonMapper = jsonMapper()
 

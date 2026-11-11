@@ -33,28 +33,43 @@ private constructor(
     ) : this(end, start, word, mutableMapOf())
 
     /**
-     * End time of the word in seconds.
+     * End time of the word in seconds. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun end(): Double = end.getRequired("end")
+    fun end(): java.util.Optional<Double> = end.getOptional("end")
 
     /**
-     * Start time of the word in seconds.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun start(): Double = start.getRequired("start")
+    fun endOrThrow(): Double = end.getRequired("end")
 
     /**
-     * The text content of the word.
+     * Start time of the word in seconds. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun word(): String = word.getRequired("word")
+    fun start(): java.util.Optional<Double> = start.getOptional("start")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun startOrThrow(): Double = start.getRequired("start")
+
+    /**
+     * The text content of the word. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun word(): java.util.Optional<String> = word.getOptional("word")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun wordOrThrow(): String = word.getRequired("word")
 
     /**
      * Returns the raw JSON value of [end].
@@ -229,9 +244,9 @@ private constructor(
             return@apply
         }
 
-        end()
-        start()
-        word()
+        endOrThrow()
+        startOrThrow()
+        wordOrThrow()
         validated = true
     }
 

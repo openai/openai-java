@@ -47,45 +47,35 @@ private constructor(
 
     fun vectorStoreId(): Optional<String> = Optional.ofNullable(vectorStoreId)
 
-    /**
-     * A query string for a search
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun query(): Query = body.query()
+    /** @see Body.query */
+    fun query(): java.util.Optional<Query> = body.query()
 
-    /**
-     * A filter to apply based on file attributes.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun filters(): Optional<Filters> = body.filters()
+    /** @see Body.queryOrThrow */
+    fun queryOrThrow(): Query = body.queryOrThrow()
 
-    /**
-     * The maximum number of results to return. This number should be between 1 and 50 inclusive.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun maxNumResults(): Optional<Long> = body.maxNumResults()
+    /** @see Body.filters */
+    fun filters(): java.util.Optional<Filters> = body.filters()
 
-    /**
-     * Ranking options for search.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun rankingOptions(): Optional<RankingOptions> = body.rankingOptions()
+    /** @see Body.filtersOrThrow */
+    fun filtersOrThrow(): Filters = body.filtersOrThrow()
 
-    /**
-     * Whether to rewrite the natural language query for vector search.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun rewriteQuery(): Optional<Boolean> = body.rewriteQuery()
+    /** @see Body.maxNumResults */
+    fun maxNumResults(): java.util.Optional<Long> = body.maxNumResults()
+
+    /** @see Body.maxNumResultsOrThrow */
+    fun maxNumResultsOrThrow(): Long = body.maxNumResultsOrThrow()
+
+    /** @see Body.rankingOptions */
+    fun rankingOptions(): java.util.Optional<RankingOptions> = body.rankingOptions()
+
+    /** @see Body.rankingOptionsOrThrow */
+    fun rankingOptionsOrThrow(): RankingOptions = body.rankingOptionsOrThrow()
+
+    /** @see Body.rewriteQuery */
+    fun rewriteQuery(): java.util.Optional<Boolean> = body.rewriteQuery()
+
+    /** @see Body.rewriteQueryOrThrow */
+    fun rewriteQueryOrThrow(): Boolean = body.rewriteQueryOrThrow()
 
     /**
      * Returns the raw JSON value of [query].
@@ -439,46 +429,74 @@ private constructor(
         ) : this(query, filters, maxNumResults, rankingOptions, rewriteQuery, mutableMapOf())
 
         /**
-         * A query string for a search
+         * A query string for a search The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun query(): Query = query.getRequired("query")
+        fun query(): java.util.Optional<Query> = query.getOptional("query")
 
         /**
-         * A filter to apply based on file attributes.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun filters(): Optional<Filters> = filters.getOptional("filters")
+        fun queryOrThrow(): Query = query.getRequired("query")
+
+        /**
+         * A filter to apply based on file attributes. Returns empty if the JSON property is missing
+         * or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun filters(): java.util.Optional<Filters> = filters.getOptional("filters")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun filtersOrThrow(): Filters = filters.getRequired("filters")
 
         /**
          * The maximum number of results to return. This number should be between 1 and 50
-         * inclusive.
+         * inclusive. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun maxNumResults(): Optional<Long> = maxNumResults.getOptional("max_num_results")
+        fun maxNumResults(): java.util.Optional<Long> = maxNumResults.getOptional("max_num_results")
 
         /**
-         * Ranking options for search.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun rankingOptions(): Optional<RankingOptions> =
+        fun maxNumResultsOrThrow(): Long = maxNumResults.getRequired("max_num_results")
+
+        /**
+         * Ranking options for search. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun rankingOptions(): java.util.Optional<RankingOptions> =
             rankingOptions.getOptional("ranking_options")
 
         /**
-         * Whether to rewrite the natural language query for vector search.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun rewriteQuery(): Optional<Boolean> = rewriteQuery.getOptional("rewrite_query")
+        fun rankingOptionsOrThrow(): RankingOptions = rankingOptions.getRequired("ranking_options")
+
+        /**
+         * Whether to rewrite the natural language query for vector search. Returns empty if the
+         * JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun rewriteQuery(): java.util.Optional<Boolean> = rewriteQuery.getOptional("rewrite_query")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun rewriteQueryOrThrow(): Boolean = rewriteQuery.getRequired("rewrite_query")
 
         /**
          * Returns the raw JSON value of [query].
@@ -732,7 +750,7 @@ private constructor(
                 return@apply
             }
 
-            query().validate()
+            queryOrThrow().validate()
             filters().ifPresent { it.validate() }
             maxNumResults()
             rankingOptions().ifPresent { it.validate() }
@@ -1271,18 +1289,32 @@ private constructor(
         ) : this(ranker, scoreThreshold, mutableMapOf())
 
         /**
-         * Enable re-ranking; set to `none` to disable, which can help reduce latency.
+         * Enable re-ranking; set to `none` to disable, which can help reduce latency. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun ranker(): Optional<Ranker> = ranker.getOptional("ranker")
+        fun ranker(): java.util.Optional<Ranker> = ranker.getOptional("ranker")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun scoreThreshold(): Optional<Double> = scoreThreshold.getOptional("score_threshold")
+        fun rankerOrThrow(): Ranker = ranker.getRequired("ranker")
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun scoreThreshold(): java.util.Optional<Double> =
+            scoreThreshold.getOptional("score_threshold")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun scoreThresholdOrThrow(): Double = scoreThreshold.getRequired("score_threshold")
 
         /**
          * Returns the raw JSON value of [ranker].

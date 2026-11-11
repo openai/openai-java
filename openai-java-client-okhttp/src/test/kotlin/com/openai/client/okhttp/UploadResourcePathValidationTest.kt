@@ -130,7 +130,7 @@ internal class UploadResourcePathValidationTest {
                         assertThat(stream.channel.position()).isZero()
                         assertThat(server.requestCount).isZero()
 
-                        assertThat(send().id()).isEqualTo("file-ok")
+                        assertThat(send().idOrThrow()).isEqualTo("file-ok")
                         val request = server.takeRequest(5, TimeUnit.SECONDS)!!
                         assertThat(request.method).isEqualTo("POST")
                         assertThat(request.path).isEqualTo("/v1/containers/container-ok/files")

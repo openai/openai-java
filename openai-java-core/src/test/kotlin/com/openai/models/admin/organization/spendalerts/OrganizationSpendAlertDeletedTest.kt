@@ -14,8 +14,8 @@ internal class OrganizationSpendAlertDeletedTest {
         val organizationSpendAlertDeleted =
             OrganizationSpendAlertDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(organizationSpendAlertDeleted.id()).isEqualTo("id")
-        assertThat(organizationSpendAlertDeleted.deleted()).isEqualTo(true)
+        assertThat(organizationSpendAlertDeleted.id()).contains("id")
+        assertThat(organizationSpendAlertDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

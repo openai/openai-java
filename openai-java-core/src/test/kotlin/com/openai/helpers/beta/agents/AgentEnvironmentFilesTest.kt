@@ -124,7 +124,7 @@ internal class AgentEnvironmentFilesTest {
             Files.setPosixFilePermissions(neighbor, emptySet())
             org.junit.jupiter.api.Assumptions.assumeFalse(Files.isReadable(neighbor))
             val successful = Transport()
-            assertThat(select(successful).files().map { it.asFileId().path() })
+            assertThat(select(successful).files().map { it.asFileId().pathOrThrow() })
                 .containsExactly("/workspace/docs/one.txt")
             assertThat(successful.uploads).isEqualTo(1)
 
@@ -163,7 +163,7 @@ internal class AgentEnvironmentFilesTest {
                 ),
             )
         assertThat(prepared.uploadedFileIds()).containsExactly("file-1", "file-2")
-        assertThat(prepared.files().map { it.asFileId().path() })
+        assertThat(prepared.files().map { it.asFileId().pathOrThrow() })
             .containsExactly("/workspace/a.txt", "/workspace/b.txt")
         assertThat(t.bodies).allSatisfy { assertThat(it).contains("user_data") }
         assertThat(t.requestOptions).allSatisfy {
@@ -329,7 +329,7 @@ internal class AgentEnvironmentFilesTest {
                         listOf("*.txt", "**/*.txt"),
                         options,
                     )
-            assertThat(prepared.files().map { it.asFileId().path() })
+            assertThat(prepared.files().map { it.asFileId().pathOrThrow() })
                 .containsExactlyInAnyOrder("/workspace/docs/a.txt", "/workspace/docs/nested/b.txt")
         } finally {
             client.close()
@@ -448,7 +448,11 @@ internal class AgentEnvironmentFilesTest {
         val t = Transport()
         val destination = "/workspace/" + "😀".repeat(5000)
         assertThat(
-                prepare(t, true, mapOf(destination to source)).files().single().asFileId().path()
+                prepare(t, true, mapOf(destination to source))
+                    .files()
+                    .single()
+                    .asFileId()
+                    .pathOrThrow()
             )
             .isEqualTo(destination)
     }
@@ -753,7 +757,7 @@ internal class AgentEnvironmentFilesTest {
             )
         val valid = Transport()
         val prepared = prepare(valid, async, siblings.associateWith { source })
-        assertThat(prepared.files().map { it.asFileId().path() })
+        assertThat(prepared.files().map { it.asFileId().pathOrThrow() })
             .containsExactlyElementsOf(siblings)
         for (parent in listOf("/workspace/a", "/workspace/😀")) {
             val invalid = Transport()
@@ -810,7 +814,7 @@ internal class AgentEnvironmentFilesTest {
             } finally {
                 release.countDown()
             }
-            assertThat(pending.get(5, TimeUnit.SECONDS).files().map { it.asFileId().path() })
+            assertThat(pending.get(5, TimeUnit.SECONDS).files().map { it.asFileId().pathOrThrow() })
                 .containsExactly("/workspace/first", "/workspace/second")
         }
     }
@@ -846,7 +850,7 @@ internal class AgentEnvironmentFilesTest {
             } finally {
                 release.countDown()
             }
-            assertThat(pending.get(5, TimeUnit.SECONDS).files().map { it.asFileId().path() })
+            assertThat(pending.get(5, TimeUnit.SECONDS).files().map { it.asFileId().pathOrThrow() })
                 .containsExactly("/workspace/docs/selected.txt")
         }
     }

@@ -13,7 +13,7 @@ internal class CustomVoiceTest {
     fun createAndRoundtrip() {
         val customVoice = CustomVoice.builder().id("x").build()
 
-        assertThat(customVoice.id()).isEqualTo("x")
+        assertThat(customVoice.id()).contains("x")
 
         val jsonMapper = jsonMapper()
 

@@ -21,7 +21,7 @@ internal class MessageCreationStepDetailsTest {
                 .build()
 
         assertThat(messageCreationStepDetails.messageCreation())
-            .isEqualTo(
+            .contains(
                 MessageCreationStepDetails.MessageCreation.builder().messageId("message_id").build()
             )
 

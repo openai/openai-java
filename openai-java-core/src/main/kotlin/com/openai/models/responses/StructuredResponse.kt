@@ -20,37 +20,60 @@ class StructuredResponse<T : Any>(
     @get:JvmName("rawResponse") val rawResponse: Response,
 ) {
     /** @see Response.id */
-    fun id(): String = rawResponse.id()
+    fun id(): Optional<String> = rawResponse.id()
+
+    fun idOrThrow(): String = rawResponse.idOrThrow()
 
     /** @see Response.accessPrograms */
     fun accessPrograms(): Optional<Response.AccessPrograms> = rawResponse.accessPrograms()
+
+    fun accessProgramsOrThrow(): Response.AccessPrograms = rawResponse.accessProgramsOrThrow()
 
     /** @see Response._accessPrograms */
     fun _accessPrograms(): JsonField<Response.AccessPrograms> = rawResponse._accessPrograms()
 
     /** @see Response.createdAt */
-    fun createdAt(): Double = rawResponse.createdAt()
+    fun createdAt(): Optional<Double> = rawResponse.createdAt()
+
+    fun createdAtOrThrow(): Double = rawResponse.createdAtOrThrow()
 
     /** @see Response.error */
     fun error(): Optional<ResponseError> = rawResponse.error()
 
+    fun errorOrThrow(): ResponseError = rawResponse.errorOrThrow()
+
     /** @see Response.incompleteDetails */
     fun incompleteDetails(): Optional<Response.IncompleteDetails> = rawResponse.incompleteDetails()
+
+    fun incompleteDetailsOrThrow(): Response.IncompleteDetails =
+        rawResponse.incompleteDetailsOrThrow()
 
     /** @see Response.instructions */
     fun instructions(): Optional<Response.Instructions> = rawResponse.instructions()
 
+    fun instructionsOrThrow(): Response.Instructions = rawResponse.instructionsOrThrow()
+
     /** @see Response.metadata */
     fun metadata(): Optional<Response.Metadata> = rawResponse.metadata()
 
+    fun metadataOrThrow(): Response.Metadata = rawResponse.metadataOrThrow()
+
     /** @see Response.model */
-    fun model(): ResponsesModel = rawResponse.model()
+    fun model(): Optional<ResponsesModel> = rawResponse.model()
+
+    fun modelOrThrow(): ResponsesModel = rawResponse.modelOrThrow()
 
     /** @see Response.moderation */
     fun moderation(): Optional<Response.Moderation> = rawResponse.moderation()
 
+    fun moderationOrThrow(): Response.Moderation = rawResponse.moderationOrThrow()
+
     /** @see Response._object_ */
-    fun _object_(): JsonValue = rawResponse._object_()
+    fun _object_(): JsonField<JsonValue> = rawResponse._object_()
+
+    fun object_(): Optional<JsonValue> = rawResponse.object_()
+
+    fun object_OrThrow(): JsonValue = rawResponse.object_OrThrow()
 
     private val output by lazy {
         rawResponse._output().map { outputs ->
@@ -59,22 +82,34 @@ class StructuredResponse<T : Any>(
     }
 
     /** @see Response.output */
-    fun output(): List<StructuredResponseOutputItem<T>> = output.getRequired("output")
+    fun output(): Optional<List<StructuredResponseOutputItem<T>>> = output.getOptional("output")
+
+    fun outputOrThrow(): List<StructuredResponseOutputItem<T>> = output.getRequired("output")
 
     /** @see Response.parallelToolCalls */
-    fun parallelToolCalls(): Boolean = rawResponse.parallelToolCalls()
+    fun parallelToolCalls(): Optional<Boolean> = rawResponse.parallelToolCalls()
+
+    fun parallelToolCallsOrThrow(): Boolean = rawResponse.parallelToolCallsOrThrow()
 
     /** @see Response.temperature */
     fun temperature(): Optional<Double> = rawResponse.temperature()
 
+    fun temperatureOrThrow(): Double = rawResponse.temperatureOrThrow()
+
     /** @see Response.toolChoice */
-    fun toolChoice(): Response.ToolChoice = rawResponse.toolChoice()
+    fun toolChoice(): Optional<Response.ToolChoice> = rawResponse.toolChoice()
+
+    fun toolChoiceOrThrow(): Response.ToolChoice = rawResponse.toolChoiceOrThrow()
 
     /** @see Response.tools */
-    fun tools(): List<Tool> = rawResponse.tools()
+    fun tools(): Optional<List<Tool>> = rawResponse.tools()
+
+    fun toolsOrThrow(): List<Tool> = rawResponse.toolsOrThrow()
 
     /** @see Response.toolUsage */
     fun toolUsage(): Optional<Response.ToolUsage> = rawResponse.toolUsage()
+
+    fun toolUsageOrThrow(): Response.ToolUsage = rawResponse.toolUsageOrThrow()
 
     /** @see Response._toolUsage */
     fun _toolUsage(): JsonField<Response.ToolUsage> = rawResponse._toolUsage()
@@ -82,71 +117,118 @@ class StructuredResponse<T : Any>(
     /** @see Response.topP */
     fun topP(): Optional<Double> = rawResponse.topP()
 
+    fun topPOrThrow(): Double = rawResponse.topPOrThrow()
+
     /** @see Response.maxToolCalls */
     fun maxToolCalls(): Optional<Long> = rawResponse.maxToolCalls()
+
+    fun maxToolCallsOrThrow(): Long = rawResponse.maxToolCallsOrThrow()
 
     /** @see Response.topLogprobs */
     fun topLogprobs(): Optional<Long> = rawResponse.topLogprobs()
 
+    fun topLogprobsOrThrow(): Long = rawResponse.topLogprobsOrThrow()
+
     /** @see Response.maxOutputTokens */
     fun maxOutputTokens(): Optional<Long> = rawResponse.maxOutputTokens()
+
+    fun maxOutputTokensOrThrow(): Long = rawResponse.maxOutputTokensOrThrow()
 
     /** @see Response.previousResponseId */
     fun previousResponseId(): Optional<String> = rawResponse.previousResponseId()
 
+    fun previousResponseIdOrThrow(): String = rawResponse.previousResponseIdOrThrow()
+
     /** @see Response.prompt */
     fun prompt(): Optional<ResponsePrompt> = rawResponse.prompt()
+
+    fun promptOrThrow(): ResponsePrompt = rawResponse.promptOrThrow()
 
     /** @see Response.promptCacheDiagnostics */
     fun promptCacheDiagnostics(): Optional<Response.PromptCacheDiagnostics> =
         rawResponse.promptCacheDiagnostics()
 
+    fun promptCacheDiagnosticsOrThrow(): Response.PromptCacheDiagnostics =
+        rawResponse.promptCacheDiagnosticsOrThrow()
+
     /** @see Response.promptCacheKey */
     fun promptCacheKey(): Optional<String> = rawResponse.promptCacheKey()
+
+    fun promptCacheKeyOrThrow(): String = rawResponse.promptCacheKeyOrThrow()
 
     /** @see Response.promptCacheOptions */
     fun promptCacheOptions(): Optional<Response.PromptCacheOptions> =
         rawResponse.promptCacheOptions()
 
+    fun promptCacheOptionsOrThrow(): Response.PromptCacheOptions =
+        rawResponse.promptCacheOptionsOrThrow()
+
     /** @see Response.promptCacheRetention */
     fun promptCacheRetention(): Optional<Response.PromptCacheRetention> =
         rawResponse.promptCacheRetention()
 
+    fun promptCacheRetentionOrThrow(): Response.PromptCacheRetention =
+        rawResponse.promptCacheRetentionOrThrow()
+
     /** @see Response.reasoning */
     fun reasoning(): Optional<Reasoning> = rawResponse.reasoning()
+
+    fun reasoningOrThrow(): Reasoning = rawResponse.reasoningOrThrow()
 
     /** @see Response.safetyIdentifier */
     fun safetyIdentifier(): Optional<String> = rawResponse.safetyIdentifier()
 
+    fun safetyIdentifierOrThrow(): String = rawResponse.safetyIdentifierOrThrow()
+
     /** @see Response.serviceTier */
     fun serviceTier(): Optional<Response.ServiceTier> = rawResponse.serviceTier()
+
+    fun serviceTierOrThrow(): Response.ServiceTier = rawResponse.serviceTierOrThrow()
 
     /** @see Response.status */
     fun status(): Optional<ResponseStatus> = rawResponse.status()
 
+    fun statusOrThrow(): ResponseStatus = rawResponse.statusOrThrow()
+
     /** @see Response.text */
     fun text(): Optional<ResponseTextConfig> = rawResponse.text()
+
+    fun textOrThrow(): ResponseTextConfig = rawResponse.textOrThrow()
 
     /** @see Response.truncation */
     fun truncation(): Optional<Response.Truncation> = rawResponse.truncation()
 
+    fun truncationOrThrow(): Response.Truncation = rawResponse.truncationOrThrow()
+
     /** @see Response.usage */
     fun usage(): Optional<ResponseUsage> = rawResponse.usage()
+
+    fun usageOrThrow(): ResponseUsage = rawResponse.usageOrThrow()
 
     /** @see Response.user */
     fun user(): Optional<String> = rawResponse.user()
 
+    fun userOrThrow(): String = rawResponse.userOrThrow()
+
     /** @see Response.background */
     fun background(): Optional<Boolean> = rawResponse.background()
+
+    fun backgroundOrThrow(): Boolean = rawResponse.backgroundOrThrow()
 
     /** @see Response.completedAt */
     fun completedAt(): Optional<Double> = rawResponse.completedAt()
 
+    fun completedAtOrThrow(): Double = rawResponse.completedAtOrThrow()
+
     /** @see Response.conversation */
     fun conversation(): Optional<Response.Conversation> = rawResponse.conversation()
 
+    fun conversationOrThrow(): Response.Conversation = rawResponse.conversationOrThrow()
+
     /** @see Response.image */
     fun image(): Optional<Response.Image> = rawResponse.image()
+
+    fun imageOrThrow(): Response.Image = rawResponse.imageOrThrow()
 
     /** @see Response._id */
     fun _id(): JsonField<String> = rawResponse._id()
@@ -262,7 +344,7 @@ class StructuredResponse<T : Any>(
 
     /** @see Response.validate */
     fun validate(): StructuredResponse<T> = apply {
-        output().forEach { it.validate() }
+        outputOrThrow().forEach { it.validate() }
         rawResponse.validate()
     }
 

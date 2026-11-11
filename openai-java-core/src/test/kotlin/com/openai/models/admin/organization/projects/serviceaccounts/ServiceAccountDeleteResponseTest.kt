@@ -14,8 +14,8 @@ internal class ServiceAccountDeleteResponseTest {
         val serviceAccountDeleteResponse =
             ServiceAccountDeleteResponse.builder().id("id").deleted(true).build()
 
-        assertThat(serviceAccountDeleteResponse.id()).isEqualTo("id")
-        assertThat(serviceAccountDeleteResponse.deleted()).isEqualTo(true)
+        assertThat(serviceAccountDeleteResponse.id()).contains("id")
+        assertThat(serviceAccountDeleteResponse.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

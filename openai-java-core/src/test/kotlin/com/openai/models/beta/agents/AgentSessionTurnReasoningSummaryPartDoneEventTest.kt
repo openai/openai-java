@@ -3,6 +3,7 @@
 package com.openai.models.beta.agents
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -23,16 +24,15 @@ internal class AgentSessionTurnReasoningSummaryPartDoneEventTest {
                 .turnId("turn_id")
                 .build()
 
-        assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.eventId()).isEqualTo("event_id")
-        assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.outputIndex()).isEqualTo(0L)
+        assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.eventId()).contains("event_id")
+        assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.itemId()).contains("item_id")
+        assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.outputIndex()).contains(0L)
         assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.part())
-            .isEqualTo(SummaryText.builder().text("text").build())
-        assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.sessionId())
-            .isEqualTo("session_id")
+            .contains(SummaryText.builder().text("text").build())
+        assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.sessionId()).contains("session_id")
         assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.status())
-            .contains(AgentSessionTurnReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
-        assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.summaryIndex()).isEqualTo(0L)
+            .contains(JsonValue.from("incomplete"))
+        assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.summaryIndex()).contains(0L)
         assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()

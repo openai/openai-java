@@ -43,43 +43,68 @@ private constructor(
     ) : this(delta, eventId, type, elapsedMs, mutableMapOf())
 
     /**
-     * Append-only transcript text for the translated output audio.
+     * Append-only transcript text for the translated output audio. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun delta(): String = delta.getRequired("delta")
+    fun delta(): java.util.Optional<String> = delta.getOptional("delta")
 
     /**
-     * The unique ID of the server event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun deltaOrThrow(): String = delta.getRequired("delta")
 
     /**
-     * The event type, must be `session.output_transcript.delta`.
+     * The unique ID of the server event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("session.output_transcript.delta")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
+
+    /**
+     * The event type, must be `session.output_transcript.delta`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("session.output_transcript.delta")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Timing metadata for stream alignment, derived from the translation frame when available. It
      * advances in 200 ms increments, but multiple transcript deltas may share the same
      * `elapsed_ms`. Treat it as alignment metadata, not a unique transcript-delta identifier.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun elapsedMs(): Optional<Long> = elapsedMs.getOptional("elapsed_ms")
+    fun elapsedMs(): java.util.Optional<Long> = elapsedMs.getOptional("elapsed_ms")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun elapsedMsOrThrow(): Long = elapsedMs.getRequired("elapsed_ms")
 
     /**
      * Returns the raw JSON value of [delta].
@@ -289,13 +314,9 @@ private constructor(
             return@apply
         }
 
-        delta()
-        eventId()
-        _type().let {
-            if (it != JsonValue.from("session.output_transcript.delta")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        deltaOrThrow()
+        eventIdOrThrow()
+        typeOrThrow()
         elapsedMs()
         validated = true
     }

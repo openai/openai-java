@@ -41,38 +41,58 @@ private constructor(
     ) : this(id, stateVariables, tracing, version, mutableMapOf())
 
     /**
-     * Identifier for the workflow invoked by the session.
+     * Identifier for the workflow invoked by the session. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
      * State variables forwarded to the workflow. Keys may be up to 64 characters, values must be
-     * primitive types, and the map defaults to an empty object.
+     * primitive types, and the map defaults to an empty object. Returns empty if the JSON property
+     * is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun stateVariables(): Optional<StateVariables> = stateVariables.getOptional("state_variables")
+    fun stateVariables(): java.util.Optional<StateVariables> =
+        stateVariables.getOptional("state_variables")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun stateVariablesOrThrow(): StateVariables = stateVariables.getRequired("state_variables")
 
     /**
      * Optional tracing overrides for the workflow invocation. When omitted, tracing is enabled by
-     * default.
+     * default. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun tracing(): Optional<Tracing> = tracing.getOptional("tracing")
+    fun tracing(): java.util.Optional<Tracing> = tracing.getOptional("tracing")
 
     /**
-     * Specific workflow version to run. Defaults to the latest deployed version.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun version(): Optional<String> = version.getOptional("version")
+    fun tracingOrThrow(): Tracing = tracing.getRequired("tracing")
+
+    /**
+     * Specific workflow version to run. Defaults to the latest deployed version. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun version(): java.util.Optional<String> = version.getOptional("version")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun versionOrThrow(): String = version.getRequired("version")
 
     /**
      * Returns the raw JSON value of [id].
@@ -277,7 +297,7 @@ private constructor(
             return@apply
         }
 
-        id()
+        idOrThrow()
         stateVariables().ifPresent { it.validate() }
         tracing().ifPresent { it.validate() }
         version()
@@ -446,12 +466,18 @@ private constructor(
         ) : this(enabled, mutableMapOf())
 
         /**
-         * Whether tracing is enabled during the session. Defaults to true.
+         * Whether tracing is enabled during the session. Defaults to true. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun enabled(): Optional<Boolean> = enabled.getOptional("enabled")
+        fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
 
         /**
          * Returns the raw JSON value of [enabled].

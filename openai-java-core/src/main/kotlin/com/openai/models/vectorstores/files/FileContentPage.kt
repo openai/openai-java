@@ -8,7 +8,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.vectorstores.FileService
 import java.util.Objects
-import kotlin.jvm.optionals.getOrNull
 
 /** @see FileService.content */
 class FileContentPage
@@ -18,18 +17,23 @@ private constructor(
     private val response: FileContentPageResponse,
 ) : Page<FileContentResponse> {
 
-    /**
-     * Delegates to [FileContentPageResponse], but gracefully handles missing data.
-     *
-     * @see FileContentPageResponse.data
-     */
-    fun data(): List<FileContentResponse> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see FileContentPageResponse.data */
+    fun data() = response.data()
+
+    fun dataOrThrow(): List<FileContentResponse> =
+        data().orElseGet { response._data().getRequired("data") }
+
+    fun _data() = response._data()
 
     /** @see FileContentPageResponse.object_ */
-    fun object_(): JsonValue = response._object_()
+    fun object_() = response.object_()
 
-    override fun items(): List<FileContentResponse> = data()
+    fun object_OrThrow(): JsonValue =
+        object_().orElseGet { response._object_().getRequired("object") }
+
+    fun _object_() = response._object_()
+
+    override fun items(): List<FileContentResponse> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = false
 

@@ -10,7 +10,6 @@ import com.openai.services.async.finetuning.checkpoints.PermissionServiceAsync
 import java.util.Objects
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see PermissionServiceAsync.create */
 class PermissionCreatePageAsync
@@ -21,18 +20,23 @@ private constructor(
     private val response: PermissionCreatePageResponse,
 ) : PageAsync<PermissionCreateResponse> {
 
-    /**
-     * Delegates to [PermissionCreatePageResponse], but gracefully handles missing data.
-     *
-     * @see PermissionCreatePageResponse.data
-     */
-    fun data(): List<PermissionCreateResponse> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see PermissionCreatePageResponse.data */
+    fun data() = response.data()
+
+    fun dataOrThrow(): List<PermissionCreateResponse> =
+        data().orElseGet { response._data().getRequired("data") }
+
+    fun _data() = response._data()
 
     /** @see PermissionCreatePageResponse.object_ */
-    fun object_(): JsonValue = response._object_()
+    fun object_() = response.object_()
 
-    override fun items(): List<PermissionCreateResponse> = data()
+    fun object_OrThrow(): JsonValue =
+        object_().orElseGet { response._object_().getRequired("object") }
+
+    fun _object_() = response._object_()
+
+    override fun items(): List<PermissionCreateResponse> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = false
 

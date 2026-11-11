@@ -19,10 +19,10 @@ internal class HostedSkillReferenceTest {
                 .version("version")
                 .build()
 
-        assertThat(hostedSkillReference.description()).isEqualTo("description")
-        assertThat(hostedSkillReference.name()).isEqualTo("name")
-        assertThat(hostedSkillReference.skillId()).isEqualTo("skill_id")
-        assertThat(hostedSkillReference.version()).isEqualTo("version")
+        assertThat(hostedSkillReference.description()).contains("description")
+        assertThat(hostedSkillReference.name()).contains("name")
+        assertThat(hostedSkillReference.skillId()).contains("skill_id")
+        assertThat(hostedSkillReference.version()).contains("version")
 
         val jsonMapper = jsonMapper()
 

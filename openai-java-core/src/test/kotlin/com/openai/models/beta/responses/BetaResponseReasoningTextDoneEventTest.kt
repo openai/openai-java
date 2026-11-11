@@ -25,11 +25,11 @@ internal class BetaResponseReasoningTextDoneEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseReasoningTextDoneEvent.contentIndex()).isEqualTo(0L)
-        assertThat(betaResponseReasoningTextDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseReasoningTextDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseReasoningTextDoneEvent.sequenceNumber()).isEqualTo(0L)
-        assertThat(betaResponseReasoningTextDoneEvent.text()).isEqualTo("text")
+        assertThat(betaResponseReasoningTextDoneEvent.contentIndex()).contains(0L)
+        assertThat(betaResponseReasoningTextDoneEvent.itemId()).contains("item_id")
+        assertThat(betaResponseReasoningTextDoneEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseReasoningTextDoneEvent.sequenceNumber()).contains(0L)
+        assertThat(betaResponseReasoningTextDoneEvent.text()).contains("text")
         assertThat(betaResponseReasoningTextDoneEvent.agent())
             .contains(
                 BetaResponseReasoningTextDoneEvent.Agent.builder().agentName("agent_name").build()

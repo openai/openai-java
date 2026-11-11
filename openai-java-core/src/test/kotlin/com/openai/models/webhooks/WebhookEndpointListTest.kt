@@ -4,6 +4,7 @@ package com.openai.models.webhooks
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -29,7 +30,7 @@ internal class WebhookEndpointListTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(webhookEndpointList.data())
+        assertThat(webhookEndpointList.data().getOrNull())
             .containsExactly(
                 WebhookEndpoint.builder()
                     .id("id")
@@ -42,7 +43,7 @@ internal class WebhookEndpointListTest {
                     .build()
             )
         assertThat(webhookEndpointList.firstId()).contains("first_id")
-        assertThat(webhookEndpointList.hasMore()).isEqualTo(true)
+        assertThat(webhookEndpointList.hasMore()).contains(true)
         assertThat(webhookEndpointList.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

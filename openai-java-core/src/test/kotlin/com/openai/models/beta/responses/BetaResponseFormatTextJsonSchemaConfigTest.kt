@@ -24,9 +24,9 @@ internal class BetaResponseFormatTextJsonSchemaConfigTest {
                 .strict(true)
                 .build()
 
-        assertThat(betaResponseFormatTextJsonSchemaConfig.name()).isEqualTo("name")
+        assertThat(betaResponseFormatTextJsonSchemaConfig.name()).contains("name")
         assertThat(betaResponseFormatTextJsonSchemaConfig.schema())
-            .isEqualTo(
+            .contains(
                 BetaResponseFormatTextJsonSchemaConfig.Schema.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()

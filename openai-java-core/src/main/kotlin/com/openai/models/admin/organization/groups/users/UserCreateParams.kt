@@ -32,13 +32,11 @@ private constructor(
 
     fun groupId(): Optional<String> = Optional.ofNullable(groupId)
 
-    /**
-     * Identifier of the user to add to the group.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun userId(): String = body.userId()
+    /** @see Body.userId */
+    fun userId(): java.util.Optional<String> = body.userId()
+
+    /** @see Body.userIdOrThrow */
+    fun userIdOrThrow(): String = body.userIdOrThrow()
 
     /**
      * Returns the raw JSON value of [userId].
@@ -275,12 +273,18 @@ private constructor(
         ) : this(userId, mutableMapOf())
 
         /**
-         * Identifier of the user to add to the group.
+         * Identifier of the user to add to the group. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun userId(): String = userId.getRequired("user_id")
+        fun userId(): java.util.Optional<String> = userId.getOptional("user_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun userIdOrThrow(): String = userId.getRequired("user_id")
 
         /**
          * Returns the raw JSON value of [userId].
@@ -403,7 +407,7 @@ private constructor(
                 return@apply
             }
 
-            userId()
+            userIdOrThrow()
             validated = true
         }
 

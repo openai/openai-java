@@ -7,10 +7,8 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.beta.agents.environments.TemplateServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see TemplateServiceAsync.list */
 class TemplateListPageAsync
@@ -21,22 +19,23 @@ private constructor(
     private val response: TemplateListPageResponse,
 ) : PageAsync<EnvironmentTemplate> {
 
-    /**
-     * Delegates to [TemplateListPageResponse], but gracefully handles missing data.
-     *
-     * @see TemplateListPageResponse.data
-     */
-    fun data(): List<EnvironmentTemplate> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see TemplateListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [TemplateListPageResponse], but gracefully handles missing data.
-     *
-     * @see TemplateListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<EnvironmentTemplate> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<EnvironmentTemplate> = data()
+    fun _data() = response._data()
+
+    /** @see TemplateListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<EnvironmentTemplate> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

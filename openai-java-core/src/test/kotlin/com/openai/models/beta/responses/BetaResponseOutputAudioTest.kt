@@ -14,8 +14,8 @@ internal class BetaResponseOutputAudioTest {
         val betaResponseOutputAudio =
             BetaResponseOutputAudio.builder().data("data").transcript("transcript").build()
 
-        assertThat(betaResponseOutputAudio.data()).isEqualTo("data")
-        assertThat(betaResponseOutputAudio.transcript()).isEqualTo("transcript")
+        assertThat(betaResponseOutputAudio.data()).contains("data")
+        assertThat(betaResponseOutputAudio.transcript()).contains("transcript")
 
         val jsonMapper = jsonMapper()
 

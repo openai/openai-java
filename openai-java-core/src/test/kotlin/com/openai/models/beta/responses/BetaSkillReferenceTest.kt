@@ -14,7 +14,7 @@ internal class BetaSkillReferenceTest {
         val betaSkillReference =
             BetaSkillReference.builder().skillId("x").version("version").build()
 
-        assertThat(betaSkillReference.skillId()).isEqualTo("x")
+        assertThat(betaSkillReference.skillId()).contains("x")
         assertThat(betaSkillReference.version()).contains("version")
 
         val jsonMapper = jsonMapper()

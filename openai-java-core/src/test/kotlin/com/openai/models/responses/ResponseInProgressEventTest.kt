@@ -308,7 +308,7 @@ internal class ResponseInProgressEventTest {
                 .build()
 
         assertThat(responseInProgressEvent.response())
-            .isEqualTo(
+            .contains(
                 Response.builder()
                     .id("id")
                     .accessPrograms(
@@ -588,7 +588,7 @@ internal class ResponseInProgressEventTest {
                     .user("user-1234")
                     .build()
             )
-        assertThat(responseInProgressEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseInProgressEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

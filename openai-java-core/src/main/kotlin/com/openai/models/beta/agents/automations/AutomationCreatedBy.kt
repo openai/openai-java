@@ -269,33 +269,56 @@ private constructor(
         ) : this(sessionId, toolCallId, type, mutableMapOf())
 
         /**
-         * The creator session, which is also the automation's target.
+         * The creator session, which is also the automation's target. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun sessionId(): String = sessionId.getRequired("session_id")
+        fun sessionId(): java.util.Optional<String> = sessionId.getOptional("session_id")
 
         /**
-         * The tool call that created the automation.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun toolCallId(): String = toolCallId.getRequired("tool_call_id")
+        fun sessionIdOrThrow(): String = sessionId.getRequired("session_id")
 
         /**
-         * The type of the object. Always `agent`.
+         * The tool call that created the automation. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("agent")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun toolCallId(): java.util.Optional<String> = toolCallId.getOptional("tool_call_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun toolCallIdOrThrow(): String = toolCallId.getRequired("tool_call_id")
+
+        /**
+         * The type of the object. Always `agent`. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("agent")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [sessionId].
@@ -469,13 +492,9 @@ private constructor(
                 return@apply
             }
 
-            sessionId()
-            toolCallId()
-            _type().let {
-                if (it != JsonValue.from("agent")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            sessionIdOrThrow()
+            toolCallIdOrThrow()
+            typeOrThrow()
             validated = true
         }
 

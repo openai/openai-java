@@ -19,10 +19,10 @@ internal class ResponseFunctionCallArgumentsDeltaEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseFunctionCallArgumentsDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(responseFunctionCallArgumentsDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseFunctionCallArgumentsDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseFunctionCallArgumentsDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseFunctionCallArgumentsDeltaEvent.delta()).contains("delta")
+        assertThat(responseFunctionCallArgumentsDeltaEvent.itemId()).contains("item_id")
+        assertThat(responseFunctionCallArgumentsDeltaEvent.outputIndex()).contains(0L)
+        assertThat(responseFunctionCallArgumentsDeltaEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

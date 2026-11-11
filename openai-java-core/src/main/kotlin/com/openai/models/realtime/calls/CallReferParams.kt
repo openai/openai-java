@@ -32,14 +32,11 @@ private constructor(
 
     fun callId(): Optional<String> = Optional.ofNullable(callId)
 
-    /**
-     * URI that should appear in the SIP Refer-To header. Supports values like `tel:+14155550123` or
-     * `sip:agent@example.com`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun targetUri(): String = body.targetUri()
+    /** @see Body.targetUri */
+    fun targetUri(): java.util.Optional<String> = body.targetUri()
+
+    /** @see Body.targetUriOrThrow */
+    fun targetUriOrThrow(): String = body.targetUriOrThrow()
 
     /**
      * Returns the raw JSON value of [targetUri].
@@ -283,12 +280,18 @@ private constructor(
 
         /**
          * URI that should appear in the SIP Refer-To header. Supports values like
-         * `tel:+14155550123` or `sip:agent@example.com`.
+         * `tel:+14155550123` or `sip:agent@example.com`. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun targetUri(): String = targetUri.getRequired("target_uri")
+        fun targetUri(): java.util.Optional<String> = targetUri.getOptional("target_uri")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun targetUriOrThrow(): String = targetUri.getRequired("target_uri")
 
         /**
          * Returns the raw JSON value of [targetUri].
@@ -414,7 +417,7 @@ private constructor(
                 return@apply
             }
 
-            targetUri()
+            targetUriOrThrow()
             validated = true
         }
 

@@ -67,7 +67,7 @@ internal class MediaSessionConfigTest {
                 )
                 .build()
 
-        assertThat(mediaSessionConfig.model()).isEqualTo(MediaSessionConfig.Model.GPT_LIVE_1)
+        assertThat(mediaSessionConfig.model()).contains(MediaSessionConfig.Model.GPT_LIVE_1)
         assertThat(mediaSessionConfig.audio())
             .contains(
                 MediaSessionConfig.Audio.builder()

@@ -22,14 +22,14 @@ internal class ResponseToolSearchCallTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(responseToolSearchCall.id()).isEqualTo("id")
+        assertThat(responseToolSearchCall.id()).contains("id")
         assertThat(responseToolSearchCall._arguments())
             .isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(responseToolSearchCall.callId()).contains("call_id")
         assertThat(responseToolSearchCall.execution())
-            .isEqualTo(ResponseToolSearchCall.Execution.SERVER)
+            .contains(ResponseToolSearchCall.Execution.SERVER)
         assertThat(responseToolSearchCall.status())
-            .isEqualTo(ResponseToolSearchCall.Status.IN_PROGRESS)
+            .contains(ResponseToolSearchCall.Status.IN_PROGRESS)
         assertThat(responseToolSearchCall.createdBy()).contains("created_by")
 
         val jsonMapper = jsonMapper()

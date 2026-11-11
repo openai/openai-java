@@ -38,7 +38,7 @@ internal class ResponseOutputTextTest {
                 )
                 .build()
 
-        assertThat(responseOutputText.annotations())
+        assertThat(responseOutputText.annotations().getOrNull())
             .containsExactly(
                 ResponseOutputText.Annotation.ofFileCitation(
                     ResponseOutputText.Annotation.FileCitation.builder()
@@ -48,7 +48,7 @@ internal class ResponseOutputTextTest {
                         .build()
                 )
             )
-        assertThat(responseOutputText.text()).isEqualTo("text")
+        assertThat(responseOutputText.text()).contains("text")
         assertThat(responseOutputText.logprobs().getOrNull())
             .containsExactly(
                 ResponseOutputText.Logprob.builder()

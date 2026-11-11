@@ -30,12 +30,17 @@ private constructor(
     ) : this(code, mutableMapOf())
 
     /**
-     * The code of a language detected in the audio.
+     * The code of a language detected in the audio. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun code(): String = code.getRequired("code")
+    fun code(): java.util.Optional<String> = code.getOptional("code")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun codeOrThrow(): String = code.getRequired("code")
 
     /**
      * Returns the raw JSON value of [code].
@@ -156,7 +161,7 @@ private constructor(
             return@apply
         }
 
-        code()
+        codeOrThrow()
         validated = true
     }
 

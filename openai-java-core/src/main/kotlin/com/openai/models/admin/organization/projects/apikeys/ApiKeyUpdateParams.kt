@@ -55,29 +55,19 @@ private constructor(
 
     fun apiKeyId(): Optional<String> = Optional.ofNullable(apiKeyId)
 
-    /**
-     * Number of seconds from this request until the API key expires. Must comply with the
-     * organization and project expiry policies. Expired keys cannot be updated. Retrying resets the
-     * expiry relative to the new request. Omit to keep the current expiration.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun expiresInSeconds(): Long = body.expiresInSeconds()
+    /** @see Body.expiresInSeconds */
+    fun expiresInSeconds(): java.util.Optional<Long> = body.expiresInSeconds()
 
-    /** Returns the requested value, or empty if the field is omitted or null. */
-    fun expiresInSecondsOptional(): Optional<Long> = body.expiresInSecondsOptional()
+    /** @see Body.expiresInSecondsOrThrow */
+    fun expiresInSecondsOrThrow(): Long = body.expiresInSecondsOrThrow()
 
-    /**
-     * Replace the API key scope restrictions. Omit to leave scopes unchanged. An empty array
-     * removes key restrictions (All permissions), subject to the owner's effective permissions. Use
-     * ["api.all.read"] for read-only access. Scopes do not change the owner's roles or grant
-     * administrative permissions.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun scopes(): Optional<List<String>> = body.scopes()
+    fun expiresInSecondsOptional(): java.util.Optional<Long> = expiresInSeconds()
+
+    /** @see Body.scopes */
+    fun scopes(): java.util.Optional<List<String>> = body.scopes()
+
+    /** @see Body.scopesOrThrow */
+    fun scopesOrThrow(): List<String> = body.scopesOrThrow()
 
     /**
      * Returns the raw JSON value of [expiresInSeconds].
@@ -369,27 +359,37 @@ private constructor(
         /**
          * Number of seconds from this request until the API key expires. Must comply with the
          * organization and project expiry policies. Expired keys cannot be updated. Retrying resets
-         * the expiry relative to the new request. Omit to keep the current expiration.
+         * the expiry relative to the new request. Omit to keep the current expiration. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun expiresInSeconds(): Long = expiresInSeconds.getRequired("expires_in_seconds")
-
-        /** Returns the requested value, or empty if the field is omitted or null. */
-        fun expiresInSecondsOptional(): Optional<Long> =
+        fun expiresInSeconds(): java.util.Optional<Long> =
             expiresInSeconds.getOptional("expires_in_seconds")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun expiresInSecondsOrThrow(): Long = expiresInSeconds.getRequired("expires_in_seconds")
+
+        fun expiresInSecondsOptional(): java.util.Optional<Long> = expiresInSeconds()
 
         /**
          * Replace the API key scope restrictions. Omit to leave scopes unchanged. An empty array
          * removes key restrictions (All permissions), subject to the owner's effective permissions.
          * Use ["api.all.read"] for read-only access. Scopes do not change the owner's roles or
-         * grant administrative permissions.
+         * grant administrative permissions. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun scopes(): Optional<List<String>> = scopes.getOptional("scopes")
+        fun scopes(): java.util.Optional<List<String>> = scopes.getOptional("scopes")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun scopesOrThrow(): List<String> = scopes.getRequired("scopes")
 
         /**
          * Returns the raw JSON value of [expiresInSeconds].

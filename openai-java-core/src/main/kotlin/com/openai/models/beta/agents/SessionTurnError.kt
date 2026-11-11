@@ -34,20 +34,30 @@ private constructor(
     ) : this(code, message, mutableMapOf())
 
     /**
-     * A stable, machine-readable failure category.
+     * A stable, machine-readable failure category. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun code(): Code = code.getRequired("code")
+    fun code(): java.util.Optional<Code> = code.getOptional("code")
 
     /**
-     * A customer-safe explanation of the failure.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun message(): String = message.getRequired("message")
+    fun codeOrThrow(): Code = code.getRequired("code")
+
+    /**
+     * A customer-safe explanation of the failure. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun message(): java.util.Optional<String> = message.getOptional("message")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun messageOrThrow(): String = message.getRequired("message")
 
     /**
      * Returns the raw JSON value of [code].
@@ -194,8 +204,8 @@ private constructor(
             return@apply
         }
 
-        code().validate()
-        message()
+        codeOrThrow().validate()
+        messageOrThrow()
         validated = true
     }
 

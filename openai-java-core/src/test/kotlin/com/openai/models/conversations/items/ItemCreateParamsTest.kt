@@ -105,7 +105,7 @@ internal class ItemCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.items())
+        assertThat(body.itemsOrThrow())
             .containsExactly(
                 ResponseInputItem.ofEasyInputMessage(
                     EasyInputMessage.builder()
@@ -134,7 +134,7 @@ internal class ItemCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.items())
+        assertThat(body.itemsOrThrow())
             .containsExactly(
                 ResponseInputItem.ofEasyInputMessage(
                     EasyInputMessage.builder()

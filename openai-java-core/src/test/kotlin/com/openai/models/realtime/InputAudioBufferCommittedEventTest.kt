@@ -18,8 +18,8 @@ internal class InputAudioBufferCommittedEventTest {
                 .previousItemId("previous_item_id")
                 .build()
 
-        assertThat(inputAudioBufferCommittedEvent.eventId()).isEqualTo("event_id")
-        assertThat(inputAudioBufferCommittedEvent.itemId()).isEqualTo("item_id")
+        assertThat(inputAudioBufferCommittedEvent.eventId()).contains("event_id")
+        assertThat(inputAudioBufferCommittedEvent.itemId()).contains("item_id")
         assertThat(inputAudioBufferCommittedEvent.previousItemId()).contains("previous_item_id")
 
         val jsonMapper = jsonMapper()

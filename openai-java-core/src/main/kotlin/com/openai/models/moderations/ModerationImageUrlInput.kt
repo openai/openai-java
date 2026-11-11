@@ -33,25 +33,40 @@ private constructor(
     ) : this(imageUrl, type, mutableMapOf())
 
     /**
-     * Contains either an image URL or a data URL for a base64 encoded image.
+     * Contains either an image URL or a data URL for a base64 encoded image. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun imageUrl(): ImageUrl = imageUrl.getRequired("image_url")
+    fun imageUrl(): java.util.Optional<ImageUrl> = imageUrl.getOptional("image_url")
 
     /**
-     * Always `image_url`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("image_url")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun imageUrlOrThrow(): ImageUrl = imageUrl.getRequired("image_url")
+
+    /**
+     * Always `image_url`. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("image_url")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [imageUrl].
@@ -197,12 +212,8 @@ private constructor(
             return@apply
         }
 
-        imageUrl().validate()
-        _type().let {
-            if (it != JsonValue.from("image_url")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        imageUrlOrThrow().validate()
+        typeOrThrow()
         validated = true
     }
 
@@ -238,12 +249,18 @@ private constructor(
         ) : this(url, mutableMapOf())
 
         /**
-         * Either a URL of the image or the base64 encoded image data.
+         * Either a URL of the image or the base64 encoded image data. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun url(): String = url.getRequired("url")
+        fun url(): java.util.Optional<String> = url.getOptional("url")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun urlOrThrow(): String = url.getRequired("url")
 
         /**
          * Returns the raw JSON value of [url].
@@ -366,7 +383,7 @@ private constructor(
                 return@apply
             }
 
-            url()
+            urlOrThrow()
             validated = true
         }
 

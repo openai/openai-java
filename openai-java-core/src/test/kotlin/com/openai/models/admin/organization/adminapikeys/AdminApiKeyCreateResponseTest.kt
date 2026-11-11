@@ -32,11 +32,11 @@ internal class AdminApiKeyCreateResponseTest {
                 .value("sk-admin-1234abcd")
                 .build()
 
-        assertThat(adminApiKeyCreateResponse.id()).isEqualTo("key_abc")
-        assertThat(adminApiKeyCreateResponse.createdAt()).isEqualTo(1711471533L)
+        assertThat(adminApiKeyCreateResponse.id()).contains("key_abc")
+        assertThat(adminApiKeyCreateResponse.createdAt()).contains(1711471533L)
         assertThat(adminApiKeyCreateResponse.expiresAt()).contains(1714063533L)
         assertThat(adminApiKeyCreateResponse.owner())
-            .isEqualTo(
+            .contains(
                 AdminApiKey.Owner.builder()
                     .id("sa_456")
                     .createdAt(1711471533L)
@@ -46,10 +46,10 @@ internal class AdminApiKeyCreateResponseTest {
                     .type("user")
                     .build()
             )
-        assertThat(adminApiKeyCreateResponse.redactedValue()).isEqualTo("sk-admin...def")
+        assertThat(adminApiKeyCreateResponse.redactedValue()).contains("sk-admin...def")
         assertThat(adminApiKeyCreateResponse.lastUsedAt()).contains(1711471534L)
         assertThat(adminApiKeyCreateResponse.name()).contains("Administration Key")
-        assertThat(adminApiKeyCreateResponse.value()).isEqualTo("sk-admin-1234abcd")
+        assertThat(adminApiKeyCreateResponse.value()).contains("sk-admin-1234abcd")
 
         val jsonMapper = jsonMapper()
 

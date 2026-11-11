@@ -44,44 +44,68 @@ private constructor(
 
     /**
      * Silent reasoning or progress context, limited to 500 tokens. It does not directly request
-     * speech, but can influence later speech and is not a secrecy boundary.
+     * speech, but can influence later speech and is not a secrecy boundary. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun content(): String = content.getRequired("content")
+    fun content(): java.util.Optional<String> = content.getOptional("content")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun contentOrThrow(): String = content.getRequired("content")
 
     /**
      * Required, nullable. Set null for general session context, or use the ID from
      * session.delegation.created for an existing client delegation. Non-null IDs are not accepted
-     * with Responses delegation.
+     * with Responses delegation. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun delegationId(): Optional<String> = delegationId.getOptional("delegation_id")
+    fun delegationId(): java.util.Optional<String> = delegationId.getOptional("delegation_id")
 
     /**
-     * The Live client event type. Always `session.thinking.append`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("session.thinking.append")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun delegationIdOrThrow(): String = delegationId.getRequired("delegation_id")
+
+    /**
+     * The Live client event type. Always `session.thinking.append`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("session.thinking.append")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Optional client identifier for correlating this command with a server event's client_event_id
-     * or error.client_event_id.
+     * or error.client_event_id. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun eventId(): Optional<String> = eventId.getOptional("event_id")
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
      * Returns the raw JSON value of [content].
@@ -293,13 +317,9 @@ private constructor(
             return@apply
         }
 
-        content()
+        contentOrThrow()
         delegationId()
-        _type().let {
-            if (it != JsonValue.from("session.thinking.append")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        typeOrThrow()
         eventId()
         validated = true
     }

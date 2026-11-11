@@ -28,7 +28,7 @@ internal class ChatCompletionContentPartInputAudioTest {
                 .build()
 
         assertThat(chatCompletionContentPartInputAudio.inputAudio())
-            .isEqualTo(
+            .contains(
                 ChatCompletionContentPartInputAudio.InputAudio.builder()
                     .data("data")
                     .format(ChatCompletionContentPartInputAudio.InputAudio.Format.WAV)

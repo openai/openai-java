@@ -18,9 +18,9 @@ internal class ComparisonFilterTest {
                 .value("string")
                 .build()
 
-        assertThat(comparisonFilter.key()).isEqualTo("key")
-        assertThat(comparisonFilter.type()).isEqualTo(ComparisonFilter.Type.EQ)
-        assertThat(comparisonFilter.value()).isEqualTo(ComparisonFilter.Value.ofString("string"))
+        assertThat(comparisonFilter.key()).contains("key")
+        assertThat(comparisonFilter.type()).contains(ComparisonFilter.Type.EQ)
+        assertThat(comparisonFilter.value()).contains(ComparisonFilter.Value.ofString("string"))
 
         val jsonMapper = jsonMapper()
 

@@ -13,8 +13,8 @@ internal class AutomationDeletedTest {
     fun createAndRoundtrip() {
         val automationDeleted = AutomationDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(automationDeleted.id()).isEqualTo("id")
-        assertThat(automationDeleted.deleted()).isEqualTo(true)
+        assertThat(automationDeleted.id()).contains("id")
+        assertThat(automationDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

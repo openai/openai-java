@@ -21,12 +21,12 @@ internal class AzureExternalStorageProviderTest {
                 .tenantId("tenant_id")
                 .build()
 
-        assertThat(azureExternalStorageProvider.accountName()).isEqualTo("account_name")
-        assertThat(azureExternalStorageProvider.container()).isEqualTo("container")
-        assertThat(azureExternalStorageProvider.region()).isEqualTo("region")
-        assertThat(azureExternalStorageProvider.resourceGroup()).isEqualTo("resource_group")
-        assertThat(azureExternalStorageProvider.subscriptionId()).isEqualTo("subscription_id")
-        assertThat(azureExternalStorageProvider.tenantId()).isEqualTo("tenant_id")
+        assertThat(azureExternalStorageProvider.accountName()).contains("account_name")
+        assertThat(azureExternalStorageProvider.container()).contains("container")
+        assertThat(azureExternalStorageProvider.region()).contains("region")
+        assertThat(azureExternalStorageProvider.resourceGroup()).contains("resource_group")
+        assertThat(azureExternalStorageProvider.subscriptionId()).contains("subscription_id")
+        assertThat(azureExternalStorageProvider.tenantId()).contains("tenant_id")
 
         val jsonMapper = jsonMapper()
 

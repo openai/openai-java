@@ -9,6 +9,7 @@ import com.openai.models.beta.agents.AgentReasoning
 import com.openai.models.beta.agents.AgentText
 import com.openai.models.beta.agents.AgentTool
 import com.openai.models.beta.agents.MultiAgentConfig
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -50,21 +51,21 @@ internal class AutomationAgentConfigTest {
                 .build()
 
         assertThat(automationAgentConfig.instructions()).contains("instructions")
-        assertThat(automationAgentConfig.model()).isEqualTo("model")
+        assertThat(automationAgentConfig.model()).contains("model")
         assertThat(automationAgentConfig.multiAgent())
-            .isEqualTo(MultiAgentConfig.builder().enabled(true).maxConcurrentSubagents(1L).build())
+            .contains(MultiAgentConfig.builder().enabled(true).maxConcurrentSubagents(1L).build())
         assertThat(automationAgentConfig.reasoning())
-            .isEqualTo(
+            .contains(
                 AgentReasoning.builder()
                     .effort(AgentReasoning.Effort.NONE)
                     .summary(AgentReasoning.Summary.CONCISE)
                     .build()
             )
         assertThat(automationAgentConfig.serviceTier())
-            .isEqualTo(AutomationAgentConfig.ServiceTier.AUTO)
+            .contains(AutomationAgentConfig.ServiceTier.AUTO)
         assertThat(automationAgentConfig.text())
-            .isEqualTo(AgentText.builder().formatText().verbosity(AgentText.Verbosity.LOW).build())
-        assertThat(automationAgentConfig.tools())
+            .contains(AgentText.builder().formatText().verbosity(AgentText.Verbosity.LOW).build())
+        assertThat(automationAgentConfig.tools().getOrNull())
             .containsExactly(
                 AgentTool.ofFunction(
                     AgentTool.Function.builder()

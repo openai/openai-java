@@ -28,9 +28,9 @@ internal class AgentSessionTurnItemDoneEventTest {
                 .turnId("turn_id")
                 .build()
 
-        assertThat(agentSessionTurnItemDoneEvent.eventId()).isEqualTo("event_id")
+        assertThat(agentSessionTurnItemDoneEvent.eventId()).contains("event_id")
         assertThat(agentSessionTurnItemDoneEvent.item())
-            .isEqualTo(
+            .contains(
                 AgentOutputItem.ofMessage(
                     AgentSessionAssistantMessage.builder()
                         .id("id")
@@ -41,8 +41,8 @@ internal class AgentSessionTurnItemDoneEventTest {
                         .build()
                 )
             )
-        assertThat(agentSessionTurnItemDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(agentSessionTurnItemDoneEvent.sessionId()).isEqualTo("session_id")
+        assertThat(agentSessionTurnItemDoneEvent.outputIndex()).contains(0L)
+        assertThat(agentSessionTurnItemDoneEvent.sessionId()).contains("session_id")
         assertThat(agentSessionTurnItemDoneEvent.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()

@@ -45,13 +45,11 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * The grader used for the fine-tuning job.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun grader(): Grader = body.grader()
+    /** @see Body.grader */
+    fun grader(): java.util.Optional<Grader> = body.grader()
+
+    /** @see Body.graderOrThrow */
+    fun graderOrThrow(): Grader = body.graderOrThrow()
 
     /**
      * Returns the raw JSON value of [grader].
@@ -288,12 +286,18 @@ private constructor(
         ) : this(grader, mutableMapOf())
 
         /**
-         * The grader used for the fine-tuning job.
+         * The grader used for the fine-tuning job. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun grader(): Grader = grader.getRequired("grader")
+        fun grader(): java.util.Optional<Grader> = grader.getOptional("grader")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun graderOrThrow(): Grader = grader.getRequired("grader")
 
         /**
          * Returns the raw JSON value of [grader].
@@ -432,7 +436,7 @@ private constructor(
                 return@apply
             }
 
-            grader().validate()
+            graderOrThrow().validate()
             validated = true
         }
 

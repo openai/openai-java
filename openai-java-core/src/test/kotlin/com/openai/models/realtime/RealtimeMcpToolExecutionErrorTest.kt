@@ -14,7 +14,7 @@ internal class RealtimeMcpToolExecutionErrorTest {
         val realtimeMcpToolExecutionError =
             RealtimeMcpToolExecutionError.builder().message("message").build()
 
-        assertThat(realtimeMcpToolExecutionError.message()).isEqualTo("message")
+        assertThat(realtimeMcpToolExecutionError.message()).contains("message")
 
         val jsonMapper = jsonMapper()
 

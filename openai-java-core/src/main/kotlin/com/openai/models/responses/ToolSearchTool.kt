@@ -42,43 +42,75 @@ private constructor(
     ) : this(type, description, execution, parameters, mutableMapOf())
 
     /**
-     * The type of the tool. Always `tool_search`.
+     * The type of the tool. Always `tool_search`. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("tool_search")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("tool_search")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * Description shown to the model for a client-executed tool search tool.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun description(): Optional<String> = description.getOptional("description")
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
-     * Whether tool search is executed by the server or by the client.
+     * Description shown to the model for a client-executed tool search tool. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun execution(): Optional<Execution> = execution.getOptional("execution")
+    fun description(): java.util.Optional<String> = description.getOptional("description")
 
     /**
-     * Parameter schema for a client-executed tool search tool.
-     *
-     * This arbitrary value can be deserialized into a custom type using the `convert` method:
-     * ```java
-     * MyClass myObject = toolSearchTool.parameters().convert(MyClass.class);
-     * ```
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("parameters") @ExcludeMissing fun _parameters(): JsonValue = parameters
+    fun descriptionOrThrow(): String = description.getRequired("description")
+
+    /**
+     * Whether tool search is executed by the server or by the client. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun execution(): java.util.Optional<Execution> = execution.getOptional("execution")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun executionOrThrow(): Execution = execution.getRequired("execution")
+
+    /**
+     * Parameter schema for a client-executed tool search tool. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun parameters(): java.util.Optional<JsonValue> {
+        val raw = parameters
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun parametersOrThrow(): JsonValue =
+        parameters().orElseGet { parameters.getRequired("parameters") }
+
+    @JsonProperty("parameters") @ExcludeMissing fun _parameters(): JsonField<JsonValue> = parameters
 
     /**
      * Returns the raw JSON value of [description].
@@ -243,11 +275,7 @@ private constructor(
             return@apply
         }
 
-        _type().let {
-            if (it != JsonValue.from("tool_search")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        typeOrThrow()
         description()
         execution().ifPresent { it.validate() }
         validated = true

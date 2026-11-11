@@ -10,6 +10,7 @@ import com.openai.core.X
 import com.openai.core.checkAllDelegation
 import com.openai.core.checkAllDelegatorReadFunctionsAreTested
 import com.openai.core.checkOneDelegationRead
+import com.openai.core.withJsonGetters
 import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -42,26 +43,27 @@ internal class StructuredChatCompletionMessageTest {
         @JvmStatic
         private fun delegationTestCases() =
             listOf(
-                // `content()` is a special case and has its own test function.
-                DelegationReadTestCase("refusal", OPTIONAL),
-                DelegationReadTestCase("_role", JSON_VALUE),
-                DelegationReadTestCase("annotations", OPTIONAL),
-                DelegationReadTestCase("audio", OPTIONAL),
-                DelegationReadTestCase("functionCall", OPTIONAL),
-                DelegationReadTestCase("toolCalls", OPTIONAL),
-                // `_content()` is a special case and has its own test function.
-                DelegationReadTestCase("_refusal", JSON_FIELD),
-                DelegationReadTestCase("_annotations", JSON_FIELD),
-                DelegationReadTestCase("_audio", JSON_FIELD),
-                DelegationReadTestCase("_functionCall", JSON_FIELD),
-                DelegationReadTestCase("_toolCalls", JSON_FIELD),
-                DelegationReadTestCase("_allProperties", mapOf("key" to JSON_VALUE)),
-                DelegationReadTestCase("validate", MESSAGE),
-                // For this boolean function, call with both possible values to ensure that any
-                // hard-coding or default value will not result in a false positive test.
-                DelegationReadTestCase("isValid", true),
-                DelegationReadTestCase("isValid", false),
-            )
+                    // `content()` is a special case and has its own test function.
+                    DelegationReadTestCase("refusal", OPTIONAL),
+                    DelegationReadTestCase("_role", JSON_VALUE),
+                    DelegationReadTestCase("annotations", OPTIONAL),
+                    DelegationReadTestCase("audio", OPTIONAL),
+                    DelegationReadTestCase("functionCall", OPTIONAL),
+                    DelegationReadTestCase("toolCalls", OPTIONAL),
+                    // `_content()` is a special case and has its own test function.
+                    DelegationReadTestCase("_refusal", JSON_FIELD),
+                    DelegationReadTestCase("_annotations", JSON_FIELD),
+                    DelegationReadTestCase("_audio", JSON_FIELD),
+                    DelegationReadTestCase("_functionCall", JSON_FIELD),
+                    DelegationReadTestCase("_toolCalls", JSON_FIELD),
+                    DelegationReadTestCase("_allProperties", mapOf("key" to JSON_VALUE)),
+                    DelegationReadTestCase("validate", MESSAGE),
+                    // For this boolean function, call with both possible values to ensure that any
+                    // hard-coding or default value will not result in a false positive test.
+                    DelegationReadTestCase("isValid", true),
+                    DelegationReadTestCase("isValid", false),
+                )
+                .withJsonGetters(ChatCompletionMessage::class.java)
     }
 
     // New instances of the `mockDelegate` and `delegator` are required for each test case (each
@@ -87,7 +89,7 @@ internal class StructuredChatCompletionMessageTest {
         checkAllDelegatorReadFunctionsAreTested(
             delegator::class,
             delegationTestCases(),
-            exceptionalTestedFns = setOf("content", "_content"),
+            exceptionalTestedFns = setOf("content", "contentOrThrow", "_content"),
             nonDelegatingFns = setOf("equals", "hashCode", "toString"),
         )
     }
@@ -106,6 +108,7 @@ internal class StructuredChatCompletionMessageTest {
         val input = JsonField.of("{\"s\" : \"hello\"}")
         `when`(mockDelegate._content()).thenReturn(input)
         val output = delegator.content() // Without an underscore.
+        assertThat(delegator.contentOrThrow()).isEqualTo(output.get())
 
         verify(mockDelegate, times(1))._content()
         verifyNoMoreInteractions(mockDelegate)

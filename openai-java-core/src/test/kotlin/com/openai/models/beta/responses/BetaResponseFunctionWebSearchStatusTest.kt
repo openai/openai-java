@@ -24,9 +24,9 @@ internal class BetaResponseFunctionWebSearchStatusTest {
                 )
 
         betaResponseFunctionWebSearch.validate()
-        assertThat(betaResponseFunctionWebSearch.status().value())
+        assertThat(betaResponseFunctionWebSearch.statusOrThrow().value())
             .isEqualTo(BetaResponseFunctionWebSearch.Status.Value.INCOMPLETE)
-        assertThat(betaResponseFunctionWebSearch.status().known())
+        assertThat(betaResponseFunctionWebSearch.statusOrThrow().known())
             .isEqualTo(BetaResponseFunctionWebSearch.Status.Known.INCOMPLETE)
     }
 }

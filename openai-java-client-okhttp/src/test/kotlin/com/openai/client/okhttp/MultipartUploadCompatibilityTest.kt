@@ -201,7 +201,7 @@ internal class MultipartUploadCompatibilityTest {
                                     .create(params)
                                     .get(5, TimeUnit.SECONDS)
                             } else client.containers().files().create(params)
-                        assertThat(result.id()).isEqualTo("file-ok")
+                        assertThat(result.idOrThrow()).isEqualTo("file-ok")
                         val requests = List(2) { server.takeRequest(5, TimeUnit.SECONDS)!! }
                         requests.forEach {
                             assertThat(it.path).isEqualTo("/v1/containers/container-ok/files")
@@ -372,7 +372,7 @@ internal class MultipartUploadCompatibilityTest {
             val result =
                 if (async) client.async().images().edit(params).get(5, TimeUnit.SECONDS)
                 else client.images().edit(params)
-            assertThat(result.created()).isEqualTo(1L)
+            assertThat(result.createdOrThrow()).isEqualTo(1L)
         } finally {
             client.close()
         }

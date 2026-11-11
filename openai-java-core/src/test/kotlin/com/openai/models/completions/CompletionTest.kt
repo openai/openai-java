@@ -5,6 +5,7 @@ package com.openai.models.completions
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -64,8 +65,8 @@ internal class CompletionTest {
                 )
                 .build()
 
-        assertThat(completion.id()).isEqualTo("id")
-        assertThat(completion.choices())
+        assertThat(completion.id()).contains("id")
+        assertThat(completion.choices().getOrNull())
             .containsExactly(
                 CompletionChoice.builder()
                     .finishReason(CompletionChoice.FinishReason.STOP)
@@ -85,8 +86,8 @@ internal class CompletionTest {
                     .text("text")
                     .build()
             )
-        assertThat(completion.created()).isEqualTo(0L)
-        assertThat(completion.model()).isEqualTo("model")
+        assertThat(completion.created()).contains(0L)
+        assertThat(completion.model()).contains("model")
         assertThat(completion.systemFingerprint()).contains("system_fingerprint")
         assertThat(completion.usage())
             .contains(

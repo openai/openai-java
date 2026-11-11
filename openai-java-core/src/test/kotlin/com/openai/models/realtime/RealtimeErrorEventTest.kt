@@ -26,7 +26,7 @@ internal class RealtimeErrorEventTest {
                 .build()
 
         assertThat(realtimeErrorEvent.error())
-            .isEqualTo(
+            .contains(
                 RealtimeError.builder()
                     .message("message")
                     .type("type")
@@ -35,7 +35,7 @@ internal class RealtimeErrorEventTest {
                     .param("param")
                     .build()
             )
-        assertThat(realtimeErrorEvent.eventId()).isEqualTo("event_id")
+        assertThat(realtimeErrorEvent.eventId()).contains("event_id")
 
         val jsonMapper = jsonMapper()
 

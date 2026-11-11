@@ -38,17 +38,17 @@ internal class BetaResponseComputerToolCallOutputItemTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(betaResponseComputerToolCallOutputItem.id()).isEqualTo("id")
-        assertThat(betaResponseComputerToolCallOutputItem.callId()).isEqualTo("call_id")
+        assertThat(betaResponseComputerToolCallOutputItem.id()).contains("id")
+        assertThat(betaResponseComputerToolCallOutputItem.callId()).contains("call_id")
         assertThat(betaResponseComputerToolCallOutputItem.output())
-            .isEqualTo(
+            .contains(
                 BetaResponseComputerToolCallOutputScreenshot.builder()
                     .fileId("file_id")
                     .imageUrl("https://example.com")
                     .build()
             )
         assertThat(betaResponseComputerToolCallOutputItem.status())
-            .isEqualTo(BetaResponseComputerToolCallOutputItem.Status.COMPLETED)
+            .contains(BetaResponseComputerToolCallOutputItem.Status.COMPLETED)
         assertThat(betaResponseComputerToolCallOutputItem.acknowledgedSafetyChecks().getOrNull())
             .containsExactly(
                 BetaResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()

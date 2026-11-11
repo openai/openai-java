@@ -5,6 +5,7 @@ package com.openai.models.beta.agents.environments.templates
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
 import com.openai.models.beta.agents.HostedPlugin
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -57,7 +58,7 @@ internal class TemplateListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(templateListPageResponse.data())
+        assertThat(templateListPageResponse.data().getOrNull())
             .containsExactly(
                 EnvironmentTemplate.builder()
                     .id("id")
@@ -97,7 +98,7 @@ internal class TemplateListPageResponseTest {
                     .build()
             )
         assertThat(templateListPageResponse.firstId()).contains("first_id")
-        assertThat(templateListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(templateListPageResponse.hasMore()).contains(true)
         assertThat(templateListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

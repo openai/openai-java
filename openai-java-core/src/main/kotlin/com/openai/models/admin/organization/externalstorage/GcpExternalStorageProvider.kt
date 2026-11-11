@@ -56,53 +56,102 @@ private constructor(
     )
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun audience(): String = audience.getRequired("audience")
-
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun bucket(): String = bucket.getRequired("bucket")
-
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun region(): String = region.getRequired("region")
-
-    /**
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("gcp")
-     * ```
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun audience(): java.util.Optional<String> = audience.getOptional("audience")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun workloadIdentityPoolId(): String =
+    fun audienceOrThrow(): String = audience.getRequired("audience")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun bucket(): java.util.Optional<String> = bucket.getOptional("bucket")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun bucketOrThrow(): String = bucket.getRequired("bucket")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun region(): java.util.Optional<String> = region.getOptional("region")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun regionOrThrow(): String = region.getRequired("region")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("gcp")) -> throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun workloadIdentityPoolId(): java.util.Optional<String> =
+        workloadIdentityPoolId.getOptional("workload_identity_pool_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun workloadIdentityPoolIdOrThrow(): String =
         workloadIdentityPoolId.getRequired("workload_identity_pool_id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun workloadIdentityProjectNumber(): String =
+    fun workloadIdentityProjectNumber(): java.util.Optional<String> =
+        workloadIdentityProjectNumber.getOptional("workload_identity_project_number")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun workloadIdentityProjectNumberOrThrow(): String =
         workloadIdentityProjectNumber.getRequired("workload_identity_project_number")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun workloadIdentityProviderId(): String =
+    fun workloadIdentityProviderId(): java.util.Optional<String> =
+        workloadIdentityProviderId.getOptional("workload_identity_provider_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun workloadIdentityProviderIdOrThrow(): String =
         workloadIdentityProviderId.getRequired("workload_identity_provider_id")
 
     /**
@@ -384,17 +433,13 @@ private constructor(
             return@apply
         }
 
-        audience()
-        bucket()
-        region()
-        _type().let {
-            if (it != JsonValue.from("gcp")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        workloadIdentityPoolId()
-        workloadIdentityProjectNumber()
-        workloadIdentityProviderId()
+        audienceOrThrow()
+        bucketOrThrow()
+        regionOrThrow()
+        typeOrThrow()
+        workloadIdentityPoolIdOrThrow()
+        workloadIdentityProjectNumberOrThrow()
+        workloadIdentityProviderIdOrThrow()
         validated = true
     }
 

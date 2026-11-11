@@ -271,55 +271,97 @@ private constructor(
         ) : this(expression, name, target, timezone, type, metadata, mutableMapOf())
 
         /**
-         * A standard five-field cron expression defining scheduled occurrences.
+         * A standard five-field cron expression defining scheduled occurrences. The schema requires
+         * this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun expression(): String = expression.getRequired("expression")
+        fun expression(): java.util.Optional<String> = expression.getOptional("expression")
 
         /**
-         * A human-readable name for the automation.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun name(): String = name.getRequired("name")
+        fun expressionOrThrow(): String = expression.getRequired("expression")
 
         /**
-         * The session an automation invocation targets.
+         * A human-readable name for the automation. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun target(): AutomationTargetParam = target.getRequired("target")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
 
         /**
-         * The IANA timezone used to interpret the cron expression.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun timezone(): String = timezone.getRequired("timezone")
+        fun nameOrThrow(): String = name.getRequired("name")
 
         /**
-         * The type of the object. Always `periodic`.
+         * The session an automation invocation targets. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("periodic")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun target(): java.util.Optional<AutomationTargetParam> = target.getOptional("target")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+        fun targetOrThrow(): AutomationTargetParam = target.getRequired("target")
+
+        /**
+         * The IANA timezone used to interpret the cron expression. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun timezone(): java.util.Optional<String> = timezone.getOptional("timezone")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun timezoneOrThrow(): String = timezone.getRequired("timezone")
+
+        /**
+         * The type of the object. Always `periodic`. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("periodic")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
 
         /**
          * Returns the raw JSON value of [expression].
@@ -578,15 +620,11 @@ private constructor(
                 return@apply
             }
 
-            expression()
-            name()
-            target().validate()
-            timezone()
-            _type().let {
-                if (it != JsonValue.from("periodic")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            expressionOrThrow()
+            nameOrThrow()
+            targetOrThrow().validate()
+            timezoneOrThrow()
+            typeOrThrow()
             metadata().ifPresent { it.validate() }
             validated = true
         }
@@ -795,47 +833,83 @@ private constructor(
         ) : this(name, runAt, target, type, metadata, mutableMapOf())
 
         /**
-         * A human-readable name for the automation.
+         * A human-readable name for the automation. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): String = name.getRequired("name")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
 
         /**
-         * A future Unix timestamp in seconds.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun runAt(): Long = runAt.getRequired("run_at")
+        fun nameOrThrow(): String = name.getRequired("name")
 
         /**
-         * The session an automation invocation targets.
+         * A future Unix timestamp in seconds. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun target(): AutomationTargetParam = target.getRequired("target")
+        fun runAt(): java.util.Optional<Long> = runAt.getOptional("run_at")
 
         /**
-         * The type of the object. Always `once`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("once")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun runAtOrThrow(): Long = runAt.getRequired("run_at")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * The session an automation invocation targets. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+        fun target(): java.util.Optional<AutomationTargetParam> = target.getOptional("target")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun targetOrThrow(): AutomationTargetParam = target.getRequired("target")
+
+        /**
+         * The type of the object. Always `once`. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("once")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
 
         /**
          * Returns the raw JSON value of [name].
@@ -1067,14 +1141,10 @@ private constructor(
                 return@apply
             }
 
-            name()
-            runAt()
-            target().validate()
-            _type().let {
-                if (it != JsonValue.from("once")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            nameOrThrow()
+            runAtOrThrow()
+            targetOrThrow().validate()
+            typeOrThrow()
             metadata().ifPresent { it.validate() }
             validated = true
         }

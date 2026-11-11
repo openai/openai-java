@@ -14,7 +14,7 @@ internal class ResponseFormatTextGrammarTest {
         val responseFormatTextGrammar =
             ResponseFormatTextGrammar.builder().grammar("grammar").build()
 
-        assertThat(responseFormatTextGrammar.grammar()).isEqualTo("grammar")
+        assertThat(responseFormatTextGrammar.grammar()).contains("grammar")
 
         val jsonMapper = jsonMapper()
 

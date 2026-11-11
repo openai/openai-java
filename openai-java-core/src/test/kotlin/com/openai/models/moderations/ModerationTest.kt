@@ -76,7 +76,7 @@ internal class ModerationTest {
                 .build()
 
         assertThat(moderation.categories())
-            .isEqualTo(
+            .contains(
                 Moderation.Categories.builder()
                     .harassment(true)
                     .harassmentThreatening(true)
@@ -94,7 +94,7 @@ internal class ModerationTest {
                     .build()
             )
         assertThat(moderation.categoryAppliedInputTypes())
-            .isEqualTo(
+            .contains(
                 Moderation.CategoryAppliedInputTypes.builder()
                     .addHarassment(Moderation.CategoryAppliedInputTypes.Harassment.TEXT)
                     .addHarassmentThreatening(
@@ -116,7 +116,7 @@ internal class ModerationTest {
                     .build()
             )
         assertThat(moderation.categoryScores())
-            .isEqualTo(
+            .contains(
                 Moderation.CategoryScores.builder()
                     .harassment(0.0)
                     .harassmentThreatening(0.0)
@@ -133,7 +133,7 @@ internal class ModerationTest {
                     .violenceGraphic(0.0)
                     .build()
             )
-        assertThat(moderation.flagged()).isEqualTo(true)
+        assertThat(moderation.flagged()).contains(true)
 
         val jsonMapper = jsonMapper()
 

@@ -28,7 +28,7 @@ internal class ChatCompletionContentPartImageTest {
                 .build()
 
         assertThat(chatCompletionContentPartImage.imageUrl())
-            .isEqualTo(
+            .contains(
                 ChatCompletionContentPartImage.ImageUrl.builder()
                     .url("https://example.com")
                     .detail(ChatCompletionContentPartImage.ImageUrl.Detail.AUTO)

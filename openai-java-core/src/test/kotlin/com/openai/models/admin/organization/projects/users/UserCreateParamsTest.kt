@@ -38,7 +38,7 @@ internal class UserCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.role()).isEqualTo("role")
+        assertThat(body.roleOrThrow()).isEqualTo("role")
         assertThat(body.email()).contains("email")
         assertThat(body.userId()).contains("user_id")
     }
@@ -49,6 +49,6 @@ internal class UserCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.role()).isEqualTo("role")
+        assertThat(body.roleOrThrow()).isEqualTo("role")
     }
 }

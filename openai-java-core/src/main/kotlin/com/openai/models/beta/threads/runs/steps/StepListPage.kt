@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.beta.threads.runs.StepService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see StepService.list */
 @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -19,21 +17,22 @@ private constructor(
     private val response: StepListPageResponse,
 ) : Page<RunStep> {
 
-    /**
-     * Delegates to [StepListPageResponse], but gracefully handles missing data.
-     *
-     * @see StepListPageResponse.data
-     */
-    fun data(): List<RunStep> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see StepListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [StepListPageResponse], but gracefully handles missing data.
-     *
-     * @see StepListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<RunStep> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<RunStep> = data()
+    fun _data() = response._data()
+
+    /** @see StepListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<RunStep> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

@@ -4,6 +4,7 @@ package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -33,13 +34,13 @@ internal class BetaResponseInjectFailedEventTest {
                 .build()
 
         assertThat(betaResponseInjectFailedEvent.error())
-            .isEqualTo(
+            .contains(
                 BetaResponseInjectFailedEvent.Error.builder()
                     .code(BetaResponseInjectFailedEvent.Error.Code.RESPONSE_ALREADY_COMPLETED)
                     .message("message")
                     .build()
             )
-        assertThat(betaResponseInjectFailedEvent.input())
+        assertThat(betaResponseInjectFailedEvent.input().getOrNull())
             .containsExactly(
                 BetaResponseInputItem.ofBetaEasyInputMessage(
                     BetaEasyInputMessage.builder()
@@ -50,8 +51,8 @@ internal class BetaResponseInjectFailedEventTest {
                         .build()
                 )
             )
-        assertThat(betaResponseInjectFailedEvent.responseId()).isEqualTo("response_id")
-        assertThat(betaResponseInjectFailedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseInjectFailedEvent.responseId()).contains("response_id")
+        assertThat(betaResponseInjectFailedEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseInjectFailedEvent.streamId()).contains("stream_id")
 
         val jsonMapper = jsonMapper()

@@ -318,7 +318,7 @@ internal class BetaResponseFailedEventTest {
                 .build()
 
         assertThat(betaResponseFailedEvent.response())
-            .isEqualTo(
+            .contains(
                 BetaResponse.builder()
                     .id("id")
                     .accessPrograms(
@@ -609,7 +609,7 @@ internal class BetaResponseFailedEventTest {
                     .user("user-1234")
                     .build()
             )
-        assertThat(betaResponseFailedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseFailedEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseFailedEvent.agent())
             .contains(BetaResponseFailedEvent.Agent.builder().agentName("agent_name").build())
 

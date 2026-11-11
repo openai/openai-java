@@ -24,10 +24,10 @@ internal class BetaResponseShellCallCommandDoneEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseShellCallCommandDoneEvent.command()).isEqualTo("command")
-        assertThat(betaResponseShellCallCommandDoneEvent.commandIndex()).isEqualTo(0L)
-        assertThat(betaResponseShellCallCommandDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseShellCallCommandDoneEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseShellCallCommandDoneEvent.command()).contains("command")
+        assertThat(betaResponseShellCallCommandDoneEvent.commandIndex()).contains(0L)
+        assertThat(betaResponseShellCallCommandDoneEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseShellCallCommandDoneEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseShellCallCommandDoneEvent.agent())
             .contains(
                 BetaResponseShellCallCommandDoneEvent.Agent.builder()

@@ -36,12 +36,18 @@ private constructor(
     ) : this(dataChannel, mutableMapOf())
 
     /**
-     * Client and server event permissions for the WebRTC frontend data channel.
+     * Client and server event permissions for the WebRTC frontend data channel. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun dataChannel(): DataChannelConfig = dataChannel.getRequired("data_channel")
+    fun dataChannel(): java.util.Optional<DataChannelConfig> =
+        dataChannel.getOptional("data_channel")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun dataChannelOrThrow(): DataChannelConfig = dataChannel.getRequired("data_channel")
 
     /**
      * Returns the raw JSON value of [dataChannel].
@@ -170,7 +176,7 @@ private constructor(
             return@apply
         }
 
-        dataChannel().validate()
+        dataChannelOrThrow().validate()
         validated = true
     }
 

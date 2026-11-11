@@ -59,67 +59,105 @@ private constructor(
     ) : this(name, type, allowedCallers, async, deferLoading, description, format, mutableMapOf())
 
     /**
-     * The name of the custom tool, used to identify it in tool calls.
+     * The name of the custom tool, used to identify it in tool calls. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun name(): String = name.getRequired("name")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
 
     /**
-     * The type of the custom tool. Always `custom`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("custom")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun nameOrThrow(): String = name.getRequired("name")
 
     /**
-     * The tool invocation context(s).
+     * The type of the custom tool. Always `custom`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun allowedCallers(): Optional<List<AllowedCaller>> =
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("custom")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The tool invocation context(s). Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun allowedCallers(): java.util.Optional<List<AllowedCaller>> =
         allowedCallers.getOptional("allowed_callers")
 
     /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun allowedCallersOrThrow(): List<AllowedCaller> = allowedCallers.getRequired("allowed_callers")
+
+    /**
      * Whether the tool response can be returned asynchronously versus immediately returned on next
-     * response creation.
+     * response creation. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun async(): Optional<Boolean> = async.getOptional("async")
+    fun async(): java.util.Optional<Boolean> = async.getOptional("async")
 
     /**
-     * Whether this tool should be deferred and discovered via tool search.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun deferLoading(): Optional<Boolean> = deferLoading.getOptional("defer_loading")
+    fun asyncOrThrow(): Boolean = async.getRequired("async")
 
     /**
-     * Optional description of the custom tool, used to provide more context.
+     * Whether this tool should be deferred and discovered via tool search. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun description(): Optional<String> = description.getOptional("description")
+    fun deferLoading(): java.util.Optional<Boolean> = deferLoading.getOptional("defer_loading")
 
     /**
-     * The input format for the custom tool. Default is unconstrained text.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun format(): Optional<CustomToolInputFormat> = format.getOptional("format")
+    fun deferLoadingOrThrow(): Boolean = deferLoading.getRequired("defer_loading")
+
+    /**
+     * Optional description of the custom tool, used to provide more context. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun description(): java.util.Optional<String> = description.getOptional("description")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun descriptionOrThrow(): String = description.getRequired("description")
+
+    /**
+     * The input format for the custom tool. Default is unconstrained text. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun format(): java.util.Optional<CustomToolInputFormat> = format.getOptional("format")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun formatOrThrow(): CustomToolInputFormat = format.getRequired("format")
 
     /**
      * Returns the raw JSON value of [name].
@@ -412,12 +450,8 @@ private constructor(
             return@apply
         }
 
-        name()
-        _type().let {
-            if (it != JsonValue.from("custom")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        nameOrThrow()
+        typeOrThrow()
         allowedCallers().ifPresent { it.forEach { it.validate() } }
         async()
         deferLoading()

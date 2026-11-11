@@ -14,9 +14,9 @@ internal class DeletedSkillVersionTest {
         val deletedSkillVersion =
             DeletedSkillVersion.builder().id("id").deleted(true).version("version").build()
 
-        assertThat(deletedSkillVersion.id()).isEqualTo("id")
-        assertThat(deletedSkillVersion.deleted()).isEqualTo(true)
-        assertThat(deletedSkillVersion.version()).isEqualTo("version")
+        assertThat(deletedSkillVersion.id()).contains("id")
+        assertThat(deletedSkillVersion.deleted()).contains(true)
+        assertThat(deletedSkillVersion.version()).contains("version")
 
         val jsonMapper = jsonMapper()
 

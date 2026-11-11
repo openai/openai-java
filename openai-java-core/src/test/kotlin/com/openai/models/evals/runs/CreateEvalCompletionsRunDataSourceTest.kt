@@ -82,7 +82,7 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                 .build()
 
         assertThat(createEvalCompletionsRunDataSource.source())
-            .isEqualTo(
+            .contains(
                 CreateEvalCompletionsRunDataSource.Source.ofFileContent(
                     CreateEvalCompletionsRunDataSource.Source.FileContent.builder()
                         .addContent(
@@ -107,7 +107,7 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                 )
             )
         assertThat(createEvalCompletionsRunDataSource.type())
-            .isEqualTo(CreateEvalCompletionsRunDataSource.Type.COMPLETIONS)
+            .contains(CreateEvalCompletionsRunDataSource.Type.COMPLETIONS)
         assertThat(createEvalCompletionsRunDataSource.inputMessages())
             .contains(
                 CreateEvalCompletionsRunDataSource.InputMessages.ofTemplate(

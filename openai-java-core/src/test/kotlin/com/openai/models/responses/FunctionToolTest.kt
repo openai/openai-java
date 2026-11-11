@@ -33,7 +33,7 @@ internal class FunctionToolTest {
                 )
                 .build()
 
-        assertThat(functionTool.name()).isEqualTo("name")
+        assertThat(functionTool.name()).contains("name")
         assertThat(functionTool.parameters())
             .contains(
                 FunctionTool.Parameters.builder()

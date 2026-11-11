@@ -18,8 +18,8 @@ internal class ResponseCompactionItemTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(responseCompactionItem.id()).isEqualTo("id")
-        assertThat(responseCompactionItem.encryptedContent()).isEqualTo("encrypted_content")
+        assertThat(responseCompactionItem.id()).contains("id")
+        assertThat(responseCompactionItem.encryptedContent()).contains("encrypted_content")
         assertThat(responseCompactionItem.createdBy()).contains("created_by")
 
         val jsonMapper = jsonMapper()

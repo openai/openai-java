@@ -32,7 +32,7 @@ class CompletePropertyViewTest {
                         .retrieve("resp_example")
                         .usage()
                         .get()
-                        .inputTokensDetails();
+                        .inputTokensDetailsOrThrow();
                 JsonValue promoted = usage._allProperties().get("cache_write_tokens_details");
                 JsonMapper mapper = ObjectMappers.jsonMapper();
                 JsonNode actual = mapper.readTree(mapper.writeValueAsBytes(promoted));

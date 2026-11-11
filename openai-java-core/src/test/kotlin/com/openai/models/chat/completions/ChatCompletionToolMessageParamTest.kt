@@ -18,8 +18,8 @@ internal class ChatCompletionToolMessageParamTest {
                 .build()
 
         assertThat(chatCompletionToolMessageParam.content())
-            .isEqualTo(ChatCompletionToolMessageParam.Content.ofText("string"))
-        assertThat(chatCompletionToolMessageParam.toolCallId()).isEqualTo("tool_call_id")
+            .contains(ChatCompletionToolMessageParam.Content.ofText("string"))
+        assertThat(chatCompletionToolMessageParam.toolCallId()).contains("tool_call_id")
 
         val jsonMapper = jsonMapper()
 

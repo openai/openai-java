@@ -54,23 +54,35 @@ private constructor(
     /**
      * Client event types that the frontend data channel may send. Use 'all' to allow every client
      * event; an empty array allows none. Omission preserves the existing allow-all behavior.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun allowedClientEvents(): Optional<AllowedClientEvents> =
+    fun allowedClientEvents(): java.util.Optional<AllowedClientEvents> =
         allowedClientEvents.getOptional("allowed_client_events")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun allowedClientEventsOrThrow(): AllowedClientEvents =
+        allowedClientEvents.getRequired("allowed_client_events")
 
     /**
      * Server events that may be sent to the frontend data channel. Use 'all' to allow every server
      * event; an empty array allows none. Omission preserves the existing allow-all behavior.
      * Responses events use an object with type 'response.event' and a response_event selector.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun allowedServerEvents(): Optional<AllowedServerEvents> =
+    fun allowedServerEvents(): java.util.Optional<AllowedServerEvents> =
         allowedServerEvents.getOptional("allowed_server_events")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun allowedServerEventsOrThrow(): AllowedServerEvents =
+        allowedServerEvents.getRequired("allowed_server_events")
 
     /**
      * Returns the raw JSON value of [allowedClientEvents].

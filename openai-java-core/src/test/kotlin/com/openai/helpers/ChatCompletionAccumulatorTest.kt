@@ -21,8 +21,8 @@ internal class ChatCompletionAccumulatorTest {
                 )
             )
 
-        assertThat(functionCall.name()).isEqualTo("fc_fn_name")
-        assertThat(functionCall.arguments()).isEqualTo("[arg1, arg2]")
+        assertThat(functionCall.nameOrThrow()).isEqualTo("fc_fn_name")
+        assertThat(functionCall.argumentsOrThrow()).isEqualTo("[arg1, arg2]")
         assertThat(functionCall._allProperties()["a"]!!.asString().get()).isEqualTo("a-value")
         assertThat(functionCall._allProperties()["b"]!!.asString().get()).isEqualTo("b-value")
     }
@@ -31,8 +31,8 @@ internal class ChatCompletionAccumulatorTest {
     fun convertFunctionCallWithAdditionalProperties() {
         val functionCall = ChatCompletionAccumulator.convertFunctionCall(functionCall())
 
-        assertThat(functionCall.name()).isEqualTo("fc_fn_name")
-        assertThat(functionCall.arguments()).isEqualTo("[arg1, arg2]")
+        assertThat(functionCall.nameOrThrow()).isEqualTo("fc_fn_name")
+        assertThat(functionCall.argumentsOrThrow()).isEqualTo("[arg1, arg2]")
         assertThat(functionCall._allProperties().keys)
             .containsExactlyInAnyOrder("name", "arguments")
     }
@@ -54,7 +54,7 @@ internal class ChatCompletionAccumulatorTest {
 
         val chatCompletion = accumulator.chatCompletion()
 
-        assertThat(chatCompletion.choices()[0].finishReason())
+        assertThat(chatCompletion.choicesOrThrow()[0].finishReasonOrThrow())
             .isEqualTo(ChatCompletion.Choice.FinishReason.STOP)
         assertThat(chatCompletion.usage()).isNotPresent()
         assertThat(chatCompletion.systemFingerprint().get()).isEqualTo("fingerprint")
@@ -77,18 +77,18 @@ internal class ChatCompletionAccumulatorTest {
         // Expect that a new `ChatCompletion` instance was created after the usage was accumulated.
         assertThat(chatCompletionA).isNotSameAs(chatCompletionB)
 
-        assertThat(chatCompletionA.choices()[0].finishReason())
+        assertThat(chatCompletionA.choicesOrThrow()[0].finishReasonOrThrow())
             .isEqualTo(ChatCompletion.Choice.FinishReason.STOP)
         assertThat(chatCompletionA.usage()).isNotPresent()
         assertThat(chatCompletionA.systemFingerprint().get()).isEqualTo("fingerprint")
         assertThat(chatCompletionA.serviceTier().get()).isEqualTo(ChatCompletion.ServiceTier.AUTO)
 
-        assertThat(chatCompletionB.choices()[0].finishReason())
+        assertThat(chatCompletionB.choicesOrThrow()[0].finishReasonOrThrow())
             .isEqualTo(ChatCompletion.Choice.FinishReason.STOP)
         assertThat(chatCompletionB.usage()).isPresent()
-        assertThat(chatCompletionB.usage().get().completionTokens()).isEqualTo(10L)
-        assertThat(chatCompletionB.usage().get().promptTokens()).isEqualTo(5L)
-        assertThat(chatCompletionB.usage().get().totalTokens()).isEqualTo(15L)
+        assertThat(chatCompletionB.usage().get().completionTokensOrThrow()).isEqualTo(10L)
+        assertThat(chatCompletionB.usage().get().promptTokensOrThrow()).isEqualTo(5L)
+        assertThat(chatCompletionB.usage().get().totalTokensOrThrow()).isEqualTo(15L)
         // The `finalUsageChunk()` had `null` values for `systemFingerprint` and `serviceTier`, but
         // those should _not_ have overwritten the non-`null` values on the `finalChunk()`.
         assertThat(chatCompletionB.systemFingerprint().get()).isEqualTo("fingerprint")
@@ -186,12 +186,14 @@ internal class ChatCompletionAccumulatorTest {
 
         var chatCompletion = accumulator.chatCompletion()
 
-        assertThat(chatCompletion.choices().size).isEqualTo(3)
-        assertThat(chatCompletion.choices()[0].message()._role().asString().get())
+        assertThat(chatCompletion.choicesOrThrow().size).isEqualTo(3)
+        assertThat(chatCompletion.choicesOrThrow()[0].messageOrThrow()._role().asString().get())
             .isEqualTo("assistant")
-        assertThat(chatCompletion.choices()[0].message().content().get()).isEqualTo("Hello, World!")
-        assertThat(chatCompletion.choices()[1].message().content().get()).isEqualTo("How are you?")
-        assertThat(chatCompletion.choices()[2].message().content().get())
+        assertThat(chatCompletion.choicesOrThrow()[0].messageOrThrow().content().get())
+            .isEqualTo("Hello, World!")
+        assertThat(chatCompletion.choicesOrThrow()[1].messageOrThrow().content().get())
+            .isEqualTo("How are you?")
+        assertThat(chatCompletion.choicesOrThrow()[2].messageOrThrow().content().get())
             .isEqualTo("See the ball game?")
     }
 
@@ -212,9 +214,10 @@ internal class ChatCompletionAccumulatorTest {
 
         val chatCompletion = accumulator.chatCompletion()
 
-        assertThat(chatCompletion.choices().size).isEqualTo(1)
-        assertThat(chatCompletion.choices()[0].message().content().get()).isEqualTo("hello world")
-        assertThat(chatCompletion.choices()[0].message().refusal().get())
+        assertThat(chatCompletion.choicesOrThrow().size).isEqualTo(1)
+        assertThat(chatCompletion.choicesOrThrow()[0].messageOrThrow().content().get())
+            .isEqualTo("hello world")
+        assertThat(chatCompletion.choicesOrThrow()[0].messageOrThrow().refusal().get())
             .isEqualTo("I cannot answer that!")
     }
 
@@ -230,19 +233,53 @@ internal class ChatCompletionAccumulatorTest {
 
         val chatCompletion = accumulator.chatCompletion()
 
-        assertThat(chatCompletion.choices().size).isEqualTo(1)
-        assertThat(chatCompletion.choices()[0].message().content().get())
+        assertThat(chatCompletion.choicesOrThrow().size).isEqualTo(1)
+        assertThat(chatCompletion.choicesOrThrow()[0].messageOrThrow().content().get())
             .isEqualTo("Hello, World. What's up?")
 
-        assertThat(chatCompletion.choices()[0].logprobs().get().content().get().size).isEqualTo(4)
-        assertThat(chatCompletion.choices()[0].logprobs().get().refusal().get().size).isEqualTo(4)
-        assertThat(chatCompletion.choices()[0].logprobs().get().refusal().get()[0].token())
+        assertThat(chatCompletion.choicesOrThrow()[0].logprobs().get().content().get().size)
+            .isEqualTo(4)
+        assertThat(chatCompletion.choicesOrThrow()[0].logprobs().get().refusal().get().size)
+            .isEqualTo(4)
+        assertThat(
+                chatCompletion
+                    .choicesOrThrow()[0]
+                    .logprobs()
+                    .get()
+                    .refusal()
+                    .get()[0]
+                    .tokenOrThrow()
+            )
             .isEqualTo("refusal-1")
-        assertThat(chatCompletion.choices()[0].logprobs().get().refusal().get()[1].token())
+        assertThat(
+                chatCompletion
+                    .choicesOrThrow()[0]
+                    .logprobs()
+                    .get()
+                    .refusal()
+                    .get()[1]
+                    .tokenOrThrow()
+            )
             .isEqualTo("refusal-2")
-        assertThat(chatCompletion.choices()[0].logprobs().get().refusal().get()[2].token())
+        assertThat(
+                chatCompletion
+                    .choicesOrThrow()[0]
+                    .logprobs()
+                    .get()
+                    .refusal()
+                    .get()[2]
+                    .tokenOrThrow()
+            )
             .isEqualTo("refusal-1")
-        assertThat(chatCompletion.choices()[0].logprobs().get().refusal().get()[3].token())
+        assertThat(
+                chatCompletion
+                    .choicesOrThrow()[0]
+                    .logprobs()
+                    .get()
+                    .refusal()
+                    .get()[3]
+                    .tokenOrThrow()
+            )
             .isEqualTo("refusal-2")
     }
 
@@ -258,10 +295,11 @@ internal class ChatCompletionAccumulatorTest {
 
         var chatCompletion = accumulator.chatCompletion()
 
-        assertThat(chatCompletion.choices().size).isEqualTo(1)
-        assertThat(chatCompletion.choices()[0].message()._role().asString().get())
+        assertThat(chatCompletion.choicesOrThrow().size).isEqualTo(1)
+        assertThat(chatCompletion.choicesOrThrow()[0].messageOrThrow()._role().asString().get())
             .isEqualTo("developer")
-        assertThat(chatCompletion.choices()[0].message().content().get()).isEqualTo("hello")
+        assertThat(chatCompletion.choicesOrThrow()[0].messageOrThrow().content().get())
+            .isEqualTo("hello")
     }
 
     @Test
@@ -277,22 +315,31 @@ internal class ChatCompletionAccumulatorTest {
 
         var chatCompletion = accumulator.chatCompletion()
 
-        assertThat(chatCompletion.choices().size).isEqualTo(1)
-        assertThat(chatCompletion.choices()[0].message().functionCall().get().name())
-            .isEqualTo("fc_fn_name")
-        assertThat(chatCompletion.choices()[0].message().toolCalls().get().size).isEqualTo(1)
+        assertThat(chatCompletion.choicesOrThrow().size).isEqualTo(1)
         assertThat(
                 chatCompletion
-                    .choices()[0]
-                    .message()
+                    .choicesOrThrow()[0]
+                    .messageOrThrow()
+                    .functionCall()
+                    .get()
+                    .nameOrThrow()
+            )
+            .isEqualTo("fc_fn_name")
+        assertThat(chatCompletion.choicesOrThrow()[0].messageOrThrow().toolCalls().get().size)
+            .isEqualTo(1)
+        assertThat(
+                chatCompletion
+                    .choicesOrThrow()[0]
+                    .messageOrThrow()
                     .toolCalls()
                     .get()[0]
                     .asFunction()
-                    .function()
-                    .name()
+                    .functionOrThrow()
+                    .nameOrThrow()
             )
             .isEqualTo("tc_fn_name")
-        assertThat(chatCompletion.choices()[0].message().content().get()).isEqualTo("hello world")
+        assertThat(chatCompletion.choicesOrThrow()[0].messageOrThrow().content().get())
+            .isEqualTo("hello world")
     }
 
     @Test
@@ -396,27 +443,29 @@ internal class ChatCompletionAccumulatorTest {
         var tc: ChatCompletionMessageFunctionToolCall
 
         // Not interested in much here except the order and details of the accumulated tool calls.
-        assertThat(chatCompletion.choices().size).isEqualTo(2)
+        assertThat(chatCompletion.choicesOrThrow().size).isEqualTo(2)
 
-        assertThat(chatCompletion.choices()[0].message().toolCalls().get().size).isEqualTo(2)
-        tc = chatCompletion.choices()[0].message().toolCalls().get()[0].asFunction()
-        assertThat(tc.id()).isEqualTo("tc-id-0-0")
-        assertThat(tc.function().name()).isEqualTo("fn-0-0")
-        assertThat(tc.function().arguments()).isEqualTo("{a-0-0-0, a-0-0-1}")
-        tc = chatCompletion.choices()[0].message().toolCalls().get()[1].asFunction()
-        assertThat(tc.id()).isEqualTo("tc-id-0-1")
-        assertThat(tc.function().name()).isEqualTo("fn-0-1")
-        assertThat(tc.function().arguments()).isEqualTo("{a-0-1-0, a-0-1-1}")
+        assertThat(chatCompletion.choicesOrThrow()[0].messageOrThrow().toolCalls().get().size)
+            .isEqualTo(2)
+        tc = chatCompletion.choicesOrThrow()[0].messageOrThrow().toolCalls().get()[0].asFunction()
+        assertThat(tc.idOrThrow()).isEqualTo("tc-id-0-0")
+        assertThat(tc.functionOrThrow().nameOrThrow()).isEqualTo("fn-0-0")
+        assertThat(tc.functionOrThrow().argumentsOrThrow()).isEqualTo("{a-0-0-0, a-0-0-1}")
+        tc = chatCompletion.choicesOrThrow()[0].messageOrThrow().toolCalls().get()[1].asFunction()
+        assertThat(tc.idOrThrow()).isEqualTo("tc-id-0-1")
+        assertThat(tc.functionOrThrow().nameOrThrow()).isEqualTo("fn-0-1")
+        assertThat(tc.functionOrThrow().argumentsOrThrow()).isEqualTo("{a-0-1-0, a-0-1-1}")
 
-        assertThat(chatCompletion.choices()[1].message().toolCalls().get().size).isEqualTo(2)
-        tc = chatCompletion.choices()[1].message().toolCalls().get()[0].asFunction()
-        assertThat(tc.id()).isEqualTo("tc-id-1-0")
-        assertThat(tc.function().name()).isEqualTo("fn-1-0")
-        assertThat(tc.function().arguments()).isEqualTo("{a-1-0-0, a-1-0-1}")
-        tc = chatCompletion.choices()[1].message().toolCalls().get()[1].asFunction()
-        assertThat(tc.id()).isEqualTo("tc-id-1-1")
-        assertThat(tc.function().name()).isEqualTo("fn-1-1")
-        assertThat(tc.function().arguments()).isEqualTo("{a-1-1-0, a-1-1-1}")
+        assertThat(chatCompletion.choicesOrThrow()[1].messageOrThrow().toolCalls().get().size)
+            .isEqualTo(2)
+        tc = chatCompletion.choicesOrThrow()[1].messageOrThrow().toolCalls().get()[0].asFunction()
+        assertThat(tc.idOrThrow()).isEqualTo("tc-id-1-0")
+        assertThat(tc.functionOrThrow().nameOrThrow()).isEqualTo("fn-1-0")
+        assertThat(tc.functionOrThrow().argumentsOrThrow()).isEqualTo("{a-1-0-0, a-1-0-1}")
+        tc = chatCompletion.choicesOrThrow()[1].messageOrThrow().toolCalls().get()[1].asFunction()
+        assertThat(tc.idOrThrow()).isEqualTo("tc-id-1-1")
+        assertThat(tc.functionOrThrow().nameOrThrow()).isEqualTo("fn-1-1")
+        assertThat(tc.functionOrThrow().argumentsOrThrow()).isEqualTo("{a-1-1-0, a-1-1-1}")
     }
 
     @Test
@@ -431,9 +480,18 @@ internal class ChatCompletionAccumulatorTest {
             accumulator.accumulate(second)
         }
         accumulator.accumulate(finalChunk())
-        val calls = accumulator.chatCompletion().choices().single().message().toolCalls().get()
-        assertThat(calls[0].asFunction().function().arguments()).isEqualTo("λ".repeat(10_000))
-        assertThat(calls[1].asFunction().function().arguments()).isEqualTo("b".repeat(10_000))
+        val calls =
+            accumulator
+                .chatCompletion()
+                .choicesOrThrow()
+                .single()
+                .messageOrThrow()
+                .toolCalls()
+                .get()
+        assertThat(calls[0].asFunction().functionOrThrow().argumentsOrThrow())
+            .isEqualTo("λ".repeat(10_000))
+        assertThat(calls[1].asFunction().functionOrThrow().argumentsOrThrow())
+            .isEqualTo("b".repeat(10_000))
     }
 
     @Test
@@ -473,15 +531,15 @@ internal class ChatCompletionAccumulatorTest {
         for (completion in listOf(result, accumulator.chatCompletion())) {
             assertThat(
                     completion
-                        .choices()
+                        .choicesOrThrow()
                         .single()
-                        .message()
+                        .messageOrThrow()
                         .toolCalls()
                         .get()
                         .single()
                         .asFunction()
-                        .function()
-                        .arguments()
+                        .functionOrThrow()
+                        .argumentsOrThrow()
                 )
                 .isEqualTo("arguments")
         }
@@ -498,7 +556,7 @@ internal class ChatCompletionAccumulatorTest {
                 .choices(
                     (0L..1L).map { index ->
                         finalChunk(index)
-                            .choices()
+                            .choicesOrThrow()
                             .single()
                             .toBuilder()
                             .delta(
@@ -517,8 +575,14 @@ internal class ChatCompletionAccumulatorTest {
                 .build()
         )
         assertThat(
-                accumulator.chatCompletion().choices().map {
-                    it.message().toolCalls().get().single().asFunction().function().arguments()
+                accumulator.chatCompletion().choicesOrThrow().map {
+                    it.messageOrThrow()
+                        .toolCalls()
+                        .get()
+                        .single()
+                        .asFunction()
+                        .functionOrThrow()
+                        .argumentsOrThrow()
                 }
             )
             .containsExactly("args-0", "args-1")
@@ -536,7 +600,7 @@ internal class ChatCompletionAccumulatorTest {
                 .choices(
                     listOf(
                         finalChunk()
-                            .choices()
+                            .choicesOrThrow()
                             .single()
                             .toBuilder()
                             .delta(
@@ -564,9 +628,14 @@ internal class ChatCompletionAccumulatorTest {
         accumulator.accumulate(toolCallChunk(0, 1, argsFragment = "recovered"))
         accumulator.accumulate(finalChunk())
         assertThat(
-                accumulator.chatCompletion().choices().single().message().toolCalls().get().map {
-                    it.asFunction().function().arguments()
-                }
+                accumulator
+                    .chatCompletion()
+                    .choicesOrThrow()
+                    .single()
+                    .messageOrThrow()
+                    .toolCalls()
+                    .get()
+                    .map { it.asFunction().functionOrThrow().argumentsOrThrow() }
             )
             .containsExactly("arguments", "recovered")
         assertThat(argumentBuffers(accumulator)).isEmpty()

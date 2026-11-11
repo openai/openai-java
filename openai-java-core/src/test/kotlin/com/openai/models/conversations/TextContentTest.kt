@@ -13,7 +13,7 @@ internal class TextContentTest {
     fun createAndRoundtrip() {
         val textContent = TextContent.builder().text("text").build()
 
-        assertThat(textContent.text()).isEqualTo("text")
+        assertThat(textContent.text()).contains("text")
 
         val jsonMapper = jsonMapper()
 

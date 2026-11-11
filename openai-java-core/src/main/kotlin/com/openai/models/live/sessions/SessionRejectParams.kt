@@ -32,13 +32,11 @@ private constructor(
 
     fun sessionId(): Optional<String> = Optional.ofNullable(sessionId)
 
-    /**
-     * SIP rejection status sent to the caller. This field is required.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun statusCode(): Long = body.statusCode()
+    /** @see Body.statusCode */
+    fun statusCode(): java.util.Optional<Long> = body.statusCode()
+
+    /** @see Body.statusCodeOrThrow */
+    fun statusCodeOrThrow(): Long = body.statusCodeOrThrow()
 
     /**
      * Returns the raw JSON value of [statusCode].
@@ -277,12 +275,18 @@ private constructor(
         ) : this(statusCode, mutableMapOf())
 
         /**
-         * SIP rejection status sent to the caller. This field is required.
+         * SIP rejection status sent to the caller. This field is required. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun statusCode(): Long = statusCode.getRequired("status_code")
+        fun statusCode(): java.util.Optional<Long> = statusCode.getOptional("status_code")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun statusCodeOrThrow(): Long = statusCode.getRequired("status_code")
 
         /**
          * Returns the raw JSON value of [statusCode].
@@ -405,7 +409,7 @@ private constructor(
                 return@apply
             }
 
-            statusCode()
+            statusCodeOrThrow()
             validated = true
         }
 

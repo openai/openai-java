@@ -19,7 +19,7 @@ internal class CommentaryAppendEventTest {
                 .build()
 
         assertThat(commentaryAppendEvent.content())
-            .isEqualTo("There is an outdoor table for two at 7 PM. Ask whether to reserve it.")
+            .contains("There is an outdoor table for two at 7 PM. Ask whether to reserve it.")
         assertThat(commentaryAppendEvent.delegationId()).contains("del_abc123")
         assertThat(commentaryAppendEvent.eventId()).contains("evt_commentary_001")
 

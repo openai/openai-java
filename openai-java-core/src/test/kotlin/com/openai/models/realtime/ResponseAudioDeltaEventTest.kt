@@ -21,12 +21,12 @@ internal class ResponseAudioDeltaEventTest {
                 .responseId("response_id")
                 .build()
 
-        assertThat(responseAudioDeltaEvent.contentIndex()).isEqualTo(0L)
-        assertThat(responseAudioDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(responseAudioDeltaEvent.eventId()).isEqualTo("event_id")
-        assertThat(responseAudioDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseAudioDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseAudioDeltaEvent.responseId()).isEqualTo("response_id")
+        assertThat(responseAudioDeltaEvent.contentIndex()).contains(0L)
+        assertThat(responseAudioDeltaEvent.delta()).contains("delta")
+        assertThat(responseAudioDeltaEvent.eventId()).contains("event_id")
+        assertThat(responseAudioDeltaEvent.itemId()).contains("item_id")
+        assertThat(responseAudioDeltaEvent.outputIndex()).contains(0L)
+        assertThat(responseAudioDeltaEvent.responseId()).contains("response_id")
 
         val jsonMapper = jsonMapper()
 

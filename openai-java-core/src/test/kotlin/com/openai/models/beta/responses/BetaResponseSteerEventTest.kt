@@ -17,9 +17,8 @@ internal class BetaResponseSteerEventTest {
                 .previousResponseId("previous_response_id")
                 .build()
 
-        assertThat(betaResponseSteerEvent.input())
-            .isEqualTo(BetaResponseSteerInput.ofText("string"))
-        assertThat(betaResponseSteerEvent.previousResponseId()).isEqualTo("previous_response_id")
+        assertThat(betaResponseSteerEvent.input()).contains(BetaResponseSteerInput.ofText("string"))
+        assertThat(betaResponseSteerEvent.previousResponseId()).contains("previous_response_id")
 
         val jsonMapper = jsonMapper()
 

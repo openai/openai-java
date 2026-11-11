@@ -8,6 +8,7 @@ import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.beta.responses.BetaResponseInputMessageItem
 import com.openai.models.beta.responses.BetaResponseInputText
 import com.openai.models.beta.responses.BetaResponseItem
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -44,7 +45,7 @@ internal class BetaResponseItemListTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(betaResponseItemList.data())
+        assertThat(betaResponseItemList.data().getOrNull())
             .containsExactly(
                 BetaResponseItem.ofBetaResponseInputMessageItem(
                     BetaResponseInputMessageItem.builder()
@@ -69,9 +70,9 @@ internal class BetaResponseItemListTest {
                         .build()
                 )
             )
-        assertThat(betaResponseItemList.firstId()).isEqualTo("first_id")
-        assertThat(betaResponseItemList.hasMore()).isEqualTo(true)
-        assertThat(betaResponseItemList.lastId()).isEqualTo("last_id")
+        assertThat(betaResponseItemList.firstId()).contains("first_id")
+        assertThat(betaResponseItemList.hasMore()).contains(true)
+        assertThat(betaResponseItemList.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()
 

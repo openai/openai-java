@@ -18,9 +18,9 @@ internal class LiveCreateResponseTest {
                 .build()
 
         assertThat(liveCreateResponse.session())
-            .isEqualTo(LiveCreateResponse.Session.builder().id("id").build())
+            .contains(LiveCreateResponse.Session.builder().id("id").build())
         assertThat(liveCreateResponse.transport())
-            .isEqualTo(LiveCreateResponse.Transport.builder().sdp("x").build())
+            .contains(LiveCreateResponse.Transport.builder().sdp("x").build())
 
         val jsonMapper = jsonMapper()
 
