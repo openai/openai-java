@@ -9,8 +9,8 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.9.1")
-        classpath("com.android.tools:r8:8.3.37")
+        classpath("com.guardsquare:proguard-gradle:7.10.0")
+        classpath("com.android.tools:r8:9.1.31")
 
         constraints {
             classpath("org.codehaus.plexus:plexus-utils:4.0.3") {
@@ -43,6 +43,7 @@ tasks.shadowJar {
     configurations = listOf(project.configurations.testRuntimeClasspath.get())
 }
 
+val okHttpRules = "../openai-java-client-okhttp/src/main/resources/META-INF/proguard/openai-java-client-okhttp.pro"
 val shadowJarFile = tasks.shadowJar.flatMap { it.archiveFile }
 val proguardJarPath = "${layout.buildDirectory.get()}/libs/${project.name}-${project.version}-proguard.jar"
 val proguardJar by tasks.registering(proguard.gradle.ProGuardTask::class) {
@@ -67,13 +68,40 @@ val proguardJar by tasks.registering(proguard.gradle.ProGuardTask::class) {
     }
 
     configuration("./test.pro")
+    configuration(okHttpRules)
     configuration("../openai-java-core/src/main/resources/META-INF/proguard/openai-java-core.pro")
     configuration("../openai-java-core/src/main/resources/META-INF/proguard/castiron-legacy-models.pro")
 }
 
+// A small program gives the optimizer the reachability that triggered the Okio verifier failure.
+val okioStreamProbe = "com.openai.proguard.OkioStreamProbe"
+val okioStreamJar = layout.buildDirectory.file("libs/okio-streams-proguard.jar")
+val shrinkOkioStreams by tasks.registering(JavaExec::class) {
+    val program = shadowJarFile.get().asFile
+    val javaBase = file("${System.getProperty("java.home")}/jmods/java.base.jmod")
+    dependsOn(tasks.shadowJar)
+    classpath = buildscript.configurations["classpath"]
+    mainClass.set("proguard.ProGuard")
+    inputs.files(shadowJarFile, javaBase, "test.pro")
+    outputs.file(okioStreamJar)
+    args(
+        "-injars", "${program.absolutePath}(okio/**,kotlin/**,${okioStreamProbe.replace('.', '/')}.class)",
+        "-libraryjars", "${javaBase.absolutePath}(!**.jar;!module-info.class)",
+        "-outjars", okioStreamJar.get().asFile.absolutePath,
+        "@test.pro",
+        "@jar:${program.toURI()}!/META-INF/proguard/openai-java-client-okhttp.pro",
+    )
+}
+
+val testOkioStreams by tasks.registering(JavaExec::class) {
+    dependsOn(shrinkOkioStreams)
+    classpath = files(okioStreamJar)
+    mainClass.set(okioStreamProbe)
+}
+
 val testProGuard by tasks.registering(JavaExec::class) {
     group = "verification"
-    dependsOn(proguardJar)
+    dependsOn(proguardJar, testOkioStreams)
 
     mainClass.set("com.openai.proguard.ProGuardCompatibilityTest")
     classpath = files(proguardJarPath)
@@ -91,7 +119,7 @@ val r8Jar by tasks.registering(JavaExec::class) {
     // JavaExec already tracks its tool classpath and arguments. Declare the files read through
     // those arguments so unchanged transformations can be restored without skipping the smoke test.
     inputs.files(shadowJarFile).withPropertyName("programJar").withNormalizer(ClasspathNormalizer::class)
-    inputs.files("./test.pro", "../openai-java-core/src/main/resources/META-INF/proguard/openai-java-core.pro", "../openai-java-core/src/main/resources/META-INF/proguard/castiron-legacy-models.pro")
+    inputs.files("./test.pro", okHttpRules, "../openai-java-core/src/main/resources/META-INF/proguard/openai-java-core.pro", "../openai-java-core/src/main/resources/META-INF/proguard/castiron-legacy-models.pro")
         .withPropertyName("proguardConfiguration").withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.dir(System.getProperty("java.home"))
         .withPropertyName("libraryJavaHome").withPathSensitivity(PathSensitivity.RELATIVE)
@@ -104,6 +132,7 @@ val r8Jar by tasks.registering(JavaExec::class) {
         "--output", r8JarPath,
         "--lib", System.getProperty("java.home"),
         "--pg-conf", "./test.pro",
+        "--pg-conf", okHttpRules,
         "--pg-conf", "../openai-java-core/src/main/resources/META-INF/proguard/openai-java-core.pro",
         "--pg-conf", "../openai-java-core/src/main/resources/META-INF/proguard/castiron-legacy-models.pro",
         "--pg-map-output", r8MappingPath,

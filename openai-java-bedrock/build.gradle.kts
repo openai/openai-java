@@ -13,7 +13,7 @@ dependencies {
     api("software.amazon.awssdk:regions")
 
     implementation("software.amazon.awssdk:http-client-spi")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation(libs.okhttp.client)
 
     // Optional provider-chain branches loaded by the AWS SDK at runtime for web identity,
     // assume-role, console login, and IAM Identity Center profiles.
@@ -42,5 +42,5 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testImplementation("org.junit-pioneer:junit-pioneer:1.9.1")
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    testImplementation(libs.okhttp.mockwebserver)
 }

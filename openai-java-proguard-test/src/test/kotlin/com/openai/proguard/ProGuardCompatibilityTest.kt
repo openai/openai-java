@@ -2,8 +2,13 @@ package com.openai.proguard
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.models.beta.agents.sessions.artifacts.SessionArtifact
+import com.openai.models.beta.agents.sessions.turns.Turn
 import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionAudio
 import com.openai.models.chat.completions.ChatCompletionContentPart
@@ -13,6 +18,7 @@ import com.openai.models.chat.completions.ChatCompletionMessageFunctionToolCall
 import com.openai.models.chat.completions.ChatCompletionModality
 import com.openai.models.chat.completions.ChatCompletionTokenLogprob
 import com.openai.models.completions.CompletionUsage
+import com.openai.models.realtime.RealtimeResponseStatus
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.jvm.javaMethod
 import org.assertj.core.api.Assertions.assertThat
@@ -50,6 +56,18 @@ internal class ProGuardCompatibilityTest {
     }
 
     @Test
+    fun agentModelIdPresence() {
+        val mapper = jsonMapper()
+        val payloads = listOf("{}", """{"id":null}""", """{"id":"root"}""")
+        val expected = listOf(JsonMissing.of(), JsonNull.of(), JsonField.of("root"))
+
+        assertThat(payloads.map { mapper.readValue(it, Turn::class.java)._id() })
+            .isEqualTo(expected)
+        assertThat(payloads.map { mapper.readValue(it, SessionArtifact::class.java)._id() })
+            .isEqualTo(expected)
+    }
+
+    @Test
     fun client() {
         val client =
             OpenAIOkHttpClient.builder()
@@ -82,6 +100,11 @@ internal class ProGuardCompatibilityTest {
         assertThat(client.containers()).isNotNull()
         assertThat(client.skills()).isNotNull()
         assertThat(client.videos()).isNotNull()
+    }
+
+    @Test
+    fun okioStreamAdaptersRoundtrip() {
+        OkioStreamProbe.main(emptyArray())
     }
 
     @Test
@@ -383,6 +406,16 @@ internal class ProGuardCompatibilityTest {
                     .isEqualTo(expected)
             }
         }
+    }
+
+    @Test
+    fun realtimeErrorPreservesOmittedFields() {
+        val mapper = jsonMapper()
+        val json = """{"message":"message","other":true}"""
+        val error = mapper.readValue(json, RealtimeResponseStatus.Error::class.java)
+
+        assertThat(mapper.readTree(mapper.writeValueAsString(error)))
+            .isEqualTo(mapper.readTree(json))
     }
 
     @Test

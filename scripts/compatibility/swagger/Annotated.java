@@ -12,6 +12,8 @@ public class Annotated {
     @ArraySchema(minItems = 2)
     public List<String> aliases;
 
+    public java.util.Optional<String> region;
+
     @JsonIgnore
     public String ignored;
 }

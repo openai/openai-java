@@ -163,7 +163,7 @@ configurations.testRuntimeClasspath.configure {
             requested.group == "com.fasterxml.jackson" ||
                 requested.group.startsWith("com.fasterxml.jackson.")
         ) {
-            useVersion(jacksonPublishedVersion)
+            useVersion(CoreCompilationDependencies.publishedJacksonModuleVersion(requested.name, jacksonPublishedVersion))
             because("tests must exercise the SDK's secure published Jackson release")
         }
     }
@@ -207,7 +207,7 @@ dependencies {
     // Gradle 9 requires an explicit launcher; JUnit's BOM aligns it with the test engine.
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(project(":openai-java-client-okhttp"))
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    testImplementation(libs.okhttp.mockwebserver)
     testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
@@ -249,6 +249,10 @@ tasks.withType<Test>().configureEach {
 
 tasks.test {
     systemProperty("expected.jackson.version", jacksonPublishedVersion)
+    systemProperty(
+        "expected.jackson.annotations.version",
+        CoreCompilationDependencies.publishedJacksonModuleVersion("jackson-annotations", jacksonPublishedVersion),
+    )
 }
 
 tasks.check { dependsOn(testJacksonCompatibility) }

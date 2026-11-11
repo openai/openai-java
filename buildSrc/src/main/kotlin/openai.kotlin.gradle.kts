@@ -1,6 +1,9 @@
+import com.openai.gradle.CoreCompilationDependencies
 import com.openai.gradle.CoreCompilationShards
 import com.openai.gradle.VersionSupportPolicy
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -19,23 +22,30 @@ val versionPolicyProject = CoreCompilationShards.versionPolicyProjectName(projec
 val runtimeFloor = versionSupportPolicy.runtimeFloor(versionPolicyProject)
 val kotlinJvmTarget = if (runtimeFloor == 8) "1.8" else runtimeFloor.toString()
 
-kotlin {
+extensions.configure<KotlinJvmProjectExtension> {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(versionSupportPolicy.buildJdk))
     }
 
+    coreLibrariesVersion = CoreCompilationDependencies.KOTLIN_RUNTIME_VERSION
+
+    // Preserve pre-upgrade metadata filenames and JVM names of internal declarations.
+    target.compilations.configureEach {
+        val module = if (name == "main") project.name else "${project.name}_$name"
+        tasks.named<KotlinCompile>(compileKotlinTaskName) { compilerOptions.moduleName.set(module) }
+    }
+
     compilerOptions {
+        jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
         freeCompilerArgs = listOf(
-            "-Xjvm-default=all",
             "-Xjdk-release=$kotlinJvmTarget",
             // Suppress deprecation warnings because we may still reference and test deprecated members.
             // TODO: Replace with `-Xsuppress-warning=DEPRECATION` once we use Kotlin compiler 2.1.0+.
             "-nowarn",
         )
         jvmTarget.set(JvmTarget.fromTarget(kotlinJvmTarget))
-        languageVersion.set(KotlinVersion.KOTLIN_1_8)
-        apiVersion.set(KotlinVersion.KOTLIN_1_8)
-        coreLibrariesVersion = "1.8.0"
+        languageVersion.set(KotlinVersion.KOTLIN_2_0)
+        apiVersion.set(KotlinVersion.KOTLIN_2_0)
     }
 }
 
@@ -43,8 +53,9 @@ kotlin {
 // versioned main JAR, so a release alone invalidates every test compilation. The compiler already
 // fingerprints the test compile classpath; use the stable main classes for internal visibility.
 // In core this is the canonical aggregate, including its internal compilation shards.
+val mainSourceSet = extensions.getByType<SourceSetContainer>().named("main")
 tasks.named<KotlinCompile>("compileTestKotlin") {
-    friendPaths.setFrom(sourceSets.main.map { it.output.classesDirs })
+    friendPaths.setFrom(mainSourceSet.map { it.output.classesDirs })
 }
 
 tasks.withType<Test>().configureEach {

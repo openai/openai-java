@@ -8,7 +8,7 @@ dependencies {
     api(project(":openai-java-client-okhttp"))
     // This dependency stays isolated from the normal OpenAI client classpath.
     api("com.google.auth:google-auth-library-oauth2-http:1.43.0")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation(libs.okhttp.client)
 
     testImplementation(kotlin("test"))
     testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))

@@ -1,0 +1,19 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>test</groupId>
+    <artifactId>kotlin-consumer</artifactId>
+    <version>1</version>
+    <repositories>
+        <repository>
+            <id>candidate</id>
+            <url>${candidateRepo}</url>
+        </repository>
+    </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>com.openai</groupId>
+            <artifactId>openai-java</artifactId>
+            <version>${candidateVersion}</version>
+        </dependency>
+    </dependencies>
+</project>

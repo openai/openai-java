@@ -36,6 +36,11 @@ def run(repo, version, java8, java21, work):
         (d.findtext("{*}groupId"), d.findtext("{*}artifactId"))
         for d in pom.findall(".//{*}dependency")
     )
+    published_jackson = next(
+        d.findtext("{*}version")
+        for d in pom.findall(".//{*}dependency")
+        if d.findtext("{*}artifactId") == "jackson-databind"
+    )
     module = json.loads(jar.with_suffix(".module").read_text())
     for variant in module["variants"]:
         check_publication(
@@ -52,10 +57,12 @@ def run(repo, version, java8, java21, work):
             raise ValueError(f"Expected {expected} from {executable}")
 
     for manager in ("maven", "gradle"):
-        for mode, annotation in (
-            ("none", None),
-            ("standard", "swagger-annotations"),
-            ("jakarta", "swagger-annotations-jakarta"),
+        for mode, annotation, boot, jackson2, jackson3 in (
+            ("none", None, None, published_jackson, None),
+            ("standard", "swagger-annotations", None, published_jackson, None),
+            ("jakarta", "swagger-annotations-jakarta", None, published_jackson, None),
+            ("boot3", None, "3.5.16", "2.21.4", None),
+            ("boot4", None, "4.1.2", "2.21.7", "3.1.7"),
         ):
             directory = work / manager / mode
             directory.mkdir(parents=True)
@@ -68,11 +75,19 @@ def run(repo, version, java8, java21, work):
                     f"<version>{v}</version></dependency>"
                     for g, a, v in coordinates
                 )
+                management = ""
+                if boot:
+                    management = f"""<dependencyManagement><dependencies><dependency>
+<groupId>org.springframework.boot</groupId><artifactId>spring-boot-dependencies</artifactId>
+<version>{boot}</version><type>pom</type><scope>import</scope>
+</dependency></dependencies></dependencyManagement>"""
+                if jackson3:
+                    deps += "<dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId></dependency>"
                 (directory / "pom.xml").write_text(
                     f"""<project><modelVersion>4.0.0</modelVersion>
 <groupId>test</groupId><artifactId>consumer</artifactId><version>1</version>
 <repositories><repository><id>candidate</id><url>{repo.as_uri()}</url></repository></repositories>
-<dependencies>{deps}</dependencies></project>"""
+{management}<dependencies>{deps}</dependencies></project>"""
                 )
                 subprocess.run(
                     [
@@ -89,12 +104,17 @@ def run(repo, version, java8, java21, work):
                 deps = "\n".join(
                     f"implementation '{g}:{a}:{v}'" for g, a, v in coordinates
                 )
+                if boot:
+                    deps += f"\nimplementation enforcedPlatform('org.springframework.boot:spring-boot-dependencies:{boot}')"
+                if jackson3:
+                    deps += "\nimplementation 'tools.jackson.core:jackson-databind'"
                 (directory / "settings.gradle").write_text(
                     "rootProject.name = 'consumer'\n"
                 )
                 (directory / "build.gradle").write_text(
                     """
 plugins { id 'java' }
+java.targetCompatibility = JavaVersion.toVersion(consumerJava)
 repositories {
     exclusiveContent {
         forRepository { maven { url = uri(candidateRepo); metadataSources { gradleMetadata() } } }
@@ -113,7 +133,14 @@ tasks.register('resolve') {
 """
                 )
                 subprocess.run(
-                    [ROOT / "gradlew", "-q", f"-PcandidateRepo={repo}", "resolve"],
+                    [
+                        ROOT / "gradlew",
+                        "--max-workers=2",
+                        "-q",
+                        f"-PcandidateRepo={repo}",
+                        f"-PconsumerJava={17 if boot else 8}",
+                        "resolve",
+                    ],
                     cwd=directory,
                     check=True,
                 )
@@ -141,18 +168,45 @@ tasks.register('resolve') {
                     "-d",
                     directory,
                     HERE / "Consumer.java",
+                    HERE / "ClientDecoding.java",
                     HERE / ("Annotated.java" if annotation else "Plain.java"),
                 ],
                 check=True,
             )
-            for executable in java:
+            for executable in java[1:] if boot else java:
                 subprocess.run(
                     [
                         executable,
                         "-cp",
                         str(directory) + os.pathsep + cp,
                         "Consumer",
-                        mode,
+                        "standard" if annotation else "none",
+                        jackson2,
+                    ],
+                    check=True,
+                )
+
+            if jackson3:
+                subprocess.run(
+                    [
+                        Path(java21) / "bin/javac",
+                        "--release",
+                        "17",
+                        "-cp",
+                        cp,
+                        "-d",
+                        directory,
+                        HERE / "Jackson3Application.java",
+                    ],
+                    check=True,
+                )
+                subprocess.run(
+                    [
+                        java[1],
+                        "-cp",
+                        str(directory) + os.pathsep + cp,
+                        "Jackson3Application",
+                        jackson3,
                     ],
                     check=True,
                 )

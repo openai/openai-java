@@ -27,7 +27,11 @@ internal class JacksonVersionTest {
         runtimeVersions.forEach { (module, runtimeVersion) ->
             assertThat(runtimeVersion)
                 .describedAs("%s runtime version", module)
-                .isEqualTo(expectedVersion)
+                .isEqualTo(
+                    if (module == "jackson-annotations")
+                        System.getProperty("expected.jackson.annotations.version", expectedVersion)
+                    else expectedVersion
+                )
         }
     }
 }

@@ -24,6 +24,10 @@
 # Preserve the default for an omitted optional TTL during reflective deserialization.
 -keep class com.openai.models.**$PromptCacheBreakpoint { *; }
 
+# Kotlin reflection needs the enclosing chat model to resolve optional parameters.
+-if class com.openai.models.chat.completions.**$PromptCacheBreakpoint
+-keep,allowoptimization class com.openai.models.chat.completions.<1>
+
 # Jackson uses reflection to access annotation members.
 -keepclassmembers @interface com.fasterxml.jackson.annotation.** {
     *;
@@ -36,6 +40,12 @@
 # Jackson uses reflection to access our class serializers and deserializers.
 -keep @com.fasterxml.jackson.databind.annotation.JsonSerialize class com.openai.** { *; }
 -keep @com.fasterxml.jackson.databind.annotation.JsonDeserialize class com.openai.** { *; }
+
+# Jackson's Kotlin module reads default constructor parameters from class metadata.
+# Match only SDK models with an annotated creator; unreachable models can still be removed.
+-keepclasseswithmembers,allowshrinking,allowoptimization,allowobfuscation @kotlin.Metadata class com.openai.models.** {
+    @com.fasterxml.jackson.annotation.JsonCreator <init>(...);
+}
 
 # Jackson uses reflection to serialize and deserialize our classes based on their constructors and annotated members.
 -keepclassmembers class com.openai.** {

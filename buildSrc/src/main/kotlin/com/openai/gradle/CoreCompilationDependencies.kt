@@ -2,7 +2,13 @@ package com.openai.gradle
 
 /** The canonical external compiler classpath for the core artifact and its internal shards. */
 object CoreCompilationDependencies {
+    const val KOTLIN_RUNTIME_VERSION = "2.4.21"
+
     const val JACKSON_COMPATIBILITY_VERSION = "2.14.0"
+
+    // The published Jackson BOM uses a two-component version for annotations since 2.20.
+    fun publishedJacksonModuleVersion(module: String, bom: String): String =
+        if (module == "jackson-annotations") bom.substringBeforeLast('.') else bom
 
     const val SWAGGER_ANNOTATIONS = "io.swagger.core.v3:swagger-annotations:2.2.31"
 
@@ -28,8 +34,8 @@ object CoreCompilationDependencies {
 
     fun publishedImplementationDependencies(jacksonPublishedVersion: String) =
         listOf(
-            "org.jetbrains.kotlin:kotlin-reflect:1.8.20",
-            "com.fasterxml.jackson.core:jackson-annotations:$jacksonPublishedVersion",
+            "org.jetbrains.kotlin:kotlin-reflect:$KOTLIN_RUNTIME_VERSION",
+            "com.fasterxml.jackson.core:jackson-annotations:${publishedJacksonModuleVersion("jackson-annotations", jacksonPublishedVersion)}",
             "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonPublishedVersion",
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonPublishedVersion",
             "com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonPublishedVersion",

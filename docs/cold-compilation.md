@@ -1,19 +1,19 @@
 # Cold in-process Kotlin compilation
 
-The SDK enables the Build Tools API runner for its pinned Kotlin 2.2.21 plugin.
-The normal Kotlin daemon execution strategy remains the default. Callers such as
-OkTest that explicitly select `in-process` also retain that strategy and their
-existing memory limits.
+Kotlin 2.4.21 uses the Build Tools API by default for JVM compilation.
+The SDK uses the Kotlin daemon by default. OkTest selects in-process compilation.
+[See the Kotlin Gradle plugin release notes.](https://kotlinlang.org/docs/whatsnew2320.html#kotlin-jvm-compilation-uses-build-tools-api-by-default)
+
+## Kotlin 2.2.21 measurements
 
 Kotlin 2.2.21's [legacy in-process runner](https://github.com/JetBrains/kotlin/blob/v2.2.21/libraries/tools/kotlin-gradle-plugin/src/common/kotlin/org/jetbrains/kotlin/compilerRunner/GradleKotlinCompilerWork.kt)
 creates a new compiler classloader for each compilation. Its
 [Build Tools API runner](https://github.com/JetBrains/kotlin/blob/v2.2.21/libraries/tools/kotlin-gradle-plugin/src/common/kotlin/org/jetbrains/kotlin/compilerRunner/btapi/BuildToolsApiCompilationWork.kt)
 uses the plugin's classloader caching service instead. This avoids repeatedly
 loading and JIT-compiling the compiler as the SDK's internal shards execute.
-Revisit this version-specific opt-in when upgrading the Kotlin plugin.
 
-This Build Tools API version supports `daemon` and `in-process`, but not
-`out-of-process`. Builds that require the latter can select the legacy runner
+The 2.2.21 Build Tools API supported `daemon` and `in-process`, but not
+`out-of-process`. Builds that required the latter could select the legacy runner
 with `-Pkotlin.compiler.runViaBuildToolsApi=false`.
 
 ## Full SDK profile

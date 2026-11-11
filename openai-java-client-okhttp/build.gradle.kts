@@ -1,3 +1,4 @@
+import com.openai.gradle.CoreCompilationDependencies
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -34,7 +35,7 @@ listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath)
                 requested.group == "com.fasterxml.jackson" ||
                     requested.group.startsWith("com.fasterxml.jackson.")
             ) {
-                useVersion(jacksonPublishedVersion)
+                useVersion(CoreCompilationDependencies.publishedJacksonModuleVersion(requested.name, jacksonPublishedVersion))
                 because("test classpaths must use the SDK's secure published Jackson release")
             }
         }
@@ -44,12 +45,12 @@ listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath)
 dependencies {
     api(project(":openai-java-core"))
 
-    api("com.squareup.okhttp3:okhttp:4.12.0")
+    api(libs.okhttp.client)
 
     testImplementation(kotlin("test"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation(platform(libs.jackson.bom))
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
-    testImplementation("com.squareup.okhttp3:okhttp-tls:4.12.0")
+    testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.okhttp.tls)
 }
