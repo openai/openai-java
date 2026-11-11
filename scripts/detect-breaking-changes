@@ -117,6 +117,12 @@ else
     cp -R "${POLICY_PATH}/." "${POLICY_ROOT}/"
 fi
 
+# Use the target branch's reviewed call-site patch on its archived compiler inputs.
+getter_policy=scripts/compatibility/next_getter_fixtures.py
+if git cat-file -e "${BASE_COMMIT}:${getter_policy}" 2>/dev/null; then
+    git show "${BASE_COMMIT}:${getter_policy}" | python3 -I - "${BASE_COMMIT}"
+fi
+
 validate_exclusions() {
     local exclusions_path="$1"
     local source_root="$2"
