@@ -62,11 +62,10 @@ class ArchivedGetterTest(unittest.TestCase):
     def test_realtime_factory_and_required_getter_migrations_compose(self):
         root = Path(__file__).resolve().parents[2]
         original = (root / realtime.FIXTURE).read_bytes()
-        if realtime.OLD_CALL not in original:
-            # Retrieve the exact fixture covered by this historical transition.
-            original = subprocess.check_output(
-                ["git", "-C", str(root), "cat-file", "blob", "98470dd1c7398d82494f52944db8e066909ed022"]
-            )
+        # These two names may already be migrated in a newer checkout.
+        original = original.replace(realtime.NEW_CALL, realtime.OLD_CALL).replace(
+            b"assertThat(sessionUpdateEvent.sessionOrThrow())", b"assertThat(sessionUpdateEvent.session())"
+        )
         full_patch = (root / PATCH).read_bytes()
         sections = full_patch.split(b"diff --git ")
         header = f"a/{realtime.FIXTURE} b/{realtime.FIXTURE}\n".encode()
