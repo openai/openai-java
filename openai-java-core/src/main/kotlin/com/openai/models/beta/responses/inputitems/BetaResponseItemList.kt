@@ -64,49 +64,79 @@ private constructor(
     ) : this(data, firstId, hasMore, lastId, object_, mutableMapOf())
 
     /**
-     * A list of items used to generate this response.
+     * A list of items used to generate this response. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun data(): List<BetaResponseItem> = data.getRequired("data")
+    fun data(): java.util.Optional<List<BetaResponseItem>> = data.getOptional("data")
 
     /**
-     * The ID of the first item in the list.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun firstId(): String = firstId.getRequired("first_id")
+    fun dataOrThrow(): List<BetaResponseItem> = data.getRequired("data")
 
     /**
-     * Whether there are more items available.
+     * The ID of the first item in the list. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun hasMore(): Boolean = hasMore.getRequired("has_more")
+    fun firstId(): java.util.Optional<String> = firstId.getOptional("first_id")
 
     /**
-     * The ID of the last item in the list.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun lastId(): String = lastId.getRequired("last_id")
+    fun firstIdOrThrow(): String = firstId.getRequired("first_id")
 
     /**
-     * The type of object returned, must be `list`.
+     * Whether there are more items available. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("list")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun hasMore(): java.util.Optional<Boolean> = hasMore.getOptional("has_more")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun hasMoreOrThrow(): Boolean = hasMore.getRequired("has_more")
+
+    /**
+     * The ID of the last item in the list. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun lastId(): java.util.Optional<String> = lastId.getOptional("last_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun lastIdOrThrow(): String = lastId.getRequired("last_id")
+
+    /**
+     * The type of object returned, must be `list`. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("list")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * Returns the raw JSON value of [data].
@@ -526,15 +556,11 @@ private constructor(
             return@apply
         }
 
-        data().forEach { it.validate() }
-        firstId()
-        hasMore()
-        lastId()
-        _object_().let {
-            if (it != JsonValue.from("list")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
+        dataOrThrow().forEach { it.validate() }
+        firstIdOrThrow()
+        hasMoreOrThrow()
+        lastIdOrThrow()
+        object_OrThrow()
         validated = true
     }
 

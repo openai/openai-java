@@ -93,20 +93,20 @@ internal class OneTimeAutomationTest {
                 )
                 .build()
 
-        assertThat(oneTimeAutomation.id()).isEqualTo("id")
-        assertThat(oneTimeAutomation.createdAt()).isEqualTo(0L)
-        assertThat(oneTimeAutomation.createdBy()).isEqualTo(AutomationCreatedBy.ofDeveloper())
+        assertThat(oneTimeAutomation.id()).contains("id")
+        assertThat(oneTimeAutomation.createdAt()).contains(0L)
+        assertThat(oneTimeAutomation.createdBy()).contains(AutomationCreatedBy.ofDeveloper())
         assertThat(oneTimeAutomation.metadata())
-            .isEqualTo(
+            .contains(
                 OneTimeAutomation.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(oneTimeAutomation.name()).isEqualTo("name")
-        assertThat(oneTimeAutomation.runAt()).isEqualTo(0L)
-        assertThat(oneTimeAutomation.status()).isEqualTo(OneTimeAutomation.Status.ACTIVE)
+        assertThat(oneTimeAutomation.name()).contains("name")
+        assertThat(oneTimeAutomation.runAt()).contains(0L)
+        assertThat(oneTimeAutomation.status()).contains(OneTimeAutomation.Status.ACTIVE)
         assertThat(oneTimeAutomation.target())
-            .isEqualTo(
+            .contains(
                 AutomationTarget.ofNewSession(
                     AutomationTarget.NewSession.builder()
                         .agent(

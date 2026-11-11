@@ -35,28 +35,43 @@ private constructor(
     ) : this(description, name, path, mutableMapOf())
 
     /**
-     * The description of the skill.
+     * The description of the skill. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun description(): String = description.getRequired("description")
+    fun description(): java.util.Optional<String> = description.getOptional("description")
 
     /**
-     * The name of the skill.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): String = name.getRequired("name")
+    fun descriptionOrThrow(): String = description.getRequired("description")
 
     /**
-     * The path to the directory containing the skill.
+     * The name of the skill. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun path(): String = path.getRequired("path")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
+
+    /**
+     * The path to the directory containing the skill. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun path(): java.util.Optional<String> = path.getOptional("path")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun pathOrThrow(): String = path.getRequired("path")
 
     /**
      * Returns the raw JSON value of [description].
@@ -232,9 +247,9 @@ private constructor(
             return@apply
         }
 
-        description()
-        name()
-        path()
+        descriptionOrThrow()
+        nameOrThrow()
+        pathOrThrow()
         validated = true
     }
 

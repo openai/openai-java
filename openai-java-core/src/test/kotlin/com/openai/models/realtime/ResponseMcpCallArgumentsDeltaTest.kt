@@ -21,11 +21,11 @@ internal class ResponseMcpCallArgumentsDeltaTest {
                 .obfuscation("obfuscation")
                 .build()
 
-        assertThat(responseMcpCallArgumentsDelta.delta()).isEqualTo("delta")
-        assertThat(responseMcpCallArgumentsDelta.eventId()).isEqualTo("event_id")
-        assertThat(responseMcpCallArgumentsDelta.itemId()).isEqualTo("item_id")
-        assertThat(responseMcpCallArgumentsDelta.outputIndex()).isEqualTo(0L)
-        assertThat(responseMcpCallArgumentsDelta.responseId()).isEqualTo("response_id")
+        assertThat(responseMcpCallArgumentsDelta.delta()).contains("delta")
+        assertThat(responseMcpCallArgumentsDelta.eventId()).contains("event_id")
+        assertThat(responseMcpCallArgumentsDelta.itemId()).contains("item_id")
+        assertThat(responseMcpCallArgumentsDelta.outputIndex()).contains(0L)
+        assertThat(responseMcpCallArgumentsDelta.responseId()).contains("response_id")
         assertThat(responseMcpCallArgumentsDelta.obfuscation()).contains("obfuscation")
 
         val jsonMapper = jsonMapper()

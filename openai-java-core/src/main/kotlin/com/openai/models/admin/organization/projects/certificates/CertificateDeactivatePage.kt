@@ -8,7 +8,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.admin.organization.projects.CertificateService
 import java.util.Objects
-import kotlin.jvm.optionals.getOrNull
 
 /** @see CertificateService.deactivate */
 class CertificateDeactivatePage
@@ -18,18 +17,23 @@ private constructor(
     private val response: CertificateDeactivatePageResponse,
 ) : Page<CertificateDeactivateResponse> {
 
-    /**
-     * Delegates to [CertificateDeactivatePageResponse], but gracefully handles missing data.
-     *
-     * @see CertificateDeactivatePageResponse.data
-     */
-    fun data(): List<CertificateDeactivateResponse> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see CertificateDeactivatePageResponse.data */
+    fun data() = response.data()
+
+    fun dataOrThrow(): List<CertificateDeactivateResponse> =
+        data().orElseGet { response._data().getRequired("data") }
+
+    fun _data() = response._data()
 
     /** @see CertificateDeactivatePageResponse.object_ */
-    fun object_(): JsonValue = response._object_()
+    fun object_() = response.object_()
 
-    override fun items(): List<CertificateDeactivateResponse> = data()
+    fun object_OrThrow(): JsonValue =
+        object_().orElseGet { response._object_().getRequired("object") }
+
+    fun _object_() = response._object_()
+
+    override fun items(): List<CertificateDeactivateResponse> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = false
 

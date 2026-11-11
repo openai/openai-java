@@ -143,7 +143,7 @@ internal class EventCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.events())
+        assertThat(body.eventsOrThrow())
             .containsExactly(
                 AgentSessionInputParam.ofAgentSessionInputComputerUseApprovalRequestResult(
                     AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
@@ -188,7 +188,7 @@ internal class EventCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.events())
+        assertThat(body.eventsOrThrow())
             .containsExactly(
                 AgentSessionInputParam.ofAgentSessionInputComputerUseApprovalRequestResult(
                     AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult

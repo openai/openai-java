@@ -13,8 +13,8 @@ internal class VoiceDeletedTest {
     fun createAndRoundtrip() {
         val voiceDeleted = VoiceDeleted.builder().id("voice_1234").deleted(true).build()
 
-        assertThat(voiceDeleted.id()).isEqualTo("voice_1234")
-        assertThat(voiceDeleted.deleted()).isEqualTo(true)
+        assertThat(voiceDeleted.id()).contains("voice_1234")
+        assertThat(voiceDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

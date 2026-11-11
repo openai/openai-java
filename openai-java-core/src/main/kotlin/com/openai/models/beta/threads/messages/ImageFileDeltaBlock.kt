@@ -41,31 +41,52 @@ private constructor(
     ) : this(index, type, imageFile, mutableMapOf())
 
     /**
-     * The index of the content part in the message.
+     * The index of the content part in the message. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun index(): Long = index.getRequired("index")
+    fun index(): java.util.Optional<Long> = index.getOptional("index")
 
     /**
-     * Always `image_file`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("image_file")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun indexOrThrow(): Long = index.getRequired("index")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Always `image_file`. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun imageFile(): Optional<ImageFileDelta> = imageFile.getOptional("image_file")
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("image_file")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun imageFile(): java.util.Optional<ImageFileDelta> = imageFile.getOptional("image_file")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun imageFileOrThrow(): ImageFileDelta = imageFile.getRequired("image_file")
 
     /**
      * Returns the raw JSON value of [index].
@@ -234,12 +255,8 @@ private constructor(
             return@apply
         }
 
-        index()
-        _type().let {
-            if (it != JsonValue.from("image_file")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        indexOrThrow()
+        typeOrThrow()
         imageFile().ifPresent { it.validate() }
         validated = true
     }

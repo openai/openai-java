@@ -37,41 +37,66 @@ private constructor(
     ) : this(error, eventId, sessionId, type, mutableMapOf())
 
     /**
-     * The error that occurred.
+     * The error that occurred. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun error(): SessionError = error.getRequired("error")
+    fun error(): java.util.Optional<SessionError> = error.getOptional("error")
 
     /**
-     * The unique ID of the event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun errorOrThrow(): SessionError = error.getRequired("error")
 
     /**
-     * The ID of the session associated with the event.
+     * The unique ID of the event. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun sessionId(): String = sessionId.getRequired("session_id")
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
     /**
-     * The type of the object. Always `error`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("error")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
+
+    /**
+     * The ID of the session associated with the event. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun sessionId(): java.util.Optional<String> = sessionId.getOptional("session_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sessionIdOrThrow(): String = sessionId.getRequired("session_id")
+
+    /**
+     * The type of the object. Always `error`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("error")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [error].
@@ -266,14 +291,10 @@ private constructor(
             return@apply
         }
 
-        error().validate()
-        eventId()
-        sessionId()
-        _type().let {
-            if (it != JsonValue.from("error")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        errorOrThrow().validate()
+        eventIdOrThrow()
+        sessionIdOrThrow()
+        typeOrThrow()
         validated = true
     }
 

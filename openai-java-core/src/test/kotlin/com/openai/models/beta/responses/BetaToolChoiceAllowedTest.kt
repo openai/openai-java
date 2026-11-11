@@ -5,6 +5,7 @@ package com.openai.models.beta.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -22,8 +23,8 @@ internal class BetaToolChoiceAllowedTest {
                 )
                 .build()
 
-        assertThat(betaToolChoiceAllowed.mode()).isEqualTo(BetaToolChoiceAllowed.Mode.AUTO)
-        assertThat(betaToolChoiceAllowed.tools())
+        assertThat(betaToolChoiceAllowed.mode()).contains(BetaToolChoiceAllowed.Mode.AUTO)
+        assertThat(betaToolChoiceAllowed.tools().getOrNull())
             .containsExactly(
                 BetaToolChoiceAllowed.Tool.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))

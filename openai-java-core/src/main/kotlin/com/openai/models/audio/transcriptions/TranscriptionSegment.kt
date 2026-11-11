@@ -70,86 +70,137 @@ private constructor(
     )
 
     /**
-     * Unique identifier of the segment.
+     * Unique identifier of the segment. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): Long = id.getRequired("id")
+    fun id(): java.util.Optional<Long> = id.getOptional("id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun idOrThrow(): Long = id.getRequired("id")
 
     /**
      * Average logprob of the segment. If the value is lower than -1, consider the logprobs failed.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun avgLogprob(): Float = avgLogprob.getRequired("avg_logprob")
+    fun avgLogprob(): java.util.Optional<Float> = avgLogprob.getOptional("avg_logprob")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun avgLogprobOrThrow(): Float = avgLogprob.getRequired("avg_logprob")
 
     /**
      * Compression ratio of the segment. If the value is greater than 2.4, consider the compression
-     * failed.
+     * failed. The schema requires this property. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun compressionRatio(): Float = compressionRatio.getRequired("compression_ratio")
+    fun compressionRatio(): java.util.Optional<Float> =
+        compressionRatio.getOptional("compression_ratio")
 
     /**
-     * End time of the segment in seconds.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun end(): Double = end.getRequired("end")
+    fun compressionRatioOrThrow(): Float = compressionRatio.getRequired("compression_ratio")
+
+    /**
+     * End time of the segment in seconds. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun end(): java.util.Optional<Double> = end.getOptional("end")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun endOrThrow(): Double = end.getRequired("end")
 
     /**
      * Probability of no speech in the segment. If the value is higher than 1.0 and the
-     * `avg_logprob` is below -1, consider this segment silent.
+     * `avg_logprob` is below -1, consider this segment silent. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun noSpeechProb(): Float = noSpeechProb.getRequired("no_speech_prob")
+    fun noSpeechProb(): java.util.Optional<Float> = noSpeechProb.getOptional("no_speech_prob")
 
     /**
-     * Seek offset of the segment.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun seek(): Long = seek.getRequired("seek")
+    fun noSpeechProbOrThrow(): Float = noSpeechProb.getRequired("no_speech_prob")
 
     /**
-     * Start time of the segment in seconds.
+     * Seek offset of the segment. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun start(): Double = start.getRequired("start")
+    fun seek(): java.util.Optional<Long> = seek.getOptional("seek")
 
     /**
-     * Temperature parameter used for generating the segment.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun temperature(): Float = temperature.getRequired("temperature")
+    fun seekOrThrow(): Long = seek.getRequired("seek")
 
     /**
-     * Text content of the segment.
+     * Start time of the segment in seconds. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun text(): String = text.getRequired("text")
+    fun start(): java.util.Optional<Double> = start.getOptional("start")
 
     /**
-     * Array of token IDs for the text content.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun tokens(): List<Long> = tokens.getRequired("tokens")
+    fun startOrThrow(): Double = start.getRequired("start")
+
+    /**
+     * Temperature parameter used for generating the segment. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun temperature(): java.util.Optional<Float> = temperature.getOptional("temperature")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun temperatureOrThrow(): Float = temperature.getRequired("temperature")
+
+    /**
+     * Text content of the segment. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun text(): java.util.Optional<String> = text.getOptional("text")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun textOrThrow(): String = text.getRequired("text")
+
+    /**
+     * Array of token IDs for the text content. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun tokens(): java.util.Optional<List<Long>> = tokens.getOptional("tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun tokensOrThrow(): List<Long> = tokens.getRequired("tokens")
 
     /**
      * Returns the raw JSON value of [id].
@@ -530,16 +581,16 @@ private constructor(
             return@apply
         }
 
-        id()
-        avgLogprob()
-        compressionRatio()
-        end()
-        noSpeechProb()
-        seek()
-        start()
-        temperature()
-        text()
-        tokens()
+        idOrThrow()
+        avgLogprobOrThrow()
+        compressionRatioOrThrow()
+        endOrThrow()
+        noSpeechProbOrThrow()
+        seekOrThrow()
+        startOrThrow()
+        temperatureOrThrow()
+        textOrThrow()
+        tokensOrThrow()
         validated = true
     }
 

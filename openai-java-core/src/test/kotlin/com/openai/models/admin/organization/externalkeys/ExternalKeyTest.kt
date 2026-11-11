@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.externalkeys
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -39,13 +40,13 @@ internal class ExternalKeyTest {
                 .workloadIdentityProviderId("workload_identity_provider_id")
                 .build()
 
-        assertThat(externalKey.id()).isEqualTo("id")
-        assertThat(externalKey.apiProjectIds()).containsExactly("string")
-        assertThat(externalKey.createdAt()).isEqualTo(0L)
-        assertThat(externalKey.name()).isEqualTo("name")
-        assertThat(externalKey.object_()).isEqualTo("object")
-        assertThat(externalKey.type()).isEqualTo("type")
-        assertThat(externalKey.workspaceId()).isEqualTo("workspace_id")
+        assertThat(externalKey.id()).contains("id")
+        assertThat(externalKey.apiProjectIds().getOrNull()).containsExactly("string")
+        assertThat(externalKey.createdAt()).contains(0L)
+        assertThat(externalKey.name()).contains("name")
+        assertThat(externalKey.object_()).contains("object")
+        assertThat(externalKey.type()).contains("type")
+        assertThat(externalKey.workspaceId()).contains("workspace_id")
         assertThat(externalKey.audience()).contains("audience")
         assertThat(externalKey.externalId()).contains("external_id")
         assertThat(externalKey.keyName()).contains("key_name")

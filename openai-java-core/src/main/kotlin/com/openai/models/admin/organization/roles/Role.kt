@@ -64,65 +64,106 @@ private constructor(
     )
 
     /**
-     * Identifier for the role.
+     * Identifier for the role. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * Optional description of the role.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun description(): Optional<String> = description.getOptional("description")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * Unique name for the role.
+     * Optional description of the role. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun name(): String = name.getRequired("name")
+    fun description(): java.util.Optional<String> = description.getOptional("description")
 
     /**
-     * Always `role`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("role")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun descriptionOrThrow(): String = description.getRequired("description")
 
     /**
-     * Permissions granted by the role.
+     * Unique name for the role. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun permissions(): List<String> = permissions.getRequired("permissions")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
 
     /**
-     * Whether the role is predefined and managed by OpenAI.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun predefinedRole(): Boolean = predefinedRole.getRequired("predefined_role")
+    fun nameOrThrow(): String = name.getRequired("name")
 
     /**
-     * Resource type the role is bound to (for example `api.organization` or `api.project`).
+     * Always `role`. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun resourceType(): String = resourceType.getRequired("resource_type")
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("role")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * Permissions granted by the role. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun permissions(): java.util.Optional<List<String>> = permissions.getOptional("permissions")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun permissionsOrThrow(): List<String> = permissions.getRequired("permissions")
+
+    /**
+     * Whether the role is predefined and managed by OpenAI. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun predefinedRole(): java.util.Optional<Boolean> =
+        predefinedRole.getOptional("predefined_role")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun predefinedRoleOrThrow(): Boolean = predefinedRole.getRequired("predefined_role")
+
+    /**
+     * Resource type the role is bound to (for example `api.organization` or `api.project`). The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun resourceType(): java.util.Optional<String> = resourceType.getOptional("resource_type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun resourceTypeOrThrow(): String = resourceType.getRequired("resource_type")
 
     /**
      * Returns the raw JSON value of [id].
@@ -416,17 +457,13 @@ private constructor(
             return@apply
         }
 
-        id()
+        idOrThrow()
         description()
-        name()
-        _object_().let {
-            if (it != JsonValue.from("role")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        permissions()
-        predefinedRole()
-        resourceType()
+        nameOrThrow()
+        object_OrThrow()
+        permissionsOrThrow()
+        predefinedRoleOrThrow()
+        resourceTypeOrThrow()
         validated = true
     }
 

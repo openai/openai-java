@@ -14,7 +14,7 @@ internal class ImageUrlTest {
         val imageUrl =
             ImageUrl.builder().url("https://example.com").detail(ImageUrl.Detail.AUTO).build()
 
-        assertThat(imageUrl.url()).isEqualTo("https://example.com")
+        assertThat(imageUrl.url()).contains("https://example.com")
         assertThat(imageUrl.detail()).contains(ImageUrl.Detail.AUTO)
 
         val jsonMapper = jsonMapper()

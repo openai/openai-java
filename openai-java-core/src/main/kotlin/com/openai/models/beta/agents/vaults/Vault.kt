@@ -42,49 +42,79 @@ private constructor(
     ) : this(id, createdAt, metadata, name, object_, mutableMapOf())
 
     /**
-     * The ID of the vault.
+     * The ID of the vault. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The Unix timestamp, in seconds, when the vault was created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * Key-value pairs associated with the vault, such as an application or team identifier.
+     * The Unix timestamp, in seconds, when the vault was created. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun metadata(): Metadata = metadata.getRequired("metadata")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * The human-readable name of the vault, if set.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): Optional<String> = name.getOptional("name")
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
     /**
-     * The object type. Always `vault`.
+     * Key-value pairs associated with the vault, such as an application or team identifier. The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("vault")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
+
+    /**
+     * The human-readable name of the vault, if set. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
+
+    /**
+     * The object type. Always `vault`. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("vault")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * Returns the raw JSON value of [id].
@@ -303,15 +333,11 @@ private constructor(
             return@apply
         }
 
-        id()
-        createdAt()
-        metadata().validate()
+        idOrThrow()
+        createdAtOrThrow()
+        metadataOrThrow().validate()
         name()
-        _object_().let {
-            if (it != JsonValue.from("vault")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
+        object_OrThrow()
         validated = true
     }
 

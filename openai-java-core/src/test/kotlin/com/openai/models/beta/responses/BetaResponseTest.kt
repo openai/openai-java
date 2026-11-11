@@ -5,6 +5,7 @@ package com.openai.models.beta.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -297,14 +298,14 @@ internal class BetaResponseTest {
                 .user("user-1234")
                 .build()
 
-        assertThat(betaResponse.id()).isEqualTo("id")
+        assertThat(betaResponse.id()).contains("id")
         assertThat(betaResponse.accessPrograms())
             .contains(
                 BetaResponse.AccessPrograms.builder()
                     .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
                     .build()
             )
-        assertThat(betaResponse.createdAt()).isEqualTo(0.0)
+        assertThat(betaResponse.createdAt()).contains(0.0)
         assertThat(betaResponse.error())
             .contains(
                 BetaResponseError.builder()
@@ -343,8 +344,8 @@ internal class BetaResponseTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(betaResponse.model()).isEqualTo(BetaResponse.Model.GPT_6_ASTRA)
-        assertThat(betaResponse.output())
+        assertThat(betaResponse.model()).contains(BetaResponse.Model.GPT_6_ASTRA)
+        assertThat(betaResponse.output().getOrNull())
             .containsExactly(
                 BetaResponseOutputItem.ofMessage(
                     BetaResponseOutputMessage.builder()
@@ -385,11 +386,11 @@ internal class BetaResponseTest {
                         .build()
                 )
             )
-        assertThat(betaResponse.parallelToolCalls()).isEqualTo(true)
+        assertThat(betaResponse.parallelToolCalls()).contains(true)
         assertThat(betaResponse.temperature()).contains(1.0)
         assertThat(betaResponse.toolChoice())
-            .isEqualTo(BetaResponse.ToolChoice.ofBetaToolChoiceOptions(BetaToolChoiceOptions.NONE))
-        assertThat(betaResponse.tools())
+            .contains(BetaResponse.ToolChoice.ofBetaToolChoiceOptions(BetaToolChoiceOptions.NONE))
+        assertThat(betaResponse.tools().getOrNull())
             .containsExactly(
                 BetaTool.ofFunction(
                     BetaFunctionTool.builder()

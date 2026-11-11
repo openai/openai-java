@@ -38,41 +38,66 @@ private constructor(
     ) : this(environmentId, object_, path, sizeBytes, mutableMapOf())
 
     /**
-     * The ID of the environment containing this file.
+     * The ID of the environment containing this file. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun environmentId(): String = environmentId.getRequired("environment_id")
+    fun environmentId(): java.util.Optional<String> = environmentId.getOptional("environment_id")
 
     /**
-     * The object type. Always `agent.environment.file`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("agent.environment.file")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun environmentIdOrThrow(): String = environmentId.getRequired("environment_id")
 
     /**
-     * The absolute file path inside the environment's workspace.
+     * The object type. Always `agent.environment.file`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun path(): String = path.getRequired("path")
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("agent.environment.file")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The file size in bytes.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun sizeBytes(): Long = sizeBytes.getRequired("size_bytes")
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * The absolute file path inside the environment's workspace. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun path(): java.util.Optional<String> = path.getOptional("path")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun pathOrThrow(): String = path.getRequired("path")
+
+    /**
+     * The file size in bytes. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun sizeBytes(): java.util.Optional<Long> = sizeBytes.getOptional("size_bytes")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sizeBytesOrThrow(): Long = sizeBytes.getRequired("size_bytes")
 
     /**
      * Returns the raw JSON value of [environmentId].
@@ -270,14 +295,10 @@ private constructor(
             return@apply
         }
 
-        environmentId()
-        _object_().let {
-            if (it != JsonValue.from("agent.environment.file")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        path()
-        sizeBytes()
+        environmentIdOrThrow()
+        object_OrThrow()
+        pathOrThrow()
+        sizeBytesOrThrow()
         validated = true
     }
 

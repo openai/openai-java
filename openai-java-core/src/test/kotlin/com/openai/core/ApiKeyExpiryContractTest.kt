@@ -7,15 +7,17 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
-/** The legacy typed expiry API is required even though the request's wire field is optional. */
+/** Expiry distinguishes omission and explicit null while retaining the published optional alias. */
 internal class ApiKeyExpiryContractTest {
     private val mapper = jsonMapper()
 
     @Test
-    fun outerAndBodyKeepPrimitiveGettersAndBoxedOptionalAliases() {
+    fun outerAndBodyExposeOptionalPrimitiveAndRawAccess() {
         for (type in listOf(ApiKeyUpdateParams::class.java, ApiKeyUpdateParams.Body::class.java)) {
-            assertThat(type.getMethod("expiresInSeconds").returnType)
+            assertThat(type.getMethod("expiresInSecondsOrThrow").returnType)
                 .isEqualTo(Long::class.javaPrimitiveType)
+            assertThat(type.getMethod("expiresInSeconds").genericReturnType.typeName)
+                .isEqualTo("java.util.Optional<java.lang.Long>")
             assertThat(type.getMethod("expiresInSecondsOptional").genericReturnType.typeName)
                 .isEqualTo("java.util.Optional<java.lang.Long>")
             assertThat(type.getMethod("_expiresInSeconds").genericReturnType.typeName)
@@ -46,8 +48,8 @@ internal class ApiKeyExpiryContractTest {
         assertThat(body._expiresInSeconds().isMissing()).isTrue()
         assertThat(params.expiresInSecondsOptional()).isEmpty()
         assertThat(body.expiresInSecondsOptional()).isEmpty()
-        assertInvalid("`expires_in_seconds` is not set") { params.expiresInSeconds() }
-        assertInvalid("`expires_in_seconds` is not set") { body.expiresInSeconds() }
+        assertInvalid("`expires_in_seconds` is not set") { params.expiresInSecondsOrThrow() }
+        assertInvalid("`expires_in_seconds` is not set") { body.expiresInSecondsOrThrow() }
         assertThat(body.validate()).isSameAs(body)
         assertThat(body.isValid()).isTrue()
         assertThat(mapper.readTree(mapper.writeValueAsString(body)))
@@ -72,8 +74,8 @@ internal class ApiKeyExpiryContractTest {
             assertThat(params._expiresInSeconds()).isEqualTo(raw)
             assertThat(params.expiresInSecondsOptional()).isEmpty()
             assertThat(body.expiresInSecondsOptional()).isEmpty()
-            assertInvalid(diagnostic) { params.expiresInSeconds() }
-            assertInvalid(diagnostic) { body.expiresInSeconds() }
+            assertInvalid(diagnostic) { params.expiresInSecondsOrThrow() }
+            assertInvalid(diagnostic) { body.expiresInSecondsOrThrow() }
             // Preserve existing client validation, including its acceptance of explicit JSON null.
             assertThat(body.validate()).isSameAs(body)
             assertThat(body.isValid()).isTrue()
@@ -100,8 +102,8 @@ internal class ApiKeyExpiryContractTest {
         val diagnostic = "`expires_in_seconds` is invalid, received unexpected"
         assertThat(params._expiresInSeconds().asString()).contains("unexpected")
         assertThat(body._expiresInSeconds()).isEqualTo(raw)
-        assertInvalid(diagnostic) { params.expiresInSeconds() }
-        assertInvalid(diagnostic) { body.expiresInSeconds() }
+        assertInvalid(diagnostic) { params.expiresInSecondsOrThrow() }
+        assertInvalid(diagnostic) { body.expiresInSecondsOrThrow() }
         assertInvalid(diagnostic) { params.expiresInSecondsOptional() }
         assertInvalid(diagnostic) { body.expiresInSecondsOptional() }
         assertInvalid(diagnostic) { body.validate() }
@@ -122,8 +124,8 @@ internal class ApiKeyExpiryContractTest {
                     .expiresInSeconds(value)
                     .build()
             val body = params._body()
-            val outer: Long = params.expiresInSeconds()
-            val inner: Long = body.expiresInSeconds()
+            val outer: Long = params.expiresInSecondsOrThrow()
+            val inner: Long = body.expiresInSecondsOrThrow()
             val alias: Optional<Long> = params.expiresInSecondsOptional()
             assertThat(outer).isEqualTo(value)
             assertThat(inner).isEqualTo(value)
@@ -190,7 +192,7 @@ internal class ApiKeyExpiryContractTest {
         assertThat(original._additionalBodyProperties()["future"])
             .isEqualTo(JsonValue.from("original"))
         assertThat(copy).isEqualTo(original)
-        assertThat(changed.expiresInSeconds()).isEqualTo(90L)
+        assertThat(changed.expiresInSecondsOrThrow()).isEqualTo(90L)
         assertThat(changed.scopes().get()).containsExactly("api.files.read", "api.all.read")
     }
 

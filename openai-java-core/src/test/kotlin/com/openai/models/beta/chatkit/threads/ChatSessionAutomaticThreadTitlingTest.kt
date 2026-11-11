@@ -14,7 +14,7 @@ internal class ChatSessionAutomaticThreadTitlingTest {
         val chatSessionAutomaticThreadTitling =
             ChatSessionAutomaticThreadTitling.builder().enabled(true).build()
 
-        assertThat(chatSessionAutomaticThreadTitling.enabled()).isEqualTo(true)
+        assertThat(chatSessionAutomaticThreadTitling.enabled()).contains(true)
 
         val jsonMapper = jsonMapper()
 

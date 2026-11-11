@@ -37,18 +37,30 @@ private constructor(
     ) : this(type, function, mutableMapOf())
 
     /**
-     * The type of the tool. If type is `function`, the function name must be set
+     * The type of the tool. If type is `function`, the function name must be set The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun type(): Type = type.getRequired("type")
+    fun type(): java.util.Optional<Type> = type.getOptional("type")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun function(): Optional<AssistantToolChoiceFunction> = function.getOptional("function")
+    fun typeOrThrow(): Type = type.getRequired("type")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun function(): java.util.Optional<AssistantToolChoiceFunction> =
+        function.getOptional("function")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun functionOrThrow(): AssistantToolChoiceFunction = function.getRequired("function")
 
     /**
      * Returns the raw JSON value of [type].
@@ -197,7 +209,7 @@ private constructor(
             return@apply
         }
 
-        type().validate()
+        typeOrThrow().validate()
         function().ifPresent { it.validate() }
         validated = true
     }

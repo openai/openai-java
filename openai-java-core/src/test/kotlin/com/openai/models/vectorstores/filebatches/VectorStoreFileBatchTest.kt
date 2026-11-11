@@ -28,10 +28,10 @@ internal class VectorStoreFileBatchTest {
                 .vectorStoreId("vector_store_id")
                 .build()
 
-        assertThat(vectorStoreFileBatch.id()).isEqualTo("id")
-        assertThat(vectorStoreFileBatch.createdAt()).isEqualTo(0L)
+        assertThat(vectorStoreFileBatch.id()).contains("id")
+        assertThat(vectorStoreFileBatch.createdAt()).contains(0L)
         assertThat(vectorStoreFileBatch.fileCounts())
-            .isEqualTo(
+            .contains(
                 VectorStoreFileBatch.FileCounts.builder()
                     .cancelled(0L)
                     .completed(0L)
@@ -40,8 +40,8 @@ internal class VectorStoreFileBatchTest {
                     .total(0L)
                     .build()
             )
-        assertThat(vectorStoreFileBatch.status()).isEqualTo(VectorStoreFileBatch.Status.IN_PROGRESS)
-        assertThat(vectorStoreFileBatch.vectorStoreId()).isEqualTo("vector_store_id")
+        assertThat(vectorStoreFileBatch.status()).contains(VectorStoreFileBatch.Status.IN_PROGRESS)
+        assertThat(vectorStoreFileBatch.vectorStoreId()).contains("vector_store_id")
 
         val jsonMapper = jsonMapper()
 

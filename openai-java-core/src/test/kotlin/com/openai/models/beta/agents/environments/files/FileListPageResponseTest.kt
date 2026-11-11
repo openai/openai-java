@@ -4,6 +4,7 @@ package com.openai.models.beta.agents.environments.files
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -25,7 +26,7 @@ internal class FileListPageResponseTest {
                 .object_(FileListPageResponse.Object.PAGE)
                 .build()
 
-        assertThat(fileListPageResponse.data())
+        assertThat(fileListPageResponse.data().getOrNull())
             .containsExactly(
                 EnvironmentFile.builder()
                     .environmentId("environment_id")
@@ -33,9 +34,9 @@ internal class FileListPageResponseTest {
                     .sizeBytes(0L)
                     .build()
             )
-        assertThat(fileListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(fileListPageResponse.hasMore()).contains(true)
         assertThat(fileListPageResponse.next()).contains("next")
-        assertThat(fileListPageResponse.object_()).isEqualTo(FileListPageResponse.Object.PAGE)
+        assertThat(fileListPageResponse.object_()).contains(FileListPageResponse.Object.PAGE)
 
         val jsonMapper = jsonMapper()
 

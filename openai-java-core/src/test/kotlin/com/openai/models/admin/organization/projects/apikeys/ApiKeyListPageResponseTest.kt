@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.projects.apikeys
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -51,7 +52,7 @@ internal class ApiKeyListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(apiKeyListPageResponse.data())
+        assertThat(apiKeyListPageResponse.data().getOrNull())
             .containsExactly(
                 ProjectApiKey.builder()
                     .id("id")
@@ -85,7 +86,7 @@ internal class ApiKeyListPageResponseTest {
                     .expiresAt(0L)
                     .build()
             )
-        assertThat(apiKeyListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(apiKeyListPageResponse.hasMore()).contains(true)
         assertThat(apiKeyListPageResponse.firstId()).contains("first_id")
         assertThat(apiKeyListPageResponse.lastId()).contains("last_id")
 

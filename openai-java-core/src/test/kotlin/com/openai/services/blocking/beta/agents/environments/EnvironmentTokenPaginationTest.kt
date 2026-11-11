@@ -65,7 +65,7 @@ internal class EnvironmentTokenPaginationTest {
                                 .list(params)
                                 .get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                                 .autoPager()
-                                .subscribe { file -> paths.add(file.path()) }
+                                .subscribe { file -> paths.add(file.pathOrThrow()) }
                                 .onCompleteFuture()
                                 .get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                         } else {
@@ -76,7 +76,7 @@ internal class EnvironmentTokenPaginationTest {
                                 .files()
                                 .list(params)
                                 .autoPager()
-                                .forEach { file -> paths.add(file.path()) }
+                                .forEach { file -> paths.add(file.pathOrThrow()) }
                         }
                         assertThat(paths)
                             .containsExactly("/workspace/test/0.txt", "/workspace/test/1.txt")

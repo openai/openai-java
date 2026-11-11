@@ -23,15 +23,14 @@ internal class AgentCommandExecutionItemTest {
                 .turnId("turn_id")
                 .build()
 
-        assertThat(agentCommandExecutionItem.id()).isEqualTo("id")
-        assertThat(agentCommandExecutionItem.command()).isEqualTo("command")
+        assertThat(agentCommandExecutionItem.id()).contains("id")
+        assertThat(agentCommandExecutionItem.command()).contains("command")
         assertThat(agentCommandExecutionItem.cwd()).contains("cwd")
         assertThat(agentCommandExecutionItem.durationMs()).contains(0L)
         assertThat(agentCommandExecutionItem.exitCode()).contains(0L)
         assertThat(agentCommandExecutionItem.output()).contains("output")
-        assertThat(agentCommandExecutionItem.status())
-            .isEqualTo(AgentFunctionCallStatus.IN_PROGRESS)
-        assertThat(agentCommandExecutionItem.turnId()).isEqualTo("turn_id")
+        assertThat(agentCommandExecutionItem.status()).contains(AgentFunctionCallStatus.IN_PROGRESS)
+        assertThat(agentCommandExecutionItem.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()
 

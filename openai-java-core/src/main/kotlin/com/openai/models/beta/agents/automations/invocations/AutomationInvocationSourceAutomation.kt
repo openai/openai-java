@@ -37,25 +37,40 @@ private constructor(
     ) : this(automation, type, mutableMapOf())
 
     /**
-     * The automation snapshot for this occurrence, excluding confidential values.
+     * The automation snapshot for this occurrence, excluding confidential values. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun automation(): Automation = automation.getRequired("automation")
+    fun automation(): java.util.Optional<Automation> = automation.getOptional("automation")
 
     /**
-     * The type of the object. Always `automation`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("automation")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun automationOrThrow(): Automation = automation.getRequired("automation")
+
+    /**
+     * The type of the object. Always `automation`. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("automation")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [automation].
@@ -213,12 +228,8 @@ private constructor(
             return@apply
         }
 
-        automation().validate()
-        _type().let {
-            if (it != JsonValue.from("automation")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        automationOrThrow().validate()
+        typeOrThrow()
         validated = true
     }
 

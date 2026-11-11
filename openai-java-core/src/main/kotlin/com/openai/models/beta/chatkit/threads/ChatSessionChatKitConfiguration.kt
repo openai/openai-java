@@ -41,29 +41,46 @@ private constructor(
     ) : this(automaticThreadTitling, fileUpload, history, mutableMapOf())
 
     /**
-     * Automatic thread titling preferences.
+     * Automatic thread titling preferences. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun automaticThreadTitling(): ChatSessionAutomaticThreadTitling =
+    fun automaticThreadTitling(): java.util.Optional<ChatSessionAutomaticThreadTitling> =
+        automaticThreadTitling.getOptional("automatic_thread_titling")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun automaticThreadTitlingOrThrow(): ChatSessionAutomaticThreadTitling =
         automaticThreadTitling.getRequired("automatic_thread_titling")
 
     /**
-     * Upload settings for the session.
+     * Upload settings for the session. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun fileUpload(): ChatSessionFileUpload = fileUpload.getRequired("file_upload")
+    fun fileUpload(): java.util.Optional<ChatSessionFileUpload> =
+        fileUpload.getOptional("file_upload")
 
     /**
-     * History retention configuration.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun history(): ChatSessionHistory = history.getRequired("history")
+    fun fileUploadOrThrow(): ChatSessionFileUpload = fileUpload.getRequired("file_upload")
+
+    /**
+     * History retention configuration. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun history(): java.util.Optional<ChatSessionHistory> = history.getOptional("history")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun historyOrThrow(): ChatSessionHistory = history.getRequired("history")
 
     /**
      * Returns the raw JSON value of [automaticThreadTitling].
@@ -255,9 +272,9 @@ private constructor(
             return@apply
         }
 
-        automaticThreadTitling().validate()
-        fileUpload().validate()
-        history().validate()
+        automaticThreadTitlingOrThrow().validate()
+        fileUploadOrThrow().validate()
+        historyOrThrow().validate()
         validated = true
     }
 

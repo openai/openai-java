@@ -24,15 +24,15 @@ internal class SessionTraceTest {
                 .sessionId("session_id")
                 .build()
 
-        assertThat(sessionTrace.id()).isEqualTo("id")
-        assertThat(sessionTrace.createdAt()).isEqualTo(0L)
+        assertThat(sessionTrace.id()).contains("id")
+        assertThat(sessionTrace.createdAt()).contains(0L)
         assertThat(sessionTrace.otlp())
-            .isEqualTo(
+            .contains(
                 SessionTrace.Otlp.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-        assertThat(sessionTrace.sessionId()).isEqualTo("session_id")
+        assertThat(sessionTrace.sessionId()).contains("session_id")
 
         val jsonMapper = jsonMapper()
 

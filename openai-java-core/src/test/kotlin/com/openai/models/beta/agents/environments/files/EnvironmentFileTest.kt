@@ -18,9 +18,9 @@ internal class EnvironmentFileTest {
                 .sizeBytes(0L)
                 .build()
 
-        assertThat(environmentFile.environmentId()).isEqualTo("environment_id")
-        assertThat(environmentFile.path()).isEqualTo("path")
-        assertThat(environmentFile.sizeBytes()).isEqualTo(0L)
+        assertThat(environmentFile.environmentId()).contains("environment_id")
+        assertThat(environmentFile.path()).contains("path")
+        assertThat(environmentFile.sizeBytes()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

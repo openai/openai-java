@@ -20,10 +20,10 @@ internal class ApiKeyCreateResponseTest {
                 .expiresAt(0L)
                 .build()
 
-        assertThat(apiKeyCreateResponse.id()).isEqualTo("id")
-        assertThat(apiKeyCreateResponse.createdAt()).isEqualTo(0L)
-        assertThat(apiKeyCreateResponse.name()).isEqualTo("name")
-        assertThat(apiKeyCreateResponse.value()).isEqualTo("value")
+        assertThat(apiKeyCreateResponse.id()).contains("id")
+        assertThat(apiKeyCreateResponse.createdAt()).contains(0L)
+        assertThat(apiKeyCreateResponse.name()).contains("name")
+        assertThat(apiKeyCreateResponse.value()).contains("value")
         assertThat(apiKeyCreateResponse.expiresAt()).contains(0L)
 
         val jsonMapper = jsonMapper()

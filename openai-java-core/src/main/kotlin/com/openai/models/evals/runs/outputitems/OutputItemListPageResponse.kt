@@ -43,49 +43,79 @@ private constructor(
     ) : this(data, firstId, hasMore, lastId, object_, mutableMapOf())
 
     /**
-     * An array of eval run output item objects.
+     * An array of eval run output item objects. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun data(): List<OutputItemListResponse> = data.getRequired("data")
+    fun data(): java.util.Optional<List<OutputItemListResponse>> = data.getOptional("data")
 
     /**
-     * The identifier of the first eval run output item in the data array.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun firstId(): String = firstId.getRequired("first_id")
+    fun dataOrThrow(): List<OutputItemListResponse> = data.getRequired("data")
 
     /**
-     * Indicates whether there are more eval run output items available.
+     * The identifier of the first eval run output item in the data array. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun hasMore(): Boolean = hasMore.getRequired("has_more")
+    fun firstId(): java.util.Optional<String> = firstId.getOptional("first_id")
 
     /**
-     * The identifier of the last eval run output item in the data array.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun lastId(): String = lastId.getRequired("last_id")
+    fun firstIdOrThrow(): String = firstId.getRequired("first_id")
 
     /**
-     * The type of this object. It is always set to "list".
+     * Indicates whether there are more eval run output items available. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("list")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun hasMore(): java.util.Optional<Boolean> = hasMore.getOptional("has_more")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun hasMoreOrThrow(): Boolean = hasMore.getRequired("has_more")
+
+    /**
+     * The identifier of the last eval run output item in the data array. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun lastId(): java.util.Optional<String> = lastId.getOptional("last_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun lastIdOrThrow(): String = lastId.getRequired("last_id")
+
+    /**
+     * The type of this object. It is always set to "list". The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("list")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * Returns the raw JSON value of [data].
@@ -319,15 +349,11 @@ private constructor(
             return@apply
         }
 
-        data().forEach { it.validate() }
-        firstId()
-        hasMore()
-        lastId()
-        _object_().let {
-            if (it != JsonValue.from("list")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
+        dataOrThrow().forEach { it.validate() }
+        firstIdOrThrow()
+        hasMoreOrThrow()
+        lastIdOrThrow()
+        object_OrThrow()
         validated = true
     }
 

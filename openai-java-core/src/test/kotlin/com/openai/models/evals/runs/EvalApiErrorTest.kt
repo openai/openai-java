@@ -13,8 +13,8 @@ internal class EvalApiErrorTest {
     fun createAndRoundtrip() {
         val evalApiError = EvalApiError.builder().code("code").message("message").build()
 
-        assertThat(evalApiError.code()).isEqualTo("code")
-        assertThat(evalApiError.message()).isEqualTo("message")
+        assertThat(evalApiError.code()).contains("code")
+        assertThat(evalApiError.message()).contains("message")
 
         val jsonMapper = jsonMapper()
 

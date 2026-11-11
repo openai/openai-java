@@ -15,7 +15,7 @@ internal class VideoGetCharacterResponseTest {
             VideoGetCharacterResponse.builder().id("id").createdAt(0L).name("name").build()
 
         assertThat(videoGetCharacterResponse.id()).contains("id")
-        assertThat(videoGetCharacterResponse.createdAt()).isEqualTo(0L)
+        assertThat(videoGetCharacterResponse.createdAt()).contains(0L)
         assertThat(videoGetCharacterResponse.name()).contains("name")
 
         val jsonMapper = jsonMapper()

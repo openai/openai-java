@@ -47,7 +47,8 @@ public final class BetaAgentToolsExample {
                 .build();
         try (var stream = client.beta().agents().sessions().stream(params)) {
             stream.stream()
-                    .forEach(event -> event.turnOutputTextDelta().ifPresent(delta -> System.out.print(delta.delta())));
+                    .forEach(event ->
+                            event.turnOutputTextDelta().ifPresent(delta -> System.out.print(delta.deltaOrThrow())));
         }
     }
 

@@ -66,8 +66,8 @@ internal class MessageCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.content()).isEqualTo(MessageCreateParams.Content.ofText("string"))
-        assertThat(body.role()).isEqualTo(MessageCreateParams.Role.USER)
+        assertThat(body.contentOrThrow()).isEqualTo(MessageCreateParams.Content.ofText("string"))
+        assertThat(body.roleOrThrow()).isEqualTo(MessageCreateParams.Role.USER)
         assertThat(body.attachments().getOrNull())
             .containsExactly(
                 MessageCreateParams.Attachment.builder()
@@ -94,7 +94,7 @@ internal class MessageCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.content()).isEqualTo(MessageCreateParams.Content.ofText("string"))
-        assertThat(body.role()).isEqualTo(MessageCreateParams.Role.USER)
+        assertThat(body.contentOrThrow()).isEqualTo(MessageCreateParams.Content.ofText("string"))
+        assertThat(body.roleOrThrow()).isEqualTo(MessageCreateParams.Role.USER)
     }
 }

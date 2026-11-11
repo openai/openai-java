@@ -75,7 +75,7 @@ internal class ImageGenerateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.prompt()).isEqualTo("A cute baby sea otter")
+        assertThat(body.promptOrThrow()).isEqualTo("A cute baby sea otter")
         assertThat(body.background()).contains(ImageGenerateParams.Background.TRANSPARENT)
         assertThat(body.complexity()).contains(ImageGenerateParams.Complexity.LOW)
         assertThat(body.frameCount()).contains(2L)
@@ -111,6 +111,6 @@ internal class ImageGenerateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.prompt()).isEqualTo("A cute baby sea otter")
+        assertThat(body.promptOrThrow()).isEqualTo("A cute baby sea otter")
     }
 }

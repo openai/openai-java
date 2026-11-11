@@ -34,7 +34,7 @@ internal class RealtimeResponseCreateMcpToolTest {
                 .tunnelId("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
                 .build()
 
-        assertThat(realtimeResponseCreateMcpTool.serverLabel()).isEqualTo("server_label")
+        assertThat(realtimeResponseCreateMcpTool.serverLabel()).contains("server_label")
         assertThat(realtimeResponseCreateMcpTool.allowedCallers().getOrNull())
             .containsExactly(RealtimeResponseCreateMcpTool.AllowedCaller.DIRECT)
         assertThat(realtimeResponseCreateMcpTool.allowedTools())

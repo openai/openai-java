@@ -44,7 +44,7 @@ internal class RealtimeTranslationSessionCreateRequestTest {
                 )
                 .build()
 
-        assertThat(realtimeTranslationSessionCreateRequest.model()).isEqualTo("model")
+        assertThat(realtimeTranslationSessionCreateRequest.model()).contains("model")
         assertThat(realtimeTranslationSessionCreateRequest.audio())
             .contains(
                 RealtimeTranslationSessionCreateRequest.Audio.builder()

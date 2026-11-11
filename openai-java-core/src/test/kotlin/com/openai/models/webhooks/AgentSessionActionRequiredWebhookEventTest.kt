@@ -30,10 +30,10 @@ internal class AgentSessionActionRequiredWebhookEventTest {
                 )
                 .build()
 
-        assertThat(agentSessionActionRequiredWebhookEvent.id()).isEqualTo("id")
-        assertThat(agentSessionActionRequiredWebhookEvent.createdAt()).isEqualTo(0L)
+        assertThat(agentSessionActionRequiredWebhookEvent.id()).contains("id")
+        assertThat(agentSessionActionRequiredWebhookEvent.createdAt()).contains(0L)
         assertThat(agentSessionActionRequiredWebhookEvent.data())
-            .isEqualTo(
+            .contains(
                 AgentSessionActionRequiredWebhookEvent.Data.builder()
                     .id("id")
                     .requiredAction(

@@ -41,34 +41,53 @@ private constructor(
     ) : this(type, eventId, responseId, mutableMapOf())
 
     /**
-     * The event type, must be `response.cancel`.
+     * The event type, must be `response.cancel`. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.cancel")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.cancel")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * Optional client-generated ID used to identify this event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun eventId(): Optional<String> = eventId.getOptional("event_id")
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * Optional client-generated ID used to identify this event. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
      * A specific response ID to cancel - if not provided, will cancel an in-progress response in
-     * the default conversation.
+     * the default conversation. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun responseId(): Optional<String> = responseId.getOptional("response_id")
+    fun responseId(): java.util.Optional<String> = responseId.getOptional("response_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun responseIdOrThrow(): String = responseId.getRequired("response_id")
 
     /**
      * Returns the raw JSON value of [eventId].
@@ -220,11 +239,7 @@ private constructor(
             return@apply
         }
 
-        _type().let {
-            if (it != JsonValue.from("response.cancel")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        typeOrThrow()
         eventId()
         responseId()
         validated = true

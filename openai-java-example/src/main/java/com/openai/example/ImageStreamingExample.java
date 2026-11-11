@@ -32,14 +32,14 @@ public final class ImageStreamingExample {
             try {
                 if (event.isGenerationPartialImage()) {
                     ImageGenPartialImageEvent partialEvent = event.asGenerationPartialImage();
-                    System.out.printf("  Partial image %d/3 received%n", partialEvent.partialImageIndex() + 1);
+                    System.out.printf("  Partial image %d/3 received%n", partialEvent.partialImageIndexOrThrow() + 1);
                     System.out.printf(
                             "   Size: %d characters (base64)%n",
-                            partialEvent.b64Json().length());
+                            partialEvent.b64JsonOrThrow().length());
 
                     // Save partial image to file
-                    String filename = String.format("partial_%d.png", partialEvent.partialImageIndex() + 1);
-                    saveBase64Image(partialEvent.b64Json(), filename);
+                    String filename = String.format("partial_%d.png", partialEvent.partialImageIndexOrThrow() + 1);
+                    saveBase64Image(partialEvent.b64JsonOrThrow(), filename);
                     Path absolutePath = Paths.get(filename).toAbsolutePath();
                     System.out.printf("   💾 Saved to: %s%n", absolutePath);
 
@@ -48,11 +48,11 @@ public final class ImageStreamingExample {
                     System.out.println("\n✅ Final image completed!");
                     System.out.printf(
                             "   Size: %d characters (base64)%n",
-                            completedEvent.b64Json().length());
+                            completedEvent.b64JsonOrThrow().length());
 
                     // Save final image to file
                     String filename = "final_image.png";
-                    saveBase64Image(completedEvent.b64Json(), filename);
+                    saveBase64Image(completedEvent.b64JsonOrThrow(), filename);
                     Path absolutePath = Paths.get(filename).toAbsolutePath();
                     System.out.printf("   💾 Saved to: %s%n", absolutePath);
 

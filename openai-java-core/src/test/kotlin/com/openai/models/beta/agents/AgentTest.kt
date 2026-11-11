@@ -5,6 +5,7 @@ package com.openai.models.beta.agents
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -52,30 +53,30 @@ internal class AgentTest {
                 .experimental(Agent.Experimental.builder().timeAwareness(true).build())
                 .build()
 
-        assertThat(agent.id()).isEqualTo("id")
-        assertThat(agent.createdAt()).isEqualTo(0L)
+        assertThat(agent.id()).contains("id")
+        assertThat(agent.createdAt()).contains(0L)
         assertThat(agent.instructions()).contains("instructions")
         assertThat(agent.metadata())
-            .isEqualTo(
+            .contains(
                 Agent.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(agent.model()).isEqualTo("model")
+        assertThat(agent.model()).contains("model")
         assertThat(agent.multiAgent())
-            .isEqualTo(MultiAgentConfig.builder().enabled(true).maxConcurrentSubagents(1L).build())
+            .contains(MultiAgentConfig.builder().enabled(true).maxConcurrentSubagents(1L).build())
         assertThat(agent.name()).contains("name")
         assertThat(agent.reasoning())
-            .isEqualTo(
+            .contains(
                 AgentReasoning.builder()
                     .effort(AgentReasoning.Effort.NONE)
                     .summary(AgentReasoning.Summary.CONCISE)
                     .build()
             )
-        assertThat(agent.serviceTier()).isEqualTo(Agent.ServiceTier.AUTO)
+        assertThat(agent.serviceTier()).contains(Agent.ServiceTier.AUTO)
         assertThat(agent.text())
-            .isEqualTo(AgentText.builder().formatText().verbosity(AgentText.Verbosity.LOW).build())
-        assertThat(agent.tools())
+            .contains(AgentText.builder().formatText().verbosity(AgentText.Verbosity.LOW).build())
+        assertThat(agent.tools().getOrNull())
             .containsExactly(
                 PersistedAgentTool.ofFunction(
                     PersistedAgentTool.Function.builder()
@@ -90,7 +91,7 @@ internal class AgentTest {
                         .build()
                 )
             )
-        assertThat(agent.updatedAt()).isEqualTo(0L)
+        assertThat(agent.updatedAt()).contains(0L)
         assertThat(agent.compaction()).contains(Agent.Compaction.builder().async(true).build())
         assertThat(agent.experimental())
             .contains(Agent.Experimental.builder().timeAwareness(true).build())

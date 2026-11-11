@@ -7,10 +7,8 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.beta.threads.RunServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see RunServiceAsync.list */
 @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -22,21 +20,22 @@ private constructor(
     private val response: RunListPageResponse,
 ) : PageAsync<Run> {
 
-    /**
-     * Delegates to [RunListPageResponse], but gracefully handles missing data.
-     *
-     * @see RunListPageResponse.data
-     */
-    fun data(): List<Run> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see RunListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [RunListPageResponse], but gracefully handles missing data.
-     *
-     * @see RunListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<Run> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<Run> = data()
+    fun _data() = response._data()
+
+    /** @see RunListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<Run> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

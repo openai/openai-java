@@ -4,6 +4,7 @@ package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -32,9 +33,9 @@ internal class BetaResponseShellCallOutputContentDoneEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseShellCallOutputContentDoneEvent.commandIndex()).isEqualTo(0L)
-        assertThat(betaResponseShellCallOutputContentDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseShellCallOutputContentDoneEvent.output())
+        assertThat(betaResponseShellCallOutputContentDoneEvent.commandIndex()).contains(0L)
+        assertThat(betaResponseShellCallOutputContentDoneEvent.itemId()).contains("item_id")
+        assertThat(betaResponseShellCallOutputContentDoneEvent.output().getOrNull())
             .containsExactly(
                 BetaResponseShellCallOutputContentDoneEvent.Output.builder()
                     .outcomeTimeout()
@@ -43,8 +44,8 @@ internal class BetaResponseShellCallOutputContentDoneEventTest {
                     .createdBy("created_by")
                     .build()
             )
-        assertThat(betaResponseShellCallOutputContentDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseShellCallOutputContentDoneEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseShellCallOutputContentDoneEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseShellCallOutputContentDoneEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseShellCallOutputContentDoneEvent.agent())
             .contains(
                 BetaResponseShellCallOutputContentDoneEvent.Agent.builder()

@@ -23,9 +23,9 @@ internal class ResponseFunctionToolCallTest {
                 .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
                 .build()
 
-        assertThat(responseFunctionToolCall.arguments()).isEqualTo("arguments")
-        assertThat(responseFunctionToolCall.callId()).isEqualTo("call_id")
-        assertThat(responseFunctionToolCall.name()).isEqualTo("name")
+        assertThat(responseFunctionToolCall.arguments()).contains("arguments")
+        assertThat(responseFunctionToolCall.callId()).contains("call_id")
+        assertThat(responseFunctionToolCall.name()).contains("name")
         assertThat(responseFunctionToolCall.id()).contains("id")
         assertThat(responseFunctionToolCall.async()).contains(true)
         assertThat(responseFunctionToolCall.caller())

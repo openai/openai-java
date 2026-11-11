@@ -37,11 +37,11 @@ private constructor(
 
     fun projectId(): Optional<String> = Optional.ofNullable(projectId)
 
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun certificateIds(): List<String> = body.certificateIds()
+    /** @see Body.certificateIds */
+    fun certificateIds(): java.util.Optional<List<String>> = body.certificateIds()
+
+    /** @see Body.certificateIdsOrThrow */
+    fun certificateIdsOrThrow(): List<String> = body.certificateIdsOrThrow()
 
     /**
      * Returns the raw JSON value of [certificateIds].
@@ -290,10 +290,18 @@ private constructor(
         ) : this(certificateIds, mutableMapOf())
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun certificateIds(): List<String> = certificateIds.getRequired("certificate_ids")
+        fun certificateIds(): java.util.Optional<List<String>> =
+            certificateIds.getOptional("certificate_ids")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun certificateIdsOrThrow(): List<String> = certificateIds.getRequired("certificate_ids")
 
         /**
          * Returns the raw JSON value of [certificateIds].
@@ -435,7 +443,7 @@ private constructor(
                 return@apply
             }
 
-            certificateIds()
+            certificateIdsOrThrow()
             validated = true
         }
 

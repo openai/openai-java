@@ -31,20 +31,29 @@ private constructor(
     ) : this(text, type, mutableMapOf())
 
     /**
-     * The text content
+     * The text content Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun text(): Optional<String> = text.getOptional("text")
+    fun text(): java.util.Optional<String> = text.getOptional("text")
 
     /**
-     * The content type (currently only `"text"`)
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun type(): Optional<String> = type.getOptional("type")
+    fun textOrThrow(): String = text.getRequired("text")
+
+    /**
+     * The content type (currently only `"text"`) Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<String> = type.getOptional("type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): String = type.getRequired("type")
 
     /**
      * Returns the raw JSON value of [text].

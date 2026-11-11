@@ -35,16 +35,16 @@ internal class ImageGenCompletedEventTest {
                 .safetyIdentifier("safety_identifier")
                 .build()
 
-        assertThat(imageGenCompletedEvent.b64Json()).isEqualTo("b64_json")
+        assertThat(imageGenCompletedEvent.b64Json()).contains("b64_json")
         assertThat(imageGenCompletedEvent.background())
-            .isEqualTo(ImageGenCompletedEvent.Background.TRANSPARENT)
-        assertThat(imageGenCompletedEvent.createdAt()).isEqualTo(0L)
+            .contains(ImageGenCompletedEvent.Background.TRANSPARENT)
+        assertThat(imageGenCompletedEvent.createdAt()).contains(0L)
         assertThat(imageGenCompletedEvent.outputFormat())
-            .isEqualTo(ImageGenCompletedEvent.OutputFormat.PNG)
-        assertThat(imageGenCompletedEvent.quality()).isEqualTo(ImageGenCompletedEvent.Quality.LOW)
-        assertThat(imageGenCompletedEvent.size()).isEqualTo(ImageGenCompletedEvent.Size._1024X1024)
+            .contains(ImageGenCompletedEvent.OutputFormat.PNG)
+        assertThat(imageGenCompletedEvent.quality()).contains(ImageGenCompletedEvent.Quality.LOW)
+        assertThat(imageGenCompletedEvent.size()).contains(ImageGenCompletedEvent.Size._1024X1024)
         assertThat(imageGenCompletedEvent.usage())
-            .isEqualTo(
+            .contains(
                 ImageGenCompletedEvent.Usage.builder()
                     .inputTokens(0L)
                     .inputTokensDetails(

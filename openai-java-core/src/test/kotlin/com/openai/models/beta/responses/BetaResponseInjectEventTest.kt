@@ -4,6 +4,7 @@ package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -24,7 +25,7 @@ internal class BetaResponseInjectEventTest {
                 .responseId("response_id")
                 .build()
 
-        assertThat(betaResponseInjectEvent.input())
+        assertThat(betaResponseInjectEvent.input().getOrNull())
             .containsExactly(
                 BetaResponseInputItem.ofBetaEasyInputMessage(
                     BetaEasyInputMessage.builder()
@@ -35,7 +36,7 @@ internal class BetaResponseInjectEventTest {
                         .build()
                 )
             )
-        assertThat(betaResponseInjectEvent.responseId()).isEqualTo("response_id")
+        assertThat(betaResponseInjectEvent.responseId()).contains("response_id")
 
         val jsonMapper = jsonMapper()
 

@@ -203,9 +203,9 @@ class ChatCompletionAccumulator private constructor() {
         // is simpler copy them each time they are encountered.
         chatCompletionBuilder
             // These are the mandatory fields that must be set to something.
-            .id(chunk.id())
-            .created(chunk.created())
-            .model(chunk.model())
+            .id(chunk.idOrThrow())
+            .created(chunk.createdOrThrow())
+            .model(chunk.modelOrThrow())
             // The other fields are optional and `object` has an appropriate default value.
             .systemFingerprint(chunk._systemFingerprint())
             .apply {
@@ -219,13 +219,13 @@ class ChatCompletionAccumulator private constructor() {
         // chunked `choice` has an `index`, that identifies the corresponding `Choice` within the
         // accumulated list of choices; and a `Delta`, that contains additional content to be
         // accumulated in that `Choice`, mostly within its `message`.
-        chunk.choices().forEach { choice ->
-            val index = choice.index()
+        chunk.choicesOrThrow().forEach { choice ->
+            val index = choice.indexOrThrow()
             val choiceBuilder =
                 choiceBuilders.getOrPut(index) { ChatCompletion.Choice.builder().index(index) }
 
             accumulateLogprobs(index, choice.logprobs())
-            accumulateMessage(index, choice.delta())
+            accumulateMessage(index, choice.deltaOrThrow())
 
             choiceBuilder.additionalProperties(choice._additionalProperties())
 
@@ -254,7 +254,9 @@ class ChatCompletionAccumulator private constructor() {
         }
 
         if (
-            chunk.choices().any { it.finishReason().isPresent || isTerminalAudioUpdate(it) } &&
+            chunk.choicesOrThrow().any {
+                it.finishReason().isPresent || isTerminalAudioUpdate(it)
+            } &&
                 choiceBuilders.keys.all { isFinished[it] == true } &&
                 messageAudio.values.all { it.isComplete() }
         ) {
@@ -330,7 +332,7 @@ class ChatCompletionAccumulator private constructor() {
                 // index will identify the function to which those argument fragments belong.
                 val messageToolCallBuilders = toolCallBuilders.getOrPut(index) { mutableMapOf() }
 
-                messageToolCallBuilders.getOrPut(deltaToolCall.index()) {
+                messageToolCallBuilders.getOrPut(deltaToolCall.indexOrThrow()) {
                     ChatCompletionMessageFunctionToolCall.builder()
                         .id(deltaToolCall._id())
                         .additionalProperties(deltaToolCall._additionalProperties())
@@ -341,7 +343,7 @@ class ChatCompletionAccumulator private constructor() {
                 val messageToolCallFunctionBuilders =
                     toolCallFunctionBuilders.getOrPut(index) { mutableMapOf() }
 
-                messageToolCallFunctionBuilders.getOrPut(deltaToolCall.index()) {
+                messageToolCallFunctionBuilders.getOrPut(deltaToolCall.indexOrThrow()) {
                     ChatCompletionMessageFunctionToolCall.Function.builder()
                         .name(ensureFunction(deltaToolCall.function())._name())
                         .additionalProperties(deltaToolCall._additionalProperties())
@@ -353,7 +355,7 @@ class ChatCompletionAccumulator private constructor() {
                 val fragment =
                     ensureFunction(deltaToolCall.function()).arguments().getOrNull() ?: ""
                 messageToolCallFunctionArgs
-                    .getOrPut(deltaToolCall.index()) { StringBuilder() }
+                    .getOrPut(deltaToolCall.indexOrThrow()) { StringBuilder() }
                     .append(fragment)
             }
         }
@@ -367,7 +369,7 @@ class ChatCompletionAccumulator private constructor() {
         function.orElseThrow { OpenAIInvalidDataException("Tool call chunk missing function.") }
 
     private fun isTerminalAudioUpdate(choice: ChatCompletionChunk.Choice): Boolean =
-        choice.delta().audio().getOrNull()?.let {
+        choice.deltaOrThrow().audio().getOrNull()?.let {
             it.expiresAt().isPresent &&
                 !it.id().isPresent &&
                 !it.data().isPresent &&

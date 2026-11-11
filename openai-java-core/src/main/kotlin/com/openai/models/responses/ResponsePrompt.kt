@@ -42,29 +42,44 @@ private constructor(
     ) : this(id, variables, version, mutableMapOf())
 
     /**
-     * The unique identifier of the prompt template to use.
+     * The unique identifier of the prompt template to use. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
      * Optional map of values to substitute in for variables in your prompt. The substitution values
-     * can either be strings, or other Response input types like images or files.
+     * can either be strings, or other Response input types like images or files. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun variables(): Optional<Variables> = variables.getOptional("variables")
+    fun variables(): java.util.Optional<Variables> = variables.getOptional("variables")
 
     /**
-     * Optional version of the prompt template.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun version(): Optional<String> = version.getOptional("version")
+    fun variablesOrThrow(): Variables = variables.getRequired("variables")
+
+    /**
+     * Optional version of the prompt template. Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun version(): java.util.Optional<String> = version.getOptional("version")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun versionOrThrow(): String = version.getRequired("version")
 
     /**
      * Returns the raw JSON value of [id].
@@ -245,7 +260,7 @@ private constructor(
             return@apply
         }
 
-        id()
+        idOrThrow()
         variables().ifPresent { it.validate() }
         version()
         validated = true

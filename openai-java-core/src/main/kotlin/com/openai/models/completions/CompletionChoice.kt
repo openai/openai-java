@@ -45,30 +45,53 @@ private constructor(
      * The reason the model stopped generating tokens. This will be `stop` if the model hit a
      * natural stop point or a provided stop sequence, `length` if the maximum number of tokens
      * specified in the request was reached, or `content_filter` if content was omitted due to a
-     * flag from our content filters.
+     * flag from our content filters. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun finishReason(): FinishReason = finishReason.getRequired("finish_reason")
+    fun finishReason(): java.util.Optional<FinishReason> = finishReason.getOptional("finish_reason")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun index(): Long = index.getRequired("index")
+    fun finishReasonOrThrow(): FinishReason = finishReason.getRequired("finish_reason")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun logprobs(): Optional<Logprobs> = logprobs.getOptional("logprobs")
+    fun index(): java.util.Optional<Long> = index.getOptional("index")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun text(): String = text.getRequired("text")
+    fun indexOrThrow(): Long = index.getRequired("index")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun logprobs(): java.util.Optional<Logprobs> = logprobs.getOptional("logprobs")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun logprobsOrThrow(): Logprobs = logprobs.getRequired("logprobs")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun text(): java.util.Optional<String> = text.getOptional("text")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun textOrThrow(): String = text.getRequired("text")
 
     /**
      * Returns the raw JSON value of [finishReason].
@@ -278,10 +301,10 @@ private constructor(
             return@apply
         }
 
-        finishReason().validate()
-        index()
+        finishReasonOrThrow().validate()
+        indexOrThrow()
         logprobs().ifPresent { it.validate() }
-        text()
+        textOrThrow()
         validated = true
     }
 
@@ -485,28 +508,58 @@ private constructor(
         ) : this(textOffset, tokenLogprobs, tokens, topLogprobs, mutableMapOf())
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun textOffset(): Optional<List<Long>> = textOffset.getOptional("text_offset")
+        fun textOffset(): java.util.Optional<List<Long>> = textOffset.getOptional("text_offset")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun tokenLogprobs(): Optional<List<Double>> = tokenLogprobs.getOptional("token_logprobs")
+        fun textOffsetOrThrow(): List<Long> = textOffset.getRequired("text_offset")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun tokens(): Optional<List<String>> = tokens.getOptional("tokens")
+        fun tokenLogprobs(): java.util.Optional<List<Double>> =
+            tokenLogprobs.getOptional("token_logprobs")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun topLogprobs(): Optional<List<TopLogprob>> = topLogprobs.getOptional("top_logprobs")
+        fun tokenLogprobsOrThrow(): List<Double> = tokenLogprobs.getRequired("token_logprobs")
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun tokens(): java.util.Optional<List<String>> = tokens.getOptional("tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun tokensOrThrow(): List<String> = tokens.getRequired("tokens")
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun topLogprobs(): java.util.Optional<List<TopLogprob>> =
+            topLogprobs.getOptional("top_logprobs")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun topLogprobsOrThrow(): List<TopLogprob> = topLogprobs.getRequired("top_logprobs")
 
         /**
          * Returns the raw JSON value of [textOffset].

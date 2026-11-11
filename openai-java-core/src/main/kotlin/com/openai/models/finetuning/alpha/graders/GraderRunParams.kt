@@ -44,34 +44,23 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * The grader used for the fine-tuning job.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun grader(): Grader = body.grader()
+    /** @see Body.grader */
+    fun grader(): java.util.Optional<Grader> = body.grader()
 
-    /**
-     * The model sample to be evaluated. This value will be used to populate the `sample` namespace.
-     * See [the guide](https://developers.openai.com/api/docs/guides/graders) for more details. The
-     * `output_json` variable will be populated if the model sample is a valid JSON string.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun modelSample(): String = body.modelSample()
+    /** @see Body.graderOrThrow */
+    fun graderOrThrow(): Grader = body.graderOrThrow()
 
-    /**
-     * The dataset item provided to the grader. This will be used to populate the `item` namespace.
-     * See [the guide](https://developers.openai.com/api/docs/guides/graders) for more details.
-     *
-     * This arbitrary value can be deserialized into a custom type using the `convert` method:
-     * ```java
-     * MyClass myObject = graderRunParams.item().convert(MyClass.class);
-     * ```
-     */
-    fun _item(): JsonValue = body._item()
+    /** @see Body.modelSample */
+    fun modelSample(): java.util.Optional<String> = body.modelSample()
+
+    /** @see Body.modelSampleOrThrow */
+    fun modelSampleOrThrow(): String = body.modelSampleOrThrow()
+
+    /** @see Body.item */
+    fun item(): java.util.Optional<JsonValue> = body.item()
+
+    /** @see Body.itemOrThrow */
+    fun itemOrThrow(): JsonValue = body.itemOrThrow()
 
     /**
      * Returns the raw JSON value of [grader].
@@ -86,6 +75,13 @@ private constructor(
      * Unlike [modelSample], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _modelSample(): JsonField<String> = body._modelSample()
+
+    /**
+     * Returns the raw JSON value of [item].
+     *
+     * Unlike [item], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _item(): JsonField<JsonValue> = body._item()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -345,35 +341,56 @@ private constructor(
         ) : this(grader, modelSample, item, mutableMapOf())
 
         /**
-         * The grader used for the fine-tuning job.
+         * The grader used for the fine-tuning job. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun grader(): Grader = grader.getRequired("grader")
+        fun grader(): java.util.Optional<Grader> = grader.getOptional("grader")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun graderOrThrow(): Grader = grader.getRequired("grader")
 
         /**
          * The model sample to be evaluated. This value will be used to populate the `sample`
          * namespace. See [the guide](https://developers.openai.com/api/docs/guides/graders) for
          * more details. The `output_json` variable will be populated if the model sample is a valid
-         * JSON string.
+         * JSON string. The schema requires this property. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun modelSample(): String = modelSample.getRequired("model_sample")
+        fun modelSample(): java.util.Optional<String> = modelSample.getOptional("model_sample")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun modelSampleOrThrow(): String = modelSample.getRequired("model_sample")
 
         /**
          * The dataset item provided to the grader. This will be used to populate the `item`
          * namespace. See [the guide](https://developers.openai.com/api/docs/guides/graders) for
-         * more details.
+         * more details. Returns empty if the JSON property is missing or null.
          *
-         * This arbitrary value can be deserialized into a custom type using the `convert` method:
-         * ```java
-         * MyClass myObject = body.item().convert(MyClass.class);
-         * ```
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("item") @ExcludeMissing fun _item(): JsonValue = item
+        fun item(): java.util.Optional<JsonValue> {
+            val raw = item
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun itemOrThrow(): JsonValue = item().orElseGet { item.getRequired("item") }
 
         /**
          * Returns the raw JSON value of [grader].
@@ -390,6 +407,13 @@ private constructor(
         @JsonProperty("model_sample")
         @ExcludeMissing
         fun _modelSample(): JsonField<String> = modelSample
+
+        /**
+         * Returns the raw JSON value of [item].
+         *
+         * Unlike [item], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("item") @ExcludeMissing fun _item(): JsonField<JsonValue> = item
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -563,8 +587,8 @@ private constructor(
                 return@apply
             }
 
-            grader().validate()
-            modelSample()
+            graderOrThrow().validate()
+            modelSampleOrThrow()
             validated = true
         }
 

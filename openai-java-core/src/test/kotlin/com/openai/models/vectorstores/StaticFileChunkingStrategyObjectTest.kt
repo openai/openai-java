@@ -22,7 +22,7 @@ internal class StaticFileChunkingStrategyObjectTest {
                 .build()
 
         assertThat(staticFileChunkingStrategyObject.static_())
-            .isEqualTo(
+            .contains(
                 StaticFileChunkingStrategy.builder()
                     .chunkOverlapTokens(0L)
                     .maxChunkSizeTokens(100L)

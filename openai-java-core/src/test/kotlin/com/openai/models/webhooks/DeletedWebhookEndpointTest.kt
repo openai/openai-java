@@ -13,8 +13,8 @@ internal class DeletedWebhookEndpointTest {
     fun createAndRoundtrip() {
         val deletedWebhookEndpoint = DeletedWebhookEndpoint.builder().id("id").deleted(true).build()
 
-        assertThat(deletedWebhookEndpoint.id()).isEqualTo("id")
-        assertThat(deletedWebhookEndpoint.deleted()).isEqualTo(true)
+        assertThat(deletedWebhookEndpoint.id()).contains("id")
+        assertThat(deletedWebhookEndpoint.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

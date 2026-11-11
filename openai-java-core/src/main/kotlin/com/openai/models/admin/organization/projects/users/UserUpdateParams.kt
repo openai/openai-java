@@ -35,13 +35,11 @@ private constructor(
 
     fun userId(): Optional<String> = Optional.ofNullable(userId)
 
-    /**
-     * `owner` or `member`
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun role(): Optional<String> = body.role()
+    /** @see Body.role */
+    fun role(): java.util.Optional<String> = body.role()
+
+    /** @see Body.roleOrThrow */
+    fun roleOrThrow(): String = body.roleOrThrow()
 
     /**
      * Returns the raw JSON value of [role].
@@ -286,12 +284,17 @@ private constructor(
         ) : this(role, mutableMapOf())
 
         /**
-         * `owner` or `member`
+         * `owner` or `member` Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun role(): Optional<String> = role.getOptional("role")
+        fun role(): java.util.Optional<String> = role.getOptional("role")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun roleOrThrow(): String = role.getRequired("role")
 
         /**
          * Returns the raw JSON value of [role].

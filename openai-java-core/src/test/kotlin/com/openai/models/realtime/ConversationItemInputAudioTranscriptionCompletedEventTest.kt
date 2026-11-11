@@ -44,15 +44,15 @@ internal class ConversationItemInputAudioTranscriptionCompletedEventTest {
                 .build()
 
         assertThat(conversationItemInputAudioTranscriptionCompletedEvent.contentIndex())
-            .isEqualTo(0L)
+            .contains(0L)
         assertThat(conversationItemInputAudioTranscriptionCompletedEvent.eventId())
-            .isEqualTo("event_id")
+            .contains("event_id")
         assertThat(conversationItemInputAudioTranscriptionCompletedEvent.itemId())
-            .isEqualTo("item_id")
+            .contains("item_id")
         assertThat(conversationItemInputAudioTranscriptionCompletedEvent.transcript())
-            .isEqualTo("transcript")
+            .contains("transcript")
         assertThat(conversationItemInputAudioTranscriptionCompletedEvent.usage())
-            .isEqualTo(
+            .contains(
                 ConversationItemInputAudioTranscriptionCompletedEvent.Usage
                     .ofTranscriptTextUsageTokens(
                         ConversationItemInputAudioTranscriptionCompletedEvent.Usage

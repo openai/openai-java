@@ -20,10 +20,10 @@ internal class TextSimilarityGraderTest {
                 .build()
 
         assertThat(textSimilarityGrader.evaluationMetric())
-            .isEqualTo(TextSimilarityGrader.EvaluationMetric.COSINE)
-        assertThat(textSimilarityGrader.input()).isEqualTo("input")
-        assertThat(textSimilarityGrader.name()).isEqualTo("name")
-        assertThat(textSimilarityGrader.reference()).isEqualTo("reference")
+            .contains(TextSimilarityGrader.EvaluationMetric.COSINE)
+        assertThat(textSimilarityGrader.input()).contains("input")
+        assertThat(textSimilarityGrader.name()).contains("name")
+        assertThat(textSimilarityGrader.reference()).contains("reference")
 
         val jsonMapper = jsonMapper()
 

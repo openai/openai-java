@@ -156,11 +156,11 @@ internal class AudioTranslationMediaTest {
             assertThat(response._json()).isPresent()
             assertThat(response._json().get().asObject().get()).containsKey("future_field")
             val text =
-                if (response.isTranslation()) response.asTranslation().text()
-                else response.asVerbose().text()
+                if (response.isTranslation()) response.asTranslation().textOrThrow()
+                else response.asVerbose().textOrThrow()
             assertThat(text).isEqualTo("translated")
         } else {
-            assertThat(response.asTranslation().text()).isEqualTo(case.body)
+            assertThat(response.asTranslation().textOrThrow()).isEqualTo(case.body)
             assertThat(response._json()).isEmpty()
         }
     }

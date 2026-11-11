@@ -20,9 +20,9 @@ internal class ErrorTest {
                 .param("param")
                 .build()
 
-        assertThat(error.code()).isEqualTo("code")
-        assertThat(error.message()).isEqualTo("message")
-        assertThat(error.type()).isEqualTo("type")
+        assertThat(error.code()).contains("code")
+        assertThat(error.message()).contains("message")
+        assertThat(error.type()).contains("type")
         assertThat(error.clientEventId()).contains("client_event_id")
         assertThat(error.param()).contains("param")
 

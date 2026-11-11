@@ -282,7 +282,7 @@ internal class ChatCompletionCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.messages())
+        assertThat(body.messagesOrThrow())
             .containsExactly(
                 ChatCompletionMessageParam.ofDeveloper(
                     ChatCompletionDeveloperMessageParam.builder()
@@ -291,7 +291,7 @@ internal class ChatCompletionCreateParamsTest {
                         .build()
                 )
             )
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_6_ASTRA)
+        assertThat(body.modelOrThrow()).isEqualTo(ChatModel.GPT_6_ASTRA)
         assertThat(body.audio())
             .contains(
                 ChatCompletionAudioParam.builder()
@@ -456,12 +456,12 @@ internal class ChatCompletionCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.messages())
+        assertThat(body.messagesOrThrow())
             .containsExactly(
                 ChatCompletionMessageParam.ofDeveloper(
                     ChatCompletionDeveloperMessageParam.builder().content("string").build()
                 )
             )
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_6_ASTRA)
+        assertThat(body.modelOrThrow()).isEqualTo(ChatModel.GPT_6_ASTRA)
     }
 }

@@ -13,8 +13,8 @@ internal class AgentTextTest {
     fun createAndRoundtrip() {
         val agentText = AgentText.builder().formatText().verbosity(AgentText.Verbosity.LOW).build()
 
-        assertThat(agentText.format()).isEqualTo(TextFormat.ofText())
-        assertThat(agentText.verbosity()).isEqualTo(AgentText.Verbosity.LOW)
+        assertThat(agentText.format()).contains(TextFormat.ofText())
+        assertThat(agentText.verbosity()).contains(AgentText.Verbosity.LOW)
 
         val jsonMapper = jsonMapper()
 

@@ -94,20 +94,20 @@ internal class PeriodicAutomationTest {
                 .timezone("timezone")
                 .build()
 
-        assertThat(periodicAutomation.id()).isEqualTo("id")
-        assertThat(periodicAutomation.createdAt()).isEqualTo(0L)
-        assertThat(periodicAutomation.createdBy()).isEqualTo(AutomationCreatedBy.ofDeveloper())
-        assertThat(periodicAutomation.expression()).isEqualTo("expression")
+        assertThat(periodicAutomation.id()).contains("id")
+        assertThat(periodicAutomation.createdAt()).contains(0L)
+        assertThat(periodicAutomation.createdBy()).contains(AutomationCreatedBy.ofDeveloper())
+        assertThat(periodicAutomation.expression()).contains("expression")
         assertThat(periodicAutomation.metadata())
-            .isEqualTo(
+            .contains(
                 PeriodicAutomation.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(periodicAutomation.name()).isEqualTo("name")
-        assertThat(periodicAutomation.status()).isEqualTo(PeriodicAutomation.Status.ACTIVE)
+        assertThat(periodicAutomation.name()).contains("name")
+        assertThat(periodicAutomation.status()).contains(PeriodicAutomation.Status.ACTIVE)
         assertThat(periodicAutomation.target())
-            .isEqualTo(
+            .contains(
                 AutomationTarget.ofNewSession(
                     AutomationTarget.NewSession.builder()
                         .agent(
@@ -171,7 +171,7 @@ internal class PeriodicAutomationTest {
                         .build()
                 )
             )
-        assertThat(periodicAutomation.timezone()).isEqualTo("timezone")
+        assertThat(periodicAutomation.timezone()).contains("timezone")
 
         val jsonMapper = jsonMapper()
 

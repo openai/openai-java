@@ -36,25 +36,39 @@ private constructor(
     ) : this(type, skills, mutableMapOf())
 
     /**
-     * Use a local computer environment.
+     * Use a local computer environment. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("local")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("local")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * An optional list of skills.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun skills(): Optional<List<BetaLocalSkill>> = skills.getOptional("skills")
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * An optional list of skills. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun skills(): java.util.Optional<List<BetaLocalSkill>> = skills.getOptional("skills")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun skillsOrThrow(): List<BetaLocalSkill> = skills.getRequired("skills")
 
     /**
      * Returns the raw JSON value of [skills].
@@ -196,11 +210,7 @@ private constructor(
             return@apply
         }
 
-        _type().let {
-            if (it != JsonValue.from("local")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        typeOrThrow()
         skills().ifPresent { it.forEach { it.validate() } }
         validated = true
     }

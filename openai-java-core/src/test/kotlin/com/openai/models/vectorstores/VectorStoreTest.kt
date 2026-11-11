@@ -38,10 +38,10 @@ internal class VectorStoreTest {
                 .expiresAt(0L)
                 .build()
 
-        assertThat(vectorStore.id()).isEqualTo("id")
-        assertThat(vectorStore.createdAt()).isEqualTo(0L)
+        assertThat(vectorStore.id()).contains("id")
+        assertThat(vectorStore.createdAt()).contains(0L)
         assertThat(vectorStore.fileCounts())
-            .isEqualTo(
+            .contains(
                 VectorStore.FileCounts.builder()
                     .cancelled(0L)
                     .completed(0L)
@@ -57,9 +57,9 @@ internal class VectorStoreTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(vectorStore.name()).isEqualTo("name")
-        assertThat(vectorStore.status()).isEqualTo(VectorStore.Status.EXPIRED)
-        assertThat(vectorStore.usageBytes()).isEqualTo(0L)
+        assertThat(vectorStore.name()).contains("name")
+        assertThat(vectorStore.status()).contains(VectorStore.Status.EXPIRED)
+        assertThat(vectorStore.usageBytes()).contains(0L)
         assertThat(vectorStore.expiresAfter())
             .contains(VectorStore.ExpiresAfter.builder().days(1L).build())
         assertThat(vectorStore.expiresAt()).contains(0L)

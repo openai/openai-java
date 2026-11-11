@@ -45,13 +45,11 @@ private constructor(
 
     fun idempotencyKey(): Optional<String> = Optional.ofNullable(idempotencyKey)
 
-    /**
-     * The input events to submit to the session.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun events(): List<AgentSessionInputParam> = body.events()
+    /** @see Body.events */
+    fun events(): java.util.Optional<List<AgentSessionInputParam>> = body.events()
+
+    /** @see Body.eventsOrThrow */
+    fun eventsOrThrow(): List<AgentSessionInputParam> = body.eventsOrThrow()
 
     /**
      * Returns the raw JSON value of [events].
@@ -356,12 +354,19 @@ private constructor(
         ) : this(events, mutableMapOf())
 
         /**
-         * The input events to submit to the session.
+         * The input events to submit to the session. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun events(): List<AgentSessionInputParam> = events.getRequired("events")
+        fun events(): java.util.Optional<List<AgentSessionInputParam>> =
+            events.getOptional("events")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun eventsOrThrow(): List<AgentSessionInputParam> = events.getRequired("events")
 
         /**
          * Returns the raw JSON value of [events].
@@ -561,7 +566,7 @@ private constructor(
                 return@apply
             }
 
-            events().forEach { it.validate() }
+            eventsOrThrow().forEach { it.validate() }
             validated = true
         }
 

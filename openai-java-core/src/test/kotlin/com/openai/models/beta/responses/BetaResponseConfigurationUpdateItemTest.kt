@@ -27,7 +27,7 @@ internal class BetaResponseConfigurationUpdateItemTest {
                 .text(BetaResponseConfigurationUpdateItem.Text.builder().formatText().build())
                 .build()
 
-        assertThat(betaResponseConfigurationUpdateItem.id()).isEqualTo("cnfu_123")
+        assertThat(betaResponseConfigurationUpdateItem.id()).contains("cnfu_123")
         assertThat(betaResponseConfigurationUpdateItem.agent())
             .contains(
                 BetaResponseConfigurationUpdateItem.Agent.builder().agentName("agent_name").build()

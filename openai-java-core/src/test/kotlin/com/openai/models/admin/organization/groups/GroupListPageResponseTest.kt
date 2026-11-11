@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.groups
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -26,7 +27,7 @@ internal class GroupListPageResponseTest {
                 .next("next")
                 .build()
 
-        assertThat(groupListPageResponse.data())
+        assertThat(groupListPageResponse.data().getOrNull())
             .containsExactly(
                 Group.builder()
                     .id("id")
@@ -36,7 +37,7 @@ internal class GroupListPageResponseTest {
                     .name("name")
                     .build()
             )
-        assertThat(groupListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(groupListPageResponse.hasMore()).contains(true)
         assertThat(groupListPageResponse.next()).contains("next")
 
         val jsonMapper = jsonMapper()

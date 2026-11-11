@@ -33,21 +33,17 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * The certificate content in PEM format
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun certificate(): String = body.certificate()
+    /** @see Body.certificate */
+    fun certificate(): java.util.Optional<String> = body.certificate()
 
-    /**
-     * An optional name for the certificate
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun name(): Optional<String> = body.name()
+    /** @see Body.certificateOrThrow */
+    fun certificateOrThrow(): String = body.certificateOrThrow()
+
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
+
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
 
     /**
      * Returns the raw JSON value of [certificate].
@@ -293,20 +289,32 @@ private constructor(
         ) : this(certificate, name, mutableMapOf())
 
         /**
-         * The certificate content in PEM format
+         * The certificate content in PEM format The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun certificate(): String = certificate.getRequired("certificate")
+        fun certificate(): java.util.Optional<String> = certificate.getOptional("certificate")
 
         /**
-         * An optional name for the certificate
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun name(): Optional<String> = name.getOptional("name")
+        fun certificateOrThrow(): String = certificate.getRequired("certificate")
+
+        /**
+         * An optional name for the certificate Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
 
         /**
          * Returns the raw JSON value of [certificate].
@@ -462,7 +470,7 @@ private constructor(
                 return@apply
             }
 
-            certificate()
+            certificateOrThrow()
             name()
             validated = true
         }

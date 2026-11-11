@@ -5,6 +5,7 @@ package com.openai.models.beta.assistants
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -53,7 +54,7 @@ internal class AssistantListPageResponseTest {
                 .object_("list")
                 .build()
 
-        assertThat(assistantListPageResponse.data())
+        assertThat(assistantListPageResponse.data().getOrNull())
             .containsExactly(
                 Assistant.builder()
                     .id("id")
@@ -87,10 +88,10 @@ internal class AssistantListPageResponseTest {
                     .topP(1.0)
                     .build()
             )
-        assertThat(assistantListPageResponse.firstId()).isEqualTo("asst_abc123")
-        assertThat(assistantListPageResponse.hasMore()).isEqualTo(false)
-        assertThat(assistantListPageResponse.lastId()).isEqualTo("asst_abc456")
-        assertThat(assistantListPageResponse.object_()).isEqualTo("list")
+        assertThat(assistantListPageResponse.firstId()).contains("asst_abc123")
+        assertThat(assistantListPageResponse.hasMore()).contains(false)
+        assertThat(assistantListPageResponse.lastId()).contains("asst_abc456")
+        assertThat(assistantListPageResponse.object_()).contains("list")
 
         val jsonMapper = jsonMapper()
 

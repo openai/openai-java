@@ -19,9 +19,9 @@ internal class ConversationItemTruncateEventTest {
                 .eventId("event_id")
                 .build()
 
-        assertThat(conversationItemTruncateEvent.audioEndMs()).isEqualTo(0L)
-        assertThat(conversationItemTruncateEvent.contentIndex()).isEqualTo(0L)
-        assertThat(conversationItemTruncateEvent.itemId()).isEqualTo("item_id")
+        assertThat(conversationItemTruncateEvent.audioEndMs()).contains(0L)
+        assertThat(conversationItemTruncateEvent.contentIndex()).contains(0L)
+        assertThat(conversationItemTruncateEvent.itemId()).contains("item_id")
         assertThat(conversationItemTruncateEvent.eventId()).contains("event_id")
 
         val jsonMapper = jsonMapper()

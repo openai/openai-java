@@ -39,21 +39,21 @@ class ResponsesWebSocketLiveTest {
                     )
                     val first = connection.finalResponse().get(45, TimeUnit.SECONDS)
                     assertThat(first.status()).contains(ResponseStatus.COMPLETED)
-                    assertThat(first.output()).isNotEmpty()
+                    assertThat(first.outputOrThrow()).isNotEmpty()
                     connection.send(
                         ResponsesClientEvent.ofResponseCreate(
                             ResponsesClientEvent.ResponseCreate.builder()
                                 .model(model)
                                 .store(false)
-                                .previousResponseId(first.id())
+                                .previousResponseId(first.idOrThrow())
                                 .input("Reply with the single word goodbye.")
                                 .build()
                         )
                     )
                     val second = connection.finalResponse().get(45, TimeUnit.SECONDS)
                     assertThat(second.status()).contains(ResponseStatus.COMPLETED)
-                    assertThat(second.output()).isNotEmpty()
-                    assertThat(second.id()).isNotEqualTo(first.id())
+                    assertThat(second.outputOrThrow()).isNotEmpty()
+                    assertThat(second.idOrThrow()).isNotEqualTo(first.idOrThrow())
                 }
         } finally {
             client.close()

@@ -23,7 +23,7 @@ internal class ChatCompletionCustomToolTest {
                 .build()
 
         assertThat(chatCompletionCustomTool.custom())
-            .isEqualTo(
+            .contains(
                 ChatCompletionCustomTool.Custom.builder()
                     .name("name")
                     .description("description")

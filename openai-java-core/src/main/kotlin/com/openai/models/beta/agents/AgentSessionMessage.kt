@@ -52,66 +52,107 @@ private constructor(
     ) : this(id, content, phase, role, status, turnId, type, mutableMapOf())
 
     /**
-     * The ID of this item, or null for legacy user messages whose ID was not recorded.
+     * The ID of this item, or null for legacy user messages whose ID was not recorded. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): Optional<String> = id.getOptional("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
      * The content of the message. User messages contain input text or images; assistant messages
-     * contain output text.
+     * contain output text. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun content(): List<AgentSessionMessageContent> = content.getRequired("content")
+    fun content(): java.util.Optional<List<AgentSessionMessageContent>> =
+        content.getOptional("content")
 
     /**
-     * The phase of an assistant message. Null for user messages.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun phase(): Optional<Phase> = phase.getOptional("phase")
+    fun contentOrThrow(): List<AgentSessionMessageContent> = content.getRequired("content")
 
     /**
-     * The role of the message author.
+     * The phase of an assistant message. Null for user messages. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun role(): Role = role.getRequired("role")
+    fun phase(): java.util.Optional<Phase> = phase.getOptional("phase")
 
     /**
-     * The status of the message. User messages are always `completed`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun status(): AgentOutputItemStatus = status.getRequired("status")
+    fun phaseOrThrow(): Phase = phase.getRequired("phase")
 
     /**
-     * The ID of the turn that contains this item.
+     * The role of the message author. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun turnId(): String = turnId.getRequired("turn_id")
+    fun role(): java.util.Optional<Role> = role.getOptional("role")
 
     /**
-     * The item type. Always `message`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("message")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun roleOrThrow(): Role = role.getRequired("role")
+
+    /**
+     * The status of the message. User messages are always `completed`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun status(): java.util.Optional<AgentOutputItemStatus> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): AgentOutputItemStatus = status.getRequired("status")
+
+    /**
+     * The ID of the turn that contains this item. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun turnId(): java.util.Optional<String> = turnId.getOptional("turn_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun turnIdOrThrow(): String = turnId.getRequired("turn_id")
+
+    /**
+     * The item type. Always `message`. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("message")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [id].
@@ -453,16 +494,12 @@ private constructor(
         }
 
         id()
-        content().forEach { it.validate() }
+        contentOrThrow().forEach { it.validate() }
         phase().ifPresent { it.validate() }
-        role().validate()
-        status().validate()
-        turnId()
-        _type().let {
-            if (it != JsonValue.from("message")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        roleOrThrow().validate()
+        statusOrThrow().validate()
+        turnIdOrThrow()
+        typeOrThrow()
         validated = true
     }
 

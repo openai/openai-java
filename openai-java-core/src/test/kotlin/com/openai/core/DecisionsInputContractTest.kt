@@ -46,7 +46,7 @@ internal class DecisionsInputContractTest {
         val roundtripped = jsonMapper().readValue(serialized, DecisionInputJson::class.java)
 
         for (model in listOf(input, roundtripped)) {
-            val returned = model.data().asMaps().single() as MutableMap
+            val returned = model.dataOrThrow().asMaps().single() as MutableMap
             assertThatThrownBy { returned["answer"] = JsonValue.from("changed") }
                 .isInstanceOf(UnsupportedOperationException::class.java)
             assertThat(model).isEqualTo(expected)

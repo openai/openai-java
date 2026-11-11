@@ -7,6 +7,7 @@ import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.vectorstores.StaticFileChunkingStrategy
 import com.openai.models.vectorstores.files.VectorStoreFile
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -48,7 +49,7 @@ internal class FileBatchListFilesPageResponseTest {
                 .object_("list")
                 .build()
 
-        assertThat(fileBatchListFilesPageResponse.data())
+        assertThat(fileBatchListFilesPageResponse.data().getOrNull())
             .containsExactly(
                 VectorStoreFile.builder()
                     .id("id")
@@ -75,10 +76,10 @@ internal class FileBatchListFilesPageResponseTest {
                     )
                     .build()
             )
-        assertThat(fileBatchListFilesPageResponse.firstId()).isEqualTo("file-abc123")
-        assertThat(fileBatchListFilesPageResponse.hasMore()).isEqualTo(false)
-        assertThat(fileBatchListFilesPageResponse.lastId()).isEqualTo("file-abc456")
-        assertThat(fileBatchListFilesPageResponse.object_()).isEqualTo("list")
+        assertThat(fileBatchListFilesPageResponse.firstId()).contains("file-abc123")
+        assertThat(fileBatchListFilesPageResponse.hasMore()).contains(false)
+        assertThat(fileBatchListFilesPageResponse.lastId()).contains("file-abc456")
+        assertThat(fileBatchListFilesPageResponse.object_()).contains("list")
 
         val jsonMapper = jsonMapper()
 

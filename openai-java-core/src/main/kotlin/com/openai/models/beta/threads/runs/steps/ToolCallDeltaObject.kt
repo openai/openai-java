@@ -37,26 +37,41 @@ private constructor(
     ) : this(type, toolCalls, mutableMapOf())
 
     /**
-     * Always `tool_calls`.
+     * Always `tool_calls`. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("tool_calls")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("tool_calls")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * An array of tool calls the run step was involved in. These can be associated with one of
-     * three types of tools: `code_interpreter`, `file_search`, or `function`.
+     * three types of tools: `code_interpreter`, `file_search`, or `function`. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun toolCalls(): Optional<List<ToolCallDelta>> = toolCalls.getOptional("tool_calls")
+    fun toolCalls(): java.util.Optional<List<ToolCallDelta>> = toolCalls.getOptional("tool_calls")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun toolCallsOrThrow(): List<ToolCallDelta> = toolCalls.getRequired("tool_calls")
 
     /**
      * Returns the raw JSON value of [toolCalls].
@@ -243,11 +258,7 @@ private constructor(
             return@apply
         }
 
-        _type().let {
-            if (it != JsonValue.from("tool_calls")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        typeOrThrow()
         toolCalls().ifPresent { it.forEach { it.validate() } }
         validated = true
     }

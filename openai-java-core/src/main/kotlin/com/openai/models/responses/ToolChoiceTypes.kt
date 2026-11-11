@@ -45,12 +45,17 @@ private constructor(
      * - `computer_use_preview`
      * - `computer_use`
      * - `code_interpreter`
-     * - `image_generation`
+     * - `image_generation` The schema requires this property. Returns empty if the JSON property is
+     *   missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun type(): Type = type.getRequired("type")
+    fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): Type = type.getRequired("type")
 
     /**
      * Returns the raw JSON value of [type].
@@ -183,7 +188,7 @@ private constructor(
             return@apply
         }
 
-        type().validate()
+        typeOrThrow().validate()
         validated = true
     }
 

@@ -49,66 +49,116 @@ private constructor(
     ) : this(delta, eventId, type, channels, elapsedMs, format, sampleRate, mutableMapOf())
 
     /**
-     * Base64-encoded translated audio data.
+     * Base64-encoded translated audio data. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun delta(): String = delta.getRequired("delta")
+    fun delta(): java.util.Optional<String> = delta.getOptional("delta")
 
     /**
-     * The unique ID of the server event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun deltaOrThrow(): String = delta.getRequired("delta")
 
     /**
-     * The event type, must be `session.output_audio.delta`.
+     * The unique ID of the server event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("session.output_audio.delta")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
     /**
-     * Number of audio channels.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun channels(): Optional<Long> = channels.getOptional("channels")
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
+
+    /**
+     * The event type, must be `session.output_audio.delta`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("session.output_audio.delta")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * Number of audio channels. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun channels(): java.util.Optional<Long> = channels.getOptional("channels")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun channelsOrThrow(): Long = channels.getRequired("channels")
 
     /**
      * Timing metadata for stream alignment, derived from the translation frame when available.
-     * Treat `elapsed_ms` as alignment metadata, not a unique event identifier.
+     * Treat `elapsed_ms` as alignment metadata, not a unique event identifier. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun elapsedMs(): Optional<Long> = elapsedMs.getOptional("elapsed_ms")
+    fun elapsedMs(): java.util.Optional<Long> = elapsedMs.getOptional("elapsed_ms")
 
     /**
-     * Audio encoding for `delta`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun format(): Optional<Format> = format.getOptional("format")
+    fun elapsedMsOrThrow(): Long = elapsedMs.getRequired("elapsed_ms")
 
     /**
-     * Sample rate of the audio delta.
+     * Audio encoding for `delta`. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun sampleRate(): Optional<Long> = sampleRate.getOptional("sample_rate")
+    fun format(): java.util.Optional<JsonValue> {
+        val raw = JsonValue.from(format)
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("pcm16")) ->
+                throw OpenAIInvalidDataException("`format` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun formatOrThrow(): JsonValue =
+        format().orElseGet { JsonValue.from(format).getRequired("format") }
+
+    @JsonProperty("format")
+    @ExcludeMissing
+    fun _format(): JsonField<JsonValue> = JsonValue.from(format)
+
+    /**
+     * Sample rate of the audio delta. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun sampleRate(): java.util.Optional<Long> = sampleRate.getOptional("sample_rate")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sampleRateOrThrow(): Long = sampleRate.getRequired("sample_rate")
 
     /**
      * Returns the raw JSON value of [delta].
@@ -137,13 +187,6 @@ private constructor(
      * Unlike [elapsedMs], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("elapsed_ms") @ExcludeMissing fun _elapsedMs(): JsonField<Long> = elapsedMs
-
-    /**
-     * Returns the raw JSON value of [format].
-     *
-     * Unlike [format], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("format") @ExcludeMissing fun _format(): JsonField<Format> = format
 
     /**
      * Returns the raw JSON value of [sampleRate].
@@ -382,16 +425,12 @@ private constructor(
             return@apply
         }
 
-        delta()
-        eventId()
-        _type().let {
-            if (it != JsonValue.from("session.output_audio.delta")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        deltaOrThrow()
+        eventIdOrThrow()
+        typeOrThrow()
         channels()
         elapsedMs()
-        format().ifPresent { it.validate() }
+        format()
         sampleRate()
         validated = true
     }

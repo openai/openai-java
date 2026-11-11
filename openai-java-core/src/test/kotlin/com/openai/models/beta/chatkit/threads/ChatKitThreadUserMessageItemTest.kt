@@ -4,6 +4,7 @@ package com.openai.models.beta.chatkit.threads
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -38,8 +39,8 @@ internal class ChatKitThreadUserMessageItemTest {
                 .threadId("thread_id")
                 .build()
 
-        assertThat(chatkitThreadUserMessageItem.id()).isEqualTo("id")
-        assertThat(chatkitThreadUserMessageItem.attachments())
+        assertThat(chatkitThreadUserMessageItem.id()).contains("id")
+        assertThat(chatkitThreadUserMessageItem.attachments().getOrNull())
             .containsExactly(
                 ChatKitAttachment.builder()
                     .id("id")
@@ -49,13 +50,13 @@ internal class ChatKitThreadUserMessageItemTest {
                     .type(ChatKitAttachment.Type.IMAGE)
                     .build()
             )
-        assertThat(chatkitThreadUserMessageItem.content())
+        assertThat(chatkitThreadUserMessageItem.content().getOrNull())
             .containsExactly(
                 ChatKitThreadUserMessageItem.Content.ofInputText(
                     ChatKitThreadUserMessageItem.Content.InputText.builder().text("text").build()
                 )
             )
-        assertThat(chatkitThreadUserMessageItem.createdAt()).isEqualTo(0L)
+        assertThat(chatkitThreadUserMessageItem.createdAt()).contains(0L)
         assertThat(chatkitThreadUserMessageItem.inferenceOptions())
             .contains(
                 ChatKitThreadUserMessageItem.InferenceOptions.builder()
@@ -67,7 +68,7 @@ internal class ChatKitThreadUserMessageItemTest {
                     )
                     .build()
             )
-        assertThat(chatkitThreadUserMessageItem.threadId()).isEqualTo("thread_id")
+        assertThat(chatkitThreadUserMessageItem.threadId()).contains("thread_id")
 
         val jsonMapper = jsonMapper()
 

@@ -24,13 +24,13 @@ internal class ChatCompletionAccumulatorAudioTest {
         accumulator.accumulate(chunk("""{"data":"Jj","transcript":"world","custom":"preserved"}"""))
         accumulator.accumulate(chunk("""{"expires_at":456}"""))
         val completion = accumulator.chatCompletion()
-        val audio = completion.choices()[0].message().audio().get()
-        assertThat(audio.id()).isEqualTo("audio_test")
-        assertThat(audio.data()).isEqualTo("YWJj")
-        assertThat(audio.transcript()).isEqualTo("hello world")
-        assertThat(audio.expiresAt()).isEqualTo(456)
+        val audio = completion.choicesOrThrow()[0].messageOrThrow().audio().get()
+        assertThat(audio.idOrThrow()).isEqualTo("audio_test")
+        assertThat(audio.dataOrThrow()).isEqualTo("YWJj")
+        assertThat(audio.transcriptOrThrow()).isEqualTo("hello world")
+        assertThat(audio.expiresAtOrThrow()).isEqualTo(456)
         assertThat(audio._allProperties()["custom"]!!.asString().get()).isEqualTo("preserved")
-        assertThat(completion.choices()[0].finishReason())
+        assertThat(completion.choicesOrThrow()[0].finishReasonOrThrow())
             .isEqualTo(ChatCompletion.Choice.FinishReason.STOP)
     }
 
@@ -54,9 +54,10 @@ internal class ChatCompletionAccumulatorAudioTest {
             .isInstanceOf(IllegalStateException::class.java)
         accumulator.accumulate(chunk("""{"expires_at":456}"""))
         val completion = accumulator.chatCompletion()
-        assertThat(completion.choices()[0].finishReason())
+        assertThat(completion.choicesOrThrow()[0].finishReasonOrThrow())
             .isEqualTo(ChatCompletion.Choice.FinishReason.LENGTH)
-        assertThat(completion.choices()[0].message().audio().get().expiresAt()).isEqualTo(456)
+        assertThat(completion.choicesOrThrow()[0].messageOrThrow().audio().get().expiresAtOrThrow())
+            .isEqualTo(456)
     }
 
     @Test
@@ -72,8 +73,8 @@ internal class ChatCompletionAccumulatorAudioTest {
         assertThatThrownBy { accumulator.chatCompletion() }
             .isInstanceOf(IllegalStateException::class.java)
         accumulator.accumulate(chunk("""{"expires_at":789}""", index = 1))
-        val choices = accumulator.chatCompletion().choices()
-        assertThat(choices.map { it.message().audio().get().id() })
+        val choices = accumulator.chatCompletion().choicesOrThrow()
+        assertThat(choices.map { it.messageOrThrow().audio().get().idOrThrow() })
             .containsExactly("audio_0", "audio_1")
     }
 }

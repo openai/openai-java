@@ -4,6 +4,7 @@ package com.openai.models.beta.threads.messages
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -26,7 +27,7 @@ internal class TextTest {
                 .value("value")
                 .build()
 
-        assertThat(text.annotations())
+        assertThat(text.annotations().getOrNull())
             .containsExactly(
                 Annotation.ofFileCitation(
                     FileCitationAnnotation.builder()
@@ -39,7 +40,7 @@ internal class TextTest {
                         .build()
                 )
             )
-        assertThat(text.value()).isEqualTo("value")
+        assertThat(text.value()).contains("value")
 
         val jsonMapper = jsonMapper()
 

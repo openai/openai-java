@@ -40,34 +40,64 @@ private constructor(
     ) : this(data, firstId, hasMore, lastId, object_, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun data(): List<RunStep> = data.getRequired("data")
+    fun data(): java.util.Optional<List<RunStep>> = data.getOptional("data")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun firstId(): String = firstId.getRequired("first_id")
+    fun dataOrThrow(): List<RunStep> = data.getRequired("data")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun hasMore(): Boolean = hasMore.getRequired("has_more")
+    fun firstId(): java.util.Optional<String> = firstId.getOptional("first_id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun lastId(): String = lastId.getRequired("last_id")
+    fun firstIdOrThrow(): String = firstId.getRequired("first_id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun object_(): String = object_.getRequired("object")
+    fun hasMore(): java.util.Optional<Boolean> = hasMore.getOptional("has_more")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun hasMoreOrThrow(): Boolean = hasMore.getRequired("has_more")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun lastId(): java.util.Optional<String> = lastId.getOptional("last_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun lastIdOrThrow(): String = lastId.getRequired("last_id")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<String> = object_.getOptional("object")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): String = object_.getRequired("object")
 
     /**
      * Returns the raw JSON value of [data].
@@ -300,11 +330,11 @@ private constructor(
             return@apply
         }
 
-        data().forEach { it.validate() }
-        firstId()
-        hasMore()
-        lastId()
-        object_()
+        dataOrThrow().forEach { it.validate() }
+        firstIdOrThrow()
+        hasMoreOrThrow()
+        lastIdOrThrow()
+        object_OrThrow()
         validated = true
     }
 

@@ -17,7 +17,7 @@ internal class BetaResponseAudioDoneEventTest {
                 .agent(BetaResponseAudioDoneEvent.Agent.builder().agentName("agent_name").build())
                 .build()
 
-        assertThat(betaResponseAudioDoneEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseAudioDoneEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseAudioDoneEvent.agent())
             .contains(BetaResponseAudioDoneEvent.Agent.builder().agentName("agent_name").build())
 

@@ -23,9 +23,9 @@ internal class BetaResponseImageGenCallInProgressEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseImageGenCallInProgressEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseImageGenCallInProgressEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseImageGenCallInProgressEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseImageGenCallInProgressEvent.itemId()).contains("item_id")
+        assertThat(betaResponseImageGenCallInProgressEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseImageGenCallInProgressEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseImageGenCallInProgressEvent.agent())
             .contains(
                 BetaResponseImageGenCallInProgressEvent.Agent.builder()

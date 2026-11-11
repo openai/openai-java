@@ -25,7 +25,7 @@ internal class AgentSessionEnvironmentStateTest {
                 .type("type")
                 .build()
 
-        assertThat(agentSessionEnvironmentState.id()).isEqualTo("id")
+        assertThat(agentSessionEnvironmentState.id()).contains("id")
         assertThat(agentSessionEnvironmentState.error())
             .contains(
                 AgentSessionEnvironmentState.Error.builder()
@@ -35,8 +35,8 @@ internal class AgentSessionEnvironmentStateTest {
                     .build()
             )
         assertThat(agentSessionEnvironmentState.status())
-            .isEqualTo(AgentSessionEnvironmentState.Status.PENDING)
-        assertThat(agentSessionEnvironmentState.type()).isEqualTo("type")
+            .contains(AgentSessionEnvironmentState.Status.PENDING)
+        assertThat(agentSessionEnvironmentState.type()).contains("type")
 
         val jsonMapper = jsonMapper()
 

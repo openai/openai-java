@@ -1219,7 +1219,7 @@ internal class AgentSessionStreamTest {
                 .build(),
         ) { event ->
             if (event.isTurnItemAdded()) {
-                val call = event.asTurnItemAdded().item().asFunctionCall()
+                val call = event.asTurnItemAdded().itemOrThrow().asFunctionCall()
                 @Suppress("UNCHECKED_CAST")
                 val args =
                     call._arguments().asObject().get()

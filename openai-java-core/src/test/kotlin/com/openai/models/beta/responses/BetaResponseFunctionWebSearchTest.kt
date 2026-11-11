@@ -31,9 +31,9 @@ internal class BetaResponseFunctionWebSearchTest {
                 )
                 .build()
 
-        assertThat(betaResponseFunctionWebSearch.id()).isEqualTo("id")
+        assertThat(betaResponseFunctionWebSearch.id()).contains("id")
         assertThat(betaResponseFunctionWebSearch.action())
-            .isEqualTo(
+            .contains(
                 BetaResponseFunctionWebSearch.Action.ofSearch(
                     BetaResponseFunctionWebSearch.Action.Search.builder()
                         .addQuery("string")
@@ -47,7 +47,7 @@ internal class BetaResponseFunctionWebSearchTest {
                 )
             )
         assertThat(betaResponseFunctionWebSearch.status())
-            .isEqualTo(BetaResponseFunctionWebSearch.Status.IN_PROGRESS)
+            .contains(BetaResponseFunctionWebSearch.Status.IN_PROGRESS)
         assertThat(betaResponseFunctionWebSearch.agent())
             .contains(BetaResponseFunctionWebSearch.Agent.builder().agentName("agent_name").build())
 

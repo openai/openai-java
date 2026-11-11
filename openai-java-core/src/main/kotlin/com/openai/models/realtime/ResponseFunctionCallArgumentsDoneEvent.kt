@@ -61,73 +61,118 @@ private constructor(
     )
 
     /**
-     * The final arguments as a JSON string.
+     * The final arguments as a JSON string. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun arguments(): String = arguments.getRequired("arguments")
+    fun arguments(): java.util.Optional<String> = arguments.getOptional("arguments")
 
     /**
-     * The ID of the function call.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun callId(): String = callId.getRequired("call_id")
+    fun argumentsOrThrow(): String = arguments.getRequired("arguments")
 
     /**
-     * The unique ID of the server event.
+     * The ID of the function call. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun callId(): java.util.Optional<String> = callId.getOptional("call_id")
 
     /**
-     * The ID of the function call item.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun itemId(): String = itemId.getRequired("item_id")
+    fun callIdOrThrow(): String = callId.getRequired("call_id")
 
     /**
-     * The name of the function that was called.
+     * The unique ID of the server event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun name(): String = name.getRequired("name")
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
     /**
-     * The index of the output item in the response.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun outputIndex(): Long = outputIndex.getRequired("output_index")
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
-     * The ID of the response.
+     * The ID of the function call item. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun responseId(): String = responseId.getRequired("response_id")
+    fun itemId(): java.util.Optional<String> = itemId.getOptional("item_id")
 
     /**
-     * The event type, must be `response.function_call_arguments.done`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.function_call_arguments.done")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun itemIdOrThrow(): String = itemId.getRequired("item_id")
+
+    /**
+     * The name of the function that was called. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
+
+    /**
+     * The index of the output item in the response. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun outputIndex(): java.util.Optional<Long> = outputIndex.getOptional("output_index")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun outputIndexOrThrow(): Long = outputIndex.getRequired("output_index")
+
+    /**
+     * The ID of the response. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun responseId(): java.util.Optional<String> = responseId.getOptional("response_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun responseIdOrThrow(): String = responseId.getRequired("response_id")
+
+    /**
+     * The event type, must be `response.function_call_arguments.done`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.function_call_arguments.done")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [arguments].
@@ -423,18 +468,14 @@ private constructor(
             return@apply
         }
 
-        arguments()
-        callId()
-        eventId()
-        itemId()
-        name()
-        outputIndex()
-        responseId()
-        _type().let {
-            if (it != JsonValue.from("response.function_call_arguments.done")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        argumentsOrThrow()
+        callIdOrThrow()
+        eventIdOrThrow()
+        itemIdOrThrow()
+        nameOrThrow()
+        outputIndexOrThrow()
+        responseIdOrThrow()
+        typeOrThrow()
         validated = true
     }
 

@@ -41,42 +41,67 @@ private constructor(
     ) : this(responseId, sequenceNumber, type, streamId, mutableMapOf())
 
     /**
-     * The ID of the response that accepted the input.
+     * The ID of the response that accepted the input. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun responseId(): String = responseId.getRequired("response_id")
+    fun responseId(): java.util.Optional<String> = responseId.getOptional("response_id")
 
     /**
-     * The sequence number for this event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
+    fun responseIdOrThrow(): String = responseId.getRequired("response_id")
 
     /**
-     * The event discriminator. Always `response.inject.created`.
+     * The sequence number for this event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.inject.created")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun sequenceNumber(): java.util.Optional<Long> = sequenceNumber.getOptional("sequence_number")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sequenceNumberOrThrow(): Long = sequenceNumber.getRequired("sequence_number")
+
+    /**
+     * The event discriminator. Always `response.inject.created`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.inject.created")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * The multiplexed WebSocket stream that emitted the event. This field is present only when
-     * WebSocket multiplexing is enabled separately.
+     * WebSocket multiplexing is enabled separately. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun streamId(): Optional<String> = streamId.getOptional("stream_id")
+    fun streamId(): java.util.Optional<String> = streamId.getOptional("stream_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun streamIdOrThrow(): String = streamId.getRequired("stream_id")
 
     /**
      * Returns the raw JSON value of [responseId].
@@ -278,13 +303,9 @@ private constructor(
             return@apply
         }
 
-        responseId()
-        sequenceNumber()
-        _type().let {
-            if (it != JsonValue.from("response.inject.created")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        responseIdOrThrow()
+        sequenceNumberOrThrow()
+        typeOrThrow()
         streamId()
         validated = true
     }

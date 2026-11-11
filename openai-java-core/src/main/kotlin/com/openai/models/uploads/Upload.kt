@@ -61,83 +61,133 @@ private constructor(
     )
 
     /**
-     * The Upload unique identifier, which can be referenced in API endpoints.
+     * The Upload unique identifier, which can be referenced in API endpoints. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The intended number of bytes to be uploaded.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun bytes(): Long = bytes.getRequired("bytes")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The Unix timestamp (in seconds) for when the Upload was created.
+     * The intended number of bytes to be uploaded. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun bytes(): java.util.Optional<Long> = bytes.getOptional("bytes")
 
     /**
-     * The Unix timestamp (in seconds) for when the Upload will expire.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun expiresAt(): Long = expiresAt.getRequired("expires_at")
+    fun bytesOrThrow(): Long = bytes.getRequired("bytes")
 
     /**
-     * The name of the file to be uploaded.
+     * The Unix timestamp (in seconds) for when the Upload was created. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun filename(): String = filename.getRequired("filename")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * The object type, which is always "upload".
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("upload")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * The Unix timestamp (in seconds) for when the Upload will expire. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun expiresAt(): java.util.Optional<Long> = expiresAt.getOptional("expires_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun expiresAtOrThrow(): Long = expiresAt.getRequired("expires_at")
+
+    /**
+     * The name of the file to be uploaded. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun filename(): java.util.Optional<String> = filename.getOptional("filename")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun filenameOrThrow(): String = filename.getRequired("filename")
+
+    /**
+     * The object type, which is always "upload". The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("upload")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * The intended purpose of the file.
      * [Please refer here](https://developers.openai.com/api/reference/resources/files#%28resource%29%20files%20%3E%20%28model%29%20file_object%20%3E%20%28schema%29%20%3E%20%28property%29%20purpose)
-     * for acceptable values.
+     * for acceptable values. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun purpose(): String = purpose.getRequired("purpose")
+    fun purpose(): java.util.Optional<String> = purpose.getOptional("purpose")
 
     /**
-     * The status of the Upload.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun status(): Status = status.getRequired("status")
+    fun purposeOrThrow(): String = purpose.getRequired("purpose")
 
     /**
-     * The `File` object represents a document that has been uploaded to OpenAI.
+     * The status of the Upload. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun file(): Optional<FileObject> = file.getOptional("file")
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): Status = status.getRequired("status")
+
+    /**
+     * The `File` object represents a document that has been uploaded to OpenAI. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun file(): java.util.Optional<FileObject> = file.getOptional("file")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun fileOrThrow(): FileObject = file.getRequired("file")
 
     /**
      * Returns the raw JSON value of [id].
@@ -455,18 +505,14 @@ private constructor(
             return@apply
         }
 
-        id()
-        bytes()
-        createdAt()
-        expiresAt()
-        filename()
-        _object_().let {
-            if (it != JsonValue.from("upload")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        purpose()
-        status().validate()
+        idOrThrow()
+        bytesOrThrow()
+        createdAtOrThrow()
+        expiresAtOrThrow()
+        filenameOrThrow()
+        object_OrThrow()
+        purposeOrThrow()
+        statusOrThrow().validate()
         file().ifPresent { it.validate() }
         validated = true
     }

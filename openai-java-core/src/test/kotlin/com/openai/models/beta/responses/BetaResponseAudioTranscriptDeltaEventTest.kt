@@ -22,8 +22,8 @@ internal class BetaResponseAudioTranscriptDeltaEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseAudioTranscriptDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(betaResponseAudioTranscriptDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseAudioTranscriptDeltaEvent.delta()).contains("delta")
+        assertThat(betaResponseAudioTranscriptDeltaEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseAudioTranscriptDeltaEvent.agent())
             .contains(
                 BetaResponseAudioTranscriptDeltaEvent.Agent.builder()

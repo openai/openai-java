@@ -24,7 +24,7 @@ internal class RealtimeFunctionToolTest {
         assertThat(realtimeFunctionTool.name()).contains("name")
         assertThat(realtimeFunctionTool._parameters())
             .isEqualTo(JsonValue.from(mapOf<String, Any>()))
-        assertThat(realtimeFunctionTool.type()).contains(RealtimeFunctionTool.Type.FUNCTION)
+        assertThat(realtimeFunctionTool.type()).contains(JsonValue.from("function"))
 
         val jsonMapper = jsonMapper()
 

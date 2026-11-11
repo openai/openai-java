@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.beta.agents.sessions.ArtifactService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see ArtifactService.list */
 class ArtifactListPage
@@ -18,22 +16,23 @@ private constructor(
     private val response: ArtifactListPageResponse,
 ) : Page<SessionArtifact> {
 
-    /**
-     * Delegates to [ArtifactListPageResponse], but gracefully handles missing data.
-     *
-     * @see ArtifactListPageResponse.data
-     */
-    fun data(): List<SessionArtifact> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see ArtifactListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [ArtifactListPageResponse], but gracefully handles missing data.
-     *
-     * @see ArtifactListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<SessionArtifact> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<SessionArtifact> = data()
+    fun _data() = response._data()
+
+    /** @see ArtifactListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<SessionArtifact> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

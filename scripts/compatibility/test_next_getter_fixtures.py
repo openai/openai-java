@@ -61,11 +61,9 @@ class ArchivedGetterTest(unittest.TestCase):
 
     def test_realtime_factory_and_required_getter_migrations_compose(self):
         root = Path(__file__).resolve().parents[2]
-        original = (root / realtime.FIXTURE).read_bytes()
-        # These two names may already be migrated in a newer checkout.
-        original = original.replace(realtime.NEW_CALL, realtime.OLD_CALL).replace(
-            b"assertThat(sessionUpdateEvent.sessionOrThrow())", b"assertThat(sessionUpdateEvent.session())"
-        )
+        # Preserve the exact pre-getter blob used by the archived migration patch.
+        fixture = Path(__file__).parent / "fixtures" / "SessionUpdateEventTest.kt.fixture"
+        original = fixture.read_bytes()
         full_patch = (root / PATCH).read_bytes()
         sections = full_patch.split(b"diff --git ")
         header = f"a/{realtime.FIXTURE} b/{realtime.FIXTURE}\n".encode()

@@ -27,18 +27,18 @@ internal class CertificateTest {
                 .active(true)
                 .build()
 
-        assertThat(certificate.id()).isEqualTo("id")
+        assertThat(certificate.id()).contains("id")
         assertThat(certificate.certificateDetails())
-            .isEqualTo(
+            .contains(
                 Certificate.CertificateDetails.builder()
                     .content("content")
                     .expiresAt(0L)
                     .validAt(0L)
                     .build()
             )
-        assertThat(certificate.createdAt()).isEqualTo(0L)
+        assertThat(certificate.createdAt()).contains(0L)
         assertThat(certificate.name()).contains("name")
-        assertThat(certificate.object_()).isEqualTo(Certificate.Object.CERTIFICATE)
+        assertThat(certificate.object_()).contains(Certificate.Object.CERTIFICATE)
         assertThat(certificate.active()).contains(true)
 
         val jsonMapper = jsonMapper()

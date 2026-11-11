@@ -125,7 +125,8 @@ internal class SseTerminalEventTest {
                 }
             }
             assertThat(closeCount).isEqualTo(1)
-            assertThat(events.map { it.asOutputTextDelta().delta() }).containsExactly("accepted")
+            assertThat(events.map { it.asOutputTextDelta().deltaOrThrow() })
+                .containsExactly("accepted")
         } finally {
             client.close()
         }

@@ -25,11 +25,11 @@ internal class BetaResponseReasoningSummaryTextDeltaEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseReasoningSummaryTextDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(betaResponseReasoningSummaryTextDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseReasoningSummaryTextDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseReasoningSummaryTextDeltaEvent.sequenceNumber()).isEqualTo(0L)
-        assertThat(betaResponseReasoningSummaryTextDeltaEvent.summaryIndex()).isEqualTo(0L)
+        assertThat(betaResponseReasoningSummaryTextDeltaEvent.delta()).contains("delta")
+        assertThat(betaResponseReasoningSummaryTextDeltaEvent.itemId()).contains("item_id")
+        assertThat(betaResponseReasoningSummaryTextDeltaEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseReasoningSummaryTextDeltaEvent.sequenceNumber()).contains(0L)
+        assertThat(betaResponseReasoningSummaryTextDeltaEvent.summaryIndex()).contains(0L)
         assertThat(betaResponseReasoningSummaryTextDeltaEvent.agent())
             .contains(
                 BetaResponseReasoningSummaryTextDeltaEvent.Agent.builder()

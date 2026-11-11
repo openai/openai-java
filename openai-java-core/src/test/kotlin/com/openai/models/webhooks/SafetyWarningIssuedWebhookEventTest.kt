@@ -18,10 +18,10 @@ internal class SafetyWarningIssuedWebhookEventTest {
                 .data(SafetyWarningIssuedWebhookEvent.Data.builder().id("id").build())
                 .build()
 
-        assertThat(safetyWarningIssuedWebhookEvent.id()).isEqualTo("id")
-        assertThat(safetyWarningIssuedWebhookEvent.createdAt()).isEqualTo(0L)
+        assertThat(safetyWarningIssuedWebhookEvent.id()).contains("id")
+        assertThat(safetyWarningIssuedWebhookEvent.createdAt()).contains(0L)
         assertThat(safetyWarningIssuedWebhookEvent.data())
-            .isEqualTo(SafetyWarningIssuedWebhookEvent.Data.builder().id("id").build())
+            .contains(SafetyWarningIssuedWebhookEvent.Data.builder().id("id").build())
 
         val jsonMapper = jsonMapper()
 

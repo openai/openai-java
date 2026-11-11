@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.externalkeys
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -46,7 +47,7 @@ internal class ExternalKeyListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(externalKeyListPageResponse.data())
+        assertThat(externalKeyListPageResponse.data().getOrNull())
             .containsExactly(
                 ExternalKey.builder()
                     .id("id")
@@ -76,7 +77,7 @@ internal class ExternalKeyListPageResponseTest {
                     .build()
             )
         assertThat(externalKeyListPageResponse.firstId()).contains("first_id")
-        assertThat(externalKeyListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(externalKeyListPageResponse.hasMore()).contains(true)
         assertThat(externalKeyListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

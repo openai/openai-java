@@ -19,9 +19,9 @@ internal class CommentaryAppendedEventTest {
                 .clientEventId("evt_commentary_001")
                 .build()
 
-        assertThat(commentaryAppendedEvent.endMs()).isEqualTo(5400L)
-        assertThat(commentaryAppendedEvent.eventId()).isEqualTo("evt_commentary_002")
-        assertThat(commentaryAppendedEvent.startMs()).isEqualTo(5200L)
+        assertThat(commentaryAppendedEvent.endMs()).contains(5400L)
+        assertThat(commentaryAppendedEvent.eventId()).contains("evt_commentary_002")
+        assertThat(commentaryAppendedEvent.startMs()).contains(5200L)
         assertThat(commentaryAppendedEvent.clientEventId()).contains("evt_commentary_001")
 
         val jsonMapper = jsonMapper()

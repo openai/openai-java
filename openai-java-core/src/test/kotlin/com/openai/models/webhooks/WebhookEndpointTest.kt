@@ -4,6 +4,7 @@ package com.openai.models.webhooks
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -22,12 +23,12 @@ internal class WebhookEndpointTest {
                 .updatedAt(0L)
                 .build()
 
-        assertThat(webhookEndpoint.id()).isEqualTo("id")
-        assertThat(webhookEndpoint.createdAt()).isEqualTo(0L)
-        assertThat(webhookEndpoint.eventTypes()).containsExactly("string")
-        assertThat(webhookEndpoint.name()).isEqualTo("name")
+        assertThat(webhookEndpoint.id()).contains("id")
+        assertThat(webhookEndpoint.createdAt()).contains(0L)
+        assertThat(webhookEndpoint.eventTypes().getOrNull()).containsExactly("string")
+        assertThat(webhookEndpoint.name()).contains("name")
         assertThat(webhookEndpoint.signingSecretHint()).contains("signing_secret_hint")
-        assertThat(webhookEndpoint.url()).isEqualTo("url")
+        assertThat(webhookEndpoint.url()).contains("url")
         assertThat(webhookEndpoint.updatedAt()).contains(0L)
 
         val jsonMapper = jsonMapper()

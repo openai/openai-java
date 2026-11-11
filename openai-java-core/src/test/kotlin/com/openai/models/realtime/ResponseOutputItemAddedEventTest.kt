@@ -31,9 +31,9 @@ internal class ResponseOutputItemAddedEventTest {
                 .responseId("response_id")
                 .build()
 
-        assertThat(responseOutputItemAddedEvent.eventId()).isEqualTo("event_id")
+        assertThat(responseOutputItemAddedEvent.eventId()).contains("event_id")
         assertThat(responseOutputItemAddedEvent.item())
-            .isEqualTo(
+            .contains(
                 ConversationItem.ofRealtimeConversationItemSystemMessage(
                     RealtimeConversationItemSystemMessage.builder()
                         .addContent(
@@ -48,8 +48,8 @@ internal class ResponseOutputItemAddedEventTest {
                         .build()
                 )
             )
-        assertThat(responseOutputItemAddedEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseOutputItemAddedEvent.responseId()).isEqualTo("response_id")
+        assertThat(responseOutputItemAddedEvent.outputIndex()).contains(0L)
+        assertThat(responseOutputItemAddedEvent.responseId()).contains("response_id")
 
         val jsonMapper = jsonMapper()
 

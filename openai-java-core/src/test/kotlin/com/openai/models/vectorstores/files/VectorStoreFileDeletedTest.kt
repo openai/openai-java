@@ -13,8 +13,8 @@ internal class VectorStoreFileDeletedTest {
     fun createAndRoundtrip() {
         val vectorStoreFileDeleted = VectorStoreFileDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(vectorStoreFileDeleted.id()).isEqualTo("id")
-        assertThat(vectorStoreFileDeleted.deleted()).isEqualTo(true)
+        assertThat(vectorStoreFileDeleted.id()).contains("id")
+        assertThat(vectorStoreFileDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

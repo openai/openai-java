@@ -22,13 +22,13 @@ internal class ResponseFunctionCallArgumentsDoneEventTest {
                 .responseId("response_id")
                 .build()
 
-        assertThat(responseFunctionCallArgumentsDoneEvent.arguments()).isEqualTo("arguments")
-        assertThat(responseFunctionCallArgumentsDoneEvent.callId()).isEqualTo("call_id")
-        assertThat(responseFunctionCallArgumentsDoneEvent.eventId()).isEqualTo("event_id")
-        assertThat(responseFunctionCallArgumentsDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseFunctionCallArgumentsDoneEvent.name()).isEqualTo("name")
-        assertThat(responseFunctionCallArgumentsDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseFunctionCallArgumentsDoneEvent.responseId()).isEqualTo("response_id")
+        assertThat(responseFunctionCallArgumentsDoneEvent.arguments()).contains("arguments")
+        assertThat(responseFunctionCallArgumentsDoneEvent.callId()).contains("call_id")
+        assertThat(responseFunctionCallArgumentsDoneEvent.eventId()).contains("event_id")
+        assertThat(responseFunctionCallArgumentsDoneEvent.itemId()).contains("item_id")
+        assertThat(responseFunctionCallArgumentsDoneEvent.name()).contains("name")
+        assertThat(responseFunctionCallArgumentsDoneEvent.outputIndex()).contains(0L)
+        assertThat(responseFunctionCallArgumentsDoneEvent.responseId()).contains("response_id")
 
         val jsonMapper = jsonMapper()
 

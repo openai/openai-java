@@ -3,7 +3,9 @@
 package com.openai.models.beta.agents
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -17,14 +19,13 @@ internal class AgentSessionInputMessageParamTest {
                 .type(AgentSessionInputMessageParam.Type.MESSAGE)
                 .build()
 
-        assertThat(agentSessionInputMessageParam.content())
+        assertThat(agentSessionInputMessageParam.content().getOrNull())
             .containsExactly(
                 InputContentParam.ofInputText(
                     InputContentParam.InputText.builder().text("text").build()
                 )
             )
-        assertThat(agentSessionInputMessageParam.type())
-            .contains(AgentSessionInputMessageParam.Type.MESSAGE)
+        assertThat(agentSessionInputMessageParam.type()).contains(JsonValue.from("message"))
 
         val jsonMapper = jsonMapper()
 

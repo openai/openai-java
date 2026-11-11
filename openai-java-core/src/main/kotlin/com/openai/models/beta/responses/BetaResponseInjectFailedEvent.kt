@@ -54,58 +54,93 @@ private constructor(
     ) : this(error, input, responseId, sequenceNumber, type, streamId, mutableMapOf())
 
     /**
-     * Information about why the input was not committed.
+     * Information about why the input was not committed. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun error(): Error = error.getRequired("error")
+    fun error(): java.util.Optional<Error> = error.getOptional("error")
 
     /**
-     * The raw input items that were not committed.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun input(): List<BetaResponseInputItem> = input.getRequired("input")
+    fun errorOrThrow(): Error = error.getRequired("error")
 
     /**
-     * The ID of the response that rejected the input.
+     * The raw input items that were not committed. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun responseId(): String = responseId.getRequired("response_id")
+    fun input(): java.util.Optional<List<BetaResponseInputItem>> = input.getOptional("input")
 
     /**
-     * The sequence number for this event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
+    fun inputOrThrow(): List<BetaResponseInputItem> = input.getRequired("input")
 
     /**
-     * The event discriminator. Always `response.inject.failed`.
+     * The ID of the response that rejected the input. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.inject.failed")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun responseId(): java.util.Optional<String> = responseId.getOptional("response_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun responseIdOrThrow(): String = responseId.getRequired("response_id")
+
+    /**
+     * The sequence number for this event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun sequenceNumber(): java.util.Optional<Long> = sequenceNumber.getOptional("sequence_number")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sequenceNumberOrThrow(): Long = sequenceNumber.getRequired("sequence_number")
+
+    /**
+     * The event discriminator. Always `response.inject.failed`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.inject.failed")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * The multiplexed WebSocket stream that emitted the event. This field is present only when
-     * WebSocket multiplexing is enabled separately.
+     * WebSocket multiplexing is enabled separately. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun streamId(): Optional<String> = streamId.getOptional("stream_id")
+    fun streamId(): java.util.Optional<String> = streamId.getOptional("stream_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun streamIdOrThrow(): String = streamId.getRequired("stream_id")
 
     /**
      * Returns the raw JSON value of [error].
@@ -695,15 +730,11 @@ private constructor(
             return@apply
         }
 
-        error().validate()
-        input().forEach { it.validate() }
-        responseId()
-        sequenceNumber()
-        _type().let {
-            if (it != JsonValue.from("response.inject.failed")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        errorOrThrow().validate()
+        inputOrThrow().forEach { it.validate() }
+        responseIdOrThrow()
+        sequenceNumberOrThrow()
+        typeOrThrow()
         streamId()
         validated = true
     }
@@ -746,20 +777,32 @@ private constructor(
         ) : this(code, message, mutableMapOf())
 
         /**
-         * A machine-readable error code.
+         * A machine-readable error code. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun code(): Code = code.getRequired("code")
+        fun code(): java.util.Optional<Code> = code.getOptional("code")
 
         /**
-         * A human-readable description of the error.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun message(): String = message.getRequired("message")
+        fun codeOrThrow(): Code = code.getRequired("code")
+
+        /**
+         * A human-readable description of the error. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun message(): java.util.Optional<String> = message.getOptional("message")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun messageOrThrow(): String = message.getRequired("message")
 
         /**
          * Returns the raw JSON value of [code].
@@ -913,8 +956,8 @@ private constructor(
                 return@apply
             }
 
-            code().validate()
-            message()
+            codeOrThrow().validate()
+            messageOrThrow()
             validated = true
         }
 

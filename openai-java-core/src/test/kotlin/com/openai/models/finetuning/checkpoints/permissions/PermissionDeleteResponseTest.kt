@@ -14,8 +14,8 @@ internal class PermissionDeleteResponseTest {
         val permissionDeleteResponse =
             PermissionDeleteResponse.builder().id("id").deleted(true).build()
 
-        assertThat(permissionDeleteResponse.id()).isEqualTo("id")
-        assertThat(permissionDeleteResponse.deleted()).isEqualTo(true)
+        assertThat(permissionDeleteResponse.id()).contains("id")
+        assertThat(permissionDeleteResponse.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

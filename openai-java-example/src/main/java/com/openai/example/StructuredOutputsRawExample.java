@@ -35,8 +35,8 @@ public final class StructuredOutputsRawExample {
                 .addUserMessage("Who works at OpenAI?")
                 .build();
 
-        client.chat().completions().create(createParams).choices().stream()
-                .flatMap(choice -> choice.message().content().stream())
+        client.chat().completions().create(createParams).choicesOrThrow().stream()
+                .flatMap(choice -> choice.messageOrThrow().content().stream())
                 .forEach(System.out::println);
     }
 }

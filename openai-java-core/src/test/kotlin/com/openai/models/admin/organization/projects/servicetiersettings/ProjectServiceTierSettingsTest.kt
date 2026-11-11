@@ -18,9 +18,9 @@ internal class ProjectServiceTierSettingsTest {
                 .build()
 
         assertThat(projectServiceTierSettings.default_())
-            .isEqualTo(ProjectServiceTierSettings.Default.STANDARD)
+            .contains(ProjectServiceTierSettings.Default.STANDARD)
         assertThat(projectServiceTierSettings.enabledTiers())
-            .isEqualTo(ProjectServiceTierSettings.EnabledTiers.ofAll())
+            .contains(ProjectServiceTierSettings.EnabledTiers.ofAll())
 
         val jsonMapper = jsonMapper()
 

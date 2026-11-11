@@ -23,7 +23,7 @@ internal class CodeInterpreterToolCallDeltaTest {
                 )
                 .build()
 
-        assertThat(codeInterpreterToolCallDelta.index()).isEqualTo(0L)
+        assertThat(codeInterpreterToolCallDelta.index()).contains(0L)
         assertThat(codeInterpreterToolCallDelta.id()).contains("id")
         assertThat(codeInterpreterToolCallDelta.codeInterpreter())
             .contains(

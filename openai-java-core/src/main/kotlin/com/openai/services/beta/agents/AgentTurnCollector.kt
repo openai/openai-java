@@ -36,24 +36,28 @@ internal class AgentTurnCollector(
         if (failure != null || isReady()) return
         try {
             event.created().getOrNull()?.let {
-                if (sessionId == null) sessionId = it.session().id()
+                if (sessionId == null) sessionId = it.sessionOrThrow().idOrThrow()
             }
-            event.turnCreated().getOrNull()?.turn()?.let {
+            event.turnCreated().getOrNull()?.turnOrThrow()?.let {
                 if (
                     turn == null &&
                         !it.subagentId().isPresent &&
-                        (sessionId == null || sessionId == it.sessionId())
+                        (sessionId == null || sessionId == it.sessionIdOrThrow())
                 ) {
                     turn = it
-                    sessionId = it.sessionId()
+                    sessionId = it.sessionIdOrThrow()
                 }
             }
             val updated =
-                event.turnInProgress().getOrNull()?.turn()
-                    ?: event.turnCompleted().getOrNull()?.turn()
-                    ?: event.turnFailed().getOrNull()?.turn()
-                    ?: event.turnCancelled().getOrNull()?.turn()
-            if (updated != null && updated.id() == turn?.id() && updated.sessionId() == sessionId) {
+                event.turnInProgress().getOrNull()?.turnOrThrow()
+                    ?: event.turnCompleted().getOrNull()?.turnOrThrow()
+                    ?: event.turnFailed().getOrNull()?.turnOrThrow()
+                    ?: event.turnCancelled().getOrNull()?.turnOrThrow()
+            if (
+                updated != null &&
+                    updated.idOrThrow() == turn?.idOrThrow() &&
+                    updated.sessionIdOrThrow() == sessionId
+            ) {
                 turn = updated
                 if (event.isTurnCompleted()) {
                     completed = true
@@ -63,33 +67,38 @@ internal class AgentTurnCollector(
                 if (event.isTurnCancelled()) failure = error(Reason.TURN_CANCELLED)
             }
             event.turnItemDone().getOrNull()?.let {
-                val message = it.item().message().getOrNull()
+                val message = it.itemOrThrow().message().getOrNull()
                 if (
-                    message != null && it.sessionId() == sessionId && message.turnId() == turn?.id()
+                    message != null &&
+                        it.sessionIdOrThrow() == sessionId &&
+                        message.turnIdOrThrow() == turn?.idOrThrow()
                 ) {
                     if (
                         message.phase().getOrNull() == AgentSessionAssistantMessage.Phase.COMMENTARY
                     )
-                        messages.remove(message.id())
-                    else messages[message.id()] = it.outputIndex() to normalize(message)
+                        messages.remove(message.idOrThrow())
+                    else
+                        messages[message.idOrThrow()] =
+                            it.outputIndexOrThrow() to normalize(message)
                 }
             }
-            event.requiresAction().getOrNull()?.session()?.let {
-                if (it.id() == sessionId && !completed)
+            event.requiresAction().getOrNull()?.sessionOrThrow()?.let {
+                if (it.idOrThrow() == sessionId && !completed)
                     pending =
-                        it.requiredActions().filter { action ->
-                            action.functionCall().getOrNull()?.name() !in handledTools
+                        it.requiredActionsOrThrow().filter { action ->
+                            action.functionCall().getOrNull()?.nameOrThrow() !in handledTools
                         }
             }
-            event.inProgress().getOrNull()?.session()?.let {
-                if (it.id() == sessionId) pending = emptyList()
+            event.inProgress().getOrNull()?.sessionOrThrow()?.let {
+                if (it.idOrThrow() == sessionId) pending = emptyList()
             }
-            event.failed().getOrNull()?.session()?.let {
-                if (sessionId == null || it.id() == sessionId) failure = error(Reason.TURN_FAILED)
+            event.failed().getOrNull()?.sessionOrThrow()?.let {
+                if (sessionId == null || it.idOrThrow() == sessionId)
+                    failure = error(Reason.TURN_FAILED)
             }
             if (event.isError()) failure = error(Reason.STREAM_ERROR)
-            event.idle().getOrNull()?.session()?.let {
-                if (completed && it.id() == sessionId) idle = true
+            event.idle().getOrNull()?.sessionOrThrow()?.let {
+                if (completed && it.idOrThrow() == sessionId) idle = true
             }
         } catch (cause: Exception) {
             failure = error(Reason.STREAM_ERROR, cause)
@@ -98,16 +107,16 @@ internal class AgentTurnCollector(
 
     private fun normalize(message: AgentSessionAssistantMessage): AgentSessionMessage =
         AgentSessionMessage.builder()
-            .id(message.id())
-            .turnId(message.turnId())
+            .id(message.idOrThrow())
+            .turnId(message.turnIdOrThrow())
             .role(AgentSessionMessage.Role.ASSISTANT)
             .phase(message.phase().map { AgentSessionMessage.Phase.of(it.toString()) })
-            .status(message.status())
+            .status(message.statusOrThrow())
             .content(
-                message.content().map {
+                message.contentOrThrow().map {
                     AgentSessionMessageContent.ofOutputText(
                         AgentSessionMessageContent.OutputText.builder()
-                            .text(it.text())
+                            .text(it.textOrThrow())
                             .putAllAdditionalProperties(it._additionalProperties())
                             .build()
                     )

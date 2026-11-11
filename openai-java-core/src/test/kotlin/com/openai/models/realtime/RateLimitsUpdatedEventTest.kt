@@ -4,6 +4,7 @@ package com.openai.models.realtime
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -24,8 +25,8 @@ internal class RateLimitsUpdatedEventTest {
                 )
                 .build()
 
-        assertThat(rateLimitsUpdatedEvent.eventId()).isEqualTo("event_id")
-        assertThat(rateLimitsUpdatedEvent.rateLimits())
+        assertThat(rateLimitsUpdatedEvent.eventId()).contains("event_id")
+        assertThat(rateLimitsUpdatedEvent.rateLimits().getOrNull())
             .containsExactly(
                 RateLimitsUpdatedEvent.RateLimit.builder()
                     .limit(0L)

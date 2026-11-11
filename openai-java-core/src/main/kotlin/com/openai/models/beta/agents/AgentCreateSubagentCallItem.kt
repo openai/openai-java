@@ -55,73 +55,119 @@ private constructor(
     ) : this(id, agentId, content, model, reasoningEffort, status, turnId, type, mutableMapOf())
 
     /**
-     * The ID of the tool call item.
+     * The ID of the tool call item. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The ID of the agent that requested the subagent.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun agentId(): String = agentId.getRequired("agent_id")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The task given to the spawned agent.
+     * The ID of the agent that requested the subagent. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun content(): List<AgentContent> = content.getRequired("content")
+    fun agentId(): java.util.Optional<String> = agentId.getOptional("agent_id")
 
     /**
-     * The model requested for the spawned agent.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun model(): Optional<String> = model.getOptional("model")
+    fun agentIdOrThrow(): String = agentId.getRequired("agent_id")
 
     /**
-     * The reasoning effort requested for the spawned agent.
+     * The task given to the spawned agent. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun reasoningEffort(): Optional<String> = reasoningEffort.getOptional("reasoning_effort")
+    fun content(): java.util.Optional<List<AgentContent>> = content.getOptional("content")
 
     /**
-     * The status of the tool call.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun status(): AgentFunctionCallStatus = status.getRequired("status")
+    fun contentOrThrow(): List<AgentContent> = content.getRequired("content")
 
     /**
-     * The ID of the turn that contains this item.
+     * The model requested for the spawned agent. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun turnId(): String = turnId.getRequired("turn_id")
+    fun model(): java.util.Optional<String> = model.getOptional("model")
 
     /**
-     * The item type. Always `create_subagent_call`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("create_subagent_call")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun modelOrThrow(): String = model.getRequired("model")
+
+    /**
+     * The reasoning effort requested for the spawned agent. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun reasoningEffort(): java.util.Optional<String> =
+        reasoningEffort.getOptional("reasoning_effort")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun reasoningEffortOrThrow(): String = reasoningEffort.getRequired("reasoning_effort")
+
+    /**
+     * The status of the tool call. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun status(): java.util.Optional<AgentFunctionCallStatus> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): AgentFunctionCallStatus = status.getRequired("status")
+
+    /**
+     * The ID of the turn that contains this item. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun turnId(): java.util.Optional<String> = turnId.getOptional("turn_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun turnIdOrThrow(): String = turnId.getRequired("turn_id")
+
+    /**
+     * The item type. Always `create_subagent_call`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("create_subagent_call")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [id].
@@ -467,18 +513,14 @@ private constructor(
             return@apply
         }
 
-        id()
-        agentId()
-        content().forEach { it.validate() }
+        idOrThrow()
+        agentIdOrThrow()
+        contentOrThrow().forEach { it.validate() }
         model()
         reasoningEffort()
-        status().validate()
-        turnId()
-        _type().let {
-            if (it != JsonValue.from("create_subagent_call")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        statusOrThrow().validate()
+        turnIdOrThrow()
+        typeOrThrow()
         validated = true
     }
 

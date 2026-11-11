@@ -184,7 +184,7 @@ internal class SessionForkParamsTest {
 
         val body = params._body()
 
-        assertThat(body.transport())
+        assertThat(body.transportOrThrow())
             .isEqualTo(SessionForkParams.Transport.builder().sdp("x").build())
         assertThat(body.session())
             .contains(
@@ -267,7 +267,7 @@ internal class SessionForkParamsTest {
 
         val body = params._body()
 
-        assertThat(body.transport())
+        assertThat(body.transportOrThrow())
             .isEqualTo(SessionForkParams.Transport.builder().sdp("x").build())
     }
 }

@@ -4,6 +4,7 @@ package com.openai.models.moderations
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -87,9 +88,9 @@ internal class ModerationCreateResponseTest {
                 )
                 .build()
 
-        assertThat(moderationCreateResponse.id()).isEqualTo("id")
-        assertThat(moderationCreateResponse.model()).isEqualTo("model")
-        assertThat(moderationCreateResponse.results())
+        assertThat(moderationCreateResponse.id()).contains("id")
+        assertThat(moderationCreateResponse.model()).contains("model")
+        assertThat(moderationCreateResponse.results().getOrNull())
             .containsExactly(
                 Moderation.builder()
                     .categories(

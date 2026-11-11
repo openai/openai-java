@@ -24,7 +24,7 @@ internal class FunctionDefinitionTest {
                 .strict(true)
                 .build()
 
-        assertThat(functionDefinition.name()).isEqualTo("name")
+        assertThat(functionDefinition.name()).contains("name")
         assertThat(functionDefinition.description()).contains("description")
         assertThat(functionDefinition.parameters())
             .contains(

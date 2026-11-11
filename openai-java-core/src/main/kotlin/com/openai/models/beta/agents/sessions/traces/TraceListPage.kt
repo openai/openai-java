@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.beta.agents.sessions.TraceService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see TraceService.list */
 class TraceListPage
@@ -18,21 +16,23 @@ private constructor(
     private val response: TraceListPageResponse,
 ) : Page<SessionTrace> {
 
-    /**
-     * Delegates to [TraceListPageResponse], but gracefully handles missing data.
-     *
-     * @see TraceListPageResponse.data
-     */
-    fun data(): List<SessionTrace> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see TraceListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [TraceListPageResponse], but gracefully handles missing data.
-     *
-     * @see TraceListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<SessionTrace> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<SessionTrace> = data()
+    fun _data() = response._data()
+
+    /** @see TraceListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<SessionTrace> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

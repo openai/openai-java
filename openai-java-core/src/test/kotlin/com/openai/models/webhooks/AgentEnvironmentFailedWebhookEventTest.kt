@@ -18,10 +18,10 @@ internal class AgentEnvironmentFailedWebhookEventTest {
                 .data(AgentEnvironmentFailedWebhookEvent.Data.builder().id("id").build())
                 .build()
 
-        assertThat(agentEnvironmentFailedWebhookEvent.id()).isEqualTo("id")
-        assertThat(agentEnvironmentFailedWebhookEvent.createdAt()).isEqualTo(0L)
+        assertThat(agentEnvironmentFailedWebhookEvent.id()).contains("id")
+        assertThat(agentEnvironmentFailedWebhookEvent.createdAt()).contains(0L)
         assertThat(agentEnvironmentFailedWebhookEvent.data())
-            .isEqualTo(AgentEnvironmentFailedWebhookEvent.Data.builder().id("id").build())
+            .contains(AgentEnvironmentFailedWebhookEvent.Data.builder().id("id").build())
 
         val jsonMapper = jsonMapper()
 

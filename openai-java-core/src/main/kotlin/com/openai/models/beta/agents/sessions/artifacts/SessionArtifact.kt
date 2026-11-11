@@ -56,73 +56,118 @@ private constructor(
     )
 
     /**
-     * The immutable artifact ID.
+     * The immutable artifact ID. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The Unix timestamp, in seconds, when the artifact was published.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The ID of the environment that produced the artifact.
+     * The Unix timestamp, in seconds, when the artifact was published. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun environmentId(): String = environmentId.getRequired("environment_id")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * The object type. Always `agent.session.artifact`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("agent.session.artifact")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
     /**
-     * The original absolute file path in the execution environment.
+     * The ID of the environment that produced the artifact. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun path(): String = path.getRequired("path")
+    fun environmentId(): java.util.Optional<String> = environmentId.getOptional("environment_id")
 
     /**
-     * The ID of the session that owns the artifact.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun sessionId(): String = sessionId.getRequired("session_id")
+    fun environmentIdOrThrow(): String = environmentId.getRequired("environment_id")
 
     /**
-     * The immutable artifact size in bytes.
+     * The object type. Always `agent.session.artifact`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun sizeBytes(): Long = sizeBytes.getRequired("size_bytes")
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("agent.session.artifact")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The ID of the completed turn that published the artifact.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun turnId(): String = turnId.getRequired("turn_id")
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * The original absolute file path in the execution environment. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun path(): java.util.Optional<String> = path.getOptional("path")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun pathOrThrow(): String = path.getRequired("path")
+
+    /**
+     * The ID of the session that owns the artifact. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun sessionId(): java.util.Optional<String> = sessionId.getOptional("session_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sessionIdOrThrow(): String = sessionId.getRequired("session_id")
+
+    /**
+     * The immutable artifact size in bytes. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun sizeBytes(): java.util.Optional<Long> = sizeBytes.getOptional("size_bytes")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sizeBytesOrThrow(): Long = sizeBytes.getRequired("size_bytes")
+
+    /**
+     * The ID of the completed turn that published the artifact. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun turnId(): java.util.Optional<String> = turnId.getOptional("turn_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun turnIdOrThrow(): String = turnId.getRequired("turn_id")
 
     /**
      * Returns the raw JSON value of [id].
@@ -417,18 +462,14 @@ private constructor(
             return@apply
         }
 
-        id()
-        createdAt()
-        environmentId()
-        _object_().let {
-            if (it != JsonValue.from("agent.session.artifact")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        path()
-        sessionId()
-        sizeBytes()
-        turnId()
+        idOrThrow()
+        createdAtOrThrow()
+        environmentIdOrThrow()
+        object_OrThrow()
+        pathOrThrow()
+        sessionIdOrThrow()
+        sizeBytesOrThrow()
+        turnIdOrThrow()
         validated = true
     }
 

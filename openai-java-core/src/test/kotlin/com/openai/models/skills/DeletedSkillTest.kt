@@ -13,8 +13,8 @@ internal class DeletedSkillTest {
     fun createAndRoundtrip() {
         val deletedSkill = DeletedSkill.builder().id("id").deleted(true).build()
 
-        assertThat(deletedSkill.id()).isEqualTo("id")
-        assertThat(deletedSkill.deleted()).isEqualTo(true)
+        assertThat(deletedSkill.id()).contains("id")
+        assertThat(deletedSkill.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

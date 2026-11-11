@@ -92,36 +92,56 @@ private constructor(
     )
 
     /**
-     * The identifier, which can be referenced in API endpoints.
+     * The identifier, which can be referenced in API endpoints. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The Unix timestamp (in seconds) for when the assistant was created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The description of the assistant. The maximum length is 512 characters.
+     * The Unix timestamp (in seconds) for when the assistant was created. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun description(): Optional<String> = description.getOptional("description")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * The description of the assistant. The maximum length is 512 characters. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun description(): java.util.Optional<String> = description.getOptional("description")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun descriptionOrThrow(): String = description.getRequired("description")
 
     /**
      * The system instructions that the assistant uses. The maximum length is 256,000 characters.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun instructions(): Optional<String> = instructions.getOptional("instructions")
+    fun instructions(): java.util.Optional<String> = instructions.getOptional("instructions")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun instructionsOrThrow(): String = instructions.getRequired("instructions")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -129,53 +149,83 @@ private constructor(
      * API or the dashboard.
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * length of 512 characters. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+    fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
 
     /**
      * ID of the model to use. You can use the
      * [List models](https://developers.openai.com/api/reference/resources/models/methods/list) API
      * to see all of your available models, or see our
-     * [Model overview](https://developers.openai.com/api/docs/models) for descriptions of them.
+     * [Model overview](https://developers.openai.com/api/docs/models) for descriptions of them. The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun model(): String = model.getRequired("model")
+    fun model(): java.util.Optional<String> = model.getOptional("model")
 
     /**
-     * The name of the assistant. The maximum length is 256 characters.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): Optional<String> = name.getOptional("name")
+    fun modelOrThrow(): String = model.getRequired("model")
 
     /**
-     * The object type, which is always `assistant`.
+     * The name of the assistant. The maximum length is 256 characters. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("assistant")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
+
+    /**
+     * The object type, which is always `assistant`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("assistant")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant.
-     * Tools can be of types `code_interpreter`, `file_search`, or `function`.
+     * Tools can be of types `code_interpreter`, `file_search`, or `function`. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun tools(): List<AssistantTool> = tools.getRequired("tools")
+    fun tools(): java.util.Optional<List<AssistantTool>> = tools.getOptional("tools")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun toolsOrThrow(): List<AssistantTool> = tools.getRequired("tools")
 
     /**
      * Specifies the format that the model must output. Compatible with
@@ -195,44 +245,66 @@ private constructor(
      * stream of whitespace until the generation reaches the token limit, resulting in a
      * long-running and seemingly "stuck" request. Also note that the message content may be
      * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-     * `max_tokens` or the conversation exceeded the max context length.
+     * `max_tokens` or the conversation exceeded the max context length. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun responseFormat(): Optional<AssistantResponseFormatOption> =
+    fun responseFormat(): java.util.Optional<AssistantResponseFormatOption> =
         responseFormat.getOptional("response_format")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun responseFormatOrThrow(): AssistantResponseFormatOption =
+        responseFormat.getRequired("response_format")
 
     /**
      * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
      * output more random, while lower values like 0.2 will make it more focused and deterministic.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun temperature(): Optional<Double> = temperature.getOptional("temperature")
+    fun temperature(): java.util.Optional<Double> = temperature.getOptional("temperature")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun temperatureOrThrow(): Double = temperature.getRequired("temperature")
 
     /**
      * A set of resources that are used by the assistant's tools. The resources are specific to the
      * type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the
-     * `file_search` tool requires a list of vector store IDs.
+     * `file_search` tool requires a list of vector store IDs. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun toolResources(): Optional<ToolResources> = toolResources.getOptional("tool_resources")
+    fun toolResources(): java.util.Optional<ToolResources> =
+        toolResources.getOptional("tool_resources")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun toolResourcesOrThrow(): ToolResources = toolResources.getRequired("tool_resources")
 
     /**
      * An alternative to sampling with temperature, called nucleus sampling, where the model
      * considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens
      * comprising the top 10% probability mass are considered.
      *
-     * We generally recommend altering this or temperature but not both.
+     * We generally recommend altering this or temperature but not both. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun topP(): Optional<Double> = topP.getOptional("top_p")
+    fun topP(): java.util.Optional<Double> = topP.getOptional("top_p")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun topPOrThrow(): Double = topP.getRequired("top_p")
 
     /**
      * Returns the raw JSON value of [id].
@@ -798,19 +870,15 @@ private constructor(
             return@apply
         }
 
-        id()
-        createdAt()
+        idOrThrow()
+        createdAtOrThrow()
         description()
         instructions()
         metadata().ifPresent { it.validate() }
-        model()
+        modelOrThrow()
         name()
-        _object_().let {
-            if (it != JsonValue.from("assistant")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        tools().forEach { it.validate() }
+        object_OrThrow()
+        toolsOrThrow().forEach { it.validate() }
         responseFormat().ifPresent { it.validate() }
         temperature()
         toolResources().ifPresent { it.validate() }
@@ -1005,17 +1073,32 @@ private constructor(
         ) : this(codeInterpreter, fileSearch, mutableMapOf())
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun codeInterpreter(): Optional<CodeInterpreter> =
+        fun codeInterpreter(): java.util.Optional<CodeInterpreter> =
             codeInterpreter.getOptional("code_interpreter")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun fileSearch(): Optional<FileSearch> = fileSearch.getOptional("file_search")
+        fun codeInterpreterOrThrow(): CodeInterpreter =
+            codeInterpreter.getRequired("code_interpreter")
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun fileSearch(): java.util.Optional<FileSearch> = fileSearch.getOptional("file_search")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun fileSearchOrThrow(): FileSearch = fileSearch.getRequired("file_search")
 
         /**
          * Returns the raw JSON value of [codeInterpreter].
@@ -1198,12 +1281,17 @@ private constructor(
             /**
              * A list of [file](https://developers.openai.com/api/reference/resources/files) IDs
              * made available to the `code_interpreter`` tool. There can be a maximum of 20 files
-             * associated with the tool.
+             * associated with the tool. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun fileIds(): Optional<List<String>> = fileIds.getOptional("file_ids")
+            fun fileIds(): java.util.Optional<List<String>> = fileIds.getOptional("file_ids")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun fileIdsOrThrow(): List<String> = fileIds.getRequired("file_ids")
 
             /**
              * Returns the raw JSON value of [fileIds].
@@ -1394,13 +1482,19 @@ private constructor(
              * The ID of the
              * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
              * attached to this assistant. There can be a maximum of 1 vector store attached to the
-             * assistant.
+             * assistant. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun vectorStoreIds(): Optional<List<String>> =
+            fun vectorStoreIds(): java.util.Optional<List<String>> =
                 vectorStoreIds.getOptional("vector_store_ids")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun vectorStoreIdsOrThrow(): List<String> =
+                vectorStoreIds.getRequired("vector_store_ids")
 
             /**
              * Returns the raw JSON value of [vectorStoreIds].

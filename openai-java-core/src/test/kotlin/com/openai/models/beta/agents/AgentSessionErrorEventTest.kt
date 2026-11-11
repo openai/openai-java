@@ -26,7 +26,7 @@ internal class AgentSessionErrorEventTest {
                 .build()
 
         assertThat(agentSessionErrorEvent.error())
-            .isEqualTo(
+            .contains(
                 SessionError.builder()
                     .code("code")
                     .message("message")
@@ -34,8 +34,8 @@ internal class AgentSessionErrorEventTest {
                     .type("type")
                     .build()
             )
-        assertThat(agentSessionErrorEvent.eventId()).isEqualTo("event_id")
-        assertThat(agentSessionErrorEvent.sessionId()).isEqualTo("session_id")
+        assertThat(agentSessionErrorEvent.eventId()).contains("event_id")
+        assertThat(agentSessionErrorEvent.sessionId()).contains("session_id")
 
         val jsonMapper = jsonMapper()
 

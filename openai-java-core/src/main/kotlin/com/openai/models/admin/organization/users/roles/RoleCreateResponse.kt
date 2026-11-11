@@ -37,33 +37,53 @@ private constructor(
     ) : this(object_, role, user, mutableMapOf())
 
     /**
-     * Always `user.role`.
+     * Always `user.role`. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("user.role")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("user.role")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * Details about a role that can be assigned through the public Roles API.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun role(): Role = role.getRequired("role")
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
-     * Represents an individual `user` within an organization.
+     * Details about a role that can be assigned through the public Roles API. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun user(): OrganizationUser = user.getRequired("user")
+    fun role(): java.util.Optional<Role> = role.getOptional("role")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun roleOrThrow(): Role = role.getRequired("role")
+
+    /**
+     * Represents an individual `user` within an organization. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun user(): java.util.Optional<OrganizationUser> = user.getOptional("user")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun userOrThrow(): OrganizationUser = user.getRequired("user")
 
     /**
      * Returns the raw JSON value of [role].
@@ -233,13 +253,9 @@ private constructor(
             return@apply
         }
 
-        _object_().let {
-            if (it != JsonValue.from("user.role")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        role().validate()
-        user().validate()
+        object_OrThrow()
+        roleOrThrow().validate()
+        userOrThrow().validate()
         validated = true
     }
 

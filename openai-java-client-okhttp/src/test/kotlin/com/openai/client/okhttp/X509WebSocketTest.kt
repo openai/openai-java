@@ -42,13 +42,13 @@ internal class X509WebSocketTest {
                     if (async) {
                         client.async().responses().connect(options).get(5, TimeUnit.SECONDS).use {
                             it.send(command())
-                            assertThat(it.finalResponse().get(5, TimeUnit.SECONDS).id())
+                            assertThat(it.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow())
                                 .isEqualTo("resp_test")
                         }
                     } else {
                         client.responses().connect(options).use {
                             it.send(command())
-                            assertThat(it.finalResponse().id()).isEqualTo("resp_test")
+                            assertThat(it.finalResponse().idOrThrow()).isEqualTo("resp_test")
                         }
                     }
                     assertThat(closed.await(5, TimeUnit.SECONDS)).isTrue()
@@ -83,7 +83,7 @@ internal class X509WebSocketTest {
                 assertThat(h.api.server.requestCount).isEqualTo(1)
                 client.responses().connect().use {
                     it.send(command())
-                    assertThat(it.finalResponse().id()).isEqualTo("resp_test")
+                    assertThat(it.finalResponse().idOrThrow()).isEqualTo("resp_test")
                 }
                 assertThat(h.api.takeRequest().getHeader("Authorization"))
                     .isEqualTo("Bearer test-rejected-token")
@@ -206,7 +206,7 @@ internal class X509WebSocketTest {
                 release.countDown()
                 survivor.get(5, TimeUnit.SECONDS).use {
                     it.send(command())
-                    assertThat(it.finalResponse().get(5, TimeUnit.SECONDS).id())
+                    assertThat(it.finalResponse().get(5, TimeUnit.SECONDS).idOrThrow())
                         .isEqualTo("resp_test")
                 }
                 assertThat(h.auth.server.requestCount).isEqualTo(2)

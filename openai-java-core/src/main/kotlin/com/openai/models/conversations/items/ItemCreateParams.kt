@@ -59,13 +59,11 @@ private constructor(
      */
     fun include(): Optional<List<ResponseIncludable>> = Optional.ofNullable(include)
 
-    /**
-     * The items to add to the conversation. You may add up to 20 items at a time.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun items(): List<ResponseInputItem> = body.items()
+    /** @see Body.items */
+    fun items(): java.util.Optional<List<ResponseInputItem>> = body.items()
+
+    /** @see Body.itemsOrThrow */
+    fun itemsOrThrow(): List<ResponseInputItem> = body.itemsOrThrow()
 
     /**
      * Returns the raw JSON value of [items].
@@ -627,12 +625,18 @@ private constructor(
         ) : this(items, mutableMapOf())
 
         /**
-         * The items to add to the conversation. You may add up to 20 items at a time.
+         * The items to add to the conversation. You may add up to 20 items at a time. The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun items(): List<ResponseInputItem> = items.getRequired("items")
+        fun items(): java.util.Optional<List<ResponseInputItem>> = items.getOptional("items")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun itemsOrThrow(): List<ResponseInputItem> = items.getRequired("items")
 
         /**
          * Returns the raw JSON value of [items].
@@ -1072,7 +1076,7 @@ private constructor(
                 return@apply
             }
 
-            items().forEach { it.validate() }
+            itemsOrThrow().forEach { it.validate() }
             validated = true
         }
 

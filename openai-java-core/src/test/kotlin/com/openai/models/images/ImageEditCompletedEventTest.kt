@@ -35,17 +35,16 @@ internal class ImageEditCompletedEventTest {
                 .safetyIdentifier("safety_identifier")
                 .build()
 
-        assertThat(imageEditCompletedEvent.b64Json()).isEqualTo("b64_json")
+        assertThat(imageEditCompletedEvent.b64Json()).contains("b64_json")
         assertThat(imageEditCompletedEvent.background())
-            .isEqualTo(ImageEditCompletedEvent.Background.TRANSPARENT)
-        assertThat(imageEditCompletedEvent.createdAt()).isEqualTo(0L)
+            .contains(ImageEditCompletedEvent.Background.TRANSPARENT)
+        assertThat(imageEditCompletedEvent.createdAt()).contains(0L)
         assertThat(imageEditCompletedEvent.outputFormat())
-            .isEqualTo(ImageEditCompletedEvent.OutputFormat.PNG)
-        assertThat(imageEditCompletedEvent.quality()).isEqualTo(ImageEditCompletedEvent.Quality.LOW)
-        assertThat(imageEditCompletedEvent.size())
-            .isEqualTo(ImageEditCompletedEvent.Size._1024X1024)
+            .contains(ImageEditCompletedEvent.OutputFormat.PNG)
+        assertThat(imageEditCompletedEvent.quality()).contains(ImageEditCompletedEvent.Quality.LOW)
+        assertThat(imageEditCompletedEvent.size()).contains(ImageEditCompletedEvent.Size._1024X1024)
         assertThat(imageEditCompletedEvent.usage())
-            .isEqualTo(
+            .contains(
                 ImageEditCompletedEvent.Usage.builder()
                     .inputTokens(0L)
                     .inputTokensDetails(

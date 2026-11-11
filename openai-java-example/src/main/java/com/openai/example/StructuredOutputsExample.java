@@ -68,8 +68,8 @@ public final class StructuredOutputsExample {
                 .addUserMessage("List some famous late twentieth century novels.")
                 .build();
 
-        client.chat().completions().create(createParams).choices().stream()
-                .flatMap(choice -> choice.message().content().stream())
+        client.chat().completions().create(createParams).choicesOrThrow().stream()
+                .flatMap(choice -> choice.messageOrThrow().content().stream())
                 .flatMap(bookList -> bookList.books.stream())
                 .forEach(book -> System.out.println(" - " + book));
     }

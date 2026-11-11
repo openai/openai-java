@@ -35,6 +35,6 @@ internal class SessionReferParamsTest {
 
         val body = params._body()
 
-        assertThat(body.targetUri()).isEqualTo("tel:+14155550123")
+        assertThat(body.targetUriOrThrow()).isEqualTo("tel:+14155550123")
     }
 }

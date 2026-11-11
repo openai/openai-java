@@ -53,40 +53,59 @@ private constructor(
 
     /**
      * Number of examples in each batch. A larger batch size means that model parameters are updated
-     * less frequently, but with lower variance.
+     * less frequently, but with lower variance. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun batchSize(): Optional<BatchSize> = batchSize.getOptional("batch_size")
+    fun batchSize(): java.util.Optional<BatchSize> = batchSize.getOptional("batch_size")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun batchSizeOrThrow(): BatchSize = batchSize.getRequired("batch_size")
 
     /**
      * The beta value for the DPO method. A higher beta value will increase the weight of the
-     * penalty between the policy and reference model.
+     * penalty between the policy and reference model. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun beta(): Optional<Beta> = beta.getOptional("beta")
+    fun beta(): java.util.Optional<Beta> = beta.getOptional("beta")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun betaOrThrow(): Beta = beta.getRequired("beta")
 
     /**
      * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
-     * overfitting.
+     * overfitting. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
+    fun learningRateMultiplier(): java.util.Optional<LearningRateMultiplier> =
         learningRateMultiplier.getOptional("learning_rate_multiplier")
 
     /**
-     * The number of epochs to train the model for. An epoch refers to one full cycle through the
-     * training dataset.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun nEpochs(): Optional<NEpochs> = nEpochs.getOptional("n_epochs")
+    fun learningRateMultiplierOrThrow(): LearningRateMultiplier =
+        learningRateMultiplier.getRequired("learning_rate_multiplier")
+
+    /**
+     * The number of epochs to train the model for. An epoch refers to one full cycle through the
+     * training dataset. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun nEpochs(): java.util.Optional<NEpochs> = nEpochs.getOptional("n_epochs")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nEpochsOrThrow(): NEpochs = nEpochs.getRequired("n_epochs")
 
     /**
      * Returns the raw JSON value of [batchSize].

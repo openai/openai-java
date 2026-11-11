@@ -5,6 +5,7 @@ package com.openai.models.chat.completions
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -22,9 +23,8 @@ internal class ChatCompletionAllowedToolsTest {
                 )
                 .build()
 
-        assertThat(chatCompletionAllowedTools.mode())
-            .isEqualTo(ChatCompletionAllowedTools.Mode.AUTO)
-        assertThat(chatCompletionAllowedTools.tools())
+        assertThat(chatCompletionAllowedTools.mode()).contains(ChatCompletionAllowedTools.Mode.AUTO)
+        assertThat(chatCompletionAllowedTools.tools().getOrNull())
             .containsExactly(
                 ChatCompletionAllowedTools.Tool.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))

@@ -20,9 +20,9 @@ internal class ProjectUserTest {
                 .name("name")
                 .build()
 
-        assertThat(projectUser.id()).isEqualTo("id")
-        assertThat(projectUser.addedAt()).isEqualTo(0L)
-        assertThat(projectUser.role()).isEqualTo("role")
+        assertThat(projectUser.id()).contains("id")
+        assertThat(projectUser.addedAt()).contains(0L)
+        assertThat(projectUser.role()).contains("role")
         assertThat(projectUser.email()).contains("email")
         assertThat(projectUser.name()).contains("name")
 

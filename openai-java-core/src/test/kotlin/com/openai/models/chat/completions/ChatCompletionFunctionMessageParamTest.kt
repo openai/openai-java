@@ -15,7 +15,7 @@ internal class ChatCompletionFunctionMessageParamTest {
             ChatCompletionFunctionMessageParam.builder().content("content").name("name").build()
 
         assertThat(chatCompletionFunctionMessageParam.content()).contains("content")
-        assertThat(chatCompletionFunctionMessageParam.name()).isEqualTo("name")
+        assertThat(chatCompletionFunctionMessageParam.name()).contains("name")
 
         val jsonMapper = jsonMapper()
 

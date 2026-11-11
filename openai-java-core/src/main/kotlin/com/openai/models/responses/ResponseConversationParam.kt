@@ -30,12 +30,17 @@ private constructor(
     ) : this(id, mutableMapOf())
 
     /**
-     * The unique ID of the conversation.
+     * The unique ID of the conversation. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
      * Returns the raw JSON value of [id].
@@ -156,7 +161,7 @@ private constructor(
             return@apply
         }
 
-        id()
+        idOrThrow()
         validated = true
     }
 

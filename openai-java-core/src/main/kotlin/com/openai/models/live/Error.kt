@@ -44,44 +44,69 @@ private constructor(
     ) : this(code, message, type, clientEventId, param, mutableMapOf())
 
     /**
-     * A machine-readable code identifying the Live error, such as `unknown_parameter`.
+     * A machine-readable code identifying the Live error, such as `unknown_parameter`. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun code(): String = code.getRequired("code")
+    fun code(): java.util.Optional<String> = code.getOptional("code")
 
     /**
-     * A human-readable explanation of the Live error.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun message(): String = message.getRequired("message")
+    fun codeOrThrow(): String = code.getRequired("code")
+
+    /**
+     * A human-readable explanation of the Live error. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun message(): java.util.Optional<String> = message.getOptional("message")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun messageOrThrow(): String = message.getRequired("message")
 
     /**
      * The category of error, such as `invalid_request_error` for an invalid Live client command.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun type(): String = type.getRequired("type")
+    fun type(): java.util.Optional<String> = type.getOptional("type")
 
     /**
-     * The event_id of the client command that caused the error, when supplied.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun clientEventId(): Optional<String> = clientEventId.getOptional("client_event_id")
+    fun typeOrThrow(): String = type.getRequired("type")
 
     /**
-     * The parameter that caused the error, when applicable, such as `session.voice`.
+     * The event_id of the client command that caused the error, when supplied. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun param(): Optional<String> = param.getOptional("param")
+    fun clientEventId(): java.util.Optional<String> = clientEventId.getOptional("client_event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun clientEventIdOrThrow(): String = clientEventId.getRequired("client_event_id")
+
+    /**
+     * The parameter that caused the error, when applicable, such as `session.voice`. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun param(): java.util.Optional<String> = param.getOptional("param")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun paramOrThrow(): String = param.getRequired("param")
 
     /**
      * Returns the raw JSON value of [code].
@@ -308,9 +333,9 @@ private constructor(
             return@apply
         }
 
-        code()
-        message()
-        type()
+        codeOrThrow()
+        messageOrThrow()
+        typeOrThrow()
         clientEventId()
         param()
         validated = true

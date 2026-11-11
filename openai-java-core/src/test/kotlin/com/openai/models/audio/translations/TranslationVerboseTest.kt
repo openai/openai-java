@@ -34,9 +34,9 @@ internal class TranslationVerboseTest {
                 )
                 .build()
 
-        assertThat(translationVerbose.duration()).isEqualTo(0.0)
-        assertThat(translationVerbose.language()).isEqualTo("language")
-        assertThat(translationVerbose.text()).isEqualTo("text")
+        assertThat(translationVerbose.duration()).contains(0.0)
+        assertThat(translationVerbose.language()).contains("language")
+        assertThat(translationVerbose.text()).contains("text")
         assertThat(translationVerbose.segments().getOrNull())
             .containsExactly(
                 TranscriptionSegment.builder()

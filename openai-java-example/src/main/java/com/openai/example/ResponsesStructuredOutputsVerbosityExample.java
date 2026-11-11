@@ -67,9 +67,9 @@ public final class ResponsesStructuredOutputsVerbosityExample {
                 .model(ChatModel.GPT_5)
                 .build();
 
-        client.responses().create(createParams).output().stream()
+        client.responses().create(createParams).outputOrThrow().stream()
                 .flatMap(item -> item.message().stream())
-                .flatMap(message -> message.content().stream())
+                .flatMap(message -> message.contentOrThrow().stream())
                 .flatMap(content -> content.outputText().stream())
                 .flatMap(bookList -> bookList.books.stream())
                 .forEach(book -> System.out.println(" - " + book));

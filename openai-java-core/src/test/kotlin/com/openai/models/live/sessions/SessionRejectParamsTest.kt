@@ -27,6 +27,6 @@ internal class SessionRejectParamsTest {
 
         val body = params._body()
 
-        assertThat(body.statusCode()).isEqualTo(486L)
+        assertThat(body.statusCodeOrThrow()).isEqualTo(486L)
     }
 }

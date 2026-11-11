@@ -17,7 +17,7 @@ internal class AssistantToolChoiceTest {
                 .function(AssistantToolChoiceFunction.builder().name("name").build())
                 .build()
 
-        assertThat(assistantToolChoice.type()).isEqualTo(AssistantToolChoice.Type.FUNCTION)
+        assertThat(assistantToolChoice.type()).contains(AssistantToolChoice.Type.FUNCTION)
         assertThat(assistantToolChoice.function())
             .contains(AssistantToolChoiceFunction.builder().name("name").build())
 

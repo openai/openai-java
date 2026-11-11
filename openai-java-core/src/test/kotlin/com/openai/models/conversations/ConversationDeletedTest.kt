@@ -13,8 +13,8 @@ internal class ConversationDeletedTest {
     fun createAndRoundtrip() {
         val conversationDeleted = ConversationDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(conversationDeleted.id()).isEqualTo("id")
-        assertThat(conversationDeleted.deleted()).isEqualTo(true)
+        assertThat(conversationDeleted.id()).contains("id")
+        assertThat(conversationDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

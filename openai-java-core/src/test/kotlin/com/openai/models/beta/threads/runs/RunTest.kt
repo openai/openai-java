@@ -9,6 +9,7 @@ import com.openai.models.beta.assistants.AssistantTool
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantResponseFormatOption
 import com.openai.models.beta.threads.AssistantToolChoiceOption
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -88,11 +89,11 @@ internal class RunTest {
                 .topP(0.0)
                 .build()
 
-        assertThat(run.id()).isEqualTo("id")
-        assertThat(run.assistantId()).isEqualTo("assistant_id")
+        assertThat(run.id()).contains("id")
+        assertThat(run.assistantId()).contains("assistant_id")
         assertThat(run.cancelledAt()).contains(0L)
         assertThat(run.completedAt()).contains(0L)
-        assertThat(run.createdAt()).isEqualTo(0L)
+        assertThat(run.createdAt()).contains(0L)
         assertThat(run.expiresAt()).contains(0L)
         assertThat(run.failedAt()).contains(0L)
         assertThat(run.incompleteDetails())
@@ -101,7 +102,7 @@ internal class RunTest {
                     .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
                     .build()
             )
-        assertThat(run.instructions()).isEqualTo("instructions")
+        assertThat(run.instructions()).contains("instructions")
         assertThat(run.lastError())
             .contains(
                 Run.LastError.builder()
@@ -117,8 +118,8 @@ internal class RunTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(run.model()).isEqualTo("model")
-        assertThat(run.parallelToolCalls()).isEqualTo(true)
+        assertThat(run.model()).contains("model")
+        assertThat(run.parallelToolCalls()).contains(true)
         assertThat(run.requiredAction())
             .contains(
                 Run.RequiredAction.builder()
@@ -141,11 +142,11 @@ internal class RunTest {
             )
         assertThat(run.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(run.startedAt()).contains(0L)
-        assertThat(run.status()).isEqualTo(RunStatus.QUEUED)
-        assertThat(run.threadId()).isEqualTo("thread_id")
+        assertThat(run.status()).contains(RunStatus.QUEUED)
+        assertThat(run.threadId()).contains("thread_id")
         assertThat(run.toolChoice())
             .contains(AssistantToolChoiceOption.ofAuto(AssistantToolChoiceOption.Auto.NONE))
-        assertThat(run.tools())
+        assertThat(run.tools().getOrNull())
             .containsExactly(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
         assertThat(run.truncationStrategy())
             .contains(

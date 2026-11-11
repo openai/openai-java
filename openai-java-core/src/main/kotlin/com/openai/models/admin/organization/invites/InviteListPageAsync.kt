@@ -7,7 +7,6 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.admin.organization.InviteServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
@@ -21,28 +20,29 @@ private constructor(
     private val response: InviteListPageResponse,
 ) : PageAsync<Invite> {
 
-    /**
-     * Delegates to [InviteListPageResponse], but gracefully handles missing data.
-     *
-     * @see InviteListPageResponse.data
-     */
-    fun data(): List<Invite> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see InviteListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [InviteListPageResponse], but gracefully handles missing data.
-     *
-     * @see InviteListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<Invite> = data().orElseGet { response._data().getRequired("data") }
 
-    /**
-     * Delegates to [InviteListPageResponse], but gracefully handles missing data.
-     *
-     * @see InviteListPageResponse.lastId
-     */
-    fun lastId(): Optional<String> = response._lastId().getOptional("last_id")
+    fun _data() = response._data()
 
-    override fun items(): List<Invite> = data()
+    /** @see InviteListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    /** @see InviteListPageResponse.lastId */
+    fun lastId() = response.lastId()
+
+    fun lastIdOrThrow(): String = lastId().orElseGet { response._lastId().getRequired("last_id") }
+
+    fun _lastId() = response._lastId()
+
+    override fun items(): List<Invite> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean =
         hasMore().orElse(true) && items().isNotEmpty() && lastId().isPresent

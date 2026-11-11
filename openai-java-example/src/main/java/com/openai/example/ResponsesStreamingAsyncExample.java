@@ -21,7 +21,8 @@ public final class ResponsesStreamingAsyncExample {
 
         client.responses()
                 .createStreaming(createParams)
-                .subscribe(event -> event.outputTextDelta().ifPresent(textEvent -> System.out.print(textEvent.delta())))
+                .subscribe(event ->
+                        event.outputTextDelta().ifPresent(textEvent -> System.out.print(textEvent.deltaOrThrow())))
                 .onCompleteFuture()
                 .join();
     }

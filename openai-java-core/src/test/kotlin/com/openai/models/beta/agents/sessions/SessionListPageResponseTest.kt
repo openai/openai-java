@@ -11,6 +11,7 @@ import com.openai.models.beta.agents.AgentText
 import com.openai.models.beta.agents.AgentTool
 import com.openai.models.beta.agents.MultiAgentConfig
 import com.openai.models.beta.agents.TokenUsage
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -144,7 +145,7 @@ internal class SessionListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(sessionListPageResponse.data())
+        assertThat(sessionListPageResponse.data().getOrNull())
             .containsExactly(
                 AgentSession.builder()
                     .id("id")
@@ -261,7 +262,7 @@ internal class SessionListPageResponseTest {
                     .build()
             )
         assertThat(sessionListPageResponse.firstId()).contains("first_id")
-        assertThat(sessionListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(sessionListPageResponse.hasMore()).contains(true)
         assertThat(sessionListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

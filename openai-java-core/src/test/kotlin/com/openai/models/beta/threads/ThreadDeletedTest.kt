@@ -13,8 +13,8 @@ internal class ThreadDeletedTest {
     fun createAndRoundtrip() {
         val threadDeleted = ThreadDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(threadDeleted.id()).isEqualTo("id")
-        assertThat(threadDeleted.deleted()).isEqualTo(true)
+        assertThat(threadDeleted.id()).contains("id")
+        assertThat(threadDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

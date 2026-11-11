@@ -38,8 +38,8 @@ internal class VideoCreateErrorTest {
                 .type("type")
                 .build()
 
-        assertThat(videoCreateError.code()).isEqualTo("code")
-        assertThat(videoCreateError.message()).isEqualTo("message")
+        assertThat(videoCreateError.code()).contains("code")
+        assertThat(videoCreateError.message()).contains("message")
         assertThat(videoCreateError.headers())
             .contains(
                 VideoCreateError.Headers.builder()

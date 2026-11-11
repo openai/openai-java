@@ -20,11 +20,11 @@ internal class TranscriptionDiarizedSegmentTest {
                 .text("text")
                 .build()
 
-        assertThat(transcriptionDiarizedSegment.id()).isEqualTo("id")
-        assertThat(transcriptionDiarizedSegment.end()).isEqualTo(0.0)
-        assertThat(transcriptionDiarizedSegment.speaker()).isEqualTo("speaker")
-        assertThat(transcriptionDiarizedSegment.start()).isEqualTo(0.0)
-        assertThat(transcriptionDiarizedSegment.text()).isEqualTo("text")
+        assertThat(transcriptionDiarizedSegment.id()).contains("id")
+        assertThat(transcriptionDiarizedSegment.end()).contains(0.0)
+        assertThat(transcriptionDiarizedSegment.speaker()).contains("speaker")
+        assertThat(transcriptionDiarizedSegment.start()).contains(0.0)
+        assertThat(transcriptionDiarizedSegment.text()).contains("text")
 
         val jsonMapper = jsonMapper()
 

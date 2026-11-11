@@ -20,11 +20,11 @@ internal class ResponseRefusalDoneEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseRefusalDoneEvent.contentIndex()).isEqualTo(0L)
-        assertThat(responseRefusalDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseRefusalDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseRefusalDoneEvent.refusal()).isEqualTo("refusal")
-        assertThat(responseRefusalDoneEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseRefusalDoneEvent.contentIndex()).contains(0L)
+        assertThat(responseRefusalDoneEvent.itemId()).contains("item_id")
+        assertThat(responseRefusalDoneEvent.outputIndex()).contains(0L)
+        assertThat(responseRefusalDoneEvent.refusal()).contains("refusal")
+        assertThat(responseRefusalDoneEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

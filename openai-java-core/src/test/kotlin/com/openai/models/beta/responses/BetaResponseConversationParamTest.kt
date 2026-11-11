@@ -14,7 +14,7 @@ internal class BetaResponseConversationParamTest {
         val betaResponseConversationParam =
             BetaResponseConversationParam.builder().id("conv_123").build()
 
-        assertThat(betaResponseConversationParam.id()).isEqualTo("conv_123")
+        assertThat(betaResponseConversationParam.id()).contains("conv_123")
 
         val jsonMapper = jsonMapper()
 

@@ -19,9 +19,9 @@ internal class ResponseCustomToolCallOutputTest {
                 .callerDirect()
                 .build()
 
-        assertThat(responseCustomToolCallOutput.callId()).isEqualTo("call_id")
+        assertThat(responseCustomToolCallOutput.callId()).contains("call_id")
         assertThat(responseCustomToolCallOutput.output())
-            .isEqualTo(ResponseCustomToolCallOutput.Output.ofString("string"))
+            .contains(ResponseCustomToolCallOutput.Output.ofString("string"))
         assertThat(responseCustomToolCallOutput.id()).contains("id")
         assertThat(responseCustomToolCallOutput.caller())
             .contains(ResponseCustomToolCallOutput.Caller.ofDirect())

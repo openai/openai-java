@@ -24,13 +24,13 @@ internal class TokenUsageTest {
                 .totalTokens(0L)
                 .build()
 
-        assertThat(tokenUsage.inputTokens()).isEqualTo(0L)
+        assertThat(tokenUsage.inputTokens()).contains(0L)
         assertThat(tokenUsage.inputTokensDetails())
-            .isEqualTo(TokenUsage.InputTokensDetails.builder().cachedTokens(0L).build())
-        assertThat(tokenUsage.outputTokens()).isEqualTo(0L)
+            .contains(TokenUsage.InputTokensDetails.builder().cachedTokens(0L).build())
+        assertThat(tokenUsage.outputTokens()).contains(0L)
         assertThat(tokenUsage.outputTokensDetails())
-            .isEqualTo(TokenUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
-        assertThat(tokenUsage.totalTokens()).isEqualTo(0L)
+            .contains(TokenUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
+        assertThat(tokenUsage.totalTokens()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

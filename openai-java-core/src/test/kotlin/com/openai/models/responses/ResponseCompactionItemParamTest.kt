@@ -17,7 +17,7 @@ internal class ResponseCompactionItemParamTest {
                 .id("cmp_123")
                 .build()
 
-        assertThat(responseCompactionItemParam.encryptedContent()).isEqualTo("encrypted_content")
+        assertThat(responseCompactionItemParam.encryptedContent()).contains("encrypted_content")
         assertThat(responseCompactionItemParam.id()).contains("cmp_123")
 
         val jsonMapper = jsonMapper()

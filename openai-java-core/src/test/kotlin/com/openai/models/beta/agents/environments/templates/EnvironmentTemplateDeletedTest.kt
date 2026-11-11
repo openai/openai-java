@@ -14,8 +14,8 @@ internal class EnvironmentTemplateDeletedTest {
         val environmentTemplateDeleted =
             EnvironmentTemplateDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(environmentTemplateDeleted.id()).isEqualTo("id")
-        assertThat(environmentTemplateDeleted.deleted()).isEqualTo(true)
+        assertThat(environmentTemplateDeleted.id()).contains("id")
+        assertThat(environmentTemplateDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

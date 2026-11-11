@@ -4,6 +4,7 @@ package com.openai.models.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -32,10 +33,10 @@ internal class ResponseTextDeltaEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseTextDeltaEvent.contentIndex()).isEqualTo(0L)
-        assertThat(responseTextDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(responseTextDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseTextDeltaEvent.logprobs())
+        assertThat(responseTextDeltaEvent.contentIndex()).contains(0L)
+        assertThat(responseTextDeltaEvent.delta()).contains("delta")
+        assertThat(responseTextDeltaEvent.itemId()).contains("item_id")
+        assertThat(responseTextDeltaEvent.logprobs().getOrNull())
             .containsExactly(
                 ResponseTextDeltaEvent.Logprob.builder()
                     .token("token")
@@ -48,8 +49,8 @@ internal class ResponseTextDeltaEventTest {
                     )
                     .build()
             )
-        assertThat(responseTextDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseTextDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseTextDeltaEvent.outputIndex()).contains(0L)
+        assertThat(responseTextDeltaEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

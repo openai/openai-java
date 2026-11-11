@@ -7,10 +7,8 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.beta.agents.vaults.CredentialServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see CredentialServiceAsync.list */
 class CredentialListPageAsync
@@ -21,21 +19,22 @@ private constructor(
     private val response: CredentialListPageResponse,
 ) : PageAsync<Credential> {
 
-    /**
-     * Delegates to [CredentialListPageResponse], but gracefully handles missing data.
-     *
-     * @see CredentialListPageResponse.data
-     */
-    fun data(): List<Credential> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see CredentialListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [CredentialListPageResponse], but gracefully handles missing data.
-     *
-     * @see CredentialListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<Credential> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<Credential> = data()
+    fun _data() = response._data()
+
+    /** @see CredentialListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<Credential> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

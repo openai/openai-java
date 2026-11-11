@@ -28,7 +28,7 @@ internal class WebSearchToolTest {
                 )
                 .build()
 
-        assertThat(webSearchTool.type()).isEqualTo(WebSearchTool.Type.WEB_SEARCH)
+        assertThat(webSearchTool.type()).contains(WebSearchTool.Type.WEB_SEARCH)
         assertThat(webSearchTool.externalWebAccess()).contains(true)
         assertThat(webSearchTool.filters())
             .contains(WebSearchTool.Filters.builder().addAllowedDomain("string").build())

@@ -54,8 +54,8 @@ public final class FunctionCallingExample {
                 .addUserMessage("How good are the following SDKs and what do reviewers say: "
                         + "OpenAI Java SDK, Unknown Company SDK.");
 
-        client.chat().completions().create(createParamsBuilder.build()).choices().stream()
-                .map(ChatCompletion.Choice::message)
+        client.chat().completions().create(createParamsBuilder.build()).choicesOrThrow().stream()
+                .map(ChatCompletion.Choice::messageOrThrow)
                 // Add each assistant message onto the builder so that we keep track of the
                 // conversation for asking a follow-up question later.
                 .peek(createParamsBuilder::addMessage)
@@ -64,29 +64,29 @@ public final class FunctionCallingExample {
                     return message.toolCalls().stream().flatMap(Collection::stream);
                 })
                 .forEach(toolCall -> {
-                    Object result = callFunction(toolCall.asFunction().function());
+                    Object result = callFunction(toolCall.asFunction().functionOrThrow());
                     // Add the tool call result to the conversation.
                     createParamsBuilder.addMessage(ChatCompletionToolMessageParam.builder()
-                            .toolCallId(toolCall.asFunction().id())
+                            .toolCallId(toolCall.asFunction().idOrThrow())
                             .contentAsJson(result)
                             .build());
                 });
 
         // Ask a follow-up question about the function call result.
         createParamsBuilder.addUserMessage("Why do you say that?");
-        client.chat().completions().create(createParamsBuilder.build()).choices().stream()
-                .flatMap(choice -> choice.message().content().stream())
+        client.chat().completions().create(createParamsBuilder.build()).choicesOrThrow().stream()
+                .flatMap(choice -> choice.messageOrThrow().content().stream())
                 .forEach(System.out::println);
     }
 
     private static Object callFunction(ChatCompletionMessageFunctionToolCall.Function function) {
-        switch (function.name()) {
+        switch (function.nameOrThrow()) {
             case "GetSdkQuality":
                 return function.arguments(GetSdkQuality.class).execute();
             case "GetSdkScore":
                 return function.arguments(GetSdkScore.class).execute();
             default:
-                throw new IllegalArgumentException("Unknown function: " + function.name());
+                throw new IllegalArgumentException("Unknown function: " + function.nameOrThrow());
         }
     }
 }

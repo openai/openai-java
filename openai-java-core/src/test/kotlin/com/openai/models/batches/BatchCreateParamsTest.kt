@@ -44,9 +44,10 @@ internal class BatchCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.completionWindow()).isEqualTo(BatchCreateParams.CompletionWindow._24H)
-        assertThat(body.endpoint()).isEqualTo(BatchCreateParams.Endpoint.V1_RESPONSES)
-        assertThat(body.inputFileId()).isEqualTo("input_file_id")
+        assertThat(body.completionWindowOrThrow())
+            .isEqualTo(BatchCreateParams.CompletionWindow._24H)
+        assertThat(body.endpointOrThrow()).isEqualTo(BatchCreateParams.Endpoint.V1_RESPONSES)
+        assertThat(body.inputFileIdOrThrow()).isEqualTo("input_file_id")
         assertThat(body.metadata())
             .contains(
                 BatchCreateParams.Metadata.builder()
@@ -68,8 +69,9 @@ internal class BatchCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.completionWindow()).isEqualTo(BatchCreateParams.CompletionWindow._24H)
-        assertThat(body.endpoint()).isEqualTo(BatchCreateParams.Endpoint.V1_RESPONSES)
-        assertThat(body.inputFileId()).isEqualTo("input_file_id")
+        assertThat(body.completionWindowOrThrow())
+            .isEqualTo(BatchCreateParams.CompletionWindow._24H)
+        assertThat(body.endpointOrThrow()).isEqualTo(BatchCreateParams.Endpoint.V1_RESPONSES)
+        assertThat(body.inputFileIdOrThrow()).isEqualTo("input_file_id")
     }
 }

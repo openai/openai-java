@@ -36,9 +36,9 @@ internal class CompletionUsageTest {
                 )
                 .build()
 
-        assertThat(completionUsage.completionTokens()).isEqualTo(0L)
-        assertThat(completionUsage.promptTokens()).isEqualTo(0L)
-        assertThat(completionUsage.totalTokens()).isEqualTo(0L)
+        assertThat(completionUsage.completionTokens()).contains(0L)
+        assertThat(completionUsage.promptTokens()).contains(0L)
+        assertThat(completionUsage.totalTokens()).contains(0L)
         assertThat(completionUsage.completionTokensDetails())
             .contains(
                 CompletionUsage.CompletionTokensDetails.builder()

@@ -14,7 +14,7 @@ internal class ResponseAudioTranscriptDoneEventTest {
         val responseAudioTranscriptDoneEvent =
             ResponseAudioTranscriptDoneEvent.builder().sequenceNumber(0L).build()
 
-        assertThat(responseAudioTranscriptDoneEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseAudioTranscriptDoneEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

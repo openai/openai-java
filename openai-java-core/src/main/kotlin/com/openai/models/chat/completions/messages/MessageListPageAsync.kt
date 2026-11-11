@@ -8,10 +8,8 @@ import com.openai.core.checkRequired
 import com.openai.models.chat.completions.ChatCompletionStoreMessage
 import com.openai.services.async.chat.completions.MessageServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see MessageServiceAsync.list */
 class MessageListPageAsync
@@ -22,22 +20,23 @@ private constructor(
     private val response: MessageListPageResponse,
 ) : PageAsync<ChatCompletionStoreMessage> {
 
-    /**
-     * Delegates to [MessageListPageResponse], but gracefully handles missing data.
-     *
-     * @see MessageListPageResponse.data
-     */
-    fun data(): List<ChatCompletionStoreMessage> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see MessageListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [MessageListPageResponse], but gracefully handles missing data.
-     *
-     * @see MessageListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<ChatCompletionStoreMessage> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<ChatCompletionStoreMessage> = data()
+    fun _data() = response._data()
+
+    /** @see MessageListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<ChatCompletionStoreMessage> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

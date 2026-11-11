@@ -13,7 +13,7 @@ internal class BetaToolChoiceCustomTest {
     fun createAndRoundtrip() {
         val betaToolChoiceCustom = BetaToolChoiceCustom.builder().name("name").build()
 
-        assertThat(betaToolChoiceCustom.name()).isEqualTo("name")
+        assertThat(betaToolChoiceCustom.name()).contains("name")
 
         val jsonMapper = jsonMapper()
 

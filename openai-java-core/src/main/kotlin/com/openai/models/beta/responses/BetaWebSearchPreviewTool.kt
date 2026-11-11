@@ -51,39 +51,62 @@ private constructor(
 
     /**
      * The type of the web search tool. One of `web_search_preview` or
-     * `web_search_preview_2025_03_11`.
+     * `web_search_preview_2025_03_11`. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun type(): Type = type.getRequired("type")
+    fun type(): java.util.Optional<Type> = type.getOptional("type")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun searchContentTypes(): Optional<List<SearchContentType>> =
+    fun typeOrThrow(): Type = type.getRequired("type")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun searchContentTypes(): java.util.Optional<List<SearchContentType>> =
         searchContentTypes.getOptional("search_content_types")
 
     /**
-     * High level guidance for the amount of context window space to use for the search. One of
-     * `low`, `medium`, or `high`. `medium` is the default.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun searchContextSize(): Optional<SearchContextSize> =
+    fun searchContentTypesOrThrow(): List<SearchContentType> =
+        searchContentTypes.getRequired("search_content_types")
+
+    /**
+     * High level guidance for the amount of context window space to use for the search. One of
+     * `low`, `medium`, or `high`. `medium` is the default. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun searchContextSize(): java.util.Optional<SearchContextSize> =
         searchContextSize.getOptional("search_context_size")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun searchContextSizeOrThrow(): SearchContextSize =
+        searchContextSize.getRequired("search_context_size")
 
     /**
      * The approximate location of the user. If omitted or null, defaults to the United States. To
      * avoid this fallback, pass `{"type": "approximate"}` without location fields. To localize
-     * results, provide the relevant location fields.
+     * results, provide the relevant location fields. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun userLocation(): Optional<UserLocation> = userLocation.getOptional("user_location")
+    fun userLocation(): java.util.Optional<UserLocation> = userLocation.getOptional("user_location")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun userLocationOrThrow(): UserLocation = userLocation.getRequired("user_location")
 
     /**
      * Returns the raw JSON value of [type].
@@ -321,7 +344,7 @@ private constructor(
             return@apply
         }
 
-        type().validate()
+        typeOrThrow().validate()
         searchContentTypes().ifPresent { it.forEach { it.validate() } }
         searchContextSize().ifPresent { it.validate() }
         userLocation().ifPresent { it.validate() }
@@ -810,51 +833,84 @@ private constructor(
         ) : this(type, city, country, region, timezone, mutableMapOf())
 
         /**
-         * The type of location approximation. Always `approximate`.
+         * The type of location approximation. Always `approximate`. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("approximate")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("approximate")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
 
         /**
-         * Free text input for the city of the user, e.g. `San Francisco`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun city(): Optional<String> = city.getOptional("city")
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+        /**
+         * Free text input for the city of the user, e.g. `San Francisco`. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun city(): java.util.Optional<String> = city.getOptional("city")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun cityOrThrow(): String = city.getRequired("city")
 
         /**
          * The two-letter [ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1) of the user,
-         * e.g. `US`.
+         * e.g. `US`. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun country(): Optional<String> = country.getOptional("country")
+        fun country(): java.util.Optional<String> = country.getOptional("country")
 
         /**
-         * Free text input for the region of the user, e.g. `California`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun region(): Optional<String> = region.getOptional("region")
+        fun countryOrThrow(): String = country.getRequired("country")
+
+        /**
+         * Free text input for the region of the user, e.g. `California`. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun region(): java.util.Optional<String> = region.getOptional("region")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun regionOrThrow(): String = region.getRequired("region")
 
         /**
          * The [IANA timezone](https://timeapi.io/documentation/iana-timezones) of the user, e.g.
-         * `America/Los_Angeles`.
+         * `America/Los_Angeles`. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun timezone(): Optional<String> = timezone.getOptional("timezone")
+        fun timezone(): java.util.Optional<String> = timezone.getOptional("timezone")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun timezoneOrThrow(): String = timezone.getRequired("timezone")
 
         /**
          * Returns the raw JSON value of [city].
@@ -1074,11 +1130,7 @@ private constructor(
                 return@apply
             }
 
-            _type().let {
-                if (it != JsonValue.from("approximate")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            typeOrThrow()
             city()
             country()
             region()

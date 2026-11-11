@@ -22,10 +22,10 @@ internal class RealtimeMcpToolCallTest {
                 .output("output")
                 .build()
 
-        assertThat(realtimeMcpToolCall.id()).isEqualTo("id")
-        assertThat(realtimeMcpToolCall.arguments()).isEqualTo("arguments")
-        assertThat(realtimeMcpToolCall.name()).isEqualTo("name")
-        assertThat(realtimeMcpToolCall.serverLabel()).isEqualTo("server_label")
+        assertThat(realtimeMcpToolCall.id()).contains("id")
+        assertThat(realtimeMcpToolCall.arguments()).contains("arguments")
+        assertThat(realtimeMcpToolCall.name()).contains("name")
+        assertThat(realtimeMcpToolCall.serverLabel()).contains("server_label")
         assertThat(realtimeMcpToolCall.approvalRequestId()).contains("approval_request_id")
         assertThat(realtimeMcpToolCall.error())
             .contains(

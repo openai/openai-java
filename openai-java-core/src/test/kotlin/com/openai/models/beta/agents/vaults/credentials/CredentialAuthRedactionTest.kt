@@ -48,7 +48,7 @@ internal class CredentialAuthRedactionTest {
         assertThat(error).hasNoCause()
         assertThat(error).hasMessage("Unknown CredentialAuth")
         assertThat(auth._json()).contains(raw)
-        assertThat(credential.auth()._json()).contains(raw)
+        assertThat(credential.authOrThrow()._json()).contains(raw)
         assertThat(mapper.readTree(mapper.writeValueAsString(auth)))
             .isEqualTo(mapper.readTree(original))
     }

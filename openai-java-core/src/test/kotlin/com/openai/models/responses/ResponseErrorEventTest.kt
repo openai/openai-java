@@ -20,9 +20,9 @@ internal class ResponseErrorEventTest {
                 .build()
 
         assertThat(responseErrorEvent.code()).contains("code")
-        assertThat(responseErrorEvent.message()).isEqualTo("message")
+        assertThat(responseErrorEvent.message()).contains("message")
         assertThat(responseErrorEvent.param()).contains("param")
-        assertThat(responseErrorEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseErrorEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

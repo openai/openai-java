@@ -19,10 +19,10 @@ internal class GroupUpdateResponseTest {
                 .name("name")
                 .build()
 
-        assertThat(groupUpdateResponse.id()).isEqualTo("id")
-        assertThat(groupUpdateResponse.createdAt()).isEqualTo(0L)
-        assertThat(groupUpdateResponse.isScimManaged()).isEqualTo(true)
-        assertThat(groupUpdateResponse.name()).isEqualTo("name")
+        assertThat(groupUpdateResponse.id()).contains("id")
+        assertThat(groupUpdateResponse.createdAt()).contains(0L)
+        assertThat(groupUpdateResponse.isScimManaged()).contains(true)
+        assertThat(groupUpdateResponse.name()).contains("name")
 
         val jsonMapper = jsonMapper()
 

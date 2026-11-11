@@ -73,8 +73,9 @@ internal class AutomationsTransportTest {
                 assertThat(invocation.scheduledAt()).contains(1700000123L)
                 assertThat(invocation.sessionId()).contains("sess_preserved")
                 assertThat(invocation.skipReason().get().toString()).isEqualTo("pending_delivery")
-                assertThat(invocation.error().get().code()).isEqualTo("synthetic_failure")
-                assertThat(invocation.error().get().message()).isEqualTo("distinctive explanation")
+                assertThat(invocation.error().get().codeOrThrow()).isEqualTo("synthetic_failure")
+                assertThat(invocation.error().get().messageOrThrow())
+                    .isEqualTo("distinctive explanation")
             }
             val request = argumentCaptor<HttpRequest>()
             verify(transport).execute(request.capture(), any())

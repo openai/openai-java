@@ -32,20 +32,30 @@ private constructor(
     ) : this(deleted, object_, mutableMapOf())
 
     /**
-     * Whether the assignment was removed.
+     * Whether the assignment was removed. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun deleted(): Boolean = deleted.getRequired("deleted")
+    fun deleted(): java.util.Optional<Boolean> = deleted.getOptional("deleted")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun deletedOrThrow(): Boolean = deleted.getRequired("deleted")
 
     /**
      * Identifier for the deleted assignment, such as `group.role.deleted` or `user.role.deleted`.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun object_(): String = object_.getRequired("object")
+    fun object_(): java.util.Optional<String> = object_.getOptional("object")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): String = object_.getRequired("object")
 
     /**
      * Returns the raw JSON value of [deleted].
@@ -199,8 +209,8 @@ private constructor(
             return@apply
         }
 
-        deleted()
-        object_()
+        deletedOrThrow()
+        object_OrThrow()
         validated = true
     }
 

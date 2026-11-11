@@ -19,9 +19,9 @@ internal class RealtimeMcpApprovalResponseTest {
                 .reason("reason")
                 .build()
 
-        assertThat(realtimeMcpApprovalResponse.id()).isEqualTo("id")
-        assertThat(realtimeMcpApprovalResponse.approvalRequestId()).isEqualTo("approval_request_id")
-        assertThat(realtimeMcpApprovalResponse.approve()).isEqualTo(true)
+        assertThat(realtimeMcpApprovalResponse.id()).contains("id")
+        assertThat(realtimeMcpApprovalResponse.approvalRequestId()).contains("approval_request_id")
+        assertThat(realtimeMcpApprovalResponse.approve()).contains(true)
         assertThat(realtimeMcpApprovalResponse.reason()).contains("reason")
 
         val jsonMapper = jsonMapper()

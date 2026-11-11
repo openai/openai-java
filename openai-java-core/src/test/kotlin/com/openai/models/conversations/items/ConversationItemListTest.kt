@@ -7,6 +7,7 @@ import com.openai.core.jsonMapper
 import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.conversations.Message
 import com.openai.models.responses.ResponseInputText
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -39,7 +40,7 @@ internal class ConversationItemListTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(conversationItemList.data())
+        assertThat(conversationItemList.data().getOrNull())
             .containsExactly(
                 ConversationItem.ofMessage(
                     Message.builder()
@@ -60,9 +61,9 @@ internal class ConversationItemListTest {
                         .build()
                 )
             )
-        assertThat(conversationItemList.firstId()).isEqualTo("first_id")
-        assertThat(conversationItemList.hasMore()).isEqualTo(true)
-        assertThat(conversationItemList.lastId()).isEqualTo("last_id")
+        assertThat(conversationItemList.firstId()).contains("first_id")
+        assertThat(conversationItemList.hasMore()).contains(true)
+        assertThat(conversationItemList.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()
 

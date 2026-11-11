@@ -7,10 +7,8 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.evals.runs.OutputItemServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see OutputItemServiceAsync.list */
 class OutputItemListPageAsync
@@ -21,22 +19,23 @@ private constructor(
     private val response: OutputItemListPageResponse,
 ) : PageAsync<OutputItemListResponse> {
 
-    /**
-     * Delegates to [OutputItemListPageResponse], but gracefully handles missing data.
-     *
-     * @see OutputItemListPageResponse.data
-     */
-    fun data(): List<OutputItemListResponse> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see OutputItemListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [OutputItemListPageResponse], but gracefully handles missing data.
-     *
-     * @see OutputItemListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<OutputItemListResponse> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<OutputItemListResponse> = data()
+    fun _data() = response._data()
+
+    /** @see OutputItemListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<OutputItemListResponse> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

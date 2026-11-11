@@ -127,156 +127,250 @@ private constructor(
     )
 
     /**
-     * The object identifier, which can be referenced in the API endpoints.
+     * The object identifier, which can be referenced in the API endpoints. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The Unix timestamp (in seconds) for when the fine-tuning job was created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun idOrThrow(): String = id.getRequired("id")
+
+    /**
+     * The Unix timestamp (in seconds) for when the fine-tuning job was created. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
     /**
      * For fine-tuning jobs that have `failed`, this will contain more information on the cause of
-     * the failure.
+     * the failure. The schema requires this property. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun error(): Optional<Error> = error.getOptional("error")
+    fun error(): java.util.Optional<Error> = error.getOptional("error")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun errorOrThrow(): Error = error.getRequired("error")
 
     /**
      * The name of the fine-tuned model that is being created. The value will be null if the
-     * fine-tuning job is still running.
+     * fine-tuning job is still running. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun fineTunedModel(): Optional<String> = fineTunedModel.getOptional("fine_tuned_model")
+    fun fineTunedModel(): java.util.Optional<String> =
+        fineTunedModel.getOptional("fine_tuned_model")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun fineTunedModelOrThrow(): String = fineTunedModel.getRequired("fine_tuned_model")
 
     /**
      * The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will be
-     * null if the fine-tuning job is still running.
+     * null if the fine-tuning job is still running. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun finishedAt(): Optional<Long> = finishedAt.getOptional("finished_at")
+    fun finishedAt(): java.util.Optional<Long> = finishedAt.getOptional("finished_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun finishedAtOrThrow(): Long = finishedAt.getRequired("finished_at")
 
     /**
      * The hyperparameters used for the fine-tuning job. This value will only be returned when
-     * running `supervised` jobs.
+     * running `supervised` jobs. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun hyperparameters(): Hyperparameters = hyperparameters.getRequired("hyperparameters")
+    fun hyperparameters(): java.util.Optional<Hyperparameters> =
+        hyperparameters.getOptional("hyperparameters")
 
     /**
-     * The base model that is being fine-tuned.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun model(): String = model.getRequired("model")
+    fun hyperparametersOrThrow(): Hyperparameters = hyperparameters.getRequired("hyperparameters")
 
     /**
-     * The object type, which is always "fine_tuning.job".
+     * The base model that is being fine-tuned. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("fine_tuning.job")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun model(): java.util.Optional<String> = model.getOptional("model")
 
     /**
-     * The organization that owns the fine-tuning job.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun organizationId(): String = organizationId.getRequired("organization_id")
+    fun modelOrThrow(): String = model.getRequired("model")
+
+    /**
+     * The object type, which is always "fine_tuning.job". The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("fine_tuning.job")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * The organization that owns the fine-tuning job. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun organizationId(): java.util.Optional<String> = organizationId.getOptional("organization_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun organizationIdOrThrow(): String = organizationId.getRequired("organization_id")
 
     /**
      * The compiled results file ID(s) for the fine-tuning job. You can retrieve the results with
      * the [Files API](https://developers.openai.com/api/reference/resources/files/methods/content).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun resultFiles(): List<String> = resultFiles.getRequired("result_files")
+    fun resultFiles(): java.util.Optional<List<String>> = resultFiles.getOptional("result_files")
 
     /**
-     * The seed used for the fine-tuning job.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun seed(): Long = seed.getRequired("seed")
+    fun resultFilesOrThrow(): List<String> = resultFiles.getRequired("result_files")
+
+    /**
+     * The seed used for the fine-tuning job. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun seed(): java.util.Optional<Long> = seed.getOptional("seed")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun seedOrThrow(): Long = seed.getRequired("seed")
 
     /**
      * The current status of the fine-tuning job, which can be either `validating_files`, `queued`,
-     * `running`, `succeeded`, `failed`, or `cancelled`.
+     * `running`, `succeeded`, `failed`, or `cancelled`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): Status = status.getRequired("status")
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): Status = status.getRequired("status")
 
     /**
      * The total number of billable tokens processed by this fine-tuning job. The value will be null
-     * if the fine-tuning job is still running.
+     * if the fine-tuning job is still running. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun trainedTokens(): Optional<Long> = trainedTokens.getOptional("trained_tokens")
+    fun trainedTokens(): java.util.Optional<Long> = trainedTokens.getOptional("trained_tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun trainedTokensOrThrow(): Long = trainedTokens.getRequired("trained_tokens")
 
     /**
      * The file ID used for training. You can retrieve the training data with the
-     * [Files API](https://developers.openai.com/api/reference/resources/files/methods/content).
+     * [Files API](https://developers.openai.com/api/reference/resources/files/methods/content). The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun trainingFile(): String = trainingFile.getRequired("training_file")
+    fun trainingFile(): java.util.Optional<String> = trainingFile.getOptional("training_file")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun trainingFileOrThrow(): String = trainingFile.getRequired("training_file")
 
     /**
      * The file ID used for validation. You can retrieve the validation results with the
-     * [Files API](https://developers.openai.com/api/reference/resources/files/methods/content).
+     * [Files API](https://developers.openai.com/api/reference/resources/files/methods/content). The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun validationFile(): Optional<String> = validationFile.getOptional("validation_file")
+    fun validationFile(): java.util.Optional<String> = validationFile.getOptional("validation_file")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun validationFileOrThrow(): String = validationFile.getRequired("validation_file")
 
     /**
      * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
-     * value will be null if the fine-tuning job is not running.
+     * value will be null if the fine-tuning job is not running. Returns empty if the JSON property
+     * is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun estimatedFinish(): Optional<Long> = estimatedFinish.getOptional("estimated_finish")
+    fun estimatedFinish(): java.util.Optional<Long> =
+        estimatedFinish.getOptional("estimated_finish")
 
     /**
-     * A list of integrations to enable for this fine-tuning job.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun integrations(): Optional<List<FineTuningJobWandbIntegrationObject>> =
+    fun estimatedFinishOrThrow(): Long = estimatedFinish.getRequired("estimated_finish")
+
+    /**
+     * A list of integrations to enable for this fine-tuning job. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun integrations(): java.util.Optional<List<FineTuningJobWandbIntegrationObject>> =
         integrations.getOptional("integrations")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun integrationsOrThrow(): List<FineTuningJobWandbIntegrationObject> =
+        integrations.getRequired("integrations")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -284,20 +378,28 @@ private constructor(
      * API or the dashboard.
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * length of 512 characters. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+    fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
-     * The method used for fine-tuning.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun method(): Optional<Method> = method.getOptional("method")
+    fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
+
+    /**
+     * The method used for fine-tuning. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun method(): java.util.Optional<Method> = method.getOptional("method")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun methodOrThrow(): Method = method.getRequired("method")
 
     /**
      * Returns the raw JSON value of [id].
@@ -1006,24 +1108,20 @@ private constructor(
             return@apply
         }
 
-        id()
-        createdAt()
+        idOrThrow()
+        createdAtOrThrow()
         error().ifPresent { it.validate() }
         fineTunedModel()
         finishedAt()
-        hyperparameters().validate()
-        model()
-        _object_().let {
-            if (it != JsonValue.from("fine_tuning.job")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        organizationId()
-        resultFiles()
-        seed()
-        status().validate()
+        hyperparametersOrThrow().validate()
+        modelOrThrow()
+        object_OrThrow()
+        organizationIdOrThrow()
+        resultFilesOrThrow()
+        seedOrThrow()
+        statusOrThrow().validate()
         trainedTokens()
-        trainingFile()
+        trainingFileOrThrow()
         validationFile()
         estimatedFinish()
         integrations().ifPresent { it.forEach { it.validate() } }
@@ -1088,29 +1186,47 @@ private constructor(
         ) : this(code, message, param, mutableMapOf())
 
         /**
-         * A machine-readable error code.
+         * A machine-readable error code. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun code(): String = code.getRequired("code")
+        fun code(): java.util.Optional<String> = code.getOptional("code")
 
         /**
-         * A human-readable error message.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun message(): String = message.getRequired("message")
+        fun codeOrThrow(): String = code.getRequired("code")
+
+        /**
+         * A human-readable error message. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun message(): java.util.Optional<String> = message.getOptional("message")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun messageOrThrow(): String = message.getRequired("message")
 
         /**
          * The parameter that was invalid, usually `training_file` or `validation_file`. This field
-         * will be null if the failure was not parameter-specific.
+         * will be null if the failure was not parameter-specific. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun param(): Optional<String> = param.getOptional("param")
+        fun param(): java.util.Optional<String> = param.getOptional("param")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun paramOrThrow(): String = param.getRequired("param")
 
         /**
          * Returns the raw JSON value of [code].
@@ -1293,8 +1409,8 @@ private constructor(
                 return@apply
             }
 
-            code()
-            message()
+            codeOrThrow()
+            messageOrThrow()
             param()
             validated = true
         }
@@ -1367,31 +1483,48 @@ private constructor(
 
         /**
          * Number of examples in each batch. A larger batch size means that model parameters are
-         * updated less frequently, but with lower variance.
+         * updated less frequently, but with lower variance. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun batchSize(): Optional<BatchSize> = batchSize.getOptional("batch_size")
+        fun batchSize(): java.util.Optional<BatchSize> = batchSize.getOptional("batch_size")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun batchSizeOrThrow(): BatchSize = batchSize.getRequired("batch_size")
 
         /**
          * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
-         * overfitting.
+         * overfitting. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
+        fun learningRateMultiplier(): java.util.Optional<LearningRateMultiplier> =
             learningRateMultiplier.getOptional("learning_rate_multiplier")
 
         /**
-         * The number of epochs to train the model for. An epoch refers to one full cycle through
-         * the training dataset.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun nEpochs(): Optional<NEpochs> = nEpochs.getOptional("n_epochs")
+        fun learningRateMultiplierOrThrow(): LearningRateMultiplier =
+            learningRateMultiplier.getRequired("learning_rate_multiplier")
+
+        /**
+         * The number of epochs to train the model for. An epoch refers to one full cycle through
+         * the training dataset. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun nEpochs(): java.util.Optional<NEpochs> = nEpochs.getOptional("n_epochs")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nEpochsOrThrow(): NEpochs = nEpochs.getRequired("n_epochs")
 
         /**
          * Returns the raw JSON value of [batchSize].
@@ -2662,37 +2795,62 @@ private constructor(
         ) : this(type, dpo, reinforcement, supervised, mutableMapOf())
 
         /**
-         * The type of method. Is either `supervised`, `dpo`, or `reinforcement`.
+         * The type of method. Is either `supervised`, `dpo`, or `reinforcement`. The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun type(): Type = type.getRequired("type")
+        fun type(): java.util.Optional<Type> = type.getOptional("type")
 
         /**
-         * Configuration for the DPO fine-tuning method.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun dpo(): Optional<DpoMethod> = dpo.getOptional("dpo")
+        fun typeOrThrow(): Type = type.getRequired("type")
 
         /**
-         * Configuration for the reinforcement fine-tuning method.
+         * Configuration for the DPO fine-tuning method. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun reinforcement(): Optional<ReinforcementMethod> =
+        fun dpo(): java.util.Optional<DpoMethod> = dpo.getOptional("dpo")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun dpoOrThrow(): DpoMethod = dpo.getRequired("dpo")
+
+        /**
+         * Configuration for the reinforcement fine-tuning method. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun reinforcement(): java.util.Optional<ReinforcementMethod> =
             reinforcement.getOptional("reinforcement")
 
         /**
-         * Configuration for the supervised fine-tuning method.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun supervised(): Optional<SupervisedMethod> = supervised.getOptional("supervised")
+        fun reinforcementOrThrow(): ReinforcementMethod = reinforcement.getRequired("reinforcement")
+
+        /**
+         * Configuration for the supervised fine-tuning method. Returns empty if the JSON property
+         * is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun supervised(): java.util.Optional<SupervisedMethod> =
+            supervised.getOptional("supervised")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun supervisedOrThrow(): SupervisedMethod = supervised.getRequired("supervised")
 
         /**
          * Returns the raw JSON value of [type].
@@ -2900,7 +3058,7 @@ private constructor(
                 return@apply
             }
 
-            type().validate()
+            typeOrThrow().validate()
             dpo().ifPresent { it.validate() }
             reinforcement().ifPresent { it.validate() }
             supervised().ifPresent { it.validate() }

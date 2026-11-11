@@ -3,6 +3,7 @@
 package com.openai.models.realtime
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -21,12 +22,12 @@ internal class RealtimeConversationItemFunctionCallTest {
                 .status(RealtimeConversationItemFunctionCall.Status.COMPLETED)
                 .build()
 
-        assertThat(realtimeConversationItemFunctionCall.arguments()).isEqualTo("arguments")
-        assertThat(realtimeConversationItemFunctionCall.name()).isEqualTo("name")
+        assertThat(realtimeConversationItemFunctionCall.arguments()).contains("arguments")
+        assertThat(realtimeConversationItemFunctionCall.name()).contains("name")
         assertThat(realtimeConversationItemFunctionCall.id()).contains("id")
         assertThat(realtimeConversationItemFunctionCall.callId()).contains("call_id")
         assertThat(realtimeConversationItemFunctionCall.object_())
-            .contains(RealtimeConversationItemFunctionCall.Object.REALTIME_ITEM)
+            .contains(JsonValue.from("realtime.item"))
         assertThat(realtimeConversationItemFunctionCall.status())
             .contains(RealtimeConversationItemFunctionCall.Status.COMPLETED)
 

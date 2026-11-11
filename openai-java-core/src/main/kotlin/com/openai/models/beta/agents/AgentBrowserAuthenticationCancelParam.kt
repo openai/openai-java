@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
+import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.collectAllProperties
@@ -29,26 +30,48 @@ private constructor(
     ) : this(action, type, mutableMapOf())
 
     /**
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("cancel")
-     * ```
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("action") @ExcludeMissing fun _action(): JsonValue = action
+    fun action(): java.util.Optional<JsonValue> {
+        val raw = action
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("cancel")) ->
+                throw OpenAIInvalidDataException("`action` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("browser_authentication")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun actionOrThrow(): JsonValue = action().orElseGet { action.getRequired("action") }
+
+    @JsonProperty("action") @ExcludeMissing fun _action(): JsonField<JsonValue> = action
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("browser_authentication")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -173,16 +196,8 @@ private constructor(
             return@apply
         }
 
-        _action().let {
-            if (it != JsonValue.from("cancel")) {
-                throw OpenAIInvalidDataException("'action' is invalid, received $it")
-            }
-        }
-        _type().let {
-            if (it != JsonValue.from("browser_authentication")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        actionOrThrow()
+        typeOrThrow()
         validated = true
     }
 

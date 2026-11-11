@@ -37,21 +37,33 @@ private constructor(
     /**
      * The number of tokens that overlap between chunks. The default value is `400`.
      *
-     * Note that the overlap must not exceed half of `max_chunk_size_tokens`.
+     * Note that the overlap must not exceed half of `max_chunk_size_tokens`. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun chunkOverlapTokens(): Long = chunkOverlapTokens.getRequired("chunk_overlap_tokens")
+    fun chunkOverlapTokens(): java.util.Optional<Long> =
+        chunkOverlapTokens.getOptional("chunk_overlap_tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun chunkOverlapTokensOrThrow(): Long = chunkOverlapTokens.getRequired("chunk_overlap_tokens")
 
     /**
      * The maximum number of tokens in each chunk. The default value is `800`. The minimum value is
-     * `100` and the maximum value is `4096`.
+     * `100` and the maximum value is `4096`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun maxChunkSizeTokens(): Long = maxChunkSizeTokens.getRequired("max_chunk_size_tokens")
+    fun maxChunkSizeTokens(): java.util.Optional<Long> =
+        maxChunkSizeTokens.getOptional("max_chunk_size_tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun maxChunkSizeTokensOrThrow(): Long = maxChunkSizeTokens.getRequired("max_chunk_size_tokens")
 
     /**
      * Returns the raw JSON value of [chunkOverlapTokens].
@@ -223,8 +235,8 @@ private constructor(
             return@apply
         }
 
-        chunkOverlapTokens()
-        maxChunkSizeTokens()
+        chunkOverlapTokensOrThrow()
+        maxChunkSizeTokensOrThrow()
         validated = true
     }
 

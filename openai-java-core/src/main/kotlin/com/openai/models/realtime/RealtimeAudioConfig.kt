@@ -37,16 +37,28 @@ private constructor(
     ) : this(input, output, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun input(): Optional<RealtimeAudioConfigInput> = input.getOptional("input")
+    fun input(): java.util.Optional<RealtimeAudioConfigInput> = input.getOptional("input")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun output(): Optional<RealtimeAudioConfigOutput> = output.getOptional("output")
+    fun inputOrThrow(): RealtimeAudioConfigInput = input.getRequired("input")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun output(): java.util.Optional<RealtimeAudioConfigOutput> = output.getOptional("output")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun outputOrThrow(): RealtimeAudioConfigOutput = output.getRequired("output")
 
     /**
      * Returns the raw JSON value of [input].

@@ -20,10 +20,10 @@ internal class VoiceTest {
                 .prompt("prompt")
                 .build()
 
-        assertThat(voice.id()).isEqualTo("id")
-        assertThat(voice.createdAt()).isEqualTo(0L)
-        assertThat(voice.name()).isEqualTo("name")
-        assertThat(voice.type()).isEqualTo(Voice.Type.AUDIO_SAMPLE)
+        assertThat(voice.id()).contains("id")
+        assertThat(voice.createdAt()).contains(0L)
+        assertThat(voice.name()).contains("name")
+        assertThat(voice.type()).contains(Voice.Type.AUDIO_SAMPLE)
         assertThat(voice.prompt()).contains("prompt")
 
         val jsonMapper = jsonMapper()

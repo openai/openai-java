@@ -13,7 +13,7 @@ internal class ToolChoiceMcpTest {
     fun createAndRoundtrip() {
         val toolChoiceMcp = ToolChoiceMcp.builder().serverLabel("server_label").name("name").build()
 
-        assertThat(toolChoiceMcp.serverLabel()).isEqualTo("server_label")
+        assertThat(toolChoiceMcp.serverLabel()).contains("server_label")
         assertThat(toolChoiceMcp.name()).contains("name")
 
         val jsonMapper = jsonMapper()

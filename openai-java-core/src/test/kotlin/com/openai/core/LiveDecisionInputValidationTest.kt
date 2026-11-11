@@ -31,11 +31,11 @@ internal class LiveDecisionInputValidationTest {
     @MethodSource("validInputs")
     fun validatesCurrentInputItemsWithAllInputIdStates(label: String, item: String) {
         val event = decode(item)
-        assertThat(event.item().isValid()).describedAs(label).isTrue()
-        assertThat(event.item().validate()).isSameAs(event.item())
+        assertThat(event.itemOrThrow().isValid()).describedAs(label).isTrue()
+        assertThat(event.itemOrThrow().validate()).isSameAs(event.itemOrThrow())
         assertThat(event.isValid()).describedAs(label).isTrue()
         assertThat(event.validate()).isSameAs(event)
-        assertThat(mapper.readTree(mapper.writeValueAsString(event.item())))
+        assertThat(mapper.readTree(mapper.writeValueAsString(event.itemOrThrow())))
             .isEqualTo(mapper.readTree(item))
     }
 
@@ -59,8 +59,8 @@ internal class LiveDecisionInputValidationTest {
     )
     fun rejectsMalformedKnownInputFieldsAndDiscriminators(item: String) {
         val event = decode(item)
-        assertThat(event.item().isValid()).isFalse()
-        assertThrows<OpenAIInvalidDataException> { event.item().validate() }
+        assertThat(event.itemOrThrow().isValid()).isFalse()
+        assertThrows<OpenAIInvalidDataException> { event.itemOrThrow().validate() }
         assertThat(event.isValid()).isFalse()
         assertThrows<OpenAIInvalidDataException> { event.validate() }
     }
@@ -70,7 +70,7 @@ internal class LiveDecisionInputValidationTest {
         assertThrows<IllegalStateException> { DecisionItemCreateEvent.Item.builder().build() }
         val original =
             DecisionItemCreateEvent.Item.builder().content("fixture").id("first").build().validate()
-        assertThat(original.content().asString()).isEqualTo("fixture")
+        assertThat(original.contentOrThrow().asString()).isEqualTo("fixture")
         assertThat(original.id()).contains("first")
         assertThat(original._role()).isEqualTo(JsonValue.from("user"))
 

@@ -40,49 +40,79 @@ private constructor(
     ) : this(description, name, skillId, type, version, mutableMapOf())
 
     /**
-     * The installed skill description.
+     * The installed skill description. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun description(): String = description.getRequired("description")
+    fun description(): java.util.Optional<String> = description.getOptional("description")
 
     /**
-     * The installed skill name.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): String = name.getRequired("name")
+    fun descriptionOrThrow(): String = description.getRequired("description")
 
     /**
-     * The referenced skill ID.
+     * The installed skill name. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun skillId(): String = skillId.getRequired("skill_id")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
 
     /**
-     * The type of the object. Always `skill_reference`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("skill_reference")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun nameOrThrow(): String = name.getRequired("name")
 
     /**
-     * The concrete skill version installed for this session.
+     * The referenced skill ID. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun version(): String = version.getRequired("version")
+    fun skillId(): java.util.Optional<String> = skillId.getOptional("skill_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun skillIdOrThrow(): String = skillId.getRequired("skill_id")
+
+    /**
+     * The type of the object. Always `skill_reference`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("skill_reference")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The concrete skill version installed for this session. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun version(): java.util.Optional<String> = version.getOptional("version")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun versionOrThrow(): String = version.getRequired("version")
 
     /**
      * Returns the raw JSON value of [description].
@@ -300,15 +330,11 @@ private constructor(
             return@apply
         }
 
-        description()
-        name()
-        skillId()
-        _type().let {
-            if (it != JsonValue.from("skill_reference")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        version()
+        descriptionOrThrow()
+        nameOrThrow()
+        skillIdOrThrow()
+        typeOrThrow()
+        versionOrThrow()
         validated = true
     }
 

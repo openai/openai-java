@@ -75,81 +75,130 @@ private constructor(
     )
 
     /**
-     * The name of the function to call.
+     * The name of the function to call. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun name(): String = name.getRequired("name")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
 
     /**
-     * A JSON schema object describing the parameters of the function.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun parameters(): Optional<Parameters> = parameters.getOptional("parameters")
+    fun nameOrThrow(): String = name.getRequired("name")
 
     /**
-     * Whether strict parameter validation is enforced for this function tool.
+     * A JSON schema object describing the parameters of the function. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun strict(): Optional<Boolean> = strict.getOptional("strict")
+    fun parameters(): java.util.Optional<Parameters> = parameters.getOptional("parameters")
 
     /**
-     * The type of the function tool. Always `function`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("function")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun parametersOrThrow(): Parameters = parameters.getRequired("parameters")
 
     /**
-     * The tool invocation context(s).
+     * Whether strict parameter validation is enforced for this function tool. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun allowedCallers(): Optional<List<AllowedCaller>> =
+    fun strict(): java.util.Optional<Boolean> = strict.getOptional("strict")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun strictOrThrow(): Boolean = strict.getRequired("strict")
+
+    /**
+     * The type of the function tool. Always `function`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("function")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The tool invocation context(s). Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun allowedCallers(): java.util.Optional<List<AllowedCaller>> =
         allowedCallers.getOptional("allowed_callers")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun async(): Optional<Boolean> = async.getOptional("async")
+    fun allowedCallersOrThrow(): List<AllowedCaller> = allowedCallers.getRequired("allowed_callers")
 
     /**
-     * Whether this function is deferred and loaded via tool search.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun deferLoading(): Optional<Boolean> = deferLoading.getOptional("defer_loading")
+    fun async(): java.util.Optional<Boolean> = async.getOptional("async")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun asyncOrThrow(): Boolean = async.getRequired("async")
+
+    /**
+     * Whether this function is deferred and loaded via tool search. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun deferLoading(): java.util.Optional<Boolean> = deferLoading.getOptional("defer_loading")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun deferLoadingOrThrow(): Boolean = deferLoading.getRequired("defer_loading")
 
     /**
      * A description of the function. Used by the model to determine whether or not to call the
-     * function.
+     * function. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun description(): Optional<String> = description.getOptional("description")
+    fun description(): java.util.Optional<String> = description.getOptional("description")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun descriptionOrThrow(): String = description.getRequired("description")
 
     /**
      * A JSON schema object describing the JSON value encoded in string outputs for this function.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun outputSchema(): Optional<OutputSchema> = outputSchema.getOptional("output_schema")
+    fun outputSchema(): java.util.Optional<OutputSchema> = outputSchema.getOptional("output_schema")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun outputSchemaOrThrow(): OutputSchema = outputSchema.getRequired("output_schema")
 
     /**
      * Returns the raw JSON value of [name].
@@ -513,14 +562,10 @@ private constructor(
             return@apply
         }
 
-        name()
+        nameOrThrow()
         parameters().ifPresent { it.validate() }
         strict()
-        _type().let {
-            if (it != JsonValue.from("function")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        typeOrThrow()
         allowedCallers().ifPresent { it.forEach { it.validate() } }
         async()
         deferLoading()

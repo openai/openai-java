@@ -18,9 +18,9 @@ internal class BetaContainerNetworkPolicyDomainSecretTest {
                 .value("x")
                 .build()
 
-        assertThat(betaContainerNetworkPolicyDomainSecret.domain()).isEqualTo("x")
-        assertThat(betaContainerNetworkPolicyDomainSecret.name()).isEqualTo("x")
-        assertThat(betaContainerNetworkPolicyDomainSecret.value()).isEqualTo("x")
+        assertThat(betaContainerNetworkPolicyDomainSecret.domain()).contains("x")
+        assertThat(betaContainerNetworkPolicyDomainSecret.name()).contains("x")
+        assertThat(betaContainerNetworkPolicyDomainSecret.value()).contains("x")
 
         val jsonMapper = jsonMapper()
 

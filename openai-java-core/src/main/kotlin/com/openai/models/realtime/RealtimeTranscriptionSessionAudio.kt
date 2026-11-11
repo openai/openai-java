@@ -33,10 +33,17 @@ private constructor(
     ) : this(input, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun input(): Optional<RealtimeTranscriptionSessionAudioInput> = input.getOptional("input")
+    fun input(): java.util.Optional<RealtimeTranscriptionSessionAudioInput> =
+        input.getOptional("input")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun inputOrThrow(): RealtimeTranscriptionSessionAudioInput = input.getRequired("input")
 
     /**
      * Returns the raw JSON value of [input].

@@ -22,9 +22,9 @@ internal class CodeInterpreterToolCallTest {
                 )
                 .build()
 
-        assertThat(codeInterpreterToolCall.id()).isEqualTo("id")
+        assertThat(codeInterpreterToolCall.id()).contains("id")
         assertThat(codeInterpreterToolCall.codeInterpreter())
-            .isEqualTo(
+            .contains(
                 CodeInterpreterToolCall.CodeInterpreter.builder()
                     .input("input")
                     .addLogsOutput("logs")

@@ -42,21 +42,30 @@ private constructor(
 
     /**
      * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
-     * dashes, with a maximum length of 64.
+     * dashes, with a maximum length of 64. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun name(): String = name.getRequired("name")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
 
     /**
      * A description of what the function does, used by the model to choose when and how to call the
-     * function.
+     * function. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun description(): Optional<String> = description.getOptional("description")
+    fun description(): java.util.Optional<String> = description.getOptional("description")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun descriptionOrThrow(): String = description.getRequired("description")
 
     /**
      * The parameters the functions accepts, described as a JSON Schema object. See the
@@ -64,23 +73,33 @@ private constructor(
      * [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for documentation
      * about the format.
      *
-     * Omitting `parameters` defines a function with an empty parameter list.
+     * Omitting `parameters` defines a function with an empty parameter list. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun parameters(): Optional<FunctionParameters> = parameters.getOptional("parameters")
+    fun parameters(): java.util.Optional<FunctionParameters> = parameters.getOptional("parameters")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun parametersOrThrow(): FunctionParameters = parameters.getRequired("parameters")
 
     /**
      * Whether to enable strict schema adherence when generating the function call. If set to true,
      * the model will follow the exact schema defined in the `parameters` field. Only a subset of
      * JSON Schema is supported when `strict` is `true`. Learn more about Structured Outputs in the
      * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling).
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun strict(): Optional<Boolean> = strict.getOptional("strict")
+    fun strict(): java.util.Optional<Boolean> = strict.getOptional("strict")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun strictOrThrow(): Boolean = strict.getRequired("strict")
 
     /**
      * Returns the raw JSON value of [name].
@@ -308,7 +327,7 @@ private constructor(
             return@apply
         }
 
-        name()
+        nameOrThrow()
         description()
         parameters().ifPresent { it.validate() }
         strict()

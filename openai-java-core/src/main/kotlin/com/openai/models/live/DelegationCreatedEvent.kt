@@ -50,50 +50,80 @@ private constructor(
 
     /**
      * The delegated work identifier and destination. This object contains metadata, not the task
-     * text.
+     * text. The schema requires this property. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun delegation(): Delegation = delegation.getRequired("delegation")
+    fun delegation(): java.util.Optional<Delegation> = delegation.getOptional("delegation")
 
     /**
-     * The unique ID of the Live server event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun delegationOrThrow(): Delegation = delegation.getRequired("delegation")
+
+    /**
+     * The unique ID of the Live server event. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
      * The position on the Live session timeline where the delegation was created, in milliseconds
-     * from the beginning of the session.
+     * from the beginning of the session. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun offsetMs(): Long = offsetMs.getRequired("offset_ms")
+    fun offsetMs(): java.util.Optional<Long> = offsetMs.getOptional("offset_ms")
 
     /**
-     * The event type, always `session.delegation.created`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("session.delegation.created")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun offsetMsOrThrow(): Long = offsetMs.getRequired("offset_ms")
 
     /**
-     * The event_id of the client command associated with this server event, when supplied.
+     * The event type, always `session.delegation.created`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun clientEventId(): Optional<String> = clientEventId.getOptional("client_event_id")
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("session.delegation.created")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The event_id of the client command associated with this server event, when supplied. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun clientEventId(): java.util.Optional<String> = clientEventId.getOptional("client_event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun clientEventIdOrThrow(): String = clientEventId.getRequired("client_event_id")
 
     /**
      * Returns the raw JSON value of [delegation].
@@ -322,14 +352,10 @@ private constructor(
             return@apply
         }
 
-        delegation().validate()
-        eventId()
-        offsetMs()
-        _type().let {
-            if (it != JsonValue.from("session.delegation.created")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        delegationOrThrow().validate()
+        eventIdOrThrow()
+        offsetMsOrThrow()
+        typeOrThrow()
         clientEventId()
         validated = true
     }
@@ -381,42 +407,70 @@ private constructor(
 
         /**
          * The unique ID of the delegation. Use this as delegation_id when replying to client-owned
-         * work or correlating backend events.
+         * work or correlating backend events. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun id(): String = id.getRequired("id")
+        fun id(): java.util.Optional<String> = id.getOptional("id")
 
         /**
-         * Where the Live model delegated the work: `client`, `responses`, or `decisions`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun target(): Target = target.getRequired("target")
+        fun idOrThrow(): String = id.getRequired("id")
 
         /**
-         * The object type, always `delegation`.
+         * Where the Live model delegated the work: `client`, `responses`, or `decisions`. The
+         * schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("delegation")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun target(): java.util.Optional<Target> = target.getOptional("target")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun targetOrThrow(): Target = target.getRequired("target")
+
+        /**
+         * The object type, always `delegation`. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("delegation")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * The ID of the Responses API response associated with a Responses delegation. Omitted for
-         * client delegations.
+         * client delegations. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun responseId(): Optional<String> = responseId.getOptional("response_id")
+        fun responseId(): java.util.Optional<String> = responseId.getOptional("response_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun responseIdOrThrow(): String = responseId.getRequired("response_id")
 
         /**
          * Returns the raw JSON value of [id].
@@ -628,13 +682,9 @@ private constructor(
                 return@apply
             }
 
-            id()
-            target()
-            _type().let {
-                if (it != JsonValue.from("delegation")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            idOrThrow()
+            targetOrThrow()
+            typeOrThrow()
             responseId()
             validated = true
         }

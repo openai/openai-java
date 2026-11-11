@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.VectorStoreService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see VectorStoreService.list */
 class VectorStoreListPage
@@ -18,21 +16,22 @@ private constructor(
     private val response: VectorStoreListPageResponse,
 ) : Page<VectorStore> {
 
-    /**
-     * Delegates to [VectorStoreListPageResponse], but gracefully handles missing data.
-     *
-     * @see VectorStoreListPageResponse.data
-     */
-    fun data(): List<VectorStore> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see VectorStoreListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [VectorStoreListPageResponse], but gracefully handles missing data.
-     *
-     * @see VectorStoreListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<VectorStore> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<VectorStore> = data()
+    fun _data() = response._data()
+
+    /** @see VectorStoreListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<VectorStore> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

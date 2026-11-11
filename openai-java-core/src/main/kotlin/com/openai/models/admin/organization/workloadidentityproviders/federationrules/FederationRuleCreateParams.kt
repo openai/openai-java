@@ -45,47 +45,47 @@ private constructor(
     fun workloadIdentityProviderId(): Optional<String> =
         Optional.ofNullable(workloadIdentityProviderId)
 
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun attributeMatchers(): AttributeMatchers = body.attributeMatchers()
+    /** @see Body.attributeMatchers */
+    fun attributeMatchers(): java.util.Optional<AttributeMatchers> = body.attributeMatchers()
 
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun projectId(): String = body.projectId()
+    /** @see Body.attributeMatchersOrThrow */
+    fun attributeMatchersOrThrow(): AttributeMatchers = body.attributeMatchersOrThrow()
 
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun serviceAccountId(): String = body.serviceAccountId()
+    /** @see Body.projectId */
+    fun projectId(): java.util.Optional<String> = body.projectId()
 
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun description(): Optional<String> = body.description()
+    /** @see Body.projectIdOrThrow */
+    fun projectIdOrThrow(): String = body.projectIdOrThrow()
 
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun enabled(): Optional<Boolean> = body.enabled()
+    /** @see Body.serviceAccountId */
+    fun serviceAccountId(): java.util.Optional<String> = body.serviceAccountId()
 
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun name(): Optional<String> = body.name()
+    /** @see Body.serviceAccountIdOrThrow */
+    fun serviceAccountIdOrThrow(): String = body.serviceAccountIdOrThrow()
 
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun permissions(): Optional<Permissions> = body.permissions()
+    /** @see Body.description */
+    fun description(): java.util.Optional<String> = body.description()
+
+    /** @see Body.descriptionOrThrow */
+    fun descriptionOrThrow(): String = body.descriptionOrThrow()
+
+    /** @see Body.enabled */
+    fun enabled(): java.util.Optional<Boolean> = body.enabled()
+
+    /** @see Body.enabledOrThrow */
+    fun enabledOrThrow(): Boolean = body.enabledOrThrow()
+
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
+
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
+
+    /** @see Body.permissions */
+    fun permissions(): java.util.Optional<Permissions> = body.permissions()
+
+    /** @see Body.permissionsOrThrow */
+    fun permissionsOrThrow(): Permissions = body.permissionsOrThrow()
 
     /**
      * Returns the raw JSON value of [attributeMatchers].
@@ -503,47 +503,98 @@ private constructor(
         )
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun attributeMatchers(): AttributeMatchers =
+        fun attributeMatchers(): java.util.Optional<AttributeMatchers> =
+            attributeMatchers.getOptional("attribute_matchers")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun attributeMatchersOrThrow(): AttributeMatchers =
             attributeMatchers.getRequired("attribute_matchers")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun projectId(): String = projectId.getRequired("project_id")
+        fun projectId(): java.util.Optional<String> = projectId.getOptional("project_id")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun serviceAccountId(): String = serviceAccountId.getRequired("service_account_id")
+        fun projectIdOrThrow(): String = projectId.getRequired("project_id")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun description(): Optional<String> = description.getOptional("description")
+        fun serviceAccountId(): java.util.Optional<String> =
+            serviceAccountId.getOptional("service_account_id")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun enabled(): Optional<Boolean> = enabled.getOptional("enabled")
+        fun serviceAccountIdOrThrow(): String = serviceAccountId.getRequired("service_account_id")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): Optional<String> = name.getOptional("name")
+        fun description(): java.util.Optional<String> = description.getOptional("description")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun permissions(): Optional<Permissions> = permissions.getOptional("permissions")
+        fun descriptionOrThrow(): String = description.getRequired("description")
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun permissions(): java.util.Optional<Permissions> = permissions.getOptional("permissions")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun permissionsOrThrow(): Permissions = permissions.getRequired("permissions")
 
         /**
          * Returns the raw JSON value of [attributeMatchers].
@@ -846,9 +897,9 @@ private constructor(
                 return@apply
             }
 
-            attributeMatchers().validate()
-            projectId()
-            serviceAccountId()
+            attributeMatchersOrThrow().validate()
+            projectIdOrThrow()
+            serviceAccountIdOrThrow()
             description()
             enabled()
             name()
@@ -1286,22 +1337,42 @@ private constructor(
             ) : this(scopes, type, mutableMapOf())
 
             /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun scopes(): List<String> = scopes.getRequired("scopes")
+            fun scopes(): java.util.Optional<List<String>> = scopes.getOptional("scopes")
 
             /**
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("restricted")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun scopesOrThrow(): List<String> = scopes.getRequired("scopes")
+
+            /**
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("restricted")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
             /**
              * Returns the raw JSON value of [scopes].
@@ -1465,12 +1536,8 @@ private constructor(
                     return@apply
                 }
 
-                scopes()
-                _type().let {
-                    if (it != JsonValue.from("restricted")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
+                scopesOrThrow()
+                typeOrThrow()
                 validated = true
             }
 

@@ -5,6 +5,7 @@ package com.openai.models.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
 import com.openai.models.PromptCacheBreakpointTtl
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -29,8 +30,8 @@ internal class ResponseInputMessageItemTest {
                 .status(ResponseInputMessageItem.Status.IN_PROGRESS)
                 .build()
 
-        assertThat(responseInputMessageItem.id()).isEqualTo("id")
-        assertThat(responseInputMessageItem.content())
+        assertThat(responseInputMessageItem.id()).contains("id")
+        assertThat(responseInputMessageItem.content().getOrNull())
             .containsExactly(
                 ResponseInputContent.ofInputText(
                     ResponseInputText.builder()
@@ -43,7 +44,7 @@ internal class ResponseInputMessageItemTest {
                         .build()
                 )
             )
-        assertThat(responseInputMessageItem.role()).isEqualTo(ResponseInputMessageItem.Role.USER)
+        assertThat(responseInputMessageItem.role()).contains(ResponseInputMessageItem.Role.USER)
         assertThat(responseInputMessageItem.status())
             .contains(ResponseInputMessageItem.Status.IN_PROGRESS)
 

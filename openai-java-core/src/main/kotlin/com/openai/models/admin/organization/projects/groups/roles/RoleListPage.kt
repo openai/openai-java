@@ -7,7 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.admin.organization.projects.groups.RoleService
 import java.util.Objects
-import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** @see RoleService.list */
@@ -18,29 +17,30 @@ private constructor(
     private val response: RoleListPageResponse,
 ) : Page<RoleListResponse> {
 
-    /**
-     * Delegates to [RoleListPageResponse], but gracefully handles missing data.
-     *
-     * @see RoleListPageResponse.data
-     */
-    fun data(): List<RoleListResponse> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see RoleListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [RoleListPageResponse], but gracefully handles missing data.
-     *
-     * @see RoleListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<RoleListResponse> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    /**
-     * Delegates to [RoleListPageResponse], but gracefully handles missing data.
-     *
-     * @see RoleListPageResponse.next
-     */
-    fun next(): Optional<String> = response._next().getOptional("next")
+    fun _data() = response._data()
 
-    override fun items(): List<RoleListResponse> = data()
+    /** @see RoleListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    /** @see RoleListPageResponse.next */
+    fun next() = response.next()
+
+    fun nextOrThrow(): String = next().orElseGet { response._next().getRequired("next") }
+
+    fun _next() = response._next()
+
+    override fun items(): List<RoleListResponse> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean =
         hasMore().orElse(true) && items().isNotEmpty() && next().isPresent

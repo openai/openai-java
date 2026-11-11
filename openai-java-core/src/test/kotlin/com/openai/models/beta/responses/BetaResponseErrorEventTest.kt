@@ -21,9 +21,9 @@ internal class BetaResponseErrorEventTest {
                 .build()
 
         assertThat(betaResponseErrorEvent.code()).contains("code")
-        assertThat(betaResponseErrorEvent.message()).isEqualTo("message")
+        assertThat(betaResponseErrorEvent.message()).contains("message")
         assertThat(betaResponseErrorEvent.param()).contains("param")
-        assertThat(betaResponseErrorEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseErrorEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseErrorEvent.agent())
             .contains(BetaResponseErrorEvent.Agent.builder().agentName("agent_name").build())
 

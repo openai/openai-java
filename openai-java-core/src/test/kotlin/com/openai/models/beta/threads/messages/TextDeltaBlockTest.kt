@@ -35,7 +35,7 @@ internal class TextDeltaBlockTest {
                 )
                 .build()
 
-        assertThat(textDeltaBlock.index()).isEqualTo(0L)
+        assertThat(textDeltaBlock.index()).contains(0L)
         assertThat(textDeltaBlock.text())
             .contains(
                 TextDelta.builder()

@@ -65,14 +65,14 @@ internal class FederationRuleCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.attributeMatchers())
+        assertThat(body.attributeMatchersOrThrow())
             .isEqualTo(
                 FederationRuleCreateParams.AttributeMatchers.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(body.projectId()).isEqualTo("x")
-        assertThat(body.serviceAccountId()).isEqualTo("x")
+        assertThat(body.projectIdOrThrow()).isEqualTo("x")
+        assertThat(body.serviceAccountIdOrThrow()).isEqualTo("x")
         assertThat(body.description()).contains("description")
         assertThat(body.enabled()).contains(true)
         assertThat(body.name()).contains("name")
@@ -96,13 +96,13 @@ internal class FederationRuleCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.attributeMatchers())
+        assertThat(body.attributeMatchersOrThrow())
             .isEqualTo(
                 FederationRuleCreateParams.AttributeMatchers.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(body.projectId()).isEqualTo("x")
-        assertThat(body.serviceAccountId()).isEqualTo("x")
+        assertThat(body.projectIdOrThrow()).isEqualTo("x")
+        assertThat(body.serviceAccountIdOrThrow()).isEqualTo("x")
     }
 }

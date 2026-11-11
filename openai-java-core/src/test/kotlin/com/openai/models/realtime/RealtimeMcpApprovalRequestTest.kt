@@ -19,10 +19,10 @@ internal class RealtimeMcpApprovalRequestTest {
                 .serverLabel("server_label")
                 .build()
 
-        assertThat(realtimeMcpApprovalRequest.id()).isEqualTo("id")
-        assertThat(realtimeMcpApprovalRequest.arguments()).isEqualTo("arguments")
-        assertThat(realtimeMcpApprovalRequest.name()).isEqualTo("name")
-        assertThat(realtimeMcpApprovalRequest.serverLabel()).isEqualTo("server_label")
+        assertThat(realtimeMcpApprovalRequest.id()).contains("id")
+        assertThat(realtimeMcpApprovalRequest.arguments()).contains("arguments")
+        assertThat(realtimeMcpApprovalRequest.name()).contains("name")
+        assertThat(realtimeMcpApprovalRequest.serverLabel()).contains("server_label")
 
         val jsonMapper = jsonMapper()
 

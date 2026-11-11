@@ -28,11 +28,11 @@ internal class BetaResponseFunctionToolCallOutputItemTest {
                 .namespace("namespace")
                 .build()
 
-        assertThat(betaResponseFunctionToolCallOutputItem.id()).isEqualTo("id")
+        assertThat(betaResponseFunctionToolCallOutputItem.id()).contains("id")
         assertThat(betaResponseFunctionToolCallOutputItem.output())
-            .isEqualTo(BetaResponseFunctionToolCallOutputItem.Output.ofString("string"))
+            .contains(BetaResponseFunctionToolCallOutputItem.Output.ofString("string"))
         assertThat(betaResponseFunctionToolCallOutputItem.status())
-            .isEqualTo(BetaResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
+            .contains(BetaResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
         assertThat(betaResponseFunctionToolCallOutputItem.agent())
             .contains(
                 BetaResponseFunctionToolCallOutputItem.Agent.builder()

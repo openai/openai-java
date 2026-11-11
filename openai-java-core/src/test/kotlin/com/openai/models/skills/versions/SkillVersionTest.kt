@@ -21,12 +21,12 @@ internal class SkillVersionTest {
                 .version("version")
                 .build()
 
-        assertThat(skillVersion.id()).isEqualTo("id")
-        assertThat(skillVersion.createdAt()).isEqualTo(0L)
-        assertThat(skillVersion.description()).isEqualTo("description")
-        assertThat(skillVersion.name()).isEqualTo("name")
-        assertThat(skillVersion.skillId()).isEqualTo("skill_id")
-        assertThat(skillVersion.version()).isEqualTo("version")
+        assertThat(skillVersion.id()).contains("id")
+        assertThat(skillVersion.createdAt()).contains(0L)
+        assertThat(skillVersion.description()).contains("description")
+        assertThat(skillVersion.name()).contains("name")
+        assertThat(skillVersion.skillId()).contains("skill_id")
+        assertThat(skillVersion.version()).contains("version")
 
         val jsonMapper = jsonMapper()
 

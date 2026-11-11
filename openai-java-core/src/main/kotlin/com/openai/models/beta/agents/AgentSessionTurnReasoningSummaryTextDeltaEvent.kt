@@ -61,73 +61,118 @@ private constructor(
     )
 
     /**
-     * The summary text that was appended.
+     * The summary text that was appended. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun delta(): String = delta.getRequired("delta")
+    fun delta(): java.util.Optional<String> = delta.getOptional("delta")
 
     /**
-     * The unique ID of the event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun deltaOrThrow(): String = delta.getRequired("delta")
 
     /**
-     * The ID of the reasoning item.
+     * The unique ID of the event. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun itemId(): String = itemId.getRequired("item_id")
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
     /**
-     * The index of the item in the turn output.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun outputIndex(): Long = outputIndex.getRequired("output_index")
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
-     * The ID of the session associated with the event.
+     * The ID of the reasoning item. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun sessionId(): String = sessionId.getRequired("session_id")
+    fun itemId(): java.util.Optional<String> = itemId.getOptional("item_id")
 
     /**
-     * The index of the summary content part.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun summaryIndex(): Long = summaryIndex.getRequired("summary_index")
+    fun itemIdOrThrow(): String = itemId.getRequired("item_id")
 
     /**
-     * The ID of the turn associated with the event, when applicable.
+     * The index of the item in the turn output. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun turnId(): Optional<String> = turnId.getOptional("turn_id")
+    fun outputIndex(): java.util.Optional<Long> = outputIndex.getOptional("output_index")
 
     /**
-     * The type of the object. Always `agent.session.turn.reasoning_summary_text.delta`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("agent.session.turn.reasoning_summary_text.delta")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun outputIndexOrThrow(): Long = outputIndex.getRequired("output_index")
+
+    /**
+     * The ID of the session associated with the event. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun sessionId(): java.util.Optional<String> = sessionId.getOptional("session_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sessionIdOrThrow(): String = sessionId.getRequired("session_id")
+
+    /**
+     * The index of the summary content part. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun summaryIndex(): java.util.Optional<Long> = summaryIndex.getOptional("summary_index")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun summaryIndexOrThrow(): Long = summaryIndex.getRequired("summary_index")
+
+    /**
+     * The ID of the turn associated with the event, when applicable. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun turnId(): java.util.Optional<String> = turnId.getOptional("turn_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun turnIdOrThrow(): String = turnId.getRequired("turn_id")
+
+    /**
+     * The type of the object. Always `agent.session.turn.reasoning_summary_text.delta`. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("agent.session.turn.reasoning_summary_text.delta")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [delta].
@@ -428,18 +473,14 @@ private constructor(
             return@apply
         }
 
-        delta()
-        eventId()
-        itemId()
-        outputIndex()
-        sessionId()
-        summaryIndex()
+        deltaOrThrow()
+        eventIdOrThrow()
+        itemIdOrThrow()
+        outputIndexOrThrow()
+        sessionIdOrThrow()
+        summaryIndexOrThrow()
         turnId()
-        _type().let {
-            if (it != JsonValue.from("agent.session.turn.reasoning_summary_text.delta")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        typeOrThrow()
         validated = true
     }
 

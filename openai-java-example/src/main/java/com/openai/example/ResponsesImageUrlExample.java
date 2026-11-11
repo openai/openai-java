@@ -37,10 +37,10 @@ public final class ResponsesImageUrlExample {
                 .model(ChatModel.GPT_4O)
                 .build();
 
-        client.responses().create(createParams).output().stream()
+        client.responses().create(createParams).outputOrThrow().stream()
                 .flatMap(item -> item.message().stream())
-                .flatMap(message -> message.content().stream())
+                .flatMap(message -> message.contentOrThrow().stream())
                 .flatMap(content -> content.outputText().stream())
-                .forEach(outputText -> System.out.println(outputText.text()));
+                .forEach(outputText -> System.out.println(outputText.textOrThrow()));
     }
 }

@@ -19,7 +19,7 @@ internal class InstructionsAppendEventTest {
                 .build()
 
         assertThat(instructionsAppendEvent.content())
-            .isEqualTo("The caller prefers outdoor seating.")
+            .contains("The caller prefers outdoor seating.")
         assertThat(instructionsAppendEvent.delegationId()).isEmpty
         assertThat(instructionsAppendEvent.eventId()).contains("evt_instructions_001")
 

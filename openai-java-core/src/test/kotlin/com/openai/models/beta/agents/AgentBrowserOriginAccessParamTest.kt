@@ -17,7 +17,7 @@ internal class AgentBrowserOriginAccessParamTest {
                 .build()
 
         assertThat(agentBrowserOriginAccessParam.decision())
-            .isEqualTo(AgentBrowserOriginAccessParam.Decision.APPROVE)
+            .contains(AgentBrowserOriginAccessParam.Decision.APPROVE)
 
         val jsonMapper = jsonMapper()
 

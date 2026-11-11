@@ -24,9 +24,9 @@ internal class ResponseFormatTextJsonSchemaConfigTest {
                 .strict(true)
                 .build()
 
-        assertThat(responseFormatTextJsonSchemaConfig.name()).isEqualTo("name")
+        assertThat(responseFormatTextJsonSchemaConfig.name()).contains("name")
         assertThat(responseFormatTextJsonSchemaConfig.schema())
-            .isEqualTo(
+            .contains(
                 ResponseFormatTextJsonSchemaConfig.Schema.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()

@@ -23,9 +23,9 @@ internal class BetaResponseWebSearchCallSearchingEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseWebSearchCallSearchingEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseWebSearchCallSearchingEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseWebSearchCallSearchingEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseWebSearchCallSearchingEvent.itemId()).contains("item_id")
+        assertThat(betaResponseWebSearchCallSearchingEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseWebSearchCallSearchingEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseWebSearchCallSearchingEvent.agent())
             .contains(
                 BetaResponseWebSearchCallSearchingEvent.Agent.builder()

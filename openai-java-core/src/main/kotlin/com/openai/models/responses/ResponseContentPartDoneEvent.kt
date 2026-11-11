@@ -58,57 +58,92 @@ private constructor(
     ) : this(contentIndex, itemId, outputIndex, part, sequenceNumber, type, mutableMapOf())
 
     /**
-     * The index of the content part that is done.
+     * The index of the content part that is done. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun contentIndex(): Long = contentIndex.getRequired("content_index")
+    fun contentIndex(): java.util.Optional<Long> = contentIndex.getOptional("content_index")
 
     /**
-     * The ID of the output item that the content part was added to.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun itemId(): String = itemId.getRequired("item_id")
+    fun contentIndexOrThrow(): Long = contentIndex.getRequired("content_index")
 
     /**
-     * The index of the output item that the content part was added to.
+     * The ID of the output item that the content part was added to. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun outputIndex(): Long = outputIndex.getRequired("output_index")
+    fun itemId(): java.util.Optional<String> = itemId.getOptional("item_id")
 
     /**
-     * The content part that is done.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun part(): Part = part.getRequired("part")
+    fun itemIdOrThrow(): String = itemId.getRequired("item_id")
 
     /**
-     * The sequence number of this event.
+     * The index of the output item that the content part was added to. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
+    fun outputIndex(): java.util.Optional<Long> = outputIndex.getOptional("output_index")
 
     /**
-     * The type of the event. Always `response.content_part.done`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.content_part.done")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun outputIndexOrThrow(): Long = outputIndex.getRequired("output_index")
+
+    /**
+     * The content part that is done. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun part(): java.util.Optional<Part> = part.getOptional("part")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun partOrThrow(): Part = part.getRequired("part")
+
+    /**
+     * The sequence number of this event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun sequenceNumber(): java.util.Optional<Long> = sequenceNumber.getOptional("sequence_number")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sequenceNumberOrThrow(): Long = sequenceNumber.getRequired("sequence_number")
+
+    /**
+     * The type of the event. Always `response.content_part.done`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.content_part.done")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [contentIndex].
@@ -388,16 +423,12 @@ private constructor(
             return@apply
         }
 
-        contentIndex()
-        itemId()
-        outputIndex()
-        part().validate()
-        sequenceNumber()
-        _type().let {
-            if (it != JsonValue.from("response.content_part.done")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        contentIndexOrThrow()
+        itemIdOrThrow()
+        outputIndexOrThrow()
+        partOrThrow().validate()
+        sequenceNumberOrThrow()
+        typeOrThrow()
         validated = true
     }
 
@@ -694,26 +725,42 @@ private constructor(
             ) : this(text, type, mutableMapOf())
 
             /**
-             * The reasoning text from the model.
+             * The reasoning text from the model. The schema requires this property. Returns empty
+             * if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun text(): String = text.getRequired("text")
+            fun text(): java.util.Optional<String> = text.getOptional("text")
 
             /**
-             * The type of the reasoning text. Always `reasoning_text`.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("reasoning_text")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun textOrThrow(): String = text.getRequired("text")
+
+            /**
+             * The type of the reasoning text. Always `reasoning_text`. The schema requires this
+             * property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("reasoning_text")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
             /**
              * Returns the raw JSON value of [text].
@@ -860,12 +907,8 @@ private constructor(
                     return@apply
                 }
 
-                text()
-                _type().let {
-                    if (it != JsonValue.from("reasoning_text")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
+                textOrThrow()
+                typeOrThrow()
                 validated = true
             }
 

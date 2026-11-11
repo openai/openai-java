@@ -50,9 +50,9 @@ internal class RealtimeTranslationClientSecretCreateResponseTest {
                 .value("value")
                 .build()
 
-        assertThat(realtimeTranslationClientSecretCreateResponse.expiresAt()).isEqualTo(0L)
+        assertThat(realtimeTranslationClientSecretCreateResponse.expiresAt()).contains(0L)
         assertThat(realtimeTranslationClientSecretCreateResponse.session())
-            .isEqualTo(
+            .contains(
                 RealtimeTranslationSession.builder()
                     .id("id")
                     .audio(
@@ -85,7 +85,7 @@ internal class RealtimeTranslationClientSecretCreateResponseTest {
                     .model("model")
                     .build()
             )
-        assertThat(realtimeTranslationClientSecretCreateResponse.value()).isEqualTo("value")
+        assertThat(realtimeTranslationClientSecretCreateResponse.value()).contains("value")
 
         val jsonMapper = jsonMapper()
 

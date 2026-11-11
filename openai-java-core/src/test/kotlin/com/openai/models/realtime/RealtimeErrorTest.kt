@@ -20,8 +20,8 @@ internal class RealtimeErrorTest {
                 .param("param")
                 .build()
 
-        assertThat(realtimeError.message()).isEqualTo("message")
-        assertThat(realtimeError.type()).isEqualTo("type")
+        assertThat(realtimeError.message()).contains("message")
+        assertThat(realtimeError.type()).contains("type")
         assertThat(realtimeError.code()).contains("code")
         assertThat(realtimeError.eventId()).contains("event_id")
         assertThat(realtimeError.param()).contains("param")

@@ -50,11 +50,11 @@ internal class BetaResponseContentPartAddedEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseContentPartAddedEvent.contentIndex()).isEqualTo(0L)
-        assertThat(betaResponseContentPartAddedEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseContentPartAddedEvent.outputIndex()).isEqualTo(0L)
+        assertThat(betaResponseContentPartAddedEvent.contentIndex()).contains(0L)
+        assertThat(betaResponseContentPartAddedEvent.itemId()).contains("item_id")
+        assertThat(betaResponseContentPartAddedEvent.outputIndex()).contains(0L)
         assertThat(betaResponseContentPartAddedEvent.part())
-            .isEqualTo(
+            .contains(
                 BetaResponseContentPartAddedEvent.Part.ofOutputText(
                     BetaResponseOutputText.builder()
                         .addAnnotation(
@@ -82,7 +82,7 @@ internal class BetaResponseContentPartAddedEventTest {
                         .build()
                 )
             )
-        assertThat(betaResponseContentPartAddedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseContentPartAddedEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseContentPartAddedEvent.agent())
             .contains(
                 BetaResponseContentPartAddedEvent.Agent.builder().agentName("agent_name").build()

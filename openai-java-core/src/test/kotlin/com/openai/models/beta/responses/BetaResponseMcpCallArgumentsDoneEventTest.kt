@@ -24,10 +24,10 @@ internal class BetaResponseMcpCallArgumentsDoneEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseMcpCallArgumentsDoneEvent.arguments()).isEqualTo("arguments")
-        assertThat(betaResponseMcpCallArgumentsDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseMcpCallArgumentsDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseMcpCallArgumentsDoneEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseMcpCallArgumentsDoneEvent.arguments()).contains("arguments")
+        assertThat(betaResponseMcpCallArgumentsDoneEvent.itemId()).contains("item_id")
+        assertThat(betaResponseMcpCallArgumentsDoneEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseMcpCallArgumentsDoneEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseMcpCallArgumentsDoneEvent.agent())
             .contains(
                 BetaResponseMcpCallArgumentsDoneEvent.Agent.builder()

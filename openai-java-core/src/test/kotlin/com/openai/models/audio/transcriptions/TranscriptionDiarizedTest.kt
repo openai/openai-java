@@ -4,6 +4,7 @@ package com.openai.models.audio.transcriptions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -39,8 +40,8 @@ internal class TranscriptionDiarizedTest {
                 )
                 .build()
 
-        assertThat(transcriptionDiarized.duration()).isEqualTo(0.0)
-        assertThat(transcriptionDiarized.segments())
+        assertThat(transcriptionDiarized.duration()).contains(0.0)
+        assertThat(transcriptionDiarized.segments().getOrNull())
             .containsExactly(
                 TranscriptionDiarizedSegment.builder()
                     .id("id")
@@ -50,7 +51,7 @@ internal class TranscriptionDiarizedTest {
                     .text("text")
                     .build()
             )
-        assertThat(transcriptionDiarized.text()).isEqualTo("text")
+        assertThat(transcriptionDiarized.text()).contains("text")
         assertThat(transcriptionDiarized.usage())
             .contains(
                 TranscriptionDiarized.Usage.ofTokens(

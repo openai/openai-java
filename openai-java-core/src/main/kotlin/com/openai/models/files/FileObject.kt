@@ -62,85 +62,136 @@ private constructor(
     )
 
     /**
-     * The file identifier, which can be referenced in the API endpoints.
+     * The file identifier, which can be referenced in the API endpoints. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The size of the file, in bytes.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun bytes(): Long = bytes.getRequired("bytes")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The Unix timestamp (in seconds) for when the file was created.
+     * The size of the file, in bytes. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun bytes(): java.util.Optional<Long> = bytes.getOptional("bytes")
 
     /**
-     * The name of the file.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun filename(): String = filename.getRequired("filename")
+    fun bytesOrThrow(): Long = bytes.getRequired("bytes")
 
     /**
-     * The object type, which is always `file`.
+     * The Unix timestamp (in seconds) for when the file was created. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("file")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * The name of the file. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun filename(): java.util.Optional<String> = filename.getOptional("filename")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun filenameOrThrow(): String = filename.getRequired("filename")
+
+    /**
+     * The object type, which is always `file`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("file")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * The intended purpose of the file. Supported values are `assistants`, `assistants_output`,
-     * `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`.
+     * `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`. The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun purpose(): Purpose = purpose.getRequired("purpose")
+    fun purpose(): java.util.Optional<Purpose> = purpose.getOptional("purpose")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun purposeOrThrow(): Purpose = purpose.getRequired("purpose")
 
     /**
      * Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or
-     * `error`.
+     * `error`. The schema requires this property. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @Deprecated("deprecated") fun status(): Status = status.getRequired("status")
+    @Deprecated("deprecated")
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
 
     /**
-     * The Unix timestamp (in seconds) for when the file will expire.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
+    @Deprecated("deprecated") fun statusOrThrow(): Status = status.getRequired("status")
+
+    /**
+     * The Unix timestamp (in seconds) for when the file will expire. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun expiresAt(): java.util.Optional<Long> = expiresAt.getOptional("expires_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun expiresAtOrThrow(): Long = expiresAt.getRequired("expires_at")
 
     /**
      * Deprecated. For details on why a fine-tuning training file failed validation, see the `error`
-     * field on `fine_tuning.job`.
+     * field on `fine_tuning.job`. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
     @Deprecated("deprecated")
-    fun statusDetails(): Optional<String> = statusDetails.getOptional("status_details")
+    fun statusDetails(): java.util.Optional<String> = statusDetails.getOptional("status_details")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    @Deprecated("deprecated")
+    fun statusDetailsOrThrow(): String = statusDetails.getRequired("status_details")
 
     /**
      * Returns the raw JSON value of [id].
@@ -470,17 +521,13 @@ private constructor(
             return@apply
         }
 
-        id()
-        bytes()
-        createdAt()
-        filename()
-        _object_().let {
-            if (it != JsonValue.from("file")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        purpose().validate()
-        status().validate()
+        idOrThrow()
+        bytesOrThrow()
+        createdAtOrThrow()
+        filenameOrThrow()
+        object_OrThrow()
+        purposeOrThrow().validate()
+        statusOrThrow().validate()
         expiresAt()
         statusDetails()
         validated = true

@@ -46,56 +46,92 @@ private constructor(
     ) : this(id, createdAt, object_, output, usage, image, mutableMapOf())
 
     /**
-     * The unique identifier for the compacted response.
+     * The unique identifier for the compacted response. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * Unix timestamp (in seconds) when the compacted conversation was created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The object type. Always `response.compaction`.
+     * Unix timestamp (in seconds) when the compacted conversation was created. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.compaction")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * The object type. Always `response.compaction`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.compaction")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * The compacted list of output items. This is a list of all user messages, followed by a single
-     * compaction item.
+     * compaction item. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun output(): List<ResponseOutputItem> = output.getRequired("output")
+    fun output(): java.util.Optional<List<ResponseOutputItem>> = output.getOptional("output")
 
     /**
-     * Token accounting for the compaction pass, including cached, reasoning, and total tokens.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun usage(): ResponseUsage = usage.getRequired("usage")
+    fun outputOrThrow(): List<ResponseOutputItem> = output.getRequired("output")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Token accounting for the compaction pass, including cached, reasoning, and total tokens. The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun image(): Optional<Image> = image.getOptional("image")
+    fun usage(): java.util.Optional<ResponseUsage> = usage.getOptional("usage")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun usageOrThrow(): ResponseUsage = usage.getRequired("usage")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun image(): java.util.Optional<Image> = image.getOptional("image")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun imageOrThrow(): Image = image.getRequired("image")
 
     /**
      * Returns the raw JSON value of [id].
@@ -518,15 +554,11 @@ private constructor(
             return@apply
         }
 
-        id()
-        createdAt()
-        _object_().let {
-            if (it != JsonValue.from("response.compaction")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        output().forEach { it.validate() }
-        usage().validate()
+        idOrThrow()
+        createdAtOrThrow()
+        object_OrThrow()
+        outputOrThrow().forEach { it.validate() }
+        usageOrThrow().validate()
         image().ifPresent { it.validate() }
         validated = true
     }
@@ -568,12 +600,19 @@ private constructor(
         ) : this(contextCompression, mutableMapOf())
 
         /**
-         * Effective image context optimization policy.
+         * Effective image context optimization policy. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun contextCompression(): ContextCompression =
+        fun contextCompression(): java.util.Optional<ContextCompression> =
+            contextCompression.getOptional("context_compression")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun contextCompressionOrThrow(): ContextCompression =
             contextCompression.getRequired("context_compression")
 
         /**
@@ -709,7 +748,7 @@ private constructor(
                 return@apply
             }
 
-            contextCompression().validate()
+            contextCompressionOrThrow().validate()
             validated = true
         }
 

@@ -13,8 +13,8 @@ internal class ApiKeyDeleteResponseTest {
     fun createAndRoundtrip() {
         val apiKeyDeleteResponse = ApiKeyDeleteResponse.builder().id("id").deleted(true).build()
 
-        assertThat(apiKeyDeleteResponse.id()).isEqualTo("id")
-        assertThat(apiKeyDeleteResponse.deleted()).isEqualTo(true)
+        assertThat(apiKeyDeleteResponse.id()).contains("id")
+        assertThat(apiKeyDeleteResponse.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

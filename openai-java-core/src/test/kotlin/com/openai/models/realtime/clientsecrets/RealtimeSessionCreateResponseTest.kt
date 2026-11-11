@@ -115,7 +115,7 @@ internal class RealtimeSessionCreateResponseTest {
                 .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
                 .build()
 
-        assertThat(realtimeSessionCreateResponse.id()).isEqualTo("id")
+        assertThat(realtimeSessionCreateResponse.id()).contains("id")
         assertThat(realtimeSessionCreateResponse.audio())
             .contains(
                 RealtimeSessionCreateResponse.Audio.builder()

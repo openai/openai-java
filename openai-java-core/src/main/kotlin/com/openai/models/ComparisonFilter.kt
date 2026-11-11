@@ -52,12 +52,17 @@ private constructor(
     ) : this(key, type, value, mutableMapOf())
 
     /**
-     * The key to compare against the value.
+     * The key to compare against the value. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun key(): String = key.getRequired("key")
+    fun key(): java.util.Optional<String> = key.getOptional("key")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun keyOrThrow(): String = key.getRequired("key")
 
     /**
      * Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `nin`.
@@ -68,20 +73,30 @@ private constructor(
      * - `lt`: less than
      * - `lte`: less than or equal
      * - `in`: in
-     * - `nin`: not in
+     * - `nin`: not in The schema requires this property. Returns empty if the JSON property is
+     *   missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun type(): Type = type.getRequired("type")
+    fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): Type = type.getRequired("type")
 
     /**
      * The value to compare against the attribute key; supports string, number, or boolean types.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun value(): Value = value.getRequired("value")
+    fun value(): java.util.Optional<Value> = value.getOptional("value")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun valueOrThrow(): Value = value.getRequired("value")
 
     /**
      * Returns the raw JSON value of [key].
@@ -286,9 +301,9 @@ private constructor(
             return@apply
         }
 
-        key()
-        type().validate()
-        value().validate()
+        keyOrThrow()
+        typeOrThrow().validate()
+        valueOrThrow().validate()
         validated = true
     }
 

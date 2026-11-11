@@ -126,7 +126,7 @@ internal class AgentArtifactDownloadsTest {
                             result(),
                         )
                         .download("/workspace/outputs/report.txt", destination, options)
-            assertThat(artifact.id()).isEqualTo("selected")
+            assertThat(artifact.idOrThrow()).isEqualTo("selected")
             assertThat(Files.size(destination)).isEqualTo(t.contentSize.toLong())
             assertThat(t.contentReads).isGreaterThan(1)
             assertThat(t.contentClosed).isTrue()
@@ -181,6 +181,25 @@ internal class AgentArtifactDownloadsTest {
             }
         } finally {
             client.close()
+        }
+    }
+
+    @Test
+    fun `matching artifacts require an ID before checking for ambiguity`() {
+        val missingId =
+            """{"session_id":"s","turn_id":"root","path":"/workspace/outputs/report.txt"}"""
+        val transport =
+            Transport().apply { pages = mutableListOf(page(missingId, artifact("two"))) }
+        withClient(transport) { client ->
+            val downloads =
+                AgentArtifactDownloads.forResult(
+                    client.beta().agents().sessions().artifacts(),
+                    result(),
+                )
+            assertThatThrownBy { downloads.content("/workspace/outputs/report.txt").use {} }
+                .isInstanceOf(com.openai.errors.OpenAIInvalidDataException::class.java)
+                .hasMessageContaining("id")
+            assertThat(transport.requests).hasSize(1)
         }
     }
 

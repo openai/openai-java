@@ -136,9 +136,9 @@ internal class AgentSessionFailedEventTest {
                 )
                 .build()
 
-        assertThat(agentSessionFailedEvent.eventId()).isEqualTo("event_id")
+        assertThat(agentSessionFailedEvent.eventId()).contains("event_id")
         assertThat(agentSessionFailedEvent.session())
-            .isEqualTo(
+            .contains(
                 AgentSession.builder()
                     .id("id")
                     .agent(

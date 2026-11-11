@@ -14,7 +14,7 @@ internal class ChatSessionRateLimitsTest {
         val chatSessionRateLimits =
             ChatSessionRateLimits.builder().maxRequestsPer1Minute(0L).build()
 
-        assertThat(chatSessionRateLimits.maxRequestsPer1Minute()).isEqualTo(0L)
+        assertThat(chatSessionRateLimits.maxRequestsPer1Minute()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

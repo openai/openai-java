@@ -14,7 +14,7 @@ internal class InputAudioBufferAppendEventTest {
         val inputAudioBufferAppendEvent =
             InputAudioBufferAppendEvent.builder().audio("audio").eventId("event_id").build()
 
-        assertThat(inputAudioBufferAppendEvent.audio()).isEqualTo("audio")
+        assertThat(inputAudioBufferAppendEvent.audio()).contains("audio")
         assertThat(inputAudioBufferAppendEvent.eventId()).contains("event_id")
 
         val jsonMapper = jsonMapper()

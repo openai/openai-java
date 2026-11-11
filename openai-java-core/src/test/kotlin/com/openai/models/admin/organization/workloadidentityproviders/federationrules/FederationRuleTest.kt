@@ -31,24 +31,24 @@ internal class FederationRuleTest {
                 .workloadIdentityProviderId("workload_identity_provider_id")
                 .build()
 
-        assertThat(federationRule.id()).isEqualTo("id")
+        assertThat(federationRule.id()).contains("id")
         assertThat(federationRule.attributeMatchers())
-            .isEqualTo(
+            .contains(
                 FederationRule.AttributeMatchers.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(federationRule.createdAt()).isEqualTo(0L)
+        assertThat(federationRule.createdAt()).contains(0L)
         assertThat(federationRule.description()).contains("description")
-        assertThat(federationRule.enabled()).isEqualTo(true)
+        assertThat(federationRule.enabled()).contains(true)
         assertThat(federationRule.name()).contains("name")
         assertThat(federationRule.permissions())
-            .isEqualTo(FederationRule.Permissions.ofServiceAccountDefault())
-        assertThat(federationRule.projectId()).isEqualTo("project_id")
-        assertThat(federationRule.serviceAccountId()).isEqualTo("service_account_id")
-        assertThat(federationRule.updatedAt()).isEqualTo(0L)
+            .contains(FederationRule.Permissions.ofServiceAccountDefault())
+        assertThat(federationRule.projectId()).contains("project_id")
+        assertThat(federationRule.serviceAccountId()).contains("service_account_id")
+        assertThat(federationRule.updatedAt()).contains(0L)
         assertThat(federationRule.workloadIdentityProviderId())
-            .isEqualTo("workload_identity_provider_id")
+            .contains("workload_identity_provider_id")
 
         val jsonMapper = jsonMapper()
 

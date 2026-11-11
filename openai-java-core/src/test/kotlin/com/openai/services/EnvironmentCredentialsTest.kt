@@ -67,10 +67,10 @@ internal class EnvironmentCredentialsTest {
         val credential = create(environmentAuth(networking), async)
 
         credential.validate()
-        assertThat(credential.auth().isEnvironmentVariable()).isTrue()
-        val auth = credential.auth().asEnvironmentVariable()
-        assertThat(auth.secretName()).isEqualTo("SDK_TEST_KEY")
-        assertThat(auth.networking().asLimited().allowedHosts())
+        assertThat(credential.authOrThrow().isEnvironmentVariable()).isTrue()
+        val auth = credential.authOrThrow().asEnvironmentVariable()
+        assertThat(auth.secretNameOrThrow()).isEqualTo("SDK_TEST_KEY")
+        assertThat(auth.networkingOrThrow().asLimited().allowedHostsOrThrow())
             .containsExactly("service.example.test")
         verifyCreate(
             """{"type":"environment_variable","secret_name":"SDK_TEST_KEY","secret_value":"fake-environment-secret","networking":{"type":"limited","allowed_hosts":["service.example.test"]}}"""
@@ -85,7 +85,14 @@ internal class EnvironmentCredentialsTest {
         val credential = create(environmentAuth(CredentialNetworkingParam.ofUnrestricted()), async)
 
         credential.validate()
-        assertThat(credential.auth().asEnvironmentVariable().networking().isUnrestricted()).isTrue()
+        assertThat(
+                credential
+                    .authOrThrow()
+                    .asEnvironmentVariable()
+                    .networkingOrThrow()
+                    .isUnrestricted()
+            )
+            .isTrue()
         verifyCreate(
             """{"type":"environment_variable","secret_name":"SDK_TEST_KEY","secret_value":"fake-environment-secret","networking":{"type":"unrestricted"}}"""
         )
@@ -123,7 +130,8 @@ internal class EnvironmentCredentialsTest {
             }
 
         credential.validate()
-        assertThat(credential.auth().asEnvironmentVariable().secretName()).isEqualTo("SDK_TEST_KEY")
+        assertThat(credential.authOrThrow().asEnvironmentVariable().secretNameOrThrow())
+            .isEqualTo("SDK_TEST_KEY")
         server.verify(
             1,
             postRequestedFor(urlEqualTo(CREDENTIAL_PATH))
@@ -163,9 +171,9 @@ internal class EnvironmentCredentialsTest {
             }
 
         credential.validate()
-        val auth = credential.auth().asEnvironmentVariable()
-        assertThat(auth.secretName()).isEqualTo("SDK_TEST_KEY")
-        assertThat(auth.networking().isUnrestricted()).isTrue()
+        val auth = credential.authOrThrow().asEnvironmentVariable()
+        assertThat(auth.secretNameOrThrow()).isEqualTo("SDK_TEST_KEY")
+        assertThat(auth.networkingOrThrow().isUnrestricted()).isTrue()
         val metadata = jsonMapper().readTree(jsonMapper().writeValueAsString(auth))
         assertThat(metadata.fieldNames().asSequence().toSet())
             .containsExactlyInAnyOrder("type", "secret_name", "networking")
@@ -187,7 +195,7 @@ internal class EnvironmentCredentialsTest {
                     .build()
             )
 
-        assertThat(create(bearer, async).auth().isStaticBearer()).isTrue()
+        assertThat(create(bearer, async).authOrThrow().isStaticBearer()).isTrue()
         verifyCreate(
             """{"type":"static_bearer","mcp_server_url":"https://service.example.test/mcp","token":"fake-mcp-token"}"""
         )
@@ -202,7 +210,7 @@ internal class EnvironmentCredentialsTest {
                     .build()
             )
 
-        assertThat(create(oauth, async).auth().isMcpO()).isTrue()
+        assertThat(create(oauth, async).authOrThrow().isMcpO()).isTrue()
         verifyCreate(
             """{"type":"mcp_oauth","mcp_server_url":"https://service.example.test/mcp","access_token":"fake-oauth-token"}"""
         )

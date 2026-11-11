@@ -7,10 +7,8 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.beta.agents.VaultServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see VaultServiceAsync.list */
 class VaultListPageAsync
@@ -21,21 +19,22 @@ private constructor(
     private val response: VaultListPageResponse,
 ) : PageAsync<Vault> {
 
-    /**
-     * Delegates to [VaultListPageResponse], but gracefully handles missing data.
-     *
-     * @see VaultListPageResponse.data
-     */
-    fun data(): List<Vault> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see VaultListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [VaultListPageResponse], but gracefully handles missing data.
-     *
-     * @see VaultListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<Vault> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<Vault> = data()
+    fun _data() = response._data()
+
+    /** @see VaultListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<Vault> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

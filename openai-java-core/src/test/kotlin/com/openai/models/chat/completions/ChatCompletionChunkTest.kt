@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.completions.CompletionUsage
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -205,8 +206,8 @@ internal class ChatCompletionChunkTest {
                 )
                 .build()
 
-        assertThat(chatCompletionChunk.id()).isEqualTo("chatcmpl-123")
-        assertThat(chatCompletionChunk.choices())
+        assertThat(chatCompletionChunk.id()).contains("chatcmpl-123")
+        assertThat(chatCompletionChunk.choices().getOrNull())
             .containsExactly(
                 ChatCompletionChunk.Choice.builder()
                     .delta(
@@ -279,8 +280,8 @@ internal class ChatCompletionChunkTest {
                     )
                     .build()
             )
-        assertThat(chatCompletionChunk.created()).isEqualTo(1694268190L)
-        assertThat(chatCompletionChunk.model()).isEqualTo("gpt-6-astra")
+        assertThat(chatCompletionChunk.created()).contains(1694268190L)
+        assertThat(chatCompletionChunk.model()).contains("gpt-6-astra")
         assertThat(chatCompletionChunk.moderation())
             .contains(
                 ChatCompletionChunk.Moderation.builder()

@@ -38,51 +38,29 @@ private constructor(
 
     fun vectorStoreId(): Optional<String> = Optional.ofNullable(vectorStoreId)
 
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
-     * strings with a maximum length of 512 characters, booleans, or numbers.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun attributes(): Optional<Attributes> = body.attributes()
+    /** @see Body.attributes */
+    fun attributes(): java.util.Optional<Attributes> = body.attributes()
 
-    /**
-     * The chunking strategy used to chunk the file(s). If not set, will use the `auto` strategy.
-     * Only applicable if `file_ids` is non-empty.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun chunkingStrategy(): Optional<FileChunkingStrategyParam> = body.chunkingStrategy()
+    /** @see Body.attributesOrThrow */
+    fun attributesOrThrow(): Attributes = body.attributesOrThrow()
 
-    /**
-     * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that the
-     * vector store should use. Useful for tools like `file_search` that can access files. If
-     * `attributes` or `chunking_strategy` are provided, they will be applied to all files in the
-     * batch. The maximum batch size is 2000 files. This endpoint is recommended for multi-file
-     * ingestion and helps reduce per-vector-store write request pressure. Mutually exclusive with
-     * `files`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun fileIds(): Optional<List<String>> = body.fileIds()
+    /** @see Body.chunkingStrategy */
+    fun chunkingStrategy(): java.util.Optional<FileChunkingStrategyParam> = body.chunkingStrategy()
 
-    /**
-     * A list of objects that each include a `file_id` plus optional `attributes` or
-     * `chunking_strategy`. Use this when you need to override metadata for specific files. The
-     * global `attributes` or `chunking_strategy` will be ignored and must be specified for each
-     * file. The maximum batch size is 2000 files. This endpoint is recommended for multi-file
-     * ingestion and helps reduce per-vector-store write request pressure. Mutually exclusive with
-     * `file_ids`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun files(): Optional<List<File>> = body.files()
+    /** @see Body.chunkingStrategyOrThrow */
+    fun chunkingStrategyOrThrow(): FileChunkingStrategyParam = body.chunkingStrategyOrThrow()
+
+    /** @see Body.fileIds */
+    fun fileIds(): java.util.Optional<List<String>> = body.fileIds()
+
+    /** @see Body.fileIdsOrThrow */
+    fun fileIdsOrThrow(): List<String> = body.fileIdsOrThrow()
+
+    /** @see Body.files */
+    fun files(): java.util.Optional<List<File>> = body.files()
+
+    /** @see Body.filesOrThrow */
+    fun filesOrThrow(): List<File> = body.filesOrThrow()
 
     /**
      * Returns the raw JSON value of [attributes].
@@ -453,22 +431,34 @@ private constructor(
          * storing additional information about the object in a structured format, and querying for
          * objects via API or the dashboard. Keys are strings with a maximum length of 64
          * characters. Values are strings with a maximum length of 512 characters, booleans, or
-         * numbers.
+         * numbers. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun attributes(): Optional<Attributes> = attributes.getOptional("attributes")
+        fun attributes(): java.util.Optional<Attributes> = attributes.getOptional("attributes")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun attributesOrThrow(): Attributes = attributes.getRequired("attributes")
 
         /**
          * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
-         * strategy. Only applicable if `file_ids` is non-empty.
+         * strategy. Only applicable if `file_ids` is non-empty. Returns empty if the JSON property
+         * is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun chunkingStrategy(): Optional<FileChunkingStrategyParam> =
+        fun chunkingStrategy(): java.util.Optional<FileChunkingStrategyParam> =
             chunkingStrategy.getOptional("chunking_strategy")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun chunkingStrategyOrThrow(): FileChunkingStrategyParam =
+            chunkingStrategy.getRequired("chunking_strategy")
 
         /**
          * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that
@@ -476,12 +466,17 @@ private constructor(
          * If `attributes` or `chunking_strategy` are provided, they will be applied to all files in
          * the batch. The maximum batch size is 2000 files. This endpoint is recommended for
          * multi-file ingestion and helps reduce per-vector-store write request pressure. Mutually
-         * exclusive with `files`.
+         * exclusive with `files`. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun fileIds(): Optional<List<String>> = fileIds.getOptional("file_ids")
+        fun fileIds(): java.util.Optional<List<String>> = fileIds.getOptional("file_ids")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun fileIdsOrThrow(): List<String> = fileIds.getRequired("file_ids")
 
         /**
          * A list of objects that each include a `file_id` plus optional `attributes` or
@@ -489,12 +484,17 @@ private constructor(
          * global `attributes` or `chunking_strategy` will be ignored and must be specified for each
          * file. The maximum batch size is 2000 files. This endpoint is recommended for multi-file
          * ingestion and helps reduce per-vector-store write request pressure. Mutually exclusive
-         * with `file_ids`.
+         * with `file_ids`. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun files(): Optional<List<File>> = files.getOptional("files")
+        fun files(): java.util.Optional<List<File>> = files.getOptional("files")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun filesOrThrow(): List<File> = files.getRequired("files")
 
         /**
          * Returns the raw JSON value of [attributes].
@@ -971,34 +971,52 @@ private constructor(
          * store should use. Useful for tools like `file_search` that can access files. For
          * multi-file ingestion, we recommend
          * [`file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
-         * to minimize per-vector-store write requests.
+         * to minimize per-vector-store write requests. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun fileId(): String = fileId.getRequired("file_id")
+        fun fileId(): java.util.Optional<String> = fileId.getOptional("file_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun fileIdOrThrow(): String = fileId.getRequired("file_id")
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format, and querying for
          * objects via API or the dashboard. Keys are strings with a maximum length of 64
          * characters. Values are strings with a maximum length of 512 characters, booleans, or
-         * numbers.
+         * numbers. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun attributes(): Optional<Attributes> = attributes.getOptional("attributes")
+        fun attributes(): java.util.Optional<Attributes> = attributes.getOptional("attributes")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun attributesOrThrow(): Attributes = attributes.getRequired("attributes")
 
         /**
          * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
-         * strategy. Only applicable if `file_ids` is non-empty.
+         * strategy. Only applicable if `file_ids` is non-empty. Returns empty if the JSON property
+         * is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun chunkingStrategy(): Optional<FileChunkingStrategyParam> =
+        fun chunkingStrategy(): java.util.Optional<FileChunkingStrategyParam> =
             chunkingStrategy.getOptional("chunking_strategy")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun chunkingStrategyOrThrow(): FileChunkingStrategyParam =
+            chunkingStrategy.getRequired("chunking_strategy")
 
         /**
          * Returns the raw JSON value of [fileId].
@@ -1227,7 +1245,7 @@ private constructor(
                 return@apply
             }
 
-            fileId()
+            fileIdOrThrow()
             attributes().ifPresent { it.validate() }
             chunkingStrategy().ifPresent { it.validate() }
             validated = true

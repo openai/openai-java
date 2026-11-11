@@ -37,28 +37,43 @@ private constructor(
     ) : this(id, email, name, mutableMapOf())
 
     /**
-     * The identifier, which can be referenced in API endpoints
+     * The identifier, which can be referenced in API endpoints The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The email address of the user.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun email(): Optional<String> = email.getOptional("email")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The name of the user.
+     * The email address of the user. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun name(): String = name.getRequired("name")
+    fun email(): java.util.Optional<String> = email.getOptional("email")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun emailOrThrow(): String = email.getRequired("email")
+
+    /**
+     * The name of the user. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
 
     /**
      * Returns the raw JSON value of [id].
@@ -234,9 +249,9 @@ private constructor(
             return@apply
         }
 
-        id()
+        idOrThrow()
         email()
-        name()
+        nameOrThrow()
         validated = true
     }
 

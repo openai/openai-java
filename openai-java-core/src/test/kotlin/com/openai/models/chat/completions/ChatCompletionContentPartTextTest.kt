@@ -22,7 +22,7 @@ internal class ChatCompletionContentPartTextTest {
                 )
                 .build()
 
-        assertThat(chatCompletionContentPartText.text()).isEqualTo("text")
+        assertThat(chatCompletionContentPartText.text()).contains("text")
         assertThat(chatCompletionContentPartText.promptCacheBreakpoint())
             .contains(
                 ChatCompletionContentPartText.PromptCacheBreakpoint.builder()

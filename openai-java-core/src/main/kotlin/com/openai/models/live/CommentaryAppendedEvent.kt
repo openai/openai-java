@@ -45,50 +45,80 @@ private constructor(
 
     /**
      * The end of this event on the Live session timeline, in milliseconds from the beginning of the
-     * session. For appended context, this can equal start_ms.
+     * session. For appended context, this can equal start_ms. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun endMs(): Long = endMs.getRequired("end_ms")
+    fun endMs(): java.util.Optional<Long> = endMs.getOptional("end_ms")
 
     /**
-     * The unique ID of the Live server event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun endMsOrThrow(): Long = endMs.getRequired("end_ms")
+
+    /**
+     * The unique ID of the Live server event. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
      * The start of this event on the Live session timeline, in milliseconds from the beginning of
-     * the session.
+     * the session. The schema requires this property. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun startMs(): Long = startMs.getRequired("start_ms")
+    fun startMs(): java.util.Optional<Long> = startMs.getOptional("start_ms")
 
     /**
-     * The event type, always `session.commentary.appended`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("session.commentary.appended")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun startMsOrThrow(): Long = startMs.getRequired("start_ms")
 
     /**
-     * The event_id of the client command associated with this server event, when supplied.
+     * The event type, always `session.commentary.appended`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun clientEventId(): Optional<String> = clientEventId.getOptional("client_event_id")
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("session.commentary.appended")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The event_id of the client command associated with this server event, when supplied. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun clientEventId(): java.util.Optional<String> = clientEventId.getOptional("client_event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun clientEventIdOrThrow(): String = clientEventId.getRequired("client_event_id")
 
     /**
      * Returns the raw JSON value of [endMs].
@@ -314,14 +344,10 @@ private constructor(
             return@apply
         }
 
-        endMs()
-        eventId()
-        startMs()
-        _type().let {
-            if (it != JsonValue.from("session.commentary.appended")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        endMsOrThrow()
+        eventIdOrThrow()
+        startMsOrThrow()
+        typeOrThrow()
         clientEventId()
         validated = true
     }

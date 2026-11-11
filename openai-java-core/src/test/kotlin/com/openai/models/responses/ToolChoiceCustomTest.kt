@@ -13,7 +13,7 @@ internal class ToolChoiceCustomTest {
     fun createAndRoundtrip() {
         val toolChoiceCustom = ToolChoiceCustom.builder().name("name").build()
 
-        assertThat(toolChoiceCustom.name()).isEqualTo("name")
+        assertThat(toolChoiceCustom.name()).contains("name")
 
         val jsonMapper = jsonMapper()
 

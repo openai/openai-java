@@ -49,52 +49,35 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * The number of bytes in the file you are uploading.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun bytes(): Long = body.bytes()
+    /** @see Body.bytes */
+    fun bytes(): java.util.Optional<Long> = body.bytes()
 
-    /**
-     * The name of the file to upload.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun filename(): String = body.filename()
+    /** @see Body.bytesOrThrow */
+    fun bytesOrThrow(): Long = body.bytesOrThrow()
 
-    /**
-     * The MIME type of the file.
-     *
-     * This must fall within the supported MIME types for your file purpose. See the supported MIME
-     * types for assistants and vision.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun mimeType(): String = body.mimeType()
+    /** @see Body.filename */
+    fun filename(): java.util.Optional<String> = body.filename()
 
-    /**
-     * The intended purpose of the uploaded file.
-     *
-     * See the
-     * [documentation on File purposes](https://developers.openai.com/api/reference/resources/files/methods/create#%28resource%29%20files%20%3E%20%28method%29%20create%20%3E%20%28params%29%200%20%3E%20%28param%29%20purpose%20%3E%20%28schema%29).
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun purpose(): FilePurpose = body.purpose()
+    /** @see Body.filenameOrThrow */
+    fun filenameOrThrow(): String = body.filenameOrThrow()
 
-    /**
-     * The expiration policy for a file. By default, files with `purpose=batch` expire after 30 days
-     * and all other files are persisted until they are manually deleted.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun expiresAfter(): Optional<ExpiresAfter> = body.expiresAfter()
+    /** @see Body.mimeType */
+    fun mimeType(): java.util.Optional<String> = body.mimeType()
+
+    /** @see Body.mimeTypeOrThrow */
+    fun mimeTypeOrThrow(): String = body.mimeTypeOrThrow()
+
+    /** @see Body.purpose */
+    fun purpose(): java.util.Optional<FilePurpose> = body.purpose()
+
+    /** @see Body.purposeOrThrow */
+    fun purposeOrThrow(): FilePurpose = body.purposeOrThrow()
+
+    /** @see Body.expiresAfter */
+    fun expiresAfter(): java.util.Optional<ExpiresAfter> = body.expiresAfter()
+
+    /** @see Body.expiresAfterOrThrow */
+    fun expiresAfterOrThrow(): ExpiresAfter = body.expiresAfterOrThrow()
 
     /**
      * Returns the raw JSON value of [bytes].
@@ -432,51 +415,82 @@ private constructor(
         ) : this(bytes, filename, mimeType, purpose, expiresAfter, mutableMapOf())
 
         /**
-         * The number of bytes in the file you are uploading.
+         * The number of bytes in the file you are uploading. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun bytes(): Long = bytes.getRequired("bytes")
+        fun bytes(): java.util.Optional<Long> = bytes.getOptional("bytes")
 
         /**
-         * The name of the file to upload.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun filename(): String = filename.getRequired("filename")
+        fun bytesOrThrow(): Long = bytes.getRequired("bytes")
+
+        /**
+         * The name of the file to upload. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun filename(): java.util.Optional<String> = filename.getOptional("filename")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun filenameOrThrow(): String = filename.getRequired("filename")
 
         /**
          * The MIME type of the file.
          *
          * This must fall within the supported MIME types for your file purpose. See the supported
-         * MIME types for assistants and vision.
+         * MIME types for assistants and vision. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun mimeType(): String = mimeType.getRequired("mime_type")
+        fun mimeType(): java.util.Optional<String> = mimeType.getOptional("mime_type")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun mimeTypeOrThrow(): String = mimeType.getRequired("mime_type")
 
         /**
          * The intended purpose of the uploaded file.
          *
          * See the
          * [documentation on File purposes](https://developers.openai.com/api/reference/resources/files/methods/create#%28resource%29%20files%20%3E%20%28method%29%20create%20%3E%20%28params%29%200%20%3E%20%28param%29%20purpose%20%3E%20%28schema%29).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun purpose(): FilePurpose = purpose.getRequired("purpose")
+        fun purpose(): java.util.Optional<FilePurpose> = purpose.getOptional("purpose")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun purposeOrThrow(): FilePurpose = purpose.getRequired("purpose")
 
         /**
          * The expiration policy for a file. By default, files with `purpose=batch` expire after 30
-         * days and all other files are persisted until they are manually deleted.
+         * days and all other files are persisted until they are manually deleted. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun expiresAfter(): Optional<ExpiresAfter> = expiresAfter.getOptional("expires_after")
+        fun expiresAfter(): java.util.Optional<ExpiresAfter> =
+            expiresAfter.getOptional("expires_after")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun expiresAfterOrThrow(): ExpiresAfter = expiresAfter.getRequired("expires_after")
 
         /**
          * Returns the raw JSON value of [bytes].
@@ -721,10 +735,10 @@ private constructor(
                 return@apply
             }
 
-            bytes()
-            filename()
-            mimeType()
-            purpose().validate()
+            bytesOrThrow()
+            filenameOrThrow()
+            mimeTypeOrThrow()
+            purposeOrThrow().validate()
             expiresAfter().ifPresent { it.validate() }
             validated = true
         }
@@ -795,26 +809,43 @@ private constructor(
 
         /**
          * Anchor timestamp after which the expiration policy applies. Supported anchors:
-         * `created_at`.
+         * `created_at`. The schema requires this property. Returns empty if the JSON property is
+         * missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("created_at")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonValue = anchor
+        fun anchor(): java.util.Optional<JsonValue> {
+            val raw = anchor
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("created_at")) ->
+                    throw OpenAIInvalidDataException("`anchor` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun anchorOrThrow(): JsonValue = anchor().orElseGet { anchor.getRequired("anchor") }
+
+        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonField<JsonValue> = anchor
 
         /**
          * The number of seconds after the anchor time that the file will expire. Must be between
-         * 3600 (1 hour) and 2592000 (30 days).
+         * 3600 (1 hour) and 2592000 (30 days). The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun seconds(): Long = seconds.getRequired("seconds")
+        fun seconds(): java.util.Optional<Long> = seconds.getOptional("seconds")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun secondsOrThrow(): Long = seconds.getRequired("seconds")
 
         /**
          * Returns the raw JSON value of [seconds].
@@ -964,12 +995,8 @@ private constructor(
                 return@apply
             }
 
-            _anchor().let {
-                if (it != JsonValue.from("created_at")) {
-                    throw OpenAIInvalidDataException("'anchor' is invalid, received $it")
-                }
-            }
-            seconds()
+            anchorOrThrow()
+            secondsOrThrow()
             validated = true
         }
 

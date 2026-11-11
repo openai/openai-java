@@ -50,20 +50,30 @@ private constructor(
     ) : this(filters, type, mutableMapOf())
 
     /**
-     * Array of filters to combine. Items can be `ComparisonFilter` or `CompoundFilter`.
+     * Array of filters to combine. Items can be `ComparisonFilter` or `CompoundFilter`. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun filters(): List<Filter> = filters.getRequired("filters")
+    fun filters(): java.util.Optional<List<Filter>> = filters.getOptional("filters")
 
     /**
-     * Type of operation: `and` or `or`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun type(): Type = type.getRequired("type")
+    fun filtersOrThrow(): List<Filter> = filters.getRequired("filters")
+
+    /**
+     * Type of operation: `and` or `or`. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): Type = type.getRequired("type")
 
     /**
      * Returns the raw JSON value of [filters].
@@ -231,8 +241,8 @@ private constructor(
             return@apply
         }
 
-        filters().forEach { it.validate() }
-        type().validate()
+        filtersOrThrow().forEach { it.validate() }
+        typeOrThrow().validate()
         validated = true
     }
 

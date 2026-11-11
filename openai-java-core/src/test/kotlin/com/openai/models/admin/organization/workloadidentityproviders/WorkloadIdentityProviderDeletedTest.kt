@@ -14,8 +14,8 @@ internal class WorkloadIdentityProviderDeletedTest {
         val workloadIdentityProviderDeleted =
             WorkloadIdentityProviderDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(workloadIdentityProviderDeleted.id()).isEqualTo("id")
-        assertThat(workloadIdentityProviderDeleted.deleted()).isEqualTo(true)
+        assertThat(workloadIdentityProviderDeleted.id()).contains("id")
+        assertThat(workloadIdentityProviderDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

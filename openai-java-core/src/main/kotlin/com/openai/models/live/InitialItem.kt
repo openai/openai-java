@@ -304,51 +304,97 @@ private constructor(
 
         /**
          * The message content. Supply exactly one text part for the initial Live conversation
-         * history.
+         * history. The schema requires this property. Returns empty if the JSON property is missing
+         * or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun content(): List<Content> = content.getRequired("content")
+        fun content(): java.util.Optional<List<Content>> = content.getOptional("content")
 
         /**
-         * The author of this history message. Always `developer`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("developer")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("role") @ExcludeMissing fun _role(): JsonValue = role
+        fun contentOrThrow(): List<Content> = content.getRequired("content")
+
+        /**
+         * The author of this history message. Always `developer`. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun role(): java.util.Optional<JsonValue> {
+            val raw = role
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("developer")) ->
+                    throw OpenAIInvalidDataException("`role` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun roleOrThrow(): JsonValue = role().orElseGet { role.getRequired("role") }
+
+        @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<JsonValue> = role
 
         /**
          * An optional identifier for the supplied history message. Live uses the message’s role and
-         * text to initialize the conversation.
+         * text to initialize the conversation. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun id(): Optional<String> = id.getOptional("id")
+        fun id(): java.util.Optional<String> = id.getOptional("id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun idOrThrow(): String = id.getRequired("id")
 
         /**
          * The supplied message’s status. Live uses its text as history and does not resume an
-         * incomplete message.
+         * incomplete message. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun status(): Optional<Status> = status.getOptional("status")
+        fun status(): java.util.Optional<Status> = status.getOptional("status")
 
         /**
-         * The history item type. Always `message`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun type(): Optional<Type> = type.getOptional("type")
+        fun statusOrThrow(): Status = status.getRequired("status")
+
+        /**
+         * The history item type. Always `message`. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = JsonValue.from(type)
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("message")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { JsonValue.from(type).getRequired("type") }
+
+        @JsonProperty("type")
+        @ExcludeMissing
+        fun _type(): JsonField<JsonValue> = JsonValue.from(type)
 
         /**
          * Returns the raw JSON value of [content].
@@ -370,13 +416,6 @@ private constructor(
          * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
-
-        /**
-         * Returns the raw JSON value of [type].
-         *
-         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -593,15 +632,11 @@ private constructor(
                 return@apply
             }
 
-            content().forEach { it.validate() }
-            _role().let {
-                if (it != JsonValue.from("developer")) {
-                    throw OpenAIInvalidDataException("'role' is invalid, received $it")
-                }
-            }
+            contentOrThrow().forEach { it.validate() }
+            roleOrThrow()
             id()
             status().ifPresent { it.validate() }
-            type().ifPresent { it.validate() }
+            type()
             validated = true
         }
 
@@ -643,21 +678,45 @@ private constructor(
             ) : this(text, type, mutableMapOf())
 
             /**
-             * The message text to include in the Live session’s initial conversation history.
+             * The message text to include in the Live session’s initial conversation history. The
+             * schema requires this property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun text(): String = text.getRequired("text")
+            fun text(): java.util.Optional<String> = text.getOptional("text")
 
             /**
-             * The text content type. Always `input_text`.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun type(): Optional<Type> = type.getOptional("type")
+            fun textOrThrow(): String = text.getRequired("text")
+
+            /**
+             * The text content type. Always `input_text`. Returns empty if the JSON property is
+             * missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = JsonValue.from(type)
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("input_text")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue =
+                type().orElseGet { JsonValue.from(type).getRequired("type") }
+
+            @JsonProperty("type")
+            @ExcludeMissing
+            fun _type(): JsonField<JsonValue> = JsonValue.from(type)
 
             /**
              * Returns the raw JSON value of [text].
@@ -665,13 +724,6 @@ private constructor(
              * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
-
-            /**
-             * Returns the raw JSON value of [type].
-             *
-             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -807,8 +859,8 @@ private constructor(
                     return@apply
                 }
 
-                text()
-                type().ifPresent { it.validate() }
+                textOrThrow()
+                type()
                 validated = true
             }
 
@@ -1321,51 +1373,97 @@ private constructor(
 
         /**
          * The message content. Supply exactly one text part for the initial Live conversation
-         * history.
+         * history. The schema requires this property. Returns empty if the JSON property is missing
+         * or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun content(): List<Content> = content.getRequired("content")
+        fun content(): java.util.Optional<List<Content>> = content.getOptional("content")
 
         /**
-         * The author of this history message. Always `user`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("user")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("role") @ExcludeMissing fun _role(): JsonValue = role
+        fun contentOrThrow(): List<Content> = content.getRequired("content")
+
+        /**
+         * The author of this history message. Always `user`. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun role(): java.util.Optional<JsonValue> {
+            val raw = role
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("user")) ->
+                    throw OpenAIInvalidDataException("`role` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun roleOrThrow(): JsonValue = role().orElseGet { role.getRequired("role") }
+
+        @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<JsonValue> = role
 
         /**
          * An optional identifier for the supplied history message. Live uses the message’s role and
-         * text to initialize the conversation.
+         * text to initialize the conversation. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun id(): Optional<String> = id.getOptional("id")
+        fun id(): java.util.Optional<String> = id.getOptional("id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun idOrThrow(): String = id.getRequired("id")
 
         /**
          * The supplied message’s status. Live uses its text as history and does not resume an
-         * incomplete message.
+         * incomplete message. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun status(): Optional<Status> = status.getOptional("status")
+        fun status(): java.util.Optional<Status> = status.getOptional("status")
 
         /**
-         * The history item type. Always `message`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun type(): Optional<Type> = type.getOptional("type")
+        fun statusOrThrow(): Status = status.getRequired("status")
+
+        /**
+         * The history item type. Always `message`. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = JsonValue.from(type)
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("message")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { JsonValue.from(type).getRequired("type") }
+
+        @JsonProperty("type")
+        @ExcludeMissing
+        fun _type(): JsonField<JsonValue> = JsonValue.from(type)
 
         /**
          * Returns the raw JSON value of [content].
@@ -1387,13 +1485,6 @@ private constructor(
          * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
-
-        /**
-         * Returns the raw JSON value of [type].
-         *
-         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1610,15 +1701,11 @@ private constructor(
                 return@apply
             }
 
-            content().forEach { it.validate() }
-            _role().let {
-                if (it != JsonValue.from("user")) {
-                    throw OpenAIInvalidDataException("'role' is invalid, received $it")
-                }
-            }
+            contentOrThrow().forEach { it.validate() }
+            roleOrThrow()
             id()
             status().ifPresent { it.validate() }
-            type().ifPresent { it.validate() }
+            type()
             validated = true
         }
 
@@ -1660,21 +1747,45 @@ private constructor(
             ) : this(text, type, mutableMapOf())
 
             /**
-             * The message text to include in the Live session’s initial conversation history.
+             * The message text to include in the Live session’s initial conversation history. The
+             * schema requires this property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun text(): String = text.getRequired("text")
+            fun text(): java.util.Optional<String> = text.getOptional("text")
 
             /**
-             * The text content type. Always `input_text`.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun type(): Optional<Type> = type.getOptional("type")
+            fun textOrThrow(): String = text.getRequired("text")
+
+            /**
+             * The text content type. Always `input_text`. Returns empty if the JSON property is
+             * missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = JsonValue.from(type)
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("input_text")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue =
+                type().orElseGet { JsonValue.from(type).getRequired("type") }
+
+            @JsonProperty("type")
+            @ExcludeMissing
+            fun _type(): JsonField<JsonValue> = JsonValue.from(type)
 
             /**
              * Returns the raw JSON value of [text].
@@ -1682,13 +1793,6 @@ private constructor(
              * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
-
-            /**
-             * Returns the raw JSON value of [type].
-             *
-             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1824,8 +1928,8 @@ private constructor(
                     return@apply
                 }
 
-                text()
-                type().ifPresent { it.validate() }
+                textOrThrow()
+                type()
                 validated = true
             }
 
@@ -2338,51 +2442,97 @@ private constructor(
 
         /**
          * The message content. Supply exactly one text part for the initial Live conversation
-         * history.
+         * history. The schema requires this property. Returns empty if the JSON property is missing
+         * or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun content(): List<Content> = content.getRequired("content")
+        fun content(): java.util.Optional<List<Content>> = content.getOptional("content")
 
         /**
-         * The author of this history message. Always `assistant`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("assistant")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("role") @ExcludeMissing fun _role(): JsonValue = role
+        fun contentOrThrow(): List<Content> = content.getRequired("content")
+
+        /**
+         * The author of this history message. Always `assistant`. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun role(): java.util.Optional<JsonValue> {
+            val raw = role
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("assistant")) ->
+                    throw OpenAIInvalidDataException("`role` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun roleOrThrow(): JsonValue = role().orElseGet { role.getRequired("role") }
+
+        @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<JsonValue> = role
 
         /**
          * An optional identifier for the supplied history message. Live uses the message’s role and
-         * text to initialize the conversation.
+         * text to initialize the conversation. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun id(): Optional<String> = id.getOptional("id")
+        fun id(): java.util.Optional<String> = id.getOptional("id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun idOrThrow(): String = id.getRequired("id")
 
         /**
          * The supplied message’s status. Live uses its text as history and does not resume an
-         * incomplete message.
+         * incomplete message. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun status(): Optional<Status> = status.getOptional("status")
+        fun status(): java.util.Optional<Status> = status.getOptional("status")
 
         /**
-         * The history item type. Always `message`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun type(): Optional<Type> = type.getOptional("type")
+        fun statusOrThrow(): Status = status.getRequired("status")
+
+        /**
+         * The history item type. Always `message`. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = JsonValue.from(type)
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("message")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { JsonValue.from(type).getRequired("type") }
+
+        @JsonProperty("type")
+        @ExcludeMissing
+        fun _type(): JsonField<JsonValue> = JsonValue.from(type)
 
         /**
          * Returns the raw JSON value of [content].
@@ -2404,13 +2554,6 @@ private constructor(
          * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
-
-        /**
-         * Returns the raw JSON value of [type].
-         *
-         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -2662,15 +2805,11 @@ private constructor(
                 return@apply
             }
 
-            content().forEach { it.validate() }
-            _role().let {
-                if (it != JsonValue.from("assistant")) {
-                    throw OpenAIInvalidDataException("'role' is invalid, received $it")
-                }
-            }
+            contentOrThrow().forEach { it.validate() }
+            roleOrThrow()
             id()
             status().ifPresent { it.validate() }
-            type().ifPresent { it.validate() }
+            type()
             validated = true
         }
 
@@ -2948,20 +3087,45 @@ private constructor(
 
                 /**
                  * The message text to include in the Live session’s initial conversation history.
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun text(): String = text.getRequired("text")
+                fun text(): java.util.Optional<String> = text.getOptional("text")
 
                 /**
-                 * The text content type. Always `text`.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun type(): Optional<Type> = type.getOptional("type")
+                fun textOrThrow(): String = text.getRequired("text")
+
+                /**
+                 * The text content type. Always `text`. Returns empty if the JSON property is
+                 * missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun type(): java.util.Optional<JsonValue> {
+                    val raw = JsonValue.from(type)
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("text")) ->
+                            throw OpenAIInvalidDataException("`type` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun typeOrThrow(): JsonValue =
+                    type().orElseGet { JsonValue.from(type).getRequired("type") }
+
+                @JsonProperty("type")
+                @ExcludeMissing
+                fun _type(): JsonField<JsonValue> = JsonValue.from(type)
 
                 /**
                  * Returns the raw JSON value of [text].
@@ -2970,14 +3134,6 @@ private constructor(
                  * type.
                  */
                 @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
-
-                /**
-                 * Returns the raw JSON value of [type].
-                 *
-                 * Unlike [type], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnySetter
                 private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -3118,8 +3274,8 @@ private constructor(
                         return@apply
                     }
 
-                    text()
-                    type().ifPresent { it.validate() }
+                    textOrThrow()
+                    type()
                     validated = true
                 }
 
@@ -3324,25 +3480,42 @@ private constructor(
 
                 /**
                  * The message text to include in the Live session’s initial conversation history.
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun text(): String = text.getRequired("text")
+                fun text(): java.util.Optional<String> = text.getOptional("text")
 
                 /**
-                 * The text content type. Always `output_text`.
-                 *
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("output_text")
-                 * ```
-                 *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+                fun textOrThrow(): String = text.getRequired("text")
+
+                /**
+                 * The text content type. Always `output_text`. The schema requires this property.
+                 * Returns empty if the JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun type(): java.util.Optional<JsonValue> {
+                    val raw = type
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("output_text")) ->
+                            throw OpenAIInvalidDataException("`type` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
                 /**
                  * Returns the raw JSON value of [text].
@@ -3497,12 +3670,8 @@ private constructor(
                         return@apply
                     }
 
-                    text()
-                    _type().let {
-                        if (it != JsonValue.from("output_text")) {
-                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                        }
-                    }
+                    textOrThrow()
+                    typeOrThrow()
                     validated = true
                 }
 

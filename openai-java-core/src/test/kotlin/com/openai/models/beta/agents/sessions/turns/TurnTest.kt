@@ -3,6 +3,7 @@
 package com.openai.models.beta.agents.sessions.turns
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.beta.agents.SessionTurnError
 import com.openai.models.beta.agents.TokenUsage
@@ -45,10 +46,10 @@ internal class TurnTest {
                 )
                 .build()
 
-        assertThat(turn.id()).isEqualTo("id")
-        assertThat(turn.agentId()).isEqualTo("agent_id")
+        assertThat(turn.id()).contains("id")
+        assertThat(turn.agentId()).contains("agent_id")
         assertThat(turn.completedAt()).contains(0L)
-        assertThat(turn.createdAt()).isEqualTo(0L)
+        assertThat(turn.createdAt()).contains(0L)
         assertThat(turn.error())
             .contains(
                 SessionTurnError.builder()
@@ -56,10 +57,10 @@ internal class TurnTest {
                     .message("message")
                     .build()
             )
-        assertThat(turn.object_()).isEqualTo(Turn.Object.AGENT_SESSION_TURN)
-        assertThat(turn.sessionId()).isEqualTo("session_id")
+        assertThat(turn.object_()).contains(JsonValue.from("agent.session.turn"))
+        assertThat(turn.sessionId()).contains("session_id")
         assertThat(turn.startedAt()).contains(0L)
-        assertThat(turn.status()).isEqualTo(Turn.Status.QUEUED)
+        assertThat(turn.status()).contains(Turn.Status.QUEUED)
         assertThat(turn.subagentId()).contains("subagent_id")
         assertThat(turn.usage())
             .contains(

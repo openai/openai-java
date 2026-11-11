@@ -45,49 +45,79 @@ private constructor(
     ) : this(id, action, status, turnId, type, mutableMapOf())
 
     /**
-     * The ID of the web search call.
+     * The ID of the web search call. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The action performed by the web search tool.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun action(): Optional<WebSearchAction> = action.getOptional("action")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The status of the web search call.
+     * The action performed by the web search tool. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): AgentOutputItemStatus = status.getRequired("status")
+    fun action(): java.util.Optional<WebSearchAction> = action.getOptional("action")
 
     /**
-     * The ID of the turn that contains this item.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun turnId(): String = turnId.getRequired("turn_id")
+    fun actionOrThrow(): WebSearchAction = action.getRequired("action")
 
     /**
-     * The item type. Always `web_search_call`.
+     * The status of the web search call. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("web_search_call")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun status(): java.util.Optional<AgentOutputItemStatus> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): AgentOutputItemStatus = status.getRequired("status")
+
+    /**
+     * The ID of the turn that contains this item. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun turnId(): java.util.Optional<String> = turnId.getOptional("turn_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun turnIdOrThrow(): String = turnId.getRequired("turn_id")
+
+    /**
+     * The item type. Always `web_search_call`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("web_search_call")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [id].
@@ -335,15 +365,11 @@ private constructor(
             return@apply
         }
 
-        id()
+        idOrThrow()
         action().ifPresent { it.validate() }
-        status().validate()
-        turnId()
-        _type().let {
-            if (it != JsonValue.from("web_search_call")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        statusOrThrow().validate()
+        turnIdOrThrow()
+        typeOrThrow()
         validated = true
     }
 

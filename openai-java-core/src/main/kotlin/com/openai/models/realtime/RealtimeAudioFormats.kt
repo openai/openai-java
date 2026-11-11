@@ -295,20 +295,32 @@ private constructor(
         ) : this(rate, type, mutableMapOf())
 
         /**
-         * The sample rate of the audio. Always `24000`.
+         * The sample rate of the audio. Always `24000`. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun rate(): Optional<Rate> = rate.getOptional("rate")
+        fun rate(): java.util.Optional<Rate> = rate.getOptional("rate")
 
         /**
-         * The audio format. Always `audio/pcm`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun type(): Optional<Type> = type.getOptional("type")
+        fun rateOrThrow(): Rate = rate.getRequired("rate")
+
+        /**
+         * The audio format. Always `audio/pcm`. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): Type = type.getRequired("type")
 
         /**
          * Returns the raw JSON value of [rate].
@@ -759,12 +771,18 @@ private constructor(
         ) : this(type, mutableMapOf())
 
         /**
-         * The audio format. Always `audio/pcmu`.
+         * The audio format. Always `audio/pcmu`. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun type(): Optional<Type> = type.getOptional("type")
+        fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): Type = type.getRequired("type")
 
         /**
          * Returns the raw JSON value of [type].
@@ -1060,12 +1078,18 @@ private constructor(
         ) : this(type, mutableMapOf())
 
         /**
-         * The audio format. Always `audio/pcma`.
+         * The audio format. Always `audio/pcma`. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun type(): Optional<Type> = type.getOptional("type")
+        fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): Type = type.getRequired("type")
 
         /**
          * Returns the raw JSON value of [type].

@@ -38,20 +38,30 @@ private constructor(
     ) : this(format, verbosity, mutableMapOf())
 
     /**
-     * The output format. Omission uses ordinary text (`{"type": "text"}`).
+     * The output format. Omission uses ordinary text (`{"type": "text"}`). Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun format(): Optional<TextFormatParam> = format.getOptional("format")
+    fun format(): java.util.Optional<TextFormatParam> = format.getOptional("format")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun formatOrThrow(): TextFormatParam = format.getRequired("format")
 
     /**
      * The amount of text the model should produce. Defaults to `medium`, matching Responses.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun verbosity(): Optional<Verbosity> = verbosity.getOptional("verbosity")
+    fun verbosity(): java.util.Optional<Verbosity> = verbosity.getOptional("verbosity")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun verbosityOrThrow(): Verbosity = verbosity.getRequired("verbosity")
 
     /**
      * Returns the raw JSON value of [format].

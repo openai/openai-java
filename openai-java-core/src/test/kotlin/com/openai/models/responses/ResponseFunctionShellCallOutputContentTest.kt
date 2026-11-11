@@ -19,9 +19,9 @@ internal class ResponseFunctionShellCallOutputContentTest {
                 .build()
 
         assertThat(responseFunctionShellCallOutputContent.outcome())
-            .isEqualTo(ResponseFunctionShellCallOutputContent.Outcome.ofTimeout())
-        assertThat(responseFunctionShellCallOutputContent.stderr()).isEqualTo("stderr")
-        assertThat(responseFunctionShellCallOutputContent.stdout()).isEqualTo("stdout")
+            .contains(ResponseFunctionShellCallOutputContent.Outcome.ofTimeout())
+        assertThat(responseFunctionShellCallOutputContent.stderr()).contains("stderr")
+        assertThat(responseFunctionShellCallOutputContent.stdout()).contains("stdout")
 
         val jsonMapper = jsonMapper()
 

@@ -32,13 +32,19 @@ private constructor(
     ) : this(maxRequestsPer1Minute, mutableMapOf())
 
     /**
-     * Maximum number of requests allowed per minute for the session. Defaults to 10.
+     * Maximum number of requests allowed per minute for the session. Defaults to 10. Returns empty
+     * if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun maxRequestsPer1Minute(): Optional<Long> =
+    fun maxRequestsPer1Minute(): java.util.Optional<Long> =
         maxRequestsPer1Minute.getOptional("max_requests_per_1_minute")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun maxRequestsPer1MinuteOrThrow(): Long =
+        maxRequestsPer1Minute.getRequired("max_requests_per_1_minute")
 
     /**
      * Returns the raw JSON value of [maxRequestsPer1Minute].

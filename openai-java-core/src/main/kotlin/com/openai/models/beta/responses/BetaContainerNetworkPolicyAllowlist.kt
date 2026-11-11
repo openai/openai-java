@@ -41,34 +41,56 @@ private constructor(
     ) : this(allowedDomains, type, domainSecrets, mutableMapOf())
 
     /**
-     * A list of allowed domains when type is `allowlist`.
+     * A list of allowed domains when type is `allowlist`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun allowedDomains(): List<String> = allowedDomains.getRequired("allowed_domains")
+    fun allowedDomains(): java.util.Optional<List<String>> =
+        allowedDomains.getOptional("allowed_domains")
 
     /**
-     * Allow outbound network access only to specified domains. Always `allowlist`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("allowlist")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun allowedDomainsOrThrow(): List<String> = allowedDomains.getRequired("allowed_domains")
 
     /**
-     * Optional domain-scoped secrets for allowlisted domains.
+     * Allow outbound network access only to specified domains. Always `allowlist`. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun domainSecrets(): Optional<List<BetaContainerNetworkPolicyDomainSecret>> =
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("allowlist")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * Optional domain-scoped secrets for allowlisted domains. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun domainSecrets(): java.util.Optional<List<BetaContainerNetworkPolicyDomainSecret>> =
         domainSecrets.getOptional("domain_secrets")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun domainSecretsOrThrow(): List<BetaContainerNetworkPolicyDomainSecret> =
+        domainSecrets.getRequired("domain_secrets")
 
     /**
      * Returns the raw JSON value of [allowedDomains].
@@ -278,12 +300,8 @@ private constructor(
             return@apply
         }
 
-        allowedDomains()
-        _type().let {
-            if (it != JsonValue.from("allowlist")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        allowedDomainsOrThrow()
+        typeOrThrow()
         domainSecrets().ifPresent { it.forEach { it.validate() } }
         validated = true
     }

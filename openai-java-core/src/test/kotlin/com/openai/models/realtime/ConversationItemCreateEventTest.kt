@@ -31,7 +31,7 @@ internal class ConversationItemCreateEventTest {
                 .build()
 
         assertThat(conversationItemCreateEvent.item())
-            .isEqualTo(
+            .contains(
                 ConversationItem.ofRealtimeConversationItemSystemMessage(
                     RealtimeConversationItemSystemMessage.builder()
                         .addContent(

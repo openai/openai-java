@@ -49,49 +49,92 @@ private constructor(
     ) : this(id, createdAt, data, type, object_, mutableMapOf())
 
     /**
-     * The unique ID of the event.
+     * The unique ID of the event. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The Unix timestamp (in seconds) of when the event was created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * Event data payload.
+     * The Unix timestamp (in seconds) of when the event was created. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun data(): Data = data.getRequired("data")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * The type of the event. Always `live.call.incoming`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("live.call.incoming")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
     /**
-     * The object of the event. Always `event`.
+     * Event data payload. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun object_(): Optional<Object> = object_.getOptional("object")
+    fun data(): java.util.Optional<Data> = data.getOptional("data")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun dataOrThrow(): Data = data.getRequired("data")
+
+    /**
+     * The type of the event. Always `live.call.incoming`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("live.call.incoming")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The object of the event. Always `event`. Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = JsonValue.from(object_)
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("event")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue =
+        object_().orElseGet { JsonValue.from(object_).getRequired("object") }
+
+    @JsonProperty("object")
+    @ExcludeMissing
+    fun _object_(): JsonField<JsonValue> = JsonValue.from(object_)
 
     /**
      * Returns the raw JSON value of [id].
@@ -113,13 +156,6 @@ private constructor(
      * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Data> = data
-
-    /**
-     * Returns the raw JSON value of [object_].
-     *
-     * Unlike [object_], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -306,15 +342,11 @@ private constructor(
             return@apply
         }
 
-        id()
-        createdAt()
-        data().validate()
-        _type().let {
-            if (it != JsonValue.from("live.call.incoming")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        object_().ifPresent { it.validate() }
+        idOrThrow()
+        createdAtOrThrow()
+        dataOrThrow().validate()
+        typeOrThrow()
+        object_()
         validated = true
     }
 
@@ -365,33 +397,52 @@ private constructor(
         /**
          * The `live_...` ID of the pending SIP session. Pass this value unchanged to Live call
          * controls and sideband connections. The corresponding `realtime.call.incoming` event uses
-         * a separate `rtc_...` call ID.
+         * a separate `rtc_...` call ID. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun sessionId(): String = sessionId.getRequired("session_id")
+        fun sessionId(): java.util.Optional<String> = sessionId.getOptional("session_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun sessionIdOrThrow(): String = sessionId.getRequired("session_id")
 
         /**
          * Headers from the SIP INVITE, excluding SIP authorization headers. Retained names, values,
          * repeated entries, and order are preserved. Treat these values as untrusted call metadata.
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun sipHeaders(): List<SipHeader> = sipHeaders.getRequired("sip_headers")
+        fun sipHeaders(): java.util.Optional<List<SipHeader>> =
+            sipHeaders.getOptional("sip_headers")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun sipHeadersOrThrow(): List<SipHeader> = sipHeaders.getRequired("sip_headers")
 
         /**
          * Media protection selected on the SIP leg during SDP negotiation. `srtp` indicates SRTP;
          * `rtp` indicates unencrypted RTP. Omitted when unknown. This does not describe SIP
          * signaling security or confirm that media has flowed. Clients should handle unrecognized
-         * values as unknown.
+         * values as unknown. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun sipMediaSecurity(): Optional<SipMediaSecurity> =
+        fun sipMediaSecurity(): java.util.Optional<SipMediaSecurity> =
             sipMediaSecurity.getOptional("sip_media_security")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun sipMediaSecurityOrThrow(): SipMediaSecurity =
+            sipMediaSecurity.getRequired("sip_media_security")
 
         /**
          * Returns the raw JSON value of [sessionId].
@@ -612,8 +663,8 @@ private constructor(
                 return@apply
             }
 
-            sessionId()
-            sipHeaders().forEach { it.validate() }
+            sessionIdOrThrow()
+            sipHeadersOrThrow().forEach { it.validate() }
             sipMediaSecurity()
             validated = true
         }
@@ -654,22 +705,32 @@ private constructor(
             ) : this(name, value, mutableMapOf())
 
             /**
-             * Name of the SIP Header.
+             * Name of the SIP Header. The schema requires this property. Returns empty if the JSON
+             * property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun name(): String = name.getRequired("name")
+            fun name(): java.util.Optional<String> = name.getOptional("name")
 
             /**
-             * Value of the SIP Header.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun value(): String = value.getRequired("value")
+            fun nameOrThrow(): String = name.getRequired("name")
+
+            /**
+             * Value of the SIP Header. The schema requires this property. Returns empty if the JSON
+             * property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun value(): java.util.Optional<String> = value.getOptional("value")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun valueOrThrow(): String = value.getRequired("value")
 
             /**
              * Returns the raw JSON value of [name].
@@ -827,8 +888,8 @@ private constructor(
                     return@apply
                 }
 
-                name()
-                value()
+                nameOrThrow()
+                valueOrThrow()
                 validated = true
             }
 

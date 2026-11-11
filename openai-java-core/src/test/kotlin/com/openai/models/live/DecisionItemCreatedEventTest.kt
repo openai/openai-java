@@ -24,9 +24,9 @@ internal class DecisionItemCreatedEventTest {
                 .clientEventId("browser_1")
                 .build()
 
-        assertThat(decisionItemCreatedEvent.eventId()).isEqualTo("evt_item_1")
+        assertThat(decisionItemCreatedEvent.eventId()).contains("evt_item_1")
         assertThat(decisionItemCreatedEvent.item())
-            .isEqualTo(
+            .contains(
                 DecisionItemCreatedEvent.Item.builder()
                     .id("msg_browser_1")
                     .content("string")

@@ -28,7 +28,7 @@ internal class ServiceAccountCreateResponseTest {
                 .role(ServiceAccountCreateResponse.Role.MEMBER)
                 .build()
 
-        assertThat(serviceAccountCreateResponse.id()).isEqualTo("id")
+        assertThat(serviceAccountCreateResponse.id()).contains("id")
         assertThat(serviceAccountCreateResponse.apiKey())
             .contains(
                 ServiceAccountCreateResponse.ApiKey.builder()
@@ -39,10 +39,10 @@ internal class ServiceAccountCreateResponseTest {
                     .expiresAt(0L)
                     .build()
             )
-        assertThat(serviceAccountCreateResponse.createdAt()).isEqualTo(0L)
-        assertThat(serviceAccountCreateResponse.name()).isEqualTo("name")
+        assertThat(serviceAccountCreateResponse.createdAt()).contains(0L)
+        assertThat(serviceAccountCreateResponse.name()).contains("name")
         assertThat(serviceAccountCreateResponse.role())
-            .isEqualTo(ServiceAccountCreateResponse.Role.MEMBER)
+            .contains(ServiceAccountCreateResponse.Role.MEMBER)
 
         val jsonMapper = jsonMapper()
 

@@ -27,6 +27,6 @@ internal class VoiceConsentUpdateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.name()).isEqualTo("name")
+        assertThat(body.nameOrThrow()).isEqualTo("name")
     }
 }

@@ -46,55 +46,91 @@ private constructor(
     ) : this(arguments, itemId, outputIndex, sequenceNumber, type, agent, mutableMapOf())
 
     /**
-     * The function-call arguments.
+     * The function-call arguments. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun arguments(): String = arguments.getRequired("arguments")
+    fun arguments(): java.util.Optional<String> = arguments.getOptional("arguments")
 
     /**
-     * The ID of the item.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun itemId(): String = itemId.getRequired("item_id")
+    fun argumentsOrThrow(): String = arguments.getRequired("arguments")
 
     /**
-     * The index of the output item.
+     * The ID of the item. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun outputIndex(): Long = outputIndex.getRequired("output_index")
+    fun itemId(): java.util.Optional<String> = itemId.getOptional("item_id")
 
     /**
-     * The sequence number of this event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
+    fun itemIdOrThrow(): String = itemId.getRequired("item_id")
 
     /**
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.function_call_arguments.done")
-     * ```
+     * The index of the output item. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun outputIndex(): java.util.Optional<Long> = outputIndex.getOptional("output_index")
 
     /**
-     * The agent that owns this multi-agent streaming event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun agent(): Optional<Agent> = agent.getOptional("agent")
+    fun outputIndexOrThrow(): Long = outputIndex.getRequired("output_index")
+
+    /**
+     * The sequence number of this event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun sequenceNumber(): java.util.Optional<Long> = sequenceNumber.getOptional("sequence_number")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sequenceNumberOrThrow(): Long = sequenceNumber.getRequired("sequence_number")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.function_call_arguments.done")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The agent that owns this multi-agent streaming event. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun agent(): java.util.Optional<Agent> = agent.getOptional("agent")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun agentOrThrow(): Agent = agent.getRequired("agent")
 
     /**
      * Returns the raw JSON value of [arguments].
@@ -347,15 +383,11 @@ private constructor(
             return@apply
         }
 
-        arguments()
-        itemId()
-        outputIndex()
-        sequenceNumber()
-        _type().let {
-            if (it != JsonValue.from("response.function_call_arguments.done")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        argumentsOrThrow()
+        itemIdOrThrow()
+        outputIndexOrThrow()
+        sequenceNumberOrThrow()
+        typeOrThrow()
         agent().ifPresent { it.validate() }
         validated = true
     }
@@ -400,12 +432,18 @@ private constructor(
         ) : this(agentName, mutableMapOf())
 
         /**
-         * The canonical name of the agent that produced this item.
+         * The canonical name of the agent that produced this item. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun agentName(): String = agentName.getRequired("agent_name")
+        fun agentName(): java.util.Optional<String> = agentName.getOptional("agent_name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun agentNameOrThrow(): String = agentName.getRequired("agent_name")
 
         /**
          * Returns the raw JSON value of [agentName].
@@ -528,7 +566,7 @@ private constructor(
                 return@apply
             }
 
-            agentName()
+            agentNameOrThrow()
             validated = true
         }
 

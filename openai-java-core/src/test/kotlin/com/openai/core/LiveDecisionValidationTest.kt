@@ -50,11 +50,11 @@ internal class LiveDecisionValidationTest {
             for (input in inputs) {
                 transport.deliver(input)
                 val event = receive()
-                assertThat(event.eventId()).isEqualTo("fake-event")
+                assertThat(event.eventIdOrThrow()).isEqualTo("fake-event")
                 // A typed, strict receive must preserve every declared and tool-specific field.
                 assertThat(
                         options.jsonMapper.readTree(
-                            options.jsonMapper.writeValueAsString(event.item())
+                            options.jsonMapper.writeValueAsString(event.itemOrThrow())
                         )
                     )
                     .isEqualTo(options.jsonMapper.readTree(input))
@@ -151,14 +151,14 @@ internal class LiveDecisionValidationTest {
                 .content("fixture")
                 .build()
                 .validate()
-        assertThat(legacy.id()).isEqualTo("fake-original")
-        assertThat(legacy.content().asString()).isEqualTo("fixture")
+        assertThat(legacy.idOrThrow()).isEqualTo("fake-original")
+        assertThat(legacy.contentOrThrow().asString()).isEqualTo("fixture")
         assertThat(legacy._role()).isEqualTo(JsonValue.from("user"))
-        assertThat(legacy.type()).contains(DecisionItemCreatedEvent.Item.Type.MESSAGE)
+        assertThat(legacy.type()).contains(JsonValue.from("message"))
 
         val rebuilt =
             legacy.toBuilder().id("fake-updated").role(JsonValue.from("developer")).build()
-        assertThat(rebuilt.validate().id()).isEqualTo("fake-updated")
+        assertThat(rebuilt.validate().idOrThrow()).isEqualTo("fake-updated")
         assertThat(rebuilt._role()).isEqualTo(JsonValue.from("developer"))
         assertThat(legacy._role()).isEqualTo(JsonValue.from("user"))
 

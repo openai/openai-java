@@ -13,8 +13,8 @@ internal class SessionArtifactDeletedTest {
     fun createAndRoundtrip() {
         val sessionArtifactDeleted = SessionArtifactDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(sessionArtifactDeleted.id()).isEqualTo("id")
-        assertThat(sessionArtifactDeleted.deleted()).isEqualTo(true)
+        assertThat(sessionArtifactDeleted.id()).contains("id")
+        assertThat(sessionArtifactDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

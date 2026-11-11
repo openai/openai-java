@@ -13,7 +13,7 @@ internal class ProjectSpendLimitDeletedTest {
     fun createAndRoundtrip() {
         val projectSpendLimitDeleted = ProjectSpendLimitDeleted.builder().deleted(true).build()
 
-        assertThat(projectSpendLimitDeleted.deleted()).isEqualTo(true)
+        assertThat(projectSpendLimitDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

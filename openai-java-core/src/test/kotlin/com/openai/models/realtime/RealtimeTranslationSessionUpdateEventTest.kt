@@ -49,7 +49,7 @@ internal class RealtimeTranslationSessionUpdateEventTest {
                 .build()
 
         assertThat(realtimeTranslationSessionUpdateEvent.session())
-            .isEqualTo(
+            .contains(
                 RealtimeTranslationSessionUpdateRequest.builder()
                     .audio(
                         RealtimeTranslationSessionUpdateRequest.Audio.builder()

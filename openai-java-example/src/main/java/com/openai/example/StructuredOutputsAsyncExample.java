@@ -71,8 +71,8 @@ public final class StructuredOutputsAsyncExample {
         client.chat()
                 .completions()
                 .create(createParams)
-                .thenAccept(completion -> completion.choices().stream()
-                        .flatMap(choice -> choice.message().content().stream())
+                .thenAccept(completion -> completion.choicesOrThrow().stream()
+                        .flatMap(choice -> choice.messageOrThrow().content().stream())
                         .flatMap(bookList -> bookList.books.stream())
                         .forEach(book -> System.out.println(" - " + book)))
                 .join();

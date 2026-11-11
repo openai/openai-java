@@ -36,20 +36,30 @@ private constructor(
     ) : this(format, verbosity, mutableMapOf())
 
     /**
-     * The effective output format. Defaults to ordinary text.
+     * The effective output format. Defaults to ordinary text. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun format(): TextFormat = format.getRequired("format")
+    fun format(): java.util.Optional<TextFormat> = format.getOptional("format")
 
     /**
-     * The amount of text produced by the agent. Defaults to `medium`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun verbosity(): Verbosity = verbosity.getRequired("verbosity")
+    fun formatOrThrow(): TextFormat = format.getRequired("format")
+
+    /**
+     * The amount of text produced by the agent. Defaults to `medium`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun verbosity(): java.util.Optional<Verbosity> = verbosity.getOptional("verbosity")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun verbosityOrThrow(): Verbosity = verbosity.getRequired("verbosity")
 
     /**
      * Returns the raw JSON value of [format].
@@ -219,8 +229,8 @@ private constructor(
             return@apply
         }
 
-        format().validate()
-        verbosity().validate()
+        formatOrThrow().validate()
+        verbosityOrThrow().validate()
         validated = true
     }
 

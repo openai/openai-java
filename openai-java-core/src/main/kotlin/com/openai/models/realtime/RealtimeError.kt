@@ -40,44 +40,68 @@ private constructor(
     ) : this(message, type, code, eventId, param, mutableMapOf())
 
     /**
-     * A human-readable error message.
+     * A human-readable error message. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun message(): String = message.getRequired("message")
+    fun message(): java.util.Optional<String> = message.getOptional("message")
 
     /**
-     * The type of error (e.g., "invalid_request_error", "server_error").
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun type(): String = type.getRequired("type")
+    fun messageOrThrow(): String = message.getRequired("message")
 
     /**
-     * Error code, if any.
+     * The type of error (e.g., "invalid_request_error", "server_error"). The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun code(): Optional<String> = code.getOptional("code")
+    fun type(): java.util.Optional<String> = type.getOptional("type")
 
     /**
-     * The event_id of the client event that caused the error, if applicable.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun eventId(): Optional<String> = eventId.getOptional("event_id")
+    fun typeOrThrow(): String = type.getRequired("type")
 
     /**
-     * Parameter related to the error, if any.
+     * Error code, if any. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun param(): Optional<String> = param.getOptional("param")
+    fun code(): java.util.Optional<String> = code.getOptional("code")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun codeOrThrow(): String = code.getRequired("code")
+
+    /**
+     * The event_id of the client event that caused the error, if applicable. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
+
+    /**
+     * Parameter related to the error, if any. Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun param(): java.util.Optional<String> = param.getOptional("param")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun paramOrThrow(): String = param.getRequired("param")
 
     /**
      * Returns the raw JSON value of [message].
@@ -303,8 +327,8 @@ private constructor(
             return@apply
         }
 
-        message()
-        type()
+        messageOrThrow()
+        typeOrThrow()
         code()
         eventId()
         param()

@@ -21,12 +21,12 @@ internal class FileCreateResponseTest {
                 .source("source")
                 .build()
 
-        assertThat(fileCreateResponse.id()).isEqualTo("id")
-        assertThat(fileCreateResponse.bytes()).isEqualTo(0L)
-        assertThat(fileCreateResponse.containerId()).isEqualTo("container_id")
-        assertThat(fileCreateResponse.createdAt()).isEqualTo(0L)
-        assertThat(fileCreateResponse.path()).isEqualTo("path")
-        assertThat(fileCreateResponse.source()).isEqualTo("source")
+        assertThat(fileCreateResponse.id()).contains("id")
+        assertThat(fileCreateResponse.bytes()).contains(0L)
+        assertThat(fileCreateResponse.containerId()).contains("container_id")
+        assertThat(fileCreateResponse.createdAt()).contains(0L)
+        assertThat(fileCreateResponse.path()).contains("path")
+        assertThat(fileCreateResponse.source()).contains("source")
 
         val jsonMapper = jsonMapper()
 

@@ -3,7 +3,9 @@
 package com.openai.models.realtime
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -24,7 +26,7 @@ internal class RealtimeConversationItemSystemMessageTest {
                 .status(RealtimeConversationItemSystemMessage.Status.COMPLETED)
                 .build()
 
-        assertThat(realtimeConversationItemSystemMessage.content())
+        assertThat(realtimeConversationItemSystemMessage.content().getOrNull())
             .containsExactly(
                 RealtimeConversationItemSystemMessage.Content.builder()
                     .text("text")
@@ -33,7 +35,7 @@ internal class RealtimeConversationItemSystemMessageTest {
             )
         assertThat(realtimeConversationItemSystemMessage.id()).contains("id")
         assertThat(realtimeConversationItemSystemMessage.object_())
-            .contains(RealtimeConversationItemSystemMessage.Object.REALTIME_ITEM)
+            .contains(JsonValue.from("realtime.item"))
         assertThat(realtimeConversationItemSystemMessage.status())
             .contains(RealtimeConversationItemSystemMessage.Status.COMPLETED)
 

@@ -40,87 +40,65 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * Directories that contain capabilities exposed to the agent. Defaults to an empty list.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun capabilityDirectories(): Optional<List<String>> = body.capabilityDirectories()
+    /** @see Body.capabilityDirectories */
+    fun capabilityDirectories(): java.util.Optional<List<String>> = body.capabilityDirectories()
 
-    /**
-     * Desktop provisioning. Omission or null inherits the template setting, or defaults to
-     * disabled.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun desktop(): Optional<Desktop> = body.desktop()
+    /** @see Body.capabilityDirectoriesOrThrow */
+    fun capabilityDirectoriesOrThrow(): List<String> = body.capabilityDirectoriesOrThrow()
 
-    /**
-     * Environment variables made available to the agent.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun env(): Optional<Env> = body.env()
+    /** @see Body.desktop */
+    fun desktop(): java.util.Optional<Desktop> = body.desktop()
 
-    /**
-     * Files available before the agent starts. Defaults to an empty list.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun files(): Optional<List<HostedEnvironmentFileParam>> = body.files()
+    /** @see Body.desktopOrThrow */
+    fun desktopOrThrow(): Desktop = body.desktopOrThrow()
 
-    /**
-     * An optional human-readable display name for the template.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun name(): Optional<String> = body.name()
+    /** @see Body.env */
+    fun env(): java.util.Optional<Env> = body.env()
 
-    /**
-     * Network access policy for the environment. If omitted, the API version determines whether
-     * network access is enabled or disabled.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun network(): Optional<Network> = body.network()
+    /** @see Body.envOrThrow */
+    fun envOrThrow(): Env = body.envOrThrow()
 
-    /**
-     * Packages to install in the environment. Defaults to empty package lists.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun packages(): Optional<Packages> = body.packages()
+    /** @see Body.files */
+    fun files(): java.util.Optional<List<HostedEnvironmentFileParam>> = body.files()
 
-    /**
-     * Plugins provided as inline ZIP archives. Defaults to an empty list.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun plugins(): Optional<List<HostedPluginParam>> = body.plugins()
+    /** @see Body.filesOrThrow */
+    fun filesOrThrow(): List<HostedEnvironmentFileParam> = body.filesOrThrow()
 
-    /**
-     * Ordered, confidential setup commands. Command bodies are never returned.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun setupCommands(): Optional<List<SetupCommandParam>> = body.setupCommands()
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
 
-    /**
-     * Skills referenced by ID or provided as inline ZIP archives. Defaults to an empty list.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun skills(): Optional<List<HostedSkillParam>> = body.skills()
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
+
+    /** @see Body.network */
+    fun network(): java.util.Optional<Network> = body.network()
+
+    /** @see Body.networkOrThrow */
+    fun networkOrThrow(): Network = body.networkOrThrow()
+
+    /** @see Body.packages */
+    fun packages(): java.util.Optional<Packages> = body.packages()
+
+    /** @see Body.packagesOrThrow */
+    fun packagesOrThrow(): Packages = body.packagesOrThrow()
+
+    /** @see Body.plugins */
+    fun plugins(): java.util.Optional<List<HostedPluginParam>> = body.plugins()
+
+    /** @see Body.pluginsOrThrow */
+    fun pluginsOrThrow(): List<HostedPluginParam> = body.pluginsOrThrow()
+
+    /** @see Body.setupCommands */
+    fun setupCommands(): java.util.Optional<List<SetupCommandParam>> = body.setupCommands()
+
+    /** @see Body.setupCommandsOrThrow */
+    fun setupCommandsOrThrow(): List<SetupCommandParam> = body.setupCommandsOrThrow()
+
+    /** @see Body.skills */
+    fun skills(): java.util.Optional<List<HostedSkillParam>> = body.skills()
+
+    /** @see Body.skillsOrThrow */
+    fun skillsOrThrow(): List<HostedSkillParam> = body.skillsOrThrow()
 
     /**
      * Returns the raw JSON value of [capabilityDirectories].
@@ -666,87 +644,149 @@ private constructor(
 
         /**
          * Directories that contain capabilities exposed to the agent. Defaults to an empty list.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun capabilityDirectories(): Optional<List<String>> =
+        fun capabilityDirectories(): java.util.Optional<List<String>> =
             capabilityDirectories.getOptional("capability_directories")
 
         /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun capabilityDirectoriesOrThrow(): List<String> =
+            capabilityDirectories.getRequired("capability_directories")
+
+        /**
          * Desktop provisioning. Omission or null inherits the template setting, or defaults to
-         * disabled.
+         * disabled. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun desktop(): Optional<Desktop> = desktop.getOptional("desktop")
+        fun desktop(): java.util.Optional<Desktop> = desktop.getOptional("desktop")
 
         /**
-         * Environment variables made available to the agent.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun env(): Optional<Env> = env.getOptional("env")
+        fun desktopOrThrow(): Desktop = desktop.getRequired("desktop")
 
         /**
-         * Files available before the agent starts. Defaults to an empty list.
+         * Environment variables made available to the agent. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun files(): Optional<List<HostedEnvironmentFileParam>> = files.getOptional("files")
+        fun env(): java.util.Optional<Env> = env.getOptional("env")
 
         /**
-         * An optional human-readable display name for the template.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun name(): Optional<String> = name.getOptional("name")
+        fun envOrThrow(): Env = env.getRequired("env")
+
+        /**
+         * Files available before the agent starts. Defaults to an empty list. Returns empty if the
+         * JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun files(): java.util.Optional<List<HostedEnvironmentFileParam>> =
+            files.getOptional("files")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun filesOrThrow(): List<HostedEnvironmentFileParam> = files.getRequired("files")
+
+        /**
+         * An optional human-readable display name for the template. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
 
         /**
          * Network access policy for the environment. If omitted, the API version determines whether
-         * network access is enabled or disabled.
+         * network access is enabled or disabled. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun network(): Optional<Network> = network.getOptional("network")
+        fun network(): java.util.Optional<Network> = network.getOptional("network")
 
         /**
-         * Packages to install in the environment. Defaults to empty package lists.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun packages(): Optional<Packages> = packages.getOptional("packages")
+        fun networkOrThrow(): Network = network.getRequired("network")
 
         /**
-         * Plugins provided as inline ZIP archives. Defaults to an empty list.
+         * Packages to install in the environment. Defaults to empty package lists. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun plugins(): Optional<List<HostedPluginParam>> = plugins.getOptional("plugins")
+        fun packages(): java.util.Optional<Packages> = packages.getOptional("packages")
 
         /**
-         * Ordered, confidential setup commands. Command bodies are never returned.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun setupCommands(): Optional<List<SetupCommandParam>> =
+        fun packagesOrThrow(): Packages = packages.getRequired("packages")
+
+        /**
+         * Plugins provided as inline ZIP archives. Defaults to an empty list. Returns empty if the
+         * JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun plugins(): java.util.Optional<List<HostedPluginParam>> = plugins.getOptional("plugins")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun pluginsOrThrow(): List<HostedPluginParam> = plugins.getRequired("plugins")
+
+        /**
+         * Ordered, confidential setup commands. Command bodies are never returned. Returns empty if
+         * the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun setupCommands(): java.util.Optional<List<SetupCommandParam>> =
             setupCommands.getOptional("setup_commands")
 
         /**
-         * Skills referenced by ID or provided as inline ZIP archives. Defaults to an empty list.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun skills(): Optional<List<HostedSkillParam>> = skills.getOptional("skills")
+        fun setupCommandsOrThrow(): List<SetupCommandParam> =
+            setupCommands.getRequired("setup_commands")
+
+        /**
+         * Skills referenced by ID or provided as inline ZIP archives. Defaults to an empty list.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun skills(): java.util.Optional<List<HostedSkillParam>> = skills.getOptional("skills")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun skillsOrThrow(): List<HostedSkillParam> = skills.getRequired("skills")
 
         /**
          * Returns the raw JSON value of [capabilityDirectories].
@@ -1326,12 +1366,18 @@ private constructor(
         ) : this(enabled, mutableMapOf())
 
         /**
-         * Whether to provision the desktop and its browser proxy.
+         * Whether to provision the desktop and its browser proxy. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun enabled(): Boolean = enabled.getRequired("enabled")
+        fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
 
         /**
          * Returns the raw JSON value of [enabled].
@@ -1454,7 +1500,7 @@ private constructor(
                 return@apply
             }
 
-            enabled()
+            enabledOrThrow()
             validated = true
         }
 
@@ -1644,30 +1690,50 @@ private constructor(
         ) : this(access, allowedDomains, blockedDomains, mutableMapOf())
 
         /**
-         * The environment's network access mode.
+         * The environment's network access mode. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun access(): Access = access.getRequired("access")
+        fun access(): java.util.Optional<Access> = access.getOptional("access")
 
         /**
-         * Domains the environment may access when network access is restricted.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun allowedDomains(): Optional<List<String>> = allowedDomains.getOptional("allowed_domains")
+        fun accessOrThrow(): Access = access.getRequired("access")
+
+        /**
+         * Domains the environment may access when network access is restricted. Returns empty if
+         * the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun allowedDomains(): java.util.Optional<List<String>> =
+            allowedDomains.getOptional("allowed_domains")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun allowedDomainsOrThrow(): List<String> = allowedDomains.getRequired("allowed_domains")
 
         /**
          * Domains blocked for both executor and browser when access is restricted. A nonempty list
          * requires `access: restricted` and cannot be combined with nonempty `allowed_domains`.
-         * Wildcard domains are not supported.
+         * Wildcard domains are not supported. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun blockedDomains(): Optional<List<String>> = blockedDomains.getOptional("blocked_domains")
+        fun blockedDomains(): java.util.Optional<List<String>> =
+            blockedDomains.getOptional("blocked_domains")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun blockedDomainsOrThrow(): List<String> = blockedDomains.getRequired("blocked_domains")
 
         /**
          * Returns the raw JSON value of [access].
@@ -1888,7 +1954,7 @@ private constructor(
                 return@apply
             }
 
-            access().validate()
+            accessOrThrow().validate()
             allowedDomains()
             blockedDomains()
             validated = true
@@ -2117,28 +2183,46 @@ private constructor(
         ) : this(npm, python, system, mutableMapOf())
 
         /**
-         * npm packages to install globally. Defaults to an empty list.
+         * npm packages to install globally. Defaults to an empty list. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun npm(): Optional<List<String>> = npm.getOptional("npm")
+        fun npm(): java.util.Optional<List<String>> = npm.getOptional("npm")
 
         /**
-         * Python packages to install. Defaults to an empty list.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun python(): Optional<List<String>> = python.getOptional("python")
+        fun npmOrThrow(): List<String> = npm.getRequired("npm")
 
         /**
-         * System packages to install. Defaults to an empty list.
+         * Python packages to install. Defaults to an empty list. Returns empty if the JSON property
+         * is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun system(): Optional<List<String>> = system.getOptional("system")
+        fun python(): java.util.Optional<List<String>> = python.getOptional("python")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun pythonOrThrow(): List<String> = python.getRequired("python")
+
+        /**
+         * System packages to install. Defaults to an empty list. Returns empty if the JSON property
+         * is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun system(): java.util.Optional<List<String>> = system.getOptional("system")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun systemOrThrow(): List<String> = system.getRequired("system")
 
         /**
          * Returns the raw JSON value of [npm].

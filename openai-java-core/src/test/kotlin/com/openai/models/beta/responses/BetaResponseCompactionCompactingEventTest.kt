@@ -23,9 +23,9 @@ internal class BetaResponseCompactionCompactingEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseCompactionCompactingEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseCompactionCompactingEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseCompactionCompactingEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseCompactionCompactingEvent.itemId()).contains("item_id")
+        assertThat(betaResponseCompactionCompactingEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseCompactionCompactingEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseCompactionCompactingEvent.agent())
             .contains(
                 BetaResponseCompactionCompactingEvent.Agent.builder()

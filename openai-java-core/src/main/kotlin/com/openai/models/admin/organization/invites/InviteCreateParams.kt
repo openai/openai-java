@@ -35,32 +35,23 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * Send an email to this address
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun email(): String = body.email()
+    /** @see Body.email */
+    fun email(): java.util.Optional<String> = body.email()
 
-    /**
-     * `owner` or `reader`
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun role(): Role = body.role()
+    /** @see Body.emailOrThrow */
+    fun emailOrThrow(): String = body.emailOrThrow()
 
-    /**
-     * An array of projects to which membership is granted at the same time the org invite is
-     * accepted. If omitted, the user will be invited to the default project for compatibility with
-     * legacy behavior. If empty list is passed, the user will not be invited to any projects,
-     * including the default one.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun projects(): Optional<List<Project>> = body.projects()
+    /** @see Body.role */
+    fun role(): java.util.Optional<Role> = body.role()
+
+    /** @see Body.roleOrThrow */
+    fun roleOrThrow(): Role = body.roleOrThrow()
+
+    /** @see Body.projects */
+    fun projects(): java.util.Optional<List<Project>> = body.projects()
+
+    /** @see Body.projectsOrThrow */
+    fun projectsOrThrow(): List<Project> = body.projectsOrThrow()
 
     /**
      * Returns the raw JSON value of [email].
@@ -341,31 +332,49 @@ private constructor(
         ) : this(email, role, projects, mutableMapOf())
 
         /**
-         * Send an email to this address
+         * Send an email to this address The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun email(): String = email.getRequired("email")
+        fun email(): java.util.Optional<String> = email.getOptional("email")
 
         /**
-         * `owner` or `reader`
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun role(): Role = role.getRequired("role")
+        fun emailOrThrow(): String = email.getRequired("email")
+
+        /**
+         * `owner` or `reader` The schema requires this property. Returns empty if the JSON property
+         * is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun role(): java.util.Optional<Role> = role.getOptional("role")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun roleOrThrow(): Role = role.getRequired("role")
 
         /**
          * An array of projects to which membership is granted at the same time the org invite is
          * accepted. If omitted, the user will be invited to the default project for compatibility
          * with legacy behavior. If empty list is passed, the user will not be invited to any
-         * projects, including the default one.
+         * projects, including the default one. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun projects(): Optional<List<Project>> = projects.getOptional("projects")
+        fun projects(): java.util.Optional<List<Project>> = projects.getOptional("projects")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun projectsOrThrow(): List<Project> = projects.getRequired("projects")
 
         /**
          * Returns the raw JSON value of [email].
@@ -562,8 +571,8 @@ private constructor(
                 return@apply
             }
 
-            email()
-            role().validate()
+            emailOrThrow()
+            roleOrThrow().validate()
             projects().ifPresent { it.forEach { it.validate() } }
             validated = true
         }
@@ -764,20 +773,32 @@ private constructor(
         ) : this(id, role, mutableMapOf())
 
         /**
-         * Project's public ID
+         * Project's public ID The schema requires this property. Returns empty if the JSON property
+         * is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun id(): String = id.getRequired("id")
+        fun id(): java.util.Optional<String> = id.getOptional("id")
 
         /**
-         * Project membership role
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun role(): Role = role.getRequired("role")
+        fun idOrThrow(): String = id.getRequired("id")
+
+        /**
+         * Project membership role The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun role(): java.util.Optional<Role> = role.getOptional("role")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun roleOrThrow(): Role = role.getRequired("role")
 
         /**
          * Returns the raw JSON value of [id].
@@ -927,8 +948,8 @@ private constructor(
                 return@apply
             }
 
-            id()
-            role().validate()
+            idOrThrow()
+            roleOrThrow().validate()
             validated = true
         }
 

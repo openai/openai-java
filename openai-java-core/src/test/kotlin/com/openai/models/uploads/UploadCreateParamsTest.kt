@@ -32,10 +32,10 @@ internal class UploadCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.bytes()).isEqualTo(0L)
-        assertThat(body.filename()).isEqualTo("filename")
-        assertThat(body.mimeType()).isEqualTo("mime_type")
-        assertThat(body.purpose()).isEqualTo(FilePurpose.ASSISTANTS)
+        assertThat(body.bytesOrThrow()).isEqualTo(0L)
+        assertThat(body.filenameOrThrow()).isEqualTo("filename")
+        assertThat(body.mimeTypeOrThrow()).isEqualTo("mime_type")
+        assertThat(body.purposeOrThrow()).isEqualTo(FilePurpose.ASSISTANTS)
         assertThat(body.expiresAfter())
             .contains(UploadCreateParams.ExpiresAfter.builder().seconds(3600L).build())
     }
@@ -52,9 +52,9 @@ internal class UploadCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.bytes()).isEqualTo(0L)
-        assertThat(body.filename()).isEqualTo("filename")
-        assertThat(body.mimeType()).isEqualTo("mime_type")
-        assertThat(body.purpose()).isEqualTo(FilePurpose.ASSISTANTS)
+        assertThat(body.bytesOrThrow()).isEqualTo(0L)
+        assertThat(body.filenameOrThrow()).isEqualTo("filename")
+        assertThat(body.mimeTypeOrThrow()).isEqualTo("mime_type")
+        assertThat(body.purposeOrThrow()).isEqualTo(FilePurpose.ASSISTANTS)
     }
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.beta.threads.AssistantResponseFormatOption
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -46,8 +47,8 @@ internal class AssistantTest {
                 .topP(1.0)
                 .build()
 
-        assertThat(assistant.id()).isEqualTo("id")
-        assertThat(assistant.createdAt()).isEqualTo(0L)
+        assertThat(assistant.id()).contains("id")
+        assertThat(assistant.createdAt()).contains(0L)
         assertThat(assistant.description()).contains("description")
         assertThat(assistant.instructions()).contains("instructions")
         assertThat(assistant.metadata())
@@ -56,9 +57,9 @@ internal class AssistantTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(assistant.model()).isEqualTo("model")
+        assertThat(assistant.model()).contains("model")
         assertThat(assistant.name()).contains("name")
-        assertThat(assistant.tools())
+        assertThat(assistant.tools().getOrNull())
             .containsExactly(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
         assertThat(assistant.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(assistant.temperature()).contains(1.0)

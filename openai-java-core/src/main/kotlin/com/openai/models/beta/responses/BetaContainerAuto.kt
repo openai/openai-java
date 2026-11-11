@@ -57,49 +57,79 @@ private constructor(
     ) : this(type, fileIds, memoryLimit, networkPolicy, skills, mutableMapOf())
 
     /**
-     * Automatically creates a container for this request
+     * Automatically creates a container for this request The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("container_auto")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("container_auto")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * An optional list of uploaded files to make available to your code.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun fileIds(): Optional<List<String>> = fileIds.getOptional("file_ids")
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
-     * The memory limit for the container.
+     * An optional list of uploaded files to make available to your code. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun memoryLimit(): Optional<MemoryLimit> = memoryLimit.getOptional("memory_limit")
+    fun fileIds(): java.util.Optional<List<String>> = fileIds.getOptional("file_ids")
 
     /**
-     * Network access policy for the container.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun networkPolicy(): Optional<NetworkPolicy> = networkPolicy.getOptional("network_policy")
+    fun fileIdsOrThrow(): List<String> = fileIds.getRequired("file_ids")
 
     /**
-     * An optional list of skills referenced by id or inline data.
+     * The memory limit for the container. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun skills(): Optional<List<Skill>> = skills.getOptional("skills")
+    fun memoryLimit(): java.util.Optional<MemoryLimit> = memoryLimit.getOptional("memory_limit")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun memoryLimitOrThrow(): MemoryLimit = memoryLimit.getRequired("memory_limit")
+
+    /**
+     * Network access policy for the container. Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun networkPolicy(): java.util.Optional<NetworkPolicy> =
+        networkPolicy.getOptional("network_policy")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun networkPolicyOrThrow(): NetworkPolicy = networkPolicy.getRequired("network_policy")
+
+    /**
+     * An optional list of skills referenced by id or inline data. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun skills(): java.util.Optional<List<Skill>> = skills.getOptional("skills")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun skillsOrThrow(): List<Skill> = skills.getRequired("skills")
 
     /**
      * Returns the raw JSON value of [fileIds].
@@ -377,11 +407,7 @@ private constructor(
             return@apply
         }
 
-        _type().let {
-            if (it != JsonValue.from("container_auto")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        typeOrThrow()
         fileIds()
         memoryLimit().ifPresent { it.validate() }
         networkPolicy().ifPresent { it.validate() }

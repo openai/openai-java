@@ -66,8 +66,8 @@ internal class RealtimeTranscriptionSessionCreateResponseTest {
                 )
                 .build()
 
-        assertThat(realtimeTranscriptionSessionCreateResponse.id()).isEqualTo("id")
-        assertThat(realtimeTranscriptionSessionCreateResponse.object_()).isEqualTo("object")
+        assertThat(realtimeTranscriptionSessionCreateResponse.id()).contains("id")
+        assertThat(realtimeTranscriptionSessionCreateResponse.object_()).contains("object")
         assertThat(realtimeTranscriptionSessionCreateResponse.audio())
             .contains(
                 RealtimeTranscriptionSessionCreateResponse.Audio.builder()

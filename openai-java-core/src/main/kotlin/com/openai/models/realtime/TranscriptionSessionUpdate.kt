@@ -39,33 +39,53 @@ private constructor(
     ) : this(session, type, eventId, mutableMapOf())
 
     /**
-     * Realtime transcription session object configuration.
+     * Realtime transcription session object configuration. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun session(): Session = session.getRequired("session")
+    fun session(): java.util.Optional<Session> = session.getOptional("session")
 
     /**
-     * The event type, must be `transcription_session.update`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("transcription_session.update")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun sessionOrThrow(): Session = session.getRequired("session")
 
     /**
-     * Optional client-generated ID used to identify this event.
+     * The event type, must be `transcription_session.update`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun eventId(): Optional<String> = eventId.getOptional("event_id")
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("transcription_session.update")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * Optional client-generated ID used to identify this event. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
      * Returns the raw JSON value of [session].
@@ -232,12 +252,8 @@ private constructor(
             return@apply
         }
 
-        session().validate()
-        _type().let {
-            if (it != JsonValue.from("transcription_session.update")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        sessionOrThrow().validate()
+        typeOrThrow()
         eventId()
         validated = true
     }
@@ -301,56 +317,87 @@ private constructor(
 
         /**
          * The set of items to include in the transcription. Current available items are:
-         * `item.input_audio_transcription.logprobs`
+         * `item.input_audio_transcription.logprobs` Returns empty if the JSON property is missing
+         * or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun include(): Optional<List<Include>> = include.getOptional("include")
+        fun include(): java.util.Optional<List<Include>> = include.getOptional("include")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun includeOrThrow(): List<Include> = include.getRequired("include")
 
         /**
          * The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`. For `pcm16`,
          * input audio must be 16-bit PCM at a 24kHz sample rate, single channel (mono), and
-         * little-endian byte order.
+         * little-endian byte order. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun inputAudioFormat(): Optional<InputAudioFormat> =
+        fun inputAudioFormat(): java.util.Optional<InputAudioFormat> =
             inputAudioFormat.getOptional("input_audio_format")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun inputAudioFormatOrThrow(): InputAudioFormat =
+            inputAudioFormat.getRequired("input_audio_format")
 
         /**
          * Configuration for input audio noise reduction. This can be set to `null` to turn off.
          * Noise reduction filters audio added to the input audio buffer before it is sent to VAD
          * and the model. Filtering the audio can improve VAD and turn detection accuracy (reducing
          * false positives) and model performance by improving perception of the input audio.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun inputAudioNoiseReduction(): Optional<InputAudioNoiseReduction> =
+        fun inputAudioNoiseReduction(): java.util.Optional<InputAudioNoiseReduction> =
             inputAudioNoiseReduction.getOptional("input_audio_noise_reduction")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun inputAudioNoiseReductionOrThrow(): InputAudioNoiseReduction =
+            inputAudioNoiseReduction.getRequired("input_audio_noise_reduction")
 
         /**
          * Configuration for input audio transcription. The client can optionally set the language
          * and prompt for transcription, these offer additional guidance to the transcription
-         * service.
+         * service. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun inputAudioTranscription(): Optional<AudioTranscription> =
+        fun inputAudioTranscription(): java.util.Optional<AudioTranscription> =
             inputAudioTranscription.getOptional("input_audio_transcription")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun inputAudioTranscriptionOrThrow(): AudioTranscription =
+            inputAudioTranscription.getRequired("input_audio_transcription")
 
         /**
          * Configuration for turn detection. Can be set to `null` to turn off. Server VAD means that
          * the model will detect the start and end of speech based on audio volume and respond at
-         * the end of user speech.
+         * the end of user speech. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun turnDetection(): Optional<TurnDetection> = turnDetection.getOptional("turn_detection")
+        fun turnDetection(): java.util.Optional<TurnDetection> =
+            turnDetection.getOptional("turn_detection")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun turnDetectionOrThrow(): TurnDetection = turnDetection.getRequired("turn_detection")
 
         /**
          * Returns the raw JSON value of [include].
@@ -971,12 +1018,17 @@ private constructor(
             /**
              * Type of noise reduction. `near_field` is for close-talking microphones such as
              * headphones, `far_field` is for far-field microphones such as laptop or conference
-             * room microphones.
+             * room microphones. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun type(): Optional<NoiseReductionType> = type.getOptional("type")
+            fun type(): java.util.Optional<NoiseReductionType> = type.getOptional("type")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): NoiseReductionType = type.getRequired("type")
 
             /**
              * Returns the raw JSON value of [type].
@@ -1167,42 +1219,64 @@ private constructor(
 
             /**
              * Amount of audio to include before the VAD detected speech (in milliseconds). Defaults
-             * to 300ms.
+             * to 300ms. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun prefixPaddingMs(): Optional<Long> = prefixPaddingMs.getOptional("prefix_padding_ms")
+            fun prefixPaddingMs(): java.util.Optional<Long> =
+                prefixPaddingMs.getOptional("prefix_padding_ms")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun prefixPaddingMsOrThrow(): Long = prefixPaddingMs.getRequired("prefix_padding_ms")
 
             /**
              * Duration of silence to detect speech stop (in milliseconds). Defaults to 500ms. With
              * shorter values the model will respond more quickly, but may jump in on short pauses
-             * from the user.
+             * from the user. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun silenceDurationMs(): Optional<Long> =
+            fun silenceDurationMs(): java.util.Optional<Long> =
                 silenceDurationMs.getOptional("silence_duration_ms")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun silenceDurationMsOrThrow(): Long =
+                silenceDurationMs.getRequired("silence_duration_ms")
 
             /**
              * Activation threshold for VAD (0.0 to 1.0), this defaults to 0.5. A higher threshold
              * will require louder audio to activate the model, and thus might perform better in
-             * noisy environments.
+             * noisy environments. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun threshold(): Optional<Double> = threshold.getOptional("threshold")
+            fun threshold(): java.util.Optional<Double> = threshold.getOptional("threshold")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun thresholdOrThrow(): Double = threshold.getRequired("threshold")
 
             /**
              * Type of turn detection. Only `server_vad` is currently supported for transcription
-             * sessions.
+             * sessions. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun type(): Optional<Type> = type.getOptional("type")
+            fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): Type = type.getRequired("type")
 
             /**
              * Returns the raw JSON value of [prefixPaddingMs].

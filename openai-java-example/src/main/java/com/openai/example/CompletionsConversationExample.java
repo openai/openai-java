@@ -29,8 +29,8 @@ public final class CompletionsConversationExample {
 
         for (int i = 0; i < 4; i++) {
             List<ChatCompletionMessage> messages =
-                    client.chat().completions().create(createParamsBuilder.build()).choices().stream()
-                            .map(ChatCompletion.Choice::message)
+                    client.chat().completions().create(createParamsBuilder.build()).choicesOrThrow().stream()
+                            .map(ChatCompletion.Choice::messageOrThrow)
                             .collect(toList());
 
             messages.stream().flatMap(message -> message.content().stream()).forEach(System.out::println);

@@ -72,89 +72,157 @@ private constructor(
     )
 
     /**
-     * The invocation ID.
+     * The invocation ID. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The automation that owns the invocation.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun automationId(): String = automationId.getRequired("automation_id")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The creation time as a Unix timestamp in seconds.
+     * The automation that owns the invocation. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun automationId(): java.util.Optional<String> = automationId.getOptional("automation_id")
 
     /**
-     * The permanent delivery failure, or null when no failure occurred.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun error(): Optional<Error> = error.getOptional("error")
+    fun automationIdOrThrow(): String = automationId.getRequired("automation_id")
 
     /**
-     * Always `agent.automation.invocation`.
+     * The creation time as a Unix timestamp in seconds. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("agent.automation.invocation")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * The intended occurrence as a Unix timestamp in seconds, or null for manual runs.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun scheduledAt(): Optional<Long> = scheduledAt.getOptional("scheduled_at")
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
     /**
-     * The target or newly created session ID, or null before one is available.
+     * The permanent delivery failure, or null when no failure occurred. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun sessionId(): Optional<String> = sessionId.getOptional("session_id")
+    fun error(): java.util.Optional<Error> = error.getOptional("error")
 
     /**
-     * Why an occurrence was skipped, or null when it was not skipped.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun skipReason(): Optional<SkipReason> = skipReason.getOptional("skip_reason")
+    fun errorOrThrow(): Error = error.getRequired("error")
 
     /**
-     * Whether the invocation was manual or scheduled.
+     * Always `agent.automation.invocation`. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun source(): AutomationInvocationSource = source.getRequired("source")
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("agent.automation.invocation")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * Delivery status; completed does not mean the agent's work has finished.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun status(): Status = status.getRequired("status")
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * The intended occurrence as a Unix timestamp in seconds, or null for manual runs. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun scheduledAt(): java.util.Optional<Long> = scheduledAt.getOptional("scheduled_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun scheduledAtOrThrow(): Long = scheduledAt.getRequired("scheduled_at")
+
+    /**
+     * The target or newly created session ID, or null before one is available. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun sessionId(): java.util.Optional<String> = sessionId.getOptional("session_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sessionIdOrThrow(): String = sessionId.getRequired("session_id")
+
+    /**
+     * Why an occurrence was skipped, or null when it was not skipped. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun skipReason(): java.util.Optional<JsonValue> {
+        val raw = JsonValue.from(skipReason)
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("pending_delivery")) ->
+                throw OpenAIInvalidDataException("`skip_reason` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun skipReasonOrThrow(): JsonValue =
+        skipReason().orElseGet { JsonValue.from(skipReason).getRequired("skip_reason") }
+
+    @JsonProperty("skip_reason")
+    @ExcludeMissing
+    fun _skipReason(): JsonField<JsonValue> = JsonValue.from(skipReason)
+
+    /**
+     * Whether the invocation was manual or scheduled. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun source(): java.util.Optional<AutomationInvocationSource> = source.getOptional("source")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sourceOrThrow(): AutomationInvocationSource = source.getRequired("source")
+
+    /**
+     * Delivery status; completed does not mean the agent's work has finished. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): Status = status.getRequired("status")
 
     /**
      * Returns the raw JSON value of [id].
@@ -199,15 +267,6 @@ private constructor(
      * Unlike [sessionId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("session_id") @ExcludeMissing fun _sessionId(): JsonField<String> = sessionId
-
-    /**
-     * Returns the raw JSON value of [skipReason].
-     *
-     * Unlike [skipReason], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("skip_reason")
-    @ExcludeMissing
-    fun _skipReason(): JsonField<SkipReason> = skipReason
 
     /**
      * Returns the raw JSON value of [source].
@@ -524,20 +583,16 @@ private constructor(
             return@apply
         }
 
-        id()
-        automationId()
-        createdAt()
+        idOrThrow()
+        automationIdOrThrow()
+        createdAtOrThrow()
         error().ifPresent { it.validate() }
-        _object_().let {
-            if (it != JsonValue.from("agent.automation.invocation")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
+        object_OrThrow()
         scheduledAt()
         sessionId()
-        skipReason().ifPresent { it.validate() }
-        source().validate()
-        status().validate()
+        skipReason()
+        sourceOrThrow().validate()
+        statusOrThrow().validate()
         validated = true
     }
 
@@ -583,20 +638,32 @@ private constructor(
         ) : this(code, message, mutableMapOf())
 
         /**
-         * A machine-readable error code.
+         * A machine-readable error code. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun code(): String = code.getRequired("code")
+        fun code(): java.util.Optional<String> = code.getOptional("code")
 
         /**
-         * A public explanation of the delivery failure.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun message(): String = message.getRequired("message")
+        fun codeOrThrow(): String = code.getRequired("code")
+
+        /**
+         * A public explanation of the delivery failure. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun message(): java.util.Optional<String> = message.getOptional("message")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun messageOrThrow(): String = message.getRequired("message")
 
         /**
          * Returns the raw JSON value of [code].
@@ -750,8 +817,8 @@ private constructor(
                 return@apply
             }
 
-            code()
-            message()
+            codeOrThrow()
+            messageOrThrow()
             validated = true
         }
 

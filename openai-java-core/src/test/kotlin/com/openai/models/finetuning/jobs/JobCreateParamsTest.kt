@@ -194,8 +194,8 @@ internal class JobCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo(JobCreateParams.Model.GPT_4O_MINI)
-        assertThat(body.trainingFile()).isEqualTo("file-abc123")
+        assertThat(body.modelOrThrow()).isEqualTo(JobCreateParams.Model.GPT_4O_MINI)
+        assertThat(body.trainingFileOrThrow()).isEqualTo("file-abc123")
         assertThat(body.hyperparameters())
             .contains(
                 JobCreateParams.Hyperparameters.builder()
@@ -292,7 +292,7 @@ internal class JobCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo(JobCreateParams.Model.GPT_4O_MINI)
-        assertThat(body.trainingFile()).isEqualTo("file-abc123")
+        assertThat(body.modelOrThrow()).isEqualTo(JobCreateParams.Model.GPT_4O_MINI)
+        assertThat(body.trainingFileOrThrow()).isEqualTo("file-abc123")
     }
 }

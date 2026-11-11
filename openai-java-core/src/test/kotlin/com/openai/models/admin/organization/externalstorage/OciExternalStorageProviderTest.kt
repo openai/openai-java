@@ -18,9 +18,9 @@ internal class OciExternalStorageProviderTest {
                 .tenancyOcid("tenancy_ocid")
                 .build()
 
-        assertThat(ociExternalStorageProvider.bucket()).isEqualTo("bucket")
-        assertThat(ociExternalStorageProvider.region()).isEqualTo("region")
-        assertThat(ociExternalStorageProvider.tenancyOcid()).isEqualTo("tenancy_ocid")
+        assertThat(ociExternalStorageProvider.bucket()).contains("bucket")
+        assertThat(ociExternalStorageProvider.region()).contains("region")
+        assertThat(ociExternalStorageProvider.tenancyOcid()).contains("tenancy_ocid")
 
         val jsonMapper = jsonMapper()
 

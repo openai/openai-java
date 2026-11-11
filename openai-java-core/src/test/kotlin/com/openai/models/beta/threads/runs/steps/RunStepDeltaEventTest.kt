@@ -29,9 +29,9 @@ internal class RunStepDeltaEventTest {
                 )
                 .build()
 
-        assertThat(runStepDeltaEvent.id()).isEqualTo("id")
+        assertThat(runStepDeltaEvent.id()).contains("id")
         assertThat(runStepDeltaEvent.delta())
-            .isEqualTo(
+            .contains(
                 RunStepDelta.builder()
                     .stepDetails(
                         RunStepDeltaMessageDelta.builder()

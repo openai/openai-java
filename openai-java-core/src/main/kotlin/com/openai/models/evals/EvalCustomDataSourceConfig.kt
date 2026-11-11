@@ -40,25 +40,40 @@ private constructor(
 
     /**
      * The json schema for the run data source items. Learn how to build JSON schemas
-     * [here](https://json-schema.org/).
+     * [here](https://json-schema.org/). The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun schema(): Schema = schema.getRequired("schema")
+    fun schema(): java.util.Optional<Schema> = schema.getOptional("schema")
 
     /**
-     * The type of data source. Always `custom`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("custom")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun schemaOrThrow(): Schema = schema.getRequired("schema")
+
+    /**
+     * The type of data source. Always `custom`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("custom")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [schema].
@@ -202,12 +217,8 @@ private constructor(
             return@apply
         }
 
-        schema().validate()
-        _type().let {
-            if (it != JsonValue.from("custom")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        schemaOrThrow().validate()
+        typeOrThrow()
         validated = true
     }
 

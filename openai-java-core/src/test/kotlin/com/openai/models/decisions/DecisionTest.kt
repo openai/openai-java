@@ -4,6 +4,7 @@ package com.openai.models.decisions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -37,15 +38,15 @@ internal class DecisionTest {
                 )
                 .build()
 
-        assertThat(decision.answers())
+        assertThat(decision.answers().getOrNull())
             .containsExactly(
                 Decision.Answer.ofPredicate(
                     Decision.Answer.Predicate.builder().name("name").probability(0.0).build()
                 )
             )
-        assertThat(decision.model()).isEqualTo("model")
+        assertThat(decision.model()).contains("model")
         assertThat(decision.usage())
-            .isEqualTo(
+            .contains(
                 Decision.Usage.builder()
                     .inputTokens(-2147483648L)
                     .inputTokensDetails(

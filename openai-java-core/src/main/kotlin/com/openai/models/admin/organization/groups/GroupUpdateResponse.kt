@@ -38,36 +38,56 @@ private constructor(
     ) : this(id, createdAt, isScimManaged, name, mutableMapOf())
 
     /**
-     * Identifier for the group.
+     * Identifier for the group. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * Unix timestamp (in seconds) when the group was created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * Whether the group is managed through SCIM and controlled by your identity provider.
+     * Unix timestamp (in seconds) when the group was created. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun isScimManaged(): Boolean = isScimManaged.getRequired("is_scim_managed")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * Updated display name for the group.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): String = name.getRequired("name")
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * Whether the group is managed through SCIM and controlled by your identity provider. The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun isScimManaged(): java.util.Optional<Boolean> = isScimManaged.getOptional("is_scim_managed")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun isScimManagedOrThrow(): Boolean = isScimManaged.getRequired("is_scim_managed")
+
+    /**
+     * Updated display name for the group. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
 
     /**
      * Returns the raw JSON value of [id].
@@ -271,10 +291,10 @@ private constructor(
             return@apply
         }
 
-        id()
-        createdAt()
-        isScimManaged()
-        name()
+        idOrThrow()
+        createdAtOrThrow()
+        isScimManagedOrThrow()
+        nameOrThrow()
         validated = true
     }
 

@@ -4,6 +4,7 @@ package com.openai.models.beta.agents
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -21,15 +22,14 @@ internal class AgentSendSubagentInputCallItemTest {
                 .turnId("turn_id")
                 .build()
 
-        assertThat(agentSendSubagentInputCallItem.id()).isEqualTo("id")
-        assertThat(agentSendSubagentInputCallItem.content())
+        assertThat(agentSendSubagentInputCallItem.id()).contains("id")
+        assertThat(agentSendSubagentInputCallItem.content().getOrNull())
             .containsExactly(AgentContent.ofOutputText(OutputText.builder().text("text").build()))
-        assertThat(agentSendSubagentInputCallItem.recipientAgentId())
-            .isEqualTo("recipient_agent_id")
-        assertThat(agentSendSubagentInputCallItem.senderAgentId()).isEqualTo("sender_agent_id")
+        assertThat(agentSendSubagentInputCallItem.recipientAgentId()).contains("recipient_agent_id")
+        assertThat(agentSendSubagentInputCallItem.senderAgentId()).contains("sender_agent_id")
         assertThat(agentSendSubagentInputCallItem.status())
-            .isEqualTo(AgentFunctionCallStatus.IN_PROGRESS)
-        assertThat(agentSendSubagentInputCallItem.turnId()).isEqualTo("turn_id")
+            .contains(AgentFunctionCallStatus.IN_PROGRESS)
+        assertThat(agentSendSubagentInputCallItem.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()
 

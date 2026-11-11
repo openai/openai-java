@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.BatchService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see BatchService.list */
 class BatchListPage
@@ -18,21 +16,22 @@ private constructor(
     private val response: BatchListPageResponse,
 ) : Page<Batch> {
 
-    /**
-     * Delegates to [BatchListPageResponse], but gracefully handles missing data.
-     *
-     * @see BatchListPageResponse.data
-     */
-    fun data(): List<Batch> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see BatchListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [BatchListPageResponse], but gracefully handles missing data.
-     *
-     * @see BatchListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<Batch> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<Batch> = data()
+    fun _data() = response._data()
+
+    /** @see BatchListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<Batch> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

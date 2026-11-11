@@ -39,55 +39,91 @@ private constructor(
     ) : this(eventType, object_, statusCode, success, webhookEndpointId, mutableMapOf())
 
     /**
-     * The event type sent in the test.
+     * The event type sent in the test. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun eventType(): String = eventType.getRequired("event_type")
+    fun eventType(): java.util.Optional<String> = eventType.getOptional("event_type")
 
     /**
-     * The object type, which is always webhook_endpoint.test.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("webhook_endpoint.test")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun eventTypeOrThrow(): String = eventType.getRequired("event_type")
 
     /**
-     * The HTTP status code returned by the endpoint.
+     * The object type, which is always webhook_endpoint.test. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun statusCode(): Long = statusCode.getRequired("status_code")
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("webhook_endpoint.test")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * The HTTP status code returned by the endpoint. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun statusCode(): java.util.Optional<Long> = statusCode.getOptional("status_code")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusCodeOrThrow(): Long = statusCode.getRequired("status_code")
 
     /**
      * Whether the test request completed. Always true for returned results; use status_code to
-     * determine the endpoint response.
+     * determine the endpoint response. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from(true)
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("success") @ExcludeMissing fun _success(): JsonValue = success
+    fun success(): java.util.Optional<JsonValue> {
+        val raw = success
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from(true)) ->
+                throw OpenAIInvalidDataException("`success` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The ID of the webhook endpoint that received the test.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun webhookEndpointId(): String = webhookEndpointId.getRequired("webhook_endpoint_id")
+    fun successOrThrow(): JsonValue = success().orElseGet { success.getRequired("success") }
+
+    @JsonProperty("success") @ExcludeMissing fun _success(): JsonField<JsonValue> = success
+
+    /**
+     * The ID of the webhook endpoint that received the test. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun webhookEndpointId(): java.util.Optional<String> =
+        webhookEndpointId.getOptional("webhook_endpoint_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun webhookEndpointIdOrThrow(): String = webhookEndpointId.getRequired("webhook_endpoint_id")
 
     /**
      * Returns the raw JSON value of [eventType].
@@ -306,19 +342,11 @@ private constructor(
             return@apply
         }
 
-        eventType()
-        _object_().let {
-            if (it != JsonValue.from("webhook_endpoint.test")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        statusCode()
-        _success().let {
-            if (it != JsonValue.from(true)) {
-                throw OpenAIInvalidDataException("'success' is invalid, received $it")
-            }
-        }
-        webhookEndpointId()
+        eventTypeOrThrow()
+        object_OrThrow()
+        statusCodeOrThrow()
+        successOrThrow()
+        webhookEndpointIdOrThrow()
         validated = true
     }
 

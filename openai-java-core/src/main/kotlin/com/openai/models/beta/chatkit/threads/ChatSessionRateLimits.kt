@@ -32,12 +32,18 @@ private constructor(
     ) : this(maxRequestsPer1Minute, mutableMapOf())
 
     /**
-     * Maximum allowed requests per one-minute window.
+     * Maximum allowed requests per one-minute window. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun maxRequestsPer1Minute(): Long =
+    fun maxRequestsPer1Minute(): java.util.Optional<Long> =
+        maxRequestsPer1Minute.getOptional("max_requests_per_1_minute")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun maxRequestsPer1MinuteOrThrow(): Long =
         maxRequestsPer1Minute.getRequired("max_requests_per_1_minute")
 
     /**
@@ -172,7 +178,7 @@ private constructor(
             return@apply
         }
 
-        maxRequestsPer1Minute()
+        maxRequestsPer1MinuteOrThrow()
         validated = true
     }
 

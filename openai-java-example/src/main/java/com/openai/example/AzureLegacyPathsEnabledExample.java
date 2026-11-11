@@ -26,8 +26,8 @@ public final class AzureLegacyPathsEnabledExample {
                 .addUserMessage("Tell me a story about building the best SDK!")
                 .build();
 
-        client.chat().completions().create(createParams).choices().stream()
-                .flatMap(choice -> choice.message().content().stream())
+        client.chat().completions().create(createParams).choicesOrThrow().stream()
+                .flatMap(choice -> choice.messageOrThrow().content().stream())
                 .forEach(System.out::println);
     }
 }

@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.workloadidentityproviders
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -37,7 +38,7 @@ internal class WorkloadIdentityProviderListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(workloadIdentityProviderListPageResponse.data())
+        assertThat(workloadIdentityProviderListPageResponse.data().getOrNull())
             .containsExactly(
                 WorkloadIdentityProvider.builder()
                     .id("id")
@@ -58,7 +59,7 @@ internal class WorkloadIdentityProviderListPageResponseTest {
                     .build()
             )
         assertThat(workloadIdentityProviderListPageResponse.firstId()).contains("first_id")
-        assertThat(workloadIdentityProviderListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(workloadIdentityProviderListPageResponse.hasMore()).contains(true)
         assertThat(workloadIdentityProviderListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

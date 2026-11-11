@@ -53,116 +53,61 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * The name of the model to fine-tune. You can select one of the
-     * [supported models](https://developers.openai.com/api/docs/guides/model-optimization#fine-tuning-methods).
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun model(): Model = body.model()
+    /** @see Body.model */
+    fun model(): java.util.Optional<Model> = body.model()
 
-    /**
-     * The ID of an uploaded file that contains training data.
-     *
-     * See [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
-     * for how to upload a file.
-     *
-     * Your dataset must be formatted as a JSONL file. Additionally, you must upload your file with
-     * the purpose `fine-tune`.
-     *
-     * The contents of the file should differ depending on if the model uses the
-     * [chat](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data),
-     * [completions](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data)
-     * format, or if the fine-tuning method uses the
-     * [preference](https://developers.openai.com/api/docs/guides/direct-preference-optimization)
-     * format.
-     *
-     * See the [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization)
-     * for more details.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun trainingFile(): String = body.trainingFile()
+    /** @see Body.modelOrThrow */
+    fun modelOrThrow(): Model = body.modelOrThrow()
 
-    /**
-     * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor of
-     * `method`, and should be passed in under the `method` parameter.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
+    /** @see Body.trainingFile */
+    fun trainingFile(): java.util.Optional<String> = body.trainingFile()
+
+    /** @see Body.trainingFileOrThrow */
+    fun trainingFileOrThrow(): String = body.trainingFileOrThrow()
+
+    /** @see Body.hyperparameters */
     @Deprecated("deprecated")
-    fun hyperparameters(): Optional<Hyperparameters> = body.hyperparameters()
+    fun hyperparameters(): java.util.Optional<Hyperparameters> = body.hyperparameters()
 
-    /**
-     * A list of integrations to enable for your fine-tuning job.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun integrations(): Optional<List<Integration>> = body.integrations()
+    /** @see Body.hyperparametersOrThrow */
+    @Deprecated("deprecated")
+    fun hyperparametersOrThrow(): Hyperparameters = body.hyperparametersOrThrow()
 
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
-     *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun metadata(): Optional<Metadata> = body.metadata()
+    /** @see Body.integrations */
+    fun integrations(): java.util.Optional<List<Integration>> = body.integrations()
 
-    /**
-     * The method used for fine-tuning.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun method(): Optional<Method> = body.method()
+    /** @see Body.integrationsOrThrow */
+    fun integrationsOrThrow(): List<Integration> = body.integrationsOrThrow()
 
-    /**
-     * The seed controls the reproducibility of the job. Passing in the same seed and job parameters
-     * should produce the same results, but may differ in rare cases. If a seed is not specified,
-     * one will be generated for you.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun seed(): Optional<Long> = body.seed()
+    /** @see Body.metadata */
+    fun metadata(): java.util.Optional<Metadata> = body.metadata()
 
-    /**
-     * A string of up to 64 characters that will be added to your fine-tuned model name.
-     *
-     * For example, a `suffix` of "custom-model-name" would produce a model name like
-     * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun suffix(): Optional<String> = body.suffix()
+    /** @see Body.metadataOrThrow */
+    fun metadataOrThrow(): Metadata = body.metadataOrThrow()
 
-    /**
-     * The ID of an uploaded file that contains validation data.
-     *
-     * If you provide this file, the data is used to generate validation metrics periodically during
-     * fine-tuning. These metrics can be viewed in the fine-tuning results file. The same data
-     * should not be present in both train and validation files.
-     *
-     * Your dataset must be formatted as a JSONL file. You must upload your file with the purpose
-     * `fine-tune`.
-     *
-     * See the [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization)
-     * for more details.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun validationFile(): Optional<String> = body.validationFile()
+    /** @see Body.method */
+    fun method(): java.util.Optional<Method> = body.method()
+
+    /** @see Body.methodOrThrow */
+    fun methodOrThrow(): Method = body.methodOrThrow()
+
+    /** @see Body.seed */
+    fun seed(): java.util.Optional<Long> = body.seed()
+
+    /** @see Body.seedOrThrow */
+    fun seedOrThrow(): Long = body.seedOrThrow()
+
+    /** @see Body.suffix */
+    fun suffix(): java.util.Optional<String> = body.suffix()
+
+    /** @see Body.suffixOrThrow */
+    fun suffixOrThrow(): String = body.suffixOrThrow()
+
+    /** @see Body.validationFile */
+    fun validationFile(): java.util.Optional<String> = body.validationFile()
+
+    /** @see Body.validationFileOrThrow */
+    fun validationFileOrThrow(): String = body.validationFileOrThrow()
 
     /**
      * Returns the raw JSON value of [model].
@@ -684,11 +629,17 @@ private constructor(
         /**
          * The name of the model to fine-tune. You can select one of the
          * [supported models](https://developers.openai.com/api/docs/guides/model-optimization#fine-tuning-methods).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun model(): Model = model.getRequired("model")
+        fun model(): java.util.Optional<Model> = model.getOptional("model")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun modelOrThrow(): Model = model.getRequired("model")
 
         /**
          * The ID of an uploaded file that contains training data.
@@ -709,31 +660,52 @@ private constructor(
          *
          * See the
          * [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization) for
-         * more details.
+         * more details. The schema requires this property. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun trainingFile(): String = trainingFile.getRequired("training_file")
+        fun trainingFile(): java.util.Optional<String> = trainingFile.getOptional("training_file")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun trainingFileOrThrow(): String = trainingFile.getRequired("training_file")
 
         /**
          * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor
-         * of `method`, and should be passed in under the `method` parameter.
+         * of `method`, and should be passed in under the `method` parameter. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
         @Deprecated("deprecated")
-        fun hyperparameters(): Optional<Hyperparameters> =
+        fun hyperparameters(): java.util.Optional<Hyperparameters> =
             hyperparameters.getOptional("hyperparameters")
 
         /**
-         * A list of integrations to enable for your fine-tuning job.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun integrations(): Optional<List<Integration>> = integrations.getOptional("integrations")
+        @Deprecated("deprecated")
+        fun hyperparametersOrThrow(): Hyperparameters =
+            hyperparameters.getRequired("hyperparameters")
+
+        /**
+         * A list of integrations to enable for your fine-tuning job. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun integrations(): java.util.Optional<List<Integration>> =
+            integrations.getOptional("integrations")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun integrationsOrThrow(): List<Integration> = integrations.getRequired("integrations")
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -741,41 +713,63 @@ private constructor(
          * objects via API or the dashboard.
          *
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * maximum length of 512 characters. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+        fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
-         * The method used for fine-tuning.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun method(): Optional<Method> = method.getOptional("method")
+        fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
+
+        /**
+         * The method used for fine-tuning. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun method(): java.util.Optional<Method> = method.getOptional("method")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun methodOrThrow(): Method = method.getRequired("method")
 
         /**
          * The seed controls the reproducibility of the job. Passing in the same seed and job
          * parameters should produce the same results, but may differ in rare cases. If a seed is
-         * not specified, one will be generated for you.
+         * not specified, one will be generated for you. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun seed(): Optional<Long> = seed.getOptional("seed")
+        fun seed(): java.util.Optional<Long> = seed.getOptional("seed")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun seedOrThrow(): Long = seed.getRequired("seed")
 
         /**
          * A string of up to 64 characters that will be added to your fine-tuned model name.
          *
          * For example, a `suffix` of "custom-model-name" would produce a model name like
-         * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
+         * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun suffix(): Optional<String> = suffix.getOptional("suffix")
+        fun suffix(): java.util.Optional<String> = suffix.getOptional("suffix")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun suffixOrThrow(): String = suffix.getRequired("suffix")
 
         /**
          * The ID of an uploaded file that contains validation data.
@@ -789,12 +783,18 @@ private constructor(
          *
          * See the
          * [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization) for
-         * more details.
+         * more details. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun validationFile(): Optional<String> = validationFile.getOptional("validation_file")
+        fun validationFile(): java.util.Optional<String> =
+            validationFile.getOptional("validation_file")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun validationFileOrThrow(): String = validationFile.getRequired("validation_file")
 
         /**
          * Returns the raw JSON value of [model].
@@ -1234,8 +1234,8 @@ private constructor(
                 return@apply
             }
 
-            model()
-            trainingFile()
+            modelOrThrow()
+            trainingFileOrThrow()
             hyperparameters().ifPresent { it.validate() }
             integrations().ifPresent { it.forEach { it.validate() } }
             metadata().ifPresent { it.validate() }
@@ -1492,31 +1492,48 @@ private constructor(
 
         /**
          * Number of examples in each batch. A larger batch size means that model parameters are
-         * updated less frequently, but with lower variance.
+         * updated less frequently, but with lower variance. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun batchSize(): Optional<BatchSize> = batchSize.getOptional("batch_size")
+        fun batchSize(): java.util.Optional<BatchSize> = batchSize.getOptional("batch_size")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun batchSizeOrThrow(): BatchSize = batchSize.getRequired("batch_size")
 
         /**
          * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
-         * overfitting.
+         * overfitting. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
+        fun learningRateMultiplier(): java.util.Optional<LearningRateMultiplier> =
             learningRateMultiplier.getOptional("learning_rate_multiplier")
 
         /**
-         * The number of epochs to train the model for. An epoch refers to one full cycle through
-         * the training dataset.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun nEpochs(): Optional<NEpochs> = nEpochs.getOptional("n_epochs")
+        fun learningRateMultiplierOrThrow(): LearningRateMultiplier =
+            learningRateMultiplier.getRequired("learning_rate_multiplier")
+
+        /**
+         * The number of epochs to train the model for. An epoch refers to one full cycle through
+         * the training dataset. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun nEpochs(): java.util.Optional<NEpochs> = nEpochs.getOptional("n_epochs")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nEpochsOrThrow(): NEpochs = nEpochs.getRequired("n_epochs")
 
         /**
          * Returns the raw JSON value of [batchSize].
@@ -2476,28 +2493,45 @@ private constructor(
 
         /**
          * The type of integration to enable. Currently, only "wandb" (Weights and Biases) is
-         * supported.
+         * supported. The schema requires this property. Returns empty if the JSON property is
+         * missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("wandb")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("wandb")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * The settings for your integration with Weights and Biases. This payload specifies the
          * project that metrics will be sent to. Optionally, you can set an explicit display name
          * for your run, add tags to your run, and set a default entity (team, username, etc) to be
-         * associated with your run.
+         * associated with your run. The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun wandb(): Wandb = wandb.getRequired("wandb")
+        fun wandb(): java.util.Optional<Wandb> = wandb.getOptional("wandb")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun wandbOrThrow(): Wandb = wandb.getRequired("wandb")
 
         /**
          * Returns the raw JSON value of [wandb].
@@ -2645,12 +2679,8 @@ private constructor(
                 return@apply
             }
 
-            _type().let {
-                if (it != JsonValue.from("wandb")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            wandb().validate()
+            typeOrThrow()
+            wandbOrThrow().validate()
             validated = true
         }
 
@@ -2704,41 +2734,64 @@ private constructor(
             ) : this(project, entity, name, tags, mutableMapOf())
 
             /**
-             * The name of the project that the new run will be created under.
+             * The name of the project that the new run will be created under. The schema requires
+             * this property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun project(): String = project.getRequired("project")
+            fun project(): java.util.Optional<String> = project.getOptional("project")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun projectOrThrow(): String = project.getRequired("project")
 
             /**
              * The entity to use for the run. This allows you to set the team or username of the
              * WandB user that you would like associated with the run. If not set, the default
-             * entity for the registered WandB API key is used.
+             * entity for the registered WandB API key is used. Returns empty if the JSON property
+             * is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun entity(): Optional<String> = entity.getOptional("entity")
+            fun entity(): java.util.Optional<String> = entity.getOptional("entity")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun entityOrThrow(): String = entity.getRequired("entity")
 
             /**
              * A display name to set for the run. If not set, we will use the Job ID as the name.
+             * Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun name(): Optional<String> = name.getOptional("name")
+            fun name(): java.util.Optional<String> = name.getOptional("name")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun nameOrThrow(): String = name.getRequired("name")
 
             /**
              * A list of tags to be attached to the newly created run. These tags are passed through
              * directly to WandB. Some default tags are generated by OpenAI: "openai/finetune",
-             * "openai/{base-model}", "openai/{ftjob-abcdef}".
+             * "openai/{base-model}", "openai/{ftjob-abcdef}". Returns empty if the JSON property is
+             * missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun tags(): Optional<List<String>> = tags.getOptional("tags")
+            fun tags(): java.util.Optional<List<String>> = tags.getOptional("tags")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun tagsOrThrow(): List<String> = tags.getRequired("tags")
 
             /**
              * Returns the raw JSON value of [project].
@@ -2970,7 +3023,7 @@ private constructor(
                     return@apply
                 }
 
-                project()
+                projectOrThrow()
                 entity()
                 name()
                 tags()
@@ -3198,37 +3251,62 @@ private constructor(
         ) : this(type, dpo, reinforcement, supervised, mutableMapOf())
 
         /**
-         * The type of method. Is either `supervised`, `dpo`, or `reinforcement`.
+         * The type of method. Is either `supervised`, `dpo`, or `reinforcement`. The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun type(): Type = type.getRequired("type")
+        fun type(): java.util.Optional<Type> = type.getOptional("type")
 
         /**
-         * Configuration for the DPO fine-tuning method.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun dpo(): Optional<DpoMethod> = dpo.getOptional("dpo")
+        fun typeOrThrow(): Type = type.getRequired("type")
 
         /**
-         * Configuration for the reinforcement fine-tuning method.
+         * Configuration for the DPO fine-tuning method. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun reinforcement(): Optional<ReinforcementMethod> =
+        fun dpo(): java.util.Optional<DpoMethod> = dpo.getOptional("dpo")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun dpoOrThrow(): DpoMethod = dpo.getRequired("dpo")
+
+        /**
+         * Configuration for the reinforcement fine-tuning method. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun reinforcement(): java.util.Optional<ReinforcementMethod> =
             reinforcement.getOptional("reinforcement")
 
         /**
-         * Configuration for the supervised fine-tuning method.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun supervised(): Optional<SupervisedMethod> = supervised.getOptional("supervised")
+        fun reinforcementOrThrow(): ReinforcementMethod = reinforcement.getRequired("reinforcement")
+
+        /**
+         * Configuration for the supervised fine-tuning method. Returns empty if the JSON property
+         * is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun supervised(): java.util.Optional<SupervisedMethod> =
+            supervised.getOptional("supervised")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun supervisedOrThrow(): SupervisedMethod = supervised.getRequired("supervised")
 
         /**
          * Returns the raw JSON value of [type].
@@ -3436,7 +3514,7 @@ private constructor(
                 return@apply
             }
 
-            type().validate()
+            typeOrThrow().validate()
             dpo().ifPresent { it.validate() }
             reinforcement().ifPresent { it.validate() }
             supervised().ifPresent { it.validate() }

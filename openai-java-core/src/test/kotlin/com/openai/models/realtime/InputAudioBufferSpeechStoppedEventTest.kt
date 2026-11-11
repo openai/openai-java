@@ -18,9 +18,9 @@ internal class InputAudioBufferSpeechStoppedEventTest {
                 .itemId("item_id")
                 .build()
 
-        assertThat(inputAudioBufferSpeechStoppedEvent.audioEndMs()).isEqualTo(0L)
-        assertThat(inputAudioBufferSpeechStoppedEvent.eventId()).isEqualTo("event_id")
-        assertThat(inputAudioBufferSpeechStoppedEvent.itemId()).isEqualTo("item_id")
+        assertThat(inputAudioBufferSpeechStoppedEvent.audioEndMs()).contains(0L)
+        assertThat(inputAudioBufferSpeechStoppedEvent.eventId()).contains("event_id")
+        assertThat(inputAudioBufferSpeechStoppedEvent.itemId()).contains("item_id")
 
         val jsonMapper = jsonMapper()
 

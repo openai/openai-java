@@ -5,6 +5,7 @@ package com.openai.models.finetuning.jobs
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -27,7 +28,7 @@ internal class JobListEventsPageResponseTest {
                 .hasMore(true)
                 .build()
 
-        assertThat(jobListEventsPageResponse.data())
+        assertThat(jobListEventsPageResponse.data().getOrNull())
             .containsExactly(
                 FineTuningJobEvent.builder()
                     .id("id")
@@ -38,7 +39,7 @@ internal class JobListEventsPageResponseTest {
                     .type(FineTuningJobEvent.Type.MESSAGE)
                     .build()
             )
-        assertThat(jobListEventsPageResponse.hasMore()).isEqualTo(true)
+        assertThat(jobListEventsPageResponse.hasMore()).contains(true)
 
         val jsonMapper = jsonMapper()
 

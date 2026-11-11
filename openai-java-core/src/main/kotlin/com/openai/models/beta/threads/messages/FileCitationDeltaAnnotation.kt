@@ -48,51 +48,89 @@ private constructor(
     ) : this(index, type, endIndex, fileCitation, startIndex, text, mutableMapOf())
 
     /**
-     * The index of the annotation in the text content part.
+     * The index of the annotation in the text content part. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun index(): Long = index.getRequired("index")
+    fun index(): java.util.Optional<Long> = index.getOptional("index")
 
     /**
-     * Always `file_citation`.
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun indexOrThrow(): Long = index.getRequired("index")
+
+    /**
+     * Always `file_citation`. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("file_citation")
-     * ```
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("file_citation")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * Returns empty if the JSON property is missing or null.
      *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun endIndex(): java.util.Optional<Long> = endIndex.getOptional("end_index")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun endIndex(): Optional<Long> = endIndex.getOptional("end_index")
+    fun endIndexOrThrow(): Long = endIndex.getRequired("end_index")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun fileCitation(): Optional<FileCitation> = fileCitation.getOptional("file_citation")
-
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun startIndex(): Optional<Long> = startIndex.getOptional("start_index")
-
-    /**
-     * The text in the message content that needs to be replaced.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun text(): Optional<String> = text.getOptional("text")
+    fun fileCitation(): java.util.Optional<FileCitation> = fileCitation.getOptional("file_citation")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun fileCitationOrThrow(): FileCitation = fileCitation.getRequired("file_citation")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun startIndex(): java.util.Optional<Long> = startIndex.getOptional("start_index")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun startIndexOrThrow(): Long = startIndex.getRequired("start_index")
+
+    /**
+     * The text in the message content that needs to be replaced. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun text(): java.util.Optional<String> = text.getOptional("text")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun textOrThrow(): String = text.getRequired("text")
 
     /**
      * Returns the raw JSON value of [index].
@@ -327,12 +365,8 @@ private constructor(
             return@apply
         }
 
-        index()
-        _type().let {
-            if (it != JsonValue.from("file_citation")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        indexOrThrow()
+        typeOrThrow()
         endIndex()
         fileCitation().ifPresent { it.validate() }
         startIndex()
@@ -377,20 +411,31 @@ private constructor(
         ) : this(fileId, quote, mutableMapOf())
 
         /**
-         * The ID of the specific File the citation is from.
+         * The ID of the specific File the citation is from. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun fileId(): Optional<String> = fileId.getOptional("file_id")
+        fun fileId(): java.util.Optional<String> = fileId.getOptional("file_id")
 
         /**
-         * The specific quote in the file.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun quote(): Optional<String> = quote.getOptional("quote")
+        fun fileIdOrThrow(): String = fileId.getRequired("file_id")
+
+        /**
+         * The specific quote in the file. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun quote(): java.util.Optional<String> = quote.getOptional("quote")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun quoteOrThrow(): String = quote.getRequired("quote")
 
         /**
          * Returns the raw JSON value of [fileId].

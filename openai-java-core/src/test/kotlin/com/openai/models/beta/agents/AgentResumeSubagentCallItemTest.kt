@@ -20,12 +20,12 @@ internal class AgentResumeSubagentCallItemTest {
                 .turnId("turn_id")
                 .build()
 
-        assertThat(agentResumeSubagentCallItem.id()).isEqualTo("id")
-        assertThat(agentResumeSubagentCallItem.recipientAgentId()).isEqualTo("recipient_agent_id")
-        assertThat(agentResumeSubagentCallItem.senderAgentId()).isEqualTo("sender_agent_id")
+        assertThat(agentResumeSubagentCallItem.id()).contains("id")
+        assertThat(agentResumeSubagentCallItem.recipientAgentId()).contains("recipient_agent_id")
+        assertThat(agentResumeSubagentCallItem.senderAgentId()).contains("sender_agent_id")
         assertThat(agentResumeSubagentCallItem.status())
-            .isEqualTo(AgentFunctionCallStatus.IN_PROGRESS)
-        assertThat(agentResumeSubagentCallItem.turnId()).isEqualTo("turn_id")
+            .contains(AgentFunctionCallStatus.IN_PROGRESS)
+        assertThat(agentResumeSubagentCallItem.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()
 

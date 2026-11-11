@@ -31,29 +31,23 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * The event types that trigger deliveries to this endpoint.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun eventTypes(): List<EventType> = body.eventTypes()
+    /** @see Body.eventTypes */
+    fun eventTypes(): java.util.Optional<List<EventType>> = body.eventTypes()
 
-    /**
-     * A human-readable name for the webhook endpoint.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = body.name()
+    /** @see Body.eventTypesOrThrow */
+    fun eventTypesOrThrow(): List<EventType> = body.eventTypesOrThrow()
 
-    /**
-     * The HTTPS URL that receives webhook deliveries.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun url(): String = body.url()
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
+
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
+
+    /** @see Body.url */
+    fun url(): java.util.Optional<String> = body.url()
+
+    /** @see Body.urlOrThrow */
+    fun urlOrThrow(): String = body.urlOrThrow()
 
     /**
      * Returns the raw JSON value of [eventTypes].
@@ -333,28 +327,47 @@ private constructor(
         ) : this(eventTypes, name, url, mutableMapOf())
 
         /**
-         * The event types that trigger deliveries to this endpoint.
+         * The event types that trigger deliveries to this endpoint. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun eventTypes(): List<EventType> = eventTypes.getRequired("event_types")
+        fun eventTypes(): java.util.Optional<List<EventType>> =
+            eventTypes.getOptional("event_types")
 
         /**
-         * A human-readable name for the webhook endpoint.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun name(): String = name.getRequired("name")
+        fun eventTypesOrThrow(): List<EventType> = eventTypes.getRequired("event_types")
 
         /**
-         * The HTTPS URL that receives webhook deliveries.
+         * A human-readable name for the webhook endpoint. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun url(): String = url.getRequired("url")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
+
+        /**
+         * The HTTPS URL that receives webhook deliveries. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun url(): java.util.Optional<String> = url.getOptional("url")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun urlOrThrow(): String = url.getRequired("url")
 
         /**
          * Returns the raw JSON value of [eventTypes].
@@ -548,9 +561,9 @@ private constructor(
                 return@apply
             }
 
-            eventTypes().forEach { it.validate() }
-            name()
-            url()
+            eventTypesOrThrow().forEach { it.validate() }
+            nameOrThrow()
+            urlOrThrow()
             validated = true
         }
 

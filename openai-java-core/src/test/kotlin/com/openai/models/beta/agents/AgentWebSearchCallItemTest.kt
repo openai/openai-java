@@ -19,15 +19,15 @@ internal class AgentWebSearchCallItemTest {
                 .turnId("turn_id")
                 .build()
 
-        assertThat(agentWebSearchCallItem.id()).isEqualTo("id")
+        assertThat(agentWebSearchCallItem.id()).contains("id")
         assertThat(agentWebSearchCallItem.action())
             .contains(
                 WebSearchAction.ofSearch(
                     WebSearchAction.Search.builder().addQuery("string").query("query").build()
                 )
             )
-        assertThat(agentWebSearchCallItem.status()).isEqualTo(AgentOutputItemStatus.IN_PROGRESS)
-        assertThat(agentWebSearchCallItem.turnId()).isEqualTo("turn_id")
+        assertThat(agentWebSearchCallItem.status()).contains(AgentOutputItemStatus.IN_PROGRESS)
+        assertThat(agentWebSearchCallItem.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()
 

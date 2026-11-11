@@ -39,22 +39,17 @@ private constructor(
 
     fun credentialId(): Optional<String> = Optional.ofNullable(credentialId)
 
-    /**
-     * Replacement values for the credential's existing authentication method.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun auth(): Optional<CredentialAuthRotateParam> = body.auth()
+    /** @see Body.auth */
+    fun auth(): java.util.Optional<CredentialAuthRotateParam> = body.auth()
 
-    /**
-     * Replaces all metadata. Omit to preserve it, or pass {} to clear it. Up to 16 string key-value
-     * pairs, with keys up to 64 and values up to 512 characters.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun metadata(): Optional<Metadata> = body.metadata()
+    /** @see Body.authOrThrow */
+    fun authOrThrow(): CredentialAuthRotateParam = body.authOrThrow()
+
+    /** @see Body.metadata */
+    fun metadata(): java.util.Optional<Metadata> = body.metadata()
+
+    /** @see Body.metadataOrThrow */
+    fun metadataOrThrow(): Metadata = body.metadataOrThrow()
 
     /**
      * Returns the raw JSON value of [auth].
@@ -370,21 +365,33 @@ private constructor(
         ) : this(auth, metadata, mutableMapOf())
 
         /**
-         * Replacement values for the credential's existing authentication method.
+         * Replacement values for the credential's existing authentication method. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun auth(): Optional<CredentialAuthRotateParam> = auth.getOptional("auth")
+        fun auth(): java.util.Optional<CredentialAuthRotateParam> = auth.getOptional("auth")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun authOrThrow(): CredentialAuthRotateParam = auth.getRequired("auth")
 
         /**
          * Replaces all metadata. Omit to preserve it, or pass {} to clear it. Up to 16 string
-         * key-value pairs, with keys up to 64 and values up to 512 characters.
+         * key-value pairs, with keys up to 64 and values up to 512 characters. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+        fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
 
         /**
          * Returns the raw JSON value of [auth].

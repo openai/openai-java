@@ -52,7 +52,7 @@ internal class RunSubmitToolOutputsParamsTest {
 
         val body = params._body()
 
-        assertThat(body.toolOutputs())
+        assertThat(body.toolOutputsOrThrow())
             .containsExactly(
                 RunSubmitToolOutputsParams.ToolOutput.builder()
                     .output("output")
@@ -72,7 +72,7 @@ internal class RunSubmitToolOutputsParamsTest {
 
         val body = params._body()
 
-        assertThat(body.toolOutputs())
+        assertThat(body.toolOutputsOrThrow())
             .containsExactly(RunSubmitToolOutputsParams.ToolOutput.builder().build())
     }
 }

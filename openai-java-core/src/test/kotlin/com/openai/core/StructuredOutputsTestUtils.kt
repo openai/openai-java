@@ -41,6 +41,38 @@ internal val CLASS = X::class.java
  */
 internal data class DelegationReadTestCase(val functionName: String, val expectedValue: Any)
 
+/** Exercise the optional and throwing reads for each JSON property forwarded by a wrapper. */
+internal fun List<DelegationReadTestCase>.withJsonGetters(
+    delegate: Class<*>
+): List<DelegationReadTestCase> {
+    val getters = delegate.methods.filter { it.parameterCount == 0 }.associateBy { it.name }
+    val namedCases = mapTo(mutableSetOf()) { it.functionName }
+    return buildList {
+        for (case in this@withJsonGetters) {
+            val name = case.functionName.removePrefix("_")
+            val throwing = getters["${name}OrThrow"]
+            if (throwing == null || (case.functionName.startsWith("_") && name in namedCases)) {
+                add(case)
+                continue
+            }
+            if (case.functionName.startsWith("_")) add(case)
+            add(DelegationReadTestCase(name, OPTIONAL))
+            val sample =
+                if (case.expectedValue !is Optional<*>) case.expectedValue
+                else
+                    when (throwing.returnType) {
+                        String::class.java -> STRING
+                        Long::class.javaPrimitiveType -> LONG
+                        Double::class.javaPrimitiveType -> DOUBLE
+                        Boolean::class.javaPrimitiveType -> BOOLEAN
+                        List::class.java -> LIST
+                        else -> org.mockito.Mockito.mock(throwing.returnType)
+                    }
+            add(DelegationReadTestCase(throwing.name, sample))
+        }
+    }
+}
+
 /**
  * Defines a test case where a function in a delegator passes its parameters through to a
  * corresponding function in a delegate.

@@ -22,7 +22,7 @@ internal class BetaResponseInputAudioTest {
                 .build()
 
         assertThat(betaResponseInputAudio.inputAudio())
-            .isEqualTo(
+            .contains(
                 BetaResponseInputAudio.InputAudio.builder()
                     .data("data")
                     .format(BetaResponseInputAudio.InputAudio.Format.MP3)

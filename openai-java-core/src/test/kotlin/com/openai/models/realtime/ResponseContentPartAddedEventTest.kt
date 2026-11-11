@@ -28,12 +28,12 @@ internal class ResponseContentPartAddedEventTest {
                 .responseId("response_id")
                 .build()
 
-        assertThat(responseContentPartAddedEvent.contentIndex()).isEqualTo(0L)
-        assertThat(responseContentPartAddedEvent.eventId()).isEqualTo("event_id")
-        assertThat(responseContentPartAddedEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseContentPartAddedEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseContentPartAddedEvent.contentIndex()).contains(0L)
+        assertThat(responseContentPartAddedEvent.eventId()).contains("event_id")
+        assertThat(responseContentPartAddedEvent.itemId()).contains("item_id")
+        assertThat(responseContentPartAddedEvent.outputIndex()).contains(0L)
         assertThat(responseContentPartAddedEvent.part())
-            .isEqualTo(
+            .contains(
                 ResponseContentPartAddedEvent.Part.builder()
                     .audio("audio")
                     .text("text")
@@ -41,7 +41,7 @@ internal class ResponseContentPartAddedEventTest {
                     .type(ResponseContentPartAddedEvent.Part.Type.TEXT)
                     .build()
             )
-        assertThat(responseContentPartAddedEvent.responseId()).isEqualTo("response_id")
+        assertThat(responseContentPartAddedEvent.responseId()).contains("response_id")
 
         val jsonMapper = jsonMapper()
 

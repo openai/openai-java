@@ -41,7 +41,7 @@ internal class ModelPermissionUpdateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.mode()).isEqualTo(ModelPermissionUpdateParams.Mode.ALLOW_LIST)
-        assertThat(body.modelIds()).containsExactly("string")
+        assertThat(body.modeOrThrow()).isEqualTo(ModelPermissionUpdateParams.Mode.ALLOW_LIST)
+        assertThat(body.modelIdsOrThrow()).containsExactly("string")
     }
 }

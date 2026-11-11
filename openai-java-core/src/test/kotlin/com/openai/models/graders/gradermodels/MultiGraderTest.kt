@@ -25,9 +25,9 @@ internal class MultiGraderTest {
                 .name("name")
                 .build()
 
-        assertThat(multiGrader.calculateOutput()).isEqualTo("calculate_output")
+        assertThat(multiGrader.calculateOutput()).contains("calculate_output")
         assertThat(multiGrader.graders())
-            .isEqualTo(
+            .contains(
                 MultiGrader.Graders.ofStringCheckGrader(
                     StringCheckGrader.builder()
                         .input("input")
@@ -37,7 +37,7 @@ internal class MultiGraderTest {
                         .build()
                 )
             )
-        assertThat(multiGrader.name()).isEqualTo("name")
+        assertThat(multiGrader.name()).contains("name")
 
         val jsonMapper = jsonMapper()
 

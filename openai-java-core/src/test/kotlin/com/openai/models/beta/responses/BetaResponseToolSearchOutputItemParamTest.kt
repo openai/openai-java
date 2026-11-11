@@ -5,6 +5,7 @@ package com.openai.models.beta.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -45,7 +46,7 @@ internal class BetaResponseToolSearchOutputItemParamTest {
                 .status(BetaResponseToolSearchOutputItemParam.Status.IN_PROGRESS)
                 .build()
 
-        assertThat(betaResponseToolSearchOutputItemParam.tools())
+        assertThat(betaResponseToolSearchOutputItemParam.tools().getOrNull())
             .containsExactly(
                 BetaTool.ofFunction(
                     BetaFunctionTool.builder()

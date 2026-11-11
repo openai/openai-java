@@ -32,44 +32,29 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * The friendly name of the project, this name appears in reports.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = body.name()
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
 
-    /**
-     * External key ID to associate with the project.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun externalKeyId(): Optional<String> = body.externalKeyId()
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
 
-    /**
-     * Create the project with the specified data residency region. Your organization must have
-     * access to Data residency functionality in order to use. See
-     * [data residency controls](https://developers.openai.com/api/docs/guides/your-data#data-residency-controls)
-     * to review the functionality and limitations of setting this field. Deprecated: use
-     * `residency` instead. Do not provide both `geography` and `residency`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    @Deprecated("deprecated") fun geography(): Optional<String> = body.geography()
+    /** @see Body.externalKeyId */
+    fun externalKeyId(): java.util.Optional<String> = body.externalKeyId()
 
-    /**
-     * Create the project with the specified residency configuration. Your organization must have
-     * access to the requested residency configuration in order to use it. See
-     * [data residency controls](https://developers.openai.com/api/docs/guides/your-data#data-residency-controls)
-     * to review the functionality and limitations of setting this field.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun residency(): Optional<ProjectResidency> = body.residency()
+    /** @see Body.externalKeyIdOrThrow */
+    fun externalKeyIdOrThrow(): String = body.externalKeyIdOrThrow()
+
+    /** @see Body.geography */
+    @Deprecated("deprecated") fun geography(): java.util.Optional<String> = body.geography()
+
+    /** @see Body.geographyOrThrow */
+    @Deprecated("deprecated") fun geographyOrThrow(): String = body.geographyOrThrow()
+
+    /** @see Body.residency */
+    fun residency(): java.util.Optional<ProjectResidency> = body.residency()
+
+    /** @see Body.residencyOrThrow */
+    fun residencyOrThrow(): ProjectResidency = body.residencyOrThrow()
 
     /**
      * Returns the raw JSON value of [name].
@@ -389,44 +374,70 @@ private constructor(
         ) : this(name, externalKeyId, geography, residency, mutableMapOf())
 
         /**
-         * The friendly name of the project, this name appears in reports.
+         * The friendly name of the project, this name appears in reports. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): String = name.getRequired("name")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
 
         /**
-         * External key ID to associate with the project.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun externalKeyId(): Optional<String> = externalKeyId.getOptional("external_key_id")
+        fun nameOrThrow(): String = name.getRequired("name")
+
+        /**
+         * External key ID to associate with the project. Returns empty if the JSON property is
+         * missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun externalKeyId(): java.util.Optional<String> =
+            externalKeyId.getOptional("external_key_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun externalKeyIdOrThrow(): String = externalKeyId.getRequired("external_key_id")
 
         /**
          * Create the project with the specified data residency region. Your organization must have
          * access to Data residency functionality in order to use. See
          * [data residency controls](https://developers.openai.com/api/docs/guides/your-data#data-residency-controls)
          * to review the functionality and limitations of setting this field. Deprecated: use
-         * `residency` instead. Do not provide both `geography` and `residency`.
+         * `residency` instead. Do not provide both `geography` and `residency`. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
         @Deprecated("deprecated")
-        fun geography(): Optional<String> = geography.getOptional("geography")
+        fun geography(): java.util.Optional<String> = geography.getOptional("geography")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        @Deprecated("deprecated")
+        fun geographyOrThrow(): String = geography.getRequired("geography")
 
         /**
          * Create the project with the specified residency configuration. Your organization must
          * have access to the requested residency configuration in order to use it. See
          * [data residency controls](https://developers.openai.com/api/docs/guides/your-data#data-residency-controls)
-         * to review the functionality and limitations of setting this field.
+         * to review the functionality and limitations of setting this field. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun residency(): Optional<ProjectResidency> = residency.getOptional("residency")
+        fun residency(): java.util.Optional<ProjectResidency> = residency.getOptional("residency")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun residencyOrThrow(): ProjectResidency = residency.getRequired("residency")
 
         /**
          * Returns the raw JSON value of [name].
@@ -661,7 +672,7 @@ private constructor(
                 return@apply
             }
 
-            name()
+            nameOrThrow()
             externalKeyId()
             geography()
             residency().ifPresent { it.validate() }

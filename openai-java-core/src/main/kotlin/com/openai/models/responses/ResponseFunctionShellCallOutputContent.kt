@@ -46,28 +46,43 @@ private constructor(
     ) : this(outcome, stderr, stdout, mutableMapOf())
 
     /**
-     * The exit or timeout outcome associated with this shell call.
+     * The exit or timeout outcome associated with this shell call. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun outcome(): Outcome = outcome.getRequired("outcome")
+    fun outcome(): java.util.Optional<Outcome> = outcome.getOptional("outcome")
 
     /**
-     * Captured stderr output for the shell call.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun stderr(): String = stderr.getRequired("stderr")
+    fun outcomeOrThrow(): Outcome = outcome.getRequired("outcome")
 
     /**
-     * Captured stdout output for the shell call.
+     * Captured stderr output for the shell call. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun stdout(): String = stdout.getRequired("stdout")
+    fun stderr(): java.util.Optional<String> = stderr.getOptional("stderr")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun stderrOrThrow(): String = stderr.getRequired("stderr")
+
+    /**
+     * Captured stdout output for the shell call. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun stdout(): java.util.Optional<String> = stdout.getOptional("stdout")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun stdoutOrThrow(): String = stdout.getRequired("stdout")
 
     /**
      * Returns the raw JSON value of [outcome].
@@ -262,9 +277,9 @@ private constructor(
             return@apply
         }
 
-        outcome().validate()
-        stderr()
-        stdout()
+        outcomeOrThrow().validate()
+        stderrOrThrow()
+        stdoutOrThrow()
         validated = true
     }
 
@@ -534,26 +549,42 @@ private constructor(
             ) : this(exitCode, type, mutableMapOf())
 
             /**
-             * The exit code returned by the shell process.
+             * The exit code returned by the shell process. The schema requires this property.
+             * Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun exitCode(): Long = exitCode.getRequired("exit_code")
+            fun exitCode(): java.util.Optional<Long> = exitCode.getOptional("exit_code")
 
             /**
-             * The outcome type. Always `exit`.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("exit")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun exitCodeOrThrow(): Long = exitCode.getRequired("exit_code")
+
+            /**
+             * The outcome type. Always `exit`. The schema requires this property. Returns empty if
+             * the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("exit")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
             /**
              * Returns the raw JSON value of [exitCode].
@@ -705,12 +736,8 @@ private constructor(
                     return@apply
                 }
 
-                exitCode()
-                _type().let {
-                    if (it != JsonValue.from("exit")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
+                exitCodeOrThrow()
+                typeOrThrow()
                 validated = true
             }
 

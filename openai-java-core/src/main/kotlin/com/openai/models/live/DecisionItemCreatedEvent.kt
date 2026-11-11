@@ -53,37 +53,64 @@ private constructor(
     ) : this(eventId, item, type, clientEventId, mutableMapOf())
 
     /**
-     * The unique ID of the Live server event.
+     * The unique ID of the Live server event. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun item(): Item = item.getRequired("item")
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("decision.item.created")
-     * ```
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun item(): java.util.Optional<Item> = item.getOptional("item")
 
     /**
-     * The event_id of the client command associated with this server event, when supplied.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun clientEventId(): Optional<String> = clientEventId.getOptional("client_event_id")
+    fun itemOrThrow(): Item = item.getRequired("item")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("decision.item.created")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The event_id of the client command associated with this server event, when supplied. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun clientEventId(): java.util.Optional<String> = clientEventId.getOptional("client_event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun clientEventIdOrThrow(): String = clientEventId.getRequired("client_event_id")
 
     /**
      * Returns the raw JSON value of [eventId].
@@ -278,13 +305,9 @@ private constructor(
             return@apply
         }
 
-        eventId()
-        item().validate()
-        _type().let {
-            if (it != JsonValue.from("decision.item.created")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        eventIdOrThrow()
+        itemOrThrow().validate()
+        typeOrThrow()
         clientEventId()
         validated = true
     }
@@ -324,43 +347,104 @@ private constructor(
             @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
             @JsonProperty("content") @ExcludeMissing content: JsonField<Content> = JsonMissing.of(),
             @JsonProperty("role") @ExcludeMissing role: JsonValue = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
-        ) : this(id, content, role, type, mutableMapOf())
+            @com.fasterxml.jackson.databind.annotation.JsonDeserialize(
+                using = JsonValue.Deserializer::class
+            )
+            @JsonProperty("type")
+            @ExcludeMissing
+            type: JsonField<Type> = JsonMissing.of(),
+        ) : this(
+            id,
+            content,
+            role,
+            type.asString().getOrNull()?.let { JsonField.of(Type.of(it)) } ?: type,
+            mutableMapOf(),
+        )
 
         /**
-         * The ID of the stored Decision input item.
+         * The ID of the stored Decision input item. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun id(): String = id.getRequired("id")
+        fun id(): java.util.Optional<String> = id.getOptional("id")
 
         /**
-         * The required content of a message item. Tool call and output items omit content.
-         *
-         * Use `_content().isMissing()` to check for content before reading it.
-         *
-         * @throws OpenAIInvalidDataException if content is missing, null, or has an unexpected
-         *   type. Tool call and output items normally omit content.
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun content(): Content = content.getRequired("content")
+        fun idOrThrow(): String = id.getRequired("id")
 
         /**
-         * The role on a message item. Tool call and output items omit role.
+         * The required content of a message item. Tool call and output items omit content. The
+         * schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * Returns the raw role. Use `_role().isMissing()` to check its presence; tool call and
-         * output items omit this field.
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("role") @ExcludeMissing fun _role(): JsonValue = role
+        fun content(): java.util.Optional<Content> = content.getOptional("content")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun contentOrThrow(): Content = content.getRequired("content")
+
+        /**
+         * The role on a message item. Tool call and output items omit role. The schema requires
+         * this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun role(): java.util.Optional<JsonValue> {
+            val raw = role
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("assistant") ||
+                    raw == JsonValue.from("developer") ||
+                    raw == JsonValue.from("system") ||
+                    raw == JsonValue.from("user")) ->
+                    throw OpenAIInvalidDataException("`role` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun roleOrThrow(): JsonValue = role().orElseGet { role.getRequired("role") }
+
+        @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<JsonValue> = role
 
         /**
          * The item type. An omitted type denotes a message. Tool call and output items have their
-         * corresponding tool type.
+         * corresponding tool type. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun type(): Optional<Type> = type.getOptional("type")
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = JsonValue.from(type)
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("custom_tool_call") ||
+                    raw == JsonValue.from("custom_tool_call_output") ||
+                    raw == JsonValue.from("function_call") ||
+                    raw == JsonValue.from("function_call_output") ||
+                    raw == JsonValue.from("message")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { JsonValue.from(type).getRequired("type") }
+
+        @JsonProperty("type")
+        @ExcludeMissing
+        fun _type(): JsonField<JsonValue> = JsonValue.from(type)
 
         /**
          * Returns the raw JSON value of [id].
@@ -375,13 +459,6 @@ private constructor(
          * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<Content> = content
-
-        /**
-         * Returns the raw JSON value of [type].
-         *
-         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -578,14 +655,14 @@ private constructor(
             if (_type().isNull()) {
                 // The released Item validated null like an omitted type. Preserve its
                 // field checks without changing the wire value or newer item variants.
-                id()
-                content().validate()
+                idOrThrow()
+                contentOrThrow().validate()
                 _role().let {
                     if (it != JsonValue.from("user")) {
                         throw OpenAIInvalidDataException("'role' is invalid, received $it")
                     }
                 }
-                type().ifPresent { it.validate() }
+                type()
             } else {
                 val properties = _allProperties()
                 com.openai.models.live.DecisionInputItemValidation.validate(properties)
@@ -1146,24 +1223,42 @@ private constructor(
                     ) : this(text, type, mutableMapOf())
 
                     /**
-                     * The text input to the model.
+                     * The text input to the model. The schema requires this property. Returns empty
+                     * if the JSON property is missing or null.
                      *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   or is unexpectedly missing or null (e.g. if the server responded with an
-                     *   unexpected value).
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
                      */
-                    fun text(): String = text.getRequired("text")
+                    fun text(): java.util.Optional<String> = text.getOptional("text")
 
                     /**
-                     * Expected to always return the following:
-                     * ```java
-                     * JsonValue.from("input_text")
-                     * ```
-                     *
-                     * However, this method can be useful for debugging and logging (e.g. if the
-                     * server responded with an unexpected value).
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
                      */
-                    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+                    fun textOrThrow(): String = text.getRequired("text")
+
+                    /**
+                     * The schema requires this property. Returns empty if the JSON property is
+                     * missing or null.
+                     *
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                     */
+                    fun type(): java.util.Optional<JsonValue> {
+                        val raw = type
+                        return when {
+                            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                            !(raw == JsonValue.from("input_text")) ->
+                                throw OpenAIInvalidDataException("`type` is invalid")
+                            else -> java.util.Optional.of(raw)
+                        }
+                    }
+
+                    /**
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
+                     */
+                    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+                    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
                     /**
                      * Returns the raw JSON value of [text].
@@ -1317,12 +1412,8 @@ private constructor(
                             return@apply
                         }
 
-                        text()
-                        _type().let {
-                            if (it != JsonValue.from("input_text")) {
-                                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                            }
-                        }
+                        textOrThrow()
+                        typeOrThrow()
                         validated = true
                     }
 
@@ -1388,32 +1479,57 @@ private constructor(
 
                     /**
                      * A base64-encoded image data URL or a publicly accessible HTTP(S) image URL.
+                     * The schema requires this property. Returns empty if the JSON property is
+                     * missing or null.
                      *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   or is unexpectedly missing or null (e.g. if the server responded with an
-                     *   unexpected value).
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
                      */
-                    fun imageUrl(): String = imageUrl.getRequired("image_url")
+                    fun imageUrl(): java.util.Optional<String> = imageUrl.getOptional("image_url")
 
                     /**
-                     * Expected to always return the following:
-                     * ```java
-                     * JsonValue.from("input_image")
-                     * ```
-                     *
-                     * However, this method can be useful for debugging and logging (e.g. if the
-                     * server responded with an unexpected value).
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
                      */
-                    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+                    fun imageUrlOrThrow(): String = imageUrl.getRequired("image_url")
+
+                    /**
+                     * The schema requires this property. Returns empty if the JSON property is
+                     * missing or null.
+                     *
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                     */
+                    fun type(): java.util.Optional<JsonValue> {
+                        val raw = type
+                        return when {
+                            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                            !(raw == JsonValue.from("input_image")) ->
+                                throw OpenAIInvalidDataException("`type` is invalid")
+                            else -> java.util.Optional.of(raw)
+                        }
+                    }
+
+                    /**
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
+                     */
+                    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+                    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
                     /**
                      * The detail level of the image to be sent to the model. One of `high`, `low`,
-                     * `auto`, or `original`. Defaults to `auto`.
+                     * `auto`, or `original`. Defaults to `auto`. Returns empty if the JSON property
+                     * is missing or null.
                      *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   (e.g. if the server responded with an unexpected value).
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
                      */
-                    fun detail(): Optional<Detail> = detail.getOptional("detail")
+                    fun detail(): java.util.Optional<Detail> = detail.getOptional("detail")
+
+                    /**
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
+                     */
+                    fun detailOrThrow(): Detail = detail.getRequired("detail")
 
                     /**
                      * Returns the raw JSON value of [imageUrl].
@@ -1606,12 +1722,8 @@ private constructor(
                             return@apply
                         }
 
-                        imageUrl()
-                        _type().let {
-                            if (it != JsonValue.from("input_image")) {
-                                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                            }
-                        }
+                        imageUrlOrThrow()
+                        typeOrThrow()
                         detail().ifPresent { it.validate() }
                         validated = true
                     }

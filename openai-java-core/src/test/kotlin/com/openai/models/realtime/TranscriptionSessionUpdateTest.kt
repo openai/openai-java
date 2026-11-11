@@ -51,7 +51,7 @@ internal class TranscriptionSessionUpdateTest {
                 .build()
 
         assertThat(transcriptionSessionUpdate.session())
-            .isEqualTo(
+            .contains(
                 TranscriptionSessionUpdate.Session.builder()
                     .addInclude(
                         TranscriptionSessionUpdate.Session.Include

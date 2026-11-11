@@ -23,7 +23,7 @@ internal class ResponsePromptTest {
                 .version("version")
                 .build()
 
-        assertThat(responsePrompt.id()).isEqualTo("id")
+        assertThat(responsePrompt.id()).contains("id")
         assertThat(responsePrompt.variables())
             .contains(
                 ResponsePrompt.Variables.builder()

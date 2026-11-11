@@ -364,7 +364,7 @@ internal class StructuredChatCompletionCreateParamsTest {
 
         assertThat(params).isInstanceOf(StructuredChatCompletionCreateParams::class.java)
         assertThat(params.responseType).isEqualTo(X::class.java)
-        assertThat(body.messages())
+        assertThat(body.messagesOrThrow())
             .containsExactly(
                 ChatCompletionMessageParam.ofDeveloper(
                     ChatCompletionDeveloperMessageParam.builder().content("dev message").build()
@@ -373,7 +373,7 @@ internal class StructuredChatCompletionCreateParamsTest {
                     ChatCompletionSystemMessageParam.builder().content("sys message").build()
                 ),
             )
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_4_1)
+        assertThat(body.modelOrThrow()).isEqualTo(ChatModel.GPT_4_1)
     }
 
     @Test

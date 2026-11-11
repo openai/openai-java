@@ -18,10 +18,10 @@ internal class BetaComputerUsePreviewToolTest {
                 .environment(BetaComputerUsePreviewTool.Environment.WINDOWS)
                 .build()
 
-        assertThat(betaComputerUsePreviewTool.displayHeight()).isEqualTo(0L)
-        assertThat(betaComputerUsePreviewTool.displayWidth()).isEqualTo(0L)
+        assertThat(betaComputerUsePreviewTool.displayHeight()).contains(0L)
+        assertThat(betaComputerUsePreviewTool.displayWidth()).contains(0L)
         assertThat(betaComputerUsePreviewTool.environment())
-            .isEqualTo(BetaComputerUsePreviewTool.Environment.WINDOWS)
+            .contains(BetaComputerUsePreviewTool.Environment.WINDOWS)
 
         val jsonMapper = jsonMapper()
 

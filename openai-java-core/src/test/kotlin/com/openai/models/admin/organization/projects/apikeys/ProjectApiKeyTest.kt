@@ -44,12 +44,12 @@ internal class ProjectApiKeyTest {
                 .expiresAt(0L)
                 .build()
 
-        assertThat(projectApiKey.id()).isEqualTo("id")
-        assertThat(projectApiKey.createdAt()).isEqualTo(0L)
+        assertThat(projectApiKey.id()).contains("id")
+        assertThat(projectApiKey.createdAt()).contains(0L)
         assertThat(projectApiKey.lastUsedAt()).contains(0L)
-        assertThat(projectApiKey.name()).isEqualTo("name")
+        assertThat(projectApiKey.name()).contains("name")
         assertThat(projectApiKey.owner())
-            .isEqualTo(
+            .contains(
                 ProjectApiKey.Owner.builder()
                     .serviceAccount(
                         ProjectApiKey.Owner.ServiceAccount.builder()
@@ -72,8 +72,8 @@ internal class ProjectApiKeyTest {
                     .build()
             )
         assertThat(projectApiKey.ownerProjectAccess())
-            .isEqualTo(ProjectApiKey.OwnerProjectAccess.ACTIVE)
-        assertThat(projectApiKey.redactedValue()).isEqualTo("redacted_value")
+            .contains(ProjectApiKey.OwnerProjectAccess.ACTIVE)
+        assertThat(projectApiKey.redactedValue()).contains("redacted_value")
         assertThat(projectApiKey.expiresAt()).contains(0L)
 
         val jsonMapper = jsonMapper()

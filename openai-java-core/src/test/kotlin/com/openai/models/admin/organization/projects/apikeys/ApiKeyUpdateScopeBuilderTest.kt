@@ -61,8 +61,8 @@ internal class ApiKeyUpdateScopeBuilderTest {
 
     private fun assertCombinedUpdate(params: ApiKeyUpdateParams) {
         params._body().validate()
-        assertThat(params.expiresInSeconds()).isEqualTo(60L)
-        assertThat(params._body().expiresInSeconds()).isEqualTo(60L)
+        assertThat(params.expiresInSecondsOrThrow()).isEqualTo(60L)
+        assertThat(params._body().expiresInSecondsOrThrow()).isEqualTo(60L)
         assertThat(jsonMapper().readTree(jsonMapper().writeValueAsString(params._body())))
             .isEqualTo(
                 jsonMapper().readTree("""{"expires_in_seconds":60,"scopes":["api.all.read"]}""")

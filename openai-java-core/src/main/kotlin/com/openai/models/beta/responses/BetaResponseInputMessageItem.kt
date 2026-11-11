@@ -46,58 +46,92 @@ private constructor(
     ) : this(id, content, role, type, agent, status, mutableMapOf())
 
     /**
-     * The unique ID of the message input.
+     * The unique ID of the message input. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * A list of one or many input items to the model, containing different content types.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun content(): List<BetaResponseInputContent> = content.getRequired("content")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The role of the message input. One of `user`, `system`, or `developer`.
+     * A list of one or many input items to the model, containing different content types. The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun role(): Role = role.getRequired("role")
+    fun content(): java.util.Optional<List<BetaResponseInputContent>> =
+        content.getOptional("content")
 
     /**
-     * The type of the message input. Always set to `message`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("message")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun contentOrThrow(): List<BetaResponseInputContent> = content.getRequired("content")
 
     /**
-     * The agent that produced this item.
+     * The role of the message input. One of `user`, `system`, or `developer`. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun agent(): Optional<Agent> = agent.getOptional("agent")
+    fun role(): java.util.Optional<Role> = role.getOptional("role")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun roleOrThrow(): Role = role.getRequired("role")
+
+    /**
+     * The type of the message input. Always set to `message`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("message")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The agent that produced this item. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun agent(): java.util.Optional<Agent> = agent.getOptional("agent")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun agentOrThrow(): Agent = agent.getRequired("agent")
 
     /**
      * The status of item. One of `in_progress`, `completed`, or `incomplete`. Populated when items
-     * are returned via API.
+     * are returned via API. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): Optional<Status> = status.getOptional("status")
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): Status = status.getRequired("status")
 
     /**
      * Returns the raw JSON value of [id].
@@ -397,14 +431,10 @@ private constructor(
             return@apply
         }
 
-        id()
-        content().forEach { it.validate() }
-        role().validate()
-        _type().let {
-            if (it != JsonValue.from("message")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        idOrThrow()
+        contentOrThrow().forEach { it.validate() }
+        roleOrThrow().validate()
+        typeOrThrow()
         agent().ifPresent { it.validate() }
         status().ifPresent { it.validate() }
         validated = true
@@ -593,12 +623,18 @@ private constructor(
         ) : this(agentName, mutableMapOf())
 
         /**
-         * The canonical name of the agent that produced this item.
+         * The canonical name of the agent that produced this item. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun agentName(): String = agentName.getRequired("agent_name")
+        fun agentName(): java.util.Optional<String> = agentName.getOptional("agent_name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun agentNameOrThrow(): String = agentName.getRequired("agent_name")
 
         /**
          * Returns the raw JSON value of [agentName].
@@ -721,7 +757,7 @@ private constructor(
                 return@apply
             }
 
-            agentName()
+            agentNameOrThrow()
             validated = true
         }
 

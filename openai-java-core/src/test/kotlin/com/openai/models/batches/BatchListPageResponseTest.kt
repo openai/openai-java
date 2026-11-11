@@ -5,6 +5,7 @@ package com.openai.models.batches
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -76,7 +77,7 @@ internal class BatchListPageResponseTest {
                 .lastId("batch_abc456")
                 .build()
 
-        assertThat(batchListPageResponse.data())
+        assertThat(batchListPageResponse.data().getOrNull())
             .containsExactly(
                 Batch.builder()
                     .id("id")
@@ -132,7 +133,7 @@ internal class BatchListPageResponseTest {
                     )
                     .build()
             )
-        assertThat(batchListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(batchListPageResponse.hasMore()).contains(true)
         assertThat(batchListPageResponse.firstId()).contains("batch_abc123")
         assertThat(batchListPageResponse.lastId()).contains("batch_abc456")
 

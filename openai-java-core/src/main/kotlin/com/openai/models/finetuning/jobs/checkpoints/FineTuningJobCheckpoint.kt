@@ -60,66 +60,108 @@ private constructor(
     )
 
     /**
-     * The checkpoint identifier, which can be referenced in the API endpoints.
+     * The checkpoint identifier, which can be referenced in the API endpoints. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The Unix timestamp (in seconds) for when the checkpoint was created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The name of the fine-tuned checkpoint model that is created.
+     * The Unix timestamp (in seconds) for when the checkpoint was created. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun fineTunedModelCheckpoint(): String =
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * The name of the fine-tuned checkpoint model that is created. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun fineTunedModelCheckpoint(): java.util.Optional<String> =
+        fineTunedModelCheckpoint.getOptional("fine_tuned_model_checkpoint")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun fineTunedModelCheckpointOrThrow(): String =
         fineTunedModelCheckpoint.getRequired("fine_tuned_model_checkpoint")
 
     /**
-     * The name of the fine-tuning job that this checkpoint was created from.
+     * The name of the fine-tuning job that this checkpoint was created from. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun fineTuningJobId(): String = fineTuningJobId.getRequired("fine_tuning_job_id")
+    fun fineTuningJobId(): java.util.Optional<String> =
+        fineTuningJobId.getOptional("fine_tuning_job_id")
 
     /**
-     * Metrics at the step number during the fine-tuning job.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun metrics(): Metrics = metrics.getRequired("metrics")
+    fun fineTuningJobIdOrThrow(): String = fineTuningJobId.getRequired("fine_tuning_job_id")
 
     /**
-     * The object type, which is always "fine_tuning.job.checkpoint".
+     * Metrics at the step number during the fine-tuning job. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("fine_tuning.job.checkpoint")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun metrics(): java.util.Optional<Metrics> = metrics.getOptional("metrics")
 
     /**
-     * The step number that the checkpoint was created at.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun stepNumber(): Long = stepNumber.getRequired("step_number")
+    fun metricsOrThrow(): Metrics = metrics.getRequired("metrics")
+
+    /**
+     * The object type, which is always "fine_tuning.job.checkpoint". The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("fine_tuning.job.checkpoint")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * The step number that the checkpoint was created at. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun stepNumber(): java.util.Optional<Long> = stepNumber.getOptional("step_number")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun stepNumberOrThrow(): Long = stepNumber.getRequired("step_number")
 
     /**
      * Returns the raw JSON value of [id].
@@ -397,17 +439,13 @@ private constructor(
             return@apply
         }
 
-        id()
-        createdAt()
-        fineTunedModelCheckpoint()
-        fineTuningJobId()
-        metrics().validate()
-        _object_().let {
-            if (it != JsonValue.from("fine_tuning.job.checkpoint")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        stepNumber()
+        idOrThrow()
+        createdAtOrThrow()
+        fineTunedModelCheckpointOrThrow()
+        fineTuningJobIdOrThrow()
+        metricsOrThrow().validate()
+        object_OrThrow()
+        stepNumberOrThrow()
         validated = true
     }
 
@@ -481,49 +519,102 @@ private constructor(
         )
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun fullValidLoss(): Optional<Double> = fullValidLoss.getOptional("full_valid_loss")
+        fun fullValidLoss(): java.util.Optional<Double> =
+            fullValidLoss.getOptional("full_valid_loss")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun fullValidMeanTokenAccuracy(): Optional<Double> =
+        fun fullValidLossOrThrow(): Double = fullValidLoss.getRequired("full_valid_loss")
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun fullValidMeanTokenAccuracy(): java.util.Optional<Double> =
             fullValidMeanTokenAccuracy.getOptional("full_valid_mean_token_accuracy")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun step(): Optional<Double> = step.getOptional("step")
+        fun fullValidMeanTokenAccuracyOrThrow(): Double =
+            fullValidMeanTokenAccuracy.getRequired("full_valid_mean_token_accuracy")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun trainLoss(): Optional<Double> = trainLoss.getOptional("train_loss")
+        fun step(): java.util.Optional<Double> = step.getOptional("step")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun trainMeanTokenAccuracy(): Optional<Double> =
+        fun stepOrThrow(): Double = step.getRequired("step")
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun trainLoss(): java.util.Optional<Double> = trainLoss.getOptional("train_loss")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun trainLossOrThrow(): Double = trainLoss.getRequired("train_loss")
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun trainMeanTokenAccuracy(): java.util.Optional<Double> =
             trainMeanTokenAccuracy.getOptional("train_mean_token_accuracy")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun validLoss(): Optional<Double> = validLoss.getOptional("valid_loss")
+        fun trainMeanTokenAccuracyOrThrow(): Double =
+            trainMeanTokenAccuracy.getRequired("train_mean_token_accuracy")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun validMeanTokenAccuracy(): Optional<Double> =
+        fun validLoss(): java.util.Optional<Double> = validLoss.getOptional("valid_loss")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun validLossOrThrow(): Double = validLoss.getRequired("valid_loss")
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun validMeanTokenAccuracy(): java.util.Optional<Double> =
             validMeanTokenAccuracy.getOptional("valid_mean_token_accuracy")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun validMeanTokenAccuracyOrThrow(): Double =
+            validMeanTokenAccuracy.getRequired("valid_mean_token_accuracy")
 
         /**
          * Returns the raw JSON value of [fullValidLoss].

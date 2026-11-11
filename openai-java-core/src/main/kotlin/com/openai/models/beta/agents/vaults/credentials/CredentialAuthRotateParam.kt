@@ -346,43 +346,71 @@ private constructor(
         ) : this(type, accessToken, expiresAt, refresh, mutableMapOf())
 
         /**
-         * The type of the object. Always `mcp_oauth`.
+         * The type of the object. Always `mcp_oauth`. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("mcp_oauth")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("mcp_oauth")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
 
         /**
-         * A write-only replacement OAuth access token.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun accessToken(): Optional<String> = accessToken.getOptional("access_token")
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+        /**
+         * A write-only replacement OAuth access token. Returns empty if the JSON property is
+         * missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun accessToken(): java.util.Optional<String> = accessToken.getOptional("access_token")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun accessTokenOrThrow(): String = accessToken.getRequired("access_token")
 
         /**
          * The replacement expiry as an RFC 3339 timestamp, or `null` to clear it. Omitting this
          * field preserves the expiry unless a new access token is supplied, in which case the
-         * expiry is cleared.
+         * expiry is cleared. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun expiresAt(): Optional<String> = expiresAt.getOptional("expires_at")
+        fun expiresAt(): java.util.Optional<String> = expiresAt.getOptional("expires_at")
 
         /**
-         * Optional write-only refresh-token and client-secret updates.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun refresh(): Optional<Refresh> = refresh.getOptional("refresh")
+        fun expiresAtOrThrow(): String = expiresAt.getRequired("expires_at")
+
+        /**
+         * Optional write-only refresh-token and client-secret updates. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun refresh(): java.util.Optional<Refresh> = refresh.getOptional("refresh")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun refreshOrThrow(): Refresh = refresh.getRequired("refresh")
 
         /**
          * Returns the raw JSON value of [accessToken].
@@ -572,11 +600,7 @@ private constructor(
                 return@apply
             }
 
-            _type().let {
-                if (it != JsonValue.from("mcp_oauth")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            typeOrThrow()
             accessToken()
             expiresAt()
             refresh().ifPresent { it.validate() }
@@ -628,30 +652,50 @@ private constructor(
 
             /**
              * The replacement refresh token. Omit or pass `null` to keep the stored token. This
-             * secret is never returned in resources.
+             * secret is never returned in resources. Returns empty if the JSON property is missing
+             * or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun refreshToken(): Optional<String> = refreshToken.getOptional("refresh_token")
+            fun refreshToken(): java.util.Optional<String> =
+                refreshToken.getOptional("refresh_token")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun refreshTokenOrThrow(): String = refreshToken.getRequired("refresh_token")
 
             /**
              * Replacement space-separated OAuth scopes for refresh requests. Omit to keep the
-             * scopes, or pass `null` to stop sending a scope parameter.
+             * scopes, or pass `null` to stop sending a scope parameter. Returns empty if the JSON
+             * property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun scope(): Optional<String> = scope.getOptional("scope")
+            fun scope(): java.util.Optional<String> = scope.getOptional("scope")
 
             /**
-             * Client-secret updates for the existing token endpoint authentication method.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun tokenEndpointAuth(): Optional<McpOAuthTokenEndpointAuthRotateParam> =
+            fun scopeOrThrow(): String = scope.getRequired("scope")
+
+            /**
+             * Client-secret updates for the existing token endpoint authentication method. Returns
+             * empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun tokenEndpointAuth(): java.util.Optional<McpOAuthTokenEndpointAuthRotateParam> =
                 tokenEndpointAuth.getOptional("token_endpoint_auth")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun tokenEndpointAuthOrThrow(): McpOAuthTokenEndpointAuthRotateParam =
+                tokenEndpointAuth.getRequired("token_endpoint_auth")
 
             /**
              * Returns the raw JSON value of [refreshToken].
@@ -960,25 +1004,42 @@ private constructor(
         ) : this(token, type, mutableMapOf())
 
         /**
-         * The replacement bearer token. This secret is never returned in credential resources.
+         * The replacement bearer token. This secret is never returned in credential resources. The
+         * schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun token(): String = token.getRequired("token")
+        fun token(): java.util.Optional<String> = token.getOptional("token")
 
         /**
-         * The type of the object. Always `static_bearer`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("static_bearer")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun tokenOrThrow(): String = token.getRequired("token")
+
+        /**
+         * The type of the object. Always `static_bearer`. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("static_bearer")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [token].
@@ -1123,12 +1184,8 @@ private constructor(
                 return@apply
             }
 
-            token()
-            _type().let {
-                if (it != JsonValue.from("static_bearer")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            tokenOrThrow()
+            typeOrThrow()
             validated = true
         }
 
@@ -1193,34 +1250,50 @@ private constructor(
         /**
          * The write-only replacement secret. Never returned in credential resources or supplied
          * directly to sandbox code. Must be nonempty and must not contain carriage returns,
-         * newlines, or NUL bytes.
+         * newlines, or NUL bytes. The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun secretValue(): String {
+        fun secretValue(): java.util.Optional<String> =
             if (
                 secretValue.asUnknown().isPresent &&
                     !secretValue.isMissing() &&
                     !secretValue.isNull()
-            ) {
+            )
                 throw OpenAIInvalidDataException("`secret_value` is invalid, received [REDACTED]")
+            else secretValue.getOptional("secret_value")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun secretValueOrThrow(): String =
+            secretValue().orElseGet { secretValue.getRequired("secret_value") }
+
+        /**
+         * The type of the object. Always `environment_variable`. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("environment_variable")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
             }
-            return secretValue.getRequired("secret_value")
         }
 
         /**
-         * The type of the object. Always `environment_variable`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("environment_variable")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [secretValue].
@@ -1375,12 +1448,8 @@ private constructor(
                 return@apply
             }
 
-            secretValue()
-            _type().let {
-                if (it != JsonValue.from("environment_variable")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            secretValueOrThrow()
+            typeOrThrow()
             validated = true
         }
 

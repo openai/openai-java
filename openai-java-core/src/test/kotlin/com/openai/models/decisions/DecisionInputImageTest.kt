@@ -18,7 +18,7 @@ internal class DecisionInputImageTest {
                 .promptCacheBreakpoint(DecisionPromptCacheBreakpoint.builder().build())
                 .build()
 
-        assertThat(decisionInputImage.imageUrl()).isEqualTo("https://")
+        assertThat(decisionInputImage.imageUrl()).contains("https://")
         assertThat(decisionInputImage.detail()).contains(DecisionInputImage.Detail.LOW)
         assertThat(decisionInputImage.promptCacheBreakpoint())
             .contains(DecisionPromptCacheBreakpoint.builder().build())

@@ -22,10 +22,10 @@ internal class FineTuningJobEventTest {
                 .type(FineTuningJobEvent.Type.MESSAGE)
                 .build()
 
-        assertThat(fineTuningJobEvent.id()).isEqualTo("id")
-        assertThat(fineTuningJobEvent.createdAt()).isEqualTo(0L)
-        assertThat(fineTuningJobEvent.level()).isEqualTo(FineTuningJobEvent.Level.INFO)
-        assertThat(fineTuningJobEvent.message()).isEqualTo("message")
+        assertThat(fineTuningJobEvent.id()).contains("id")
+        assertThat(fineTuningJobEvent.createdAt()).contains(0L)
+        assertThat(fineTuningJobEvent.level()).contains(FineTuningJobEvent.Level.INFO)
+        assertThat(fineTuningJobEvent.message()).contains("message")
         assertThat(fineTuningJobEvent._data()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(fineTuningJobEvent.type()).contains(FineTuningJobEvent.Type.MESSAGE)
 

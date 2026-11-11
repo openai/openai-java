@@ -95,7 +95,7 @@ internal class ForkSessionStartEventTest {
                 .build()
 
         assertThat(forkSessionStartEvent.session())
-            .isEqualTo(
+            .contains(
                 ForkSessionConfig.builder()
                     .audio(
                         ForkSessionConfig.Audio.builder()

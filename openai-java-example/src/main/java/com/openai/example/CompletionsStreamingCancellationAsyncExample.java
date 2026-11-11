@@ -26,8 +26,8 @@ public final class CompletionsStreamingCancellationAsyncExample {
         AsyncStreamResponse<ChatCompletionChunk> streamResponse =
                 client.chat().completions().createStreaming(createParams);
         streamResponse
-                .subscribe(completion -> completion.choices().stream()
-                        .flatMap(choice -> choice.delta().content().stream())
+                .subscribe(completion -> completion.choicesOrThrow().stream()
+                        .flatMap(choice -> choice.deltaOrThrow().content().stream())
                         .forEach(text -> {
                             System.out.print(text);
                             if (text.contains("SDK")) {

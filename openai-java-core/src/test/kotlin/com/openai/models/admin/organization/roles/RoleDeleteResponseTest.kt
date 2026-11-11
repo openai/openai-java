@@ -13,8 +13,8 @@ internal class RoleDeleteResponseTest {
     fun createAndRoundtrip() {
         val roleDeleteResponse = RoleDeleteResponse.builder().id("id").deleted(true).build()
 
-        assertThat(roleDeleteResponse.id()).isEqualTo("id")
-        assertThat(roleDeleteResponse.deleted()).isEqualTo(true)
+        assertThat(roleDeleteResponse.id()).contains("id")
+        assertThat(roleDeleteResponse.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

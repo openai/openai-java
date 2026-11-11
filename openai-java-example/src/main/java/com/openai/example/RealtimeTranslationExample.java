@@ -79,7 +79,7 @@ public final class RealtimeTranslationExample {
                 // In an application, pass this secret to the client over your authenticated channel.
                 var options = ClientOptions.builder()
                         .httpClient(http)
-                        .apiKey(secret.value())
+                        .apiKey(secret.valueOrThrow())
                         .timeout(Duration.ofSeconds(20))
                         .logLevel(LogLevel.OFF)
                         .build();
@@ -111,7 +111,7 @@ public final class RealtimeTranslationExample {
                             }
                             if (event.isSessionOutputTranscriptDelta()) {
                                 System.out.print(
-                                        event.asSessionOutputTranscriptDelta().delta());
+                                        event.asSessionOutputTranscriptDelta().deltaOrThrow());
                             }
                             // event.asSessionOutputAudioDelta().delta() contains translated audio
                             // when event.isSessionOutputAudioDelta() is true.

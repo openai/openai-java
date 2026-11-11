@@ -100,8 +100,8 @@ internal class SessionCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.user()).isEqualTo("x")
-        assertThat(body.workflow())
+        assertThat(body.userOrThrow()).isEqualTo("x")
+        assertThat(body.workflowOrThrow())
             .isEqualTo(
                 ChatSessionWorkflowParam.builder()
                     .id("id")
@@ -153,7 +153,8 @@ internal class SessionCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.user()).isEqualTo("x")
-        assertThat(body.workflow()).isEqualTo(ChatSessionWorkflowParam.builder().id("id").build())
+        assertThat(body.userOrThrow()).isEqualTo("x")
+        assertThat(body.workflowOrThrow())
+            .isEqualTo(ChatSessionWorkflowParam.builder().id("id").build())
     }
 }

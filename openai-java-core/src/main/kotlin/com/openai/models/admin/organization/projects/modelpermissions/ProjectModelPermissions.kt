@@ -40,33 +40,53 @@ private constructor(
     ) : this(mode, modelIds, object_, mutableMapOf())
 
     /**
-     * Whether the project uses an allowlist or a denylist.
+     * Whether the project uses an allowlist or a denylist. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun mode(): Mode = mode.getRequired("mode")
+    fun mode(): java.util.Optional<Mode> = mode.getOptional("mode")
 
     /**
-     * The model IDs included in the model permissions policy.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun modelIds(): List<String> = modelIds.getRequired("model_ids")
+    fun modeOrThrow(): Mode = mode.getRequired("mode")
 
     /**
-     * The object type, which is always `project.model_permissions`.
+     * The model IDs included in the model permissions policy. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("project.model_permissions")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun modelIds(): java.util.Optional<List<String>> = modelIds.getOptional("model_ids")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun modelIdsOrThrow(): List<String> = modelIds.getRequired("model_ids")
+
+    /**
+     * The object type, which is always `project.model_permissions`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("project.model_permissions")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * Returns the raw JSON value of [mode].
@@ -250,13 +270,9 @@ private constructor(
             return@apply
         }
 
-        mode().validate()
-        modelIds()
-        _object_().let {
-            if (it != JsonValue.from("project.model_permissions")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
+        modeOrThrow().validate()
+        modelIdsOrThrow()
+        object_OrThrow()
         validated = true
     }
 

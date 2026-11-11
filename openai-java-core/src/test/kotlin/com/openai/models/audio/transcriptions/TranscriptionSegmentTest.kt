@@ -4,6 +4,7 @@ package com.openai.models.audio.transcriptions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -25,16 +26,16 @@ internal class TranscriptionSegmentTest {
                 .addToken(0L)
                 .build()
 
-        assertThat(transcriptionSegment.id()).isEqualTo(0L)
-        assertThat(transcriptionSegment.avgLogprob()).isEqualTo(0.0f)
-        assertThat(transcriptionSegment.compressionRatio()).isEqualTo(0.0f)
-        assertThat(transcriptionSegment.end()).isEqualTo(0.0)
-        assertThat(transcriptionSegment.noSpeechProb()).isEqualTo(0.0f)
-        assertThat(transcriptionSegment.seek()).isEqualTo(0L)
-        assertThat(transcriptionSegment.start()).isEqualTo(0.0)
-        assertThat(transcriptionSegment.temperature()).isEqualTo(0.0f)
-        assertThat(transcriptionSegment.text()).isEqualTo("text")
-        assertThat(transcriptionSegment.tokens()).containsExactly(0L)
+        assertThat(transcriptionSegment.id()).contains(0L)
+        assertThat(transcriptionSegment.avgLogprob()).contains(0.0f)
+        assertThat(transcriptionSegment.compressionRatio()).contains(0.0f)
+        assertThat(transcriptionSegment.end()).contains(0.0)
+        assertThat(transcriptionSegment.noSpeechProb()).contains(0.0f)
+        assertThat(transcriptionSegment.seek()).contains(0L)
+        assertThat(transcriptionSegment.start()).contains(0.0)
+        assertThat(transcriptionSegment.temperature()).contains(0.0f)
+        assertThat(transcriptionSegment.text()).contains("text")
+        assertThat(transcriptionSegment.tokens().getOrNull()).containsExactly(0L)
 
         val jsonMapper = jsonMapper()
 

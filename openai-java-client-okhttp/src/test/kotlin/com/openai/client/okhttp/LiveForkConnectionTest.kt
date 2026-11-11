@@ -117,7 +117,9 @@ class LiveForkConnectionTest {
                         socket.send(
                             """{"type":"session.started","event_id":"fork-ready","session":{"id":"new-fork"}}"""
                         )
-                        assertThat(read.get(8, TimeUnit.SECONDS).asSessionStarted().eventId())
+                        assertThat(
+                                read.get(8, TimeUnit.SECONDS).asSessionStarted().eventIdOrThrow()
+                            )
                             .isEqualTo("fork-ready")
                         // This is a fork event type: do not coerce via the primary union.
                         socket.send(
@@ -388,7 +390,7 @@ class LiveForkConnectionTest {
                         .send(
                             """{"type":"session.closed","event_id":"closed","session":{},"reason":"client_request"}"""
                         )
-                    assertThat(result.get(8, TimeUnit.SECONDS).asSessionStarted().eventId())
+                    assertThat(result.get(8, TimeUnit.SECONDS).asSessionStarted().eventIdOrThrow())
                         .isEqualTo("ready")
                 }
             }

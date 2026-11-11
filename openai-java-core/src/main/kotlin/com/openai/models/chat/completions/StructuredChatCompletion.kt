@@ -22,38 +22,60 @@ class StructuredChatCompletion<T : Any>(
     @get:JvmName("rawChatCompletion") val rawChatCompletion: ChatCompletion,
 ) {
     /** @see ChatCompletion.id */
-    fun id(): String = rawChatCompletion.id()
+    fun id(): Optional<String> = rawChatCompletion.id()
+
+    fun idOrThrow(): String = rawChatCompletion.idOrThrow()
 
     private val choices by lazy {
         rawChatCompletion._choices().map { choices -> choices.map { Choice<T>(responseType, it) } }
     }
 
     /** @see ChatCompletion.choices */
-    fun choices(): List<Choice<T>> = choices.getRequired("choices")
+    fun choices(): Optional<List<Choice<T>>> = choices.getOptional("choices")
+
+    fun choicesOrThrow(): List<Choice<T>> = choices.getRequired("choices")
 
     /** @see ChatCompletion.created */
-    fun created(): Long = rawChatCompletion.created()
+    fun created(): Optional<Long> = rawChatCompletion.created()
+
+    fun createdOrThrow(): Long = rawChatCompletion.createdOrThrow()
 
     /** @see ChatCompletion.model */
-    fun model(): String = rawChatCompletion.model()
+    fun model(): Optional<String> = rawChatCompletion.model()
+
+    fun modelOrThrow(): String = rawChatCompletion.modelOrThrow()
 
     /** @see ChatCompletion.metadata */
     fun metadata(): Optional<ChatCompletion.Metadata> = rawChatCompletion.metadata()
 
+    fun metadataOrThrow(): ChatCompletion.Metadata = rawChatCompletion.metadataOrThrow()
+
     /** @see ChatCompletion.moderation */
     fun moderation(): Optional<ChatCompletion.Moderation> = rawChatCompletion.moderation()
 
+    fun moderationOrThrow(): ChatCompletion.Moderation = rawChatCompletion.moderationOrThrow()
+
     /** @see ChatCompletion._object_ */
-    fun _object_(): JsonValue = rawChatCompletion._object_()
+    fun _object_(): JsonField<JsonValue> = rawChatCompletion._object_()
+
+    fun object_(): Optional<JsonValue> = rawChatCompletion.object_()
+
+    fun object_OrThrow(): JsonValue = rawChatCompletion.object_OrThrow()
 
     /** @see ChatCompletion.serviceTier */
     fun serviceTier(): Optional<ServiceTier> = rawChatCompletion.serviceTier()
 
+    fun serviceTierOrThrow(): ServiceTier = rawChatCompletion.serviceTierOrThrow()
+
     /** @see ChatCompletion.systemFingerprint */
     fun systemFingerprint(): Optional<String> = rawChatCompletion.systemFingerprint()
 
+    fun systemFingerprintOrThrow(): String = rawChatCompletion.systemFingerprintOrThrow()
+
     /** @see ChatCompletion.usage */
     fun usage(): Optional<CompletionUsage> = rawChatCompletion.usage()
+
+    fun usageOrThrow(): CompletionUsage = rawChatCompletion.usageOrThrow()
 
     /** @see ChatCompletion._id */
     fun _id(): JsonField<String> = rawChatCompletion._id()
@@ -91,13 +113,19 @@ class StructuredChatCompletion<T : Any>(
         @get:JvmName("rawChoice") val rawChoice: ChatCompletion.Choice,
     ) {
         /** @see ChatCompletion.Choice.finishReason */
-        fun finishReason(): FinishReason = rawChoice.finishReason()
+        fun finishReason(): Optional<FinishReason> = rawChoice.finishReason()
+
+        fun finishReasonOrThrow(): FinishReason = rawChoice.finishReasonOrThrow()
 
         /** @see ChatCompletion.Choice.index */
-        fun index(): Long = rawChoice.index()
+        fun index(): Optional<Long> = rawChoice.index()
+
+        fun indexOrThrow(): Long = rawChoice.indexOrThrow()
 
         /** @see ChatCompletion.Choice.logprobs */
         fun logprobs(): Optional<Logprobs> = rawChoice.logprobs()
+
+        fun logprobsOrThrow(): Logprobs = rawChoice.logprobsOrThrow()
 
         /** @see ChatCompletion.Choice._finishReason */
         fun _finishReason(): JsonField<FinishReason> = rawChoice._finishReason()
@@ -107,7 +135,9 @@ class StructuredChatCompletion<T : Any>(
         }
 
         /** @see ChatCompletion.Choice.message */
-        fun message(): StructuredChatCompletionMessage<T> = message.getRequired("message")
+        fun message(): Optional<StructuredChatCompletionMessage<T>> = message.getOptional("message")
+
+        fun messageOrThrow(): StructuredChatCompletionMessage<T> = message.getRequired("message")
 
         /** @see ChatCompletion.Choice._index */
         fun _index(): JsonField<Long> = rawChoice._index()
@@ -123,7 +153,7 @@ class StructuredChatCompletion<T : Any>(
 
         /** @see ChatCompletion.Choice.validate */
         fun validate(): Choice<T> = apply {
-            message().validate()
+            messageOrThrow().validate()
             rawChoice.validate()
         }
 
@@ -156,7 +186,7 @@ class StructuredChatCompletion<T : Any>(
 
     /** @see ChatCompletion.validate */
     fun validate() = apply {
-        choices().forEach { it.validate() }
+        choicesOrThrow().forEach { it.validate() }
         rawChatCompletion.validate()
     }
 

@@ -18,9 +18,9 @@ internal class ResponseImageGenCallGeneratingEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseImageGenCallGeneratingEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseImageGenCallGeneratingEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseImageGenCallGeneratingEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseImageGenCallGeneratingEvent.itemId()).contains("item_id")
+        assertThat(responseImageGenCallGeneratingEvent.outputIndex()).contains(0L)
+        assertThat(responseImageGenCallGeneratingEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

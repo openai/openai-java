@@ -14,9 +14,9 @@ internal class BetaLocalSkillTest {
         val betaLocalSkill =
             BetaLocalSkill.builder().description("description").name("name").path("path").build()
 
-        assertThat(betaLocalSkill.description()).isEqualTo("description")
-        assertThat(betaLocalSkill.name()).isEqualTo("name")
-        assertThat(betaLocalSkill.path()).isEqualTo("path")
+        assertThat(betaLocalSkill.description()).contains("description")
+        assertThat(betaLocalSkill.name()).contains("name")
+        assertThat(betaLocalSkill.path()).contains("path")
 
         val jsonMapper = jsonMapper()
 

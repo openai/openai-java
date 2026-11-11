@@ -59,13 +59,11 @@ private constructor(
 
     fun sessionId(): Optional<String> = Optional.ofNullable(sessionId)
 
-    /**
-     * Model and startup configuration for the Live session that answers the incoming SIP call.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun session(): Session = body.session()
+    /** @see Body.session */
+    fun session(): java.util.Optional<Session> = body.session()
+
+    /** @see Body.sessionOrThrow */
+    fun sessionOrThrow(): Session = body.sessionOrThrow()
 
     /**
      * Returns the raw JSON value of [session].
@@ -305,11 +303,17 @@ private constructor(
 
         /**
          * Model and startup configuration for the Live session that answers the incoming SIP call.
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun session(): Session = session.getRequired("session")
+        fun session(): java.util.Optional<Session> = session.getOptional("session")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun sessionOrThrow(): Session = session.getRequired("session")
 
         /**
          * Returns the raw JSON value of [session].
@@ -435,7 +439,7 @@ private constructor(
                 return@apply
             }
 
-            session().validate()
+            sessionOrThrow().validate()
             validated = true
         }
 
@@ -520,53 +524,88 @@ private constructor(
         )
 
         /**
-         * The Live model to use for the accepted call.
+         * The Live model to use for the accepted call. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun model(): Model = model.getRequired("model")
+        fun model(): java.util.Optional<Model> = model.getOptional("model")
 
         /**
-         * The session type. Always `live`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("live")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun modelOrThrow(): Model = model.getRequired("model")
+
+        /**
+         * The session type. Always `live`. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("live")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Startup audio output configuration. SIP negotiates the media format; audio.format is only
-         * accepted for primary WebSockets. Voice cannot change after startup.
+         * accepted for primary WebSockets. Voice cannot change after startup. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun audio(): Optional<Audio> = audio.getOptional("audio")
+        fun audio(): java.util.Optional<Audio> = audio.getOptional("audio")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun audioOrThrow(): Audio = audio.getRequired("audio")
 
         /**
          * Who handles tasks delegated by the Live model. Omitted or null selects your application;
-         * use `responses` or `decisions` to delegate to the corresponding API.
+         * use `responses` or `decisions` to delegate to the corresponding API. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun delegation(): Optional<Delegation> = delegation.getOptional("delegation")
+        fun delegation(): java.util.Optional<Delegation> = delegation.getOptional("delegation")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun delegationOrThrow(): Delegation = delegation.getRequired("delegation")
 
         /**
          * Ordered text-only history supplied before startup. Supports developer, user, and
          * assistant messages with one text part each; at most 128 messages and a configured
-         * rendered-token limit (8,192 by default).
+         * rendered-token limit (8,192 by default). Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun input(): Optional<List<InitialItem>> = input.getOptional("input")
+        fun input(): java.util.Optional<List<InitialItem>> = input.getOptional("input")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun inputOrThrow(): List<InitialItem> = input.getRequired("input")
 
         /**
          * Frontend instructions for voice, conversation, interruptions, and when to delegate. Start
@@ -575,31 +614,47 @@ private constructor(
          * business rules and tool workflows in a separate
          * [backend prompt](https://developers.openai.com/api/docs/guides/live-delegation#start-with-your-existing-backend-prompt).
          * Limited to 16,384 client-supplied tokens. Omitted or blank instructions use server
-         * defaults. Immutable after startup.
+         * defaults. Immutable after startup. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun instructions(): Optional<String> = instructions.getOptional("instructions")
+        fun instructions(): java.util.Optional<String> = instructions.getOptional("instructions")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun instructionsOrThrow(): String = instructions.getRequired("instructions")
 
         /**
          * Whether to store the session for later forking and recording download. Defaults to false
-         * for new sessions.
+         * for new sessions. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun store(): Optional<Boolean> = store.getOptional("store")
+        fun store(): java.util.Optional<Boolean> = store.getOptional("store")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun storeOrThrow(): Boolean = store.getRequired("store")
 
         /**
          * At most one Decisions trigger per transcript event type. Triggers run independently of
          * delegation. On update, omit triggers to keep the current configuration, send a list to
-         * replace it, or send an empty list to disable triggers.
+         * replace it, or send an empty list to disable triggers. Returns empty if the JSON property
+         * is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun triggers(): Optional<List<DecisionTrigger>> = triggers.getOptional("triggers")
+        fun triggers(): java.util.Optional<List<DecisionTrigger>> = triggers.getOptional("triggers")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun triggersOrThrow(): List<DecisionTrigger> = triggers.getRequired("triggers")
 
         /**
          * Returns the raw JSON value of [model].
@@ -1018,12 +1073,8 @@ private constructor(
                 return@apply
             }
 
-            model()
-            _type().let {
-                if (it != JsonValue.from("live")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            modelOrThrow()
+            typeOrThrow()
             audio().ifPresent { it.validate() }
             delegation().ifPresent { it.validate() }
             input().ifPresent { it.forEach { it.validate() } }
@@ -1214,12 +1265,17 @@ private constructor(
 
             /**
              * Settings for speech generated by the Live model. Choose the voice before starting the
-             * session.
+             * session. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun output(): Optional<Output> = output.getOptional("output")
+            fun output(): java.util.Optional<Output> = output.getOptional("output")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun outputOrThrow(): Output = output.getRequired("output")
 
             /**
              * Returns the raw JSON value of [output].
@@ -1375,12 +1431,18 @@ private constructor(
 
                 /**
                  * The voice used for Live speech, as a built-in voice name or a custom voice object
-                 * containing its ID. Defaults to `marin` and cannot change after startup.
+                 * containing its ID. Defaults to `marin` and cannot change after startup. Returns
+                 * empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun voice(): Optional<Voice> = voice.getOptional("voice")
+                fun voice(): java.util.Optional<Voice> = voice.getOptional("voice")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun voiceOrThrow(): Voice = voice.getRequired("voice")
 
                 /**
                  * Returns the raw JSON value of [voice].
@@ -2116,26 +2178,45 @@ private constructor(
 
                 /**
                  * Backend model, prompt, and tools used when the Live session delegates a task to
-                 * Responses.
+                 * Responses. The schema requires this property. Returns empty if the JSON property
+                 * is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun responses(): ResponsesDelegationConfig = responses.getRequired("responses")
+                fun responses(): java.util.Optional<ResponsesDelegationConfig> =
+                    responses.getOptional("responses")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun responsesOrThrow(): ResponsesDelegationConfig =
+                    responses.getRequired("responses")
 
                 /**
                  * The delegation owner. Always `responses` for tasks handled by the Responses API.
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
                  *
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("responses")
-                 * ```
-                 *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+                fun type(): java.util.Optional<JsonValue> {
+                    val raw = type
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("responses")) ->
+                            throw OpenAIInvalidDataException("`type` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
                 /**
                  * Milliseconds to wait before requesting an automatic spoken acknowledgement for a
@@ -2143,13 +2224,20 @@ private constructor(
                  * thinking appended to the session cancels all pending acknowledgements, including
                  * those for other delegations. Defaults to 400 for Decisions sessions and 0
                  * (request immediately) for other sessions. Omission in a session update preserves
-                 * the current value. Updates apply to subsequent delegations.
+                 * the current value. Updates apply to subsequent delegations. Returns empty if the
+                 * JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun acknowledgementDelayMs(): Optional<Long> =
+                fun acknowledgementDelayMs(): java.util.Optional<Long> =
                     acknowledgementDelayMs.getOptional("acknowledgement_delay_ms")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun acknowledgementDelayMsOrThrow(): Long =
+                    acknowledgementDelayMs.getRequired("acknowledgement_delay_ms")
 
                 /**
                  * Returns the raw JSON value of [responses].
@@ -2345,12 +2433,8 @@ private constructor(
                         return@apply
                     }
 
-                    responses().validate()
-                    _type().let {
-                        if (it != JsonValue.from("responses")) {
-                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                        }
-                    }
+                    responsesOrThrow().validate()
+                    typeOrThrow()
                     acknowledgementDelayMs()
                     validated = true
                 }
@@ -2418,35 +2502,63 @@ private constructor(
                 ) : this(decisions, type, acknowledgementDelayMs, mutableMapOf())
 
                 /**
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun decisions(): DecisionsDelegationConfig = decisions.getRequired("decisions")
+                fun decisions(): java.util.Optional<DecisionsDelegationConfig> =
+                    decisions.getOptional("decisions")
 
                 /**
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("decisions")
-                 * ```
-                 *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+                fun decisionsOrThrow(): DecisionsDelegationConfig =
+                    decisions.getRequired("decisions")
+
+                /**
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun type(): java.util.Optional<JsonValue> {
+                    val raw = type
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("decisions")) ->
+                            throw OpenAIInvalidDataException("`type` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
                 /**
                  * Milliseconds to wait before requesting an automatic spoken acknowledgement for a
                  * delegation. The model may still speak before this delay. Any commentary or
                  * thinking appended to the session cancels all pending acknowledgements, including
                  * those for other delegations. Defaults to 400. Updates apply to subsequent
-                 * delegations.
+                 * delegations. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun acknowledgementDelayMs(): Optional<Long> =
+                fun acknowledgementDelayMs(): java.util.Optional<Long> =
                     acknowledgementDelayMs.getOptional("acknowledgement_delay_ms")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun acknowledgementDelayMsOrThrow(): Long =
+                    acknowledgementDelayMs.getRequired("acknowledgement_delay_ms")
 
                 /**
                  * Returns the raw JSON value of [decisions].
@@ -2637,12 +2749,8 @@ private constructor(
                         return@apply
                     }
 
-                    decisions().validate()
-                    _type().let {
-                        if (it != JsonValue.from("decisions")) {
-                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                        }
-                    }
+                    decisionsOrThrow().validate()
+                    typeOrThrow()
                     acknowledgementDelayMs()
                     validated = true
                 }

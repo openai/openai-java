@@ -28,7 +28,7 @@ internal class ResponseConfigurationUpdateItemTest {
                 )
                 .build()
 
-        assertThat(responseConfigurationUpdateItem.id()).isEqualTo("cnfu_123")
+        assertThat(responseConfigurationUpdateItem.id()).contains("cnfu_123")
         assertThat(responseConfigurationUpdateItem.reasoning())
             .contains(
                 ResponseConfigurationUpdateItem.Reasoning.builder()

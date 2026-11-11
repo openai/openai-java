@@ -13,8 +13,8 @@ internal class AgentDeletedTest {
     fun createAndRoundtrip() {
         val agentDeleted = AgentDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(agentDeleted.id()).isEqualTo("id")
-        assertThat(agentDeleted.deleted()).isEqualTo(true)
+        assertThat(agentDeleted.id()).contains("id")
+        assertThat(agentDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

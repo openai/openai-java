@@ -13,7 +13,7 @@ internal class InputTokenCountResponseTest {
     fun createAndRoundtrip() {
         val inputTokenCountResponse = InputTokenCountResponse.builder().inputTokens(123L).build()
 
-        assertThat(inputTokenCountResponse.inputTokens()).isEqualTo(123L)
+        assertThat(inputTokenCountResponse.inputTokens()).contains(123L)
 
         val jsonMapper = jsonMapper()
 

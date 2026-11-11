@@ -33,9 +33,9 @@ internal class ResponseUsageTest {
                 .totalTokens(0L)
                 .build()
 
-        assertThat(responseUsage.inputTokens()).isEqualTo(0L)
+        assertThat(responseUsage.inputTokens()).contains(0L)
         assertThat(responseUsage.inputTokensDetails())
-            .isEqualTo(
+            .contains(
                 ResponseUsage.InputTokensDetails.builder()
                     .cacheWriteTokens(0L)
                     .cachedTokens(0L)
@@ -47,10 +47,10 @@ internal class ResponseUsageTest {
                     )
                     .build()
             )
-        assertThat(responseUsage.outputTokens()).isEqualTo(0L)
+        assertThat(responseUsage.outputTokens()).contains(0L)
         assertThat(responseUsage.outputTokensDetails())
-            .isEqualTo(ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
-        assertThat(responseUsage.totalTokens()).isEqualTo(0L)
+            .contains(ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
+        assertThat(responseUsage.totalTokens()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

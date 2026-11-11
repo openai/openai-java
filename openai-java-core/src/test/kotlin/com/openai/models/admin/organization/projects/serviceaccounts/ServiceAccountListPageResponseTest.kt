@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.projects.serviceaccounts
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -26,7 +27,7 @@ internal class ServiceAccountListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(serviceAccountListPageResponse.data())
+        assertThat(serviceAccountListPageResponse.data().getOrNull())
             .containsExactly(
                 ProjectServiceAccount.builder()
                     .id("id")
@@ -35,7 +36,7 @@ internal class ServiceAccountListPageResponseTest {
                     .role(ProjectServiceAccount.Role.OWNER)
                     .build()
             )
-        assertThat(serviceAccountListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(serviceAccountListPageResponse.hasMore()).contains(true)
         assertThat(serviceAccountListPageResponse.firstId()).contains("first_id")
         assertThat(serviceAccountListPageResponse.lastId()).contains("last_id")
 

@@ -50,23 +50,33 @@ private constructor(
 
     /**
      * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or `pcm16`.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun format(): Format = format.getRequired("format")
+    fun format(): java.util.Optional<Format> = format.getOptional("format")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun formatOrThrow(): Format = format.getRequired("format")
 
     /**
      * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`, `ballad`,
      * `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer`, `marin`, and `cedar`. You may
      * also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`. Custom
      * voices must be created from audio samples. Voices created from text prompts are supported
-     * only in Live.
+     * only in Live. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun voice(): Voice = voice.getRequired("voice")
+    fun voice(): java.util.Optional<Voice> = voice.getOptional("voice")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun voiceOrThrow(): Voice = voice.getRequired("voice")
 
     /**
      * Returns the raw JSON value of [format].
@@ -231,8 +241,8 @@ private constructor(
             return@apply
         }
 
-        format().validate()
-        voice().validate()
+        formatOrThrow().validate()
+        voiceOrThrow().validate()
         validated = true
     }
 
@@ -877,13 +887,18 @@ private constructor(
             ) : this(id, mutableMapOf())
 
             /**
-             * The custom voice ID, e.g. `voice_1234`.
+             * The custom voice ID, e.g. `voice_1234`. The schema requires this property. Returns
+             * empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun id(): String = id.getRequired("id")
+            fun id(): java.util.Optional<String> = id.getOptional("id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun idOrThrow(): String = id.getRequired("id")
 
             /**
              * Returns the raw JSON value of [id].
@@ -1009,7 +1024,7 @@ private constructor(
                     return@apply
                 }
 
-                id()
+                idOrThrow()
                 validated = true
             }
 

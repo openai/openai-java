@@ -23,9 +23,9 @@ internal class BetaResponseFileSearchCallInProgressEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseFileSearchCallInProgressEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseFileSearchCallInProgressEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseFileSearchCallInProgressEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseFileSearchCallInProgressEvent.itemId()).contains("item_id")
+        assertThat(betaResponseFileSearchCallInProgressEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseFileSearchCallInProgressEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseFileSearchCallInProgressEvent.agent())
             .contains(
                 BetaResponseFileSearchCallInProgressEvent.Agent.builder()

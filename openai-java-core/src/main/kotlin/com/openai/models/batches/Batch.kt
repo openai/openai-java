@@ -120,141 +120,234 @@ private constructor(
     )
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The time frame within which the batch should be processed.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun completionWindow(): String = completionWindow.getRequired("completion_window")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The Unix timestamp (in seconds) for when the batch was created.
+     * The time frame within which the batch should be processed. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun completionWindow(): java.util.Optional<String> =
+        completionWindow.getOptional("completion_window")
 
     /**
-     * The OpenAI API endpoint used by the batch.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun endpoint(): String = endpoint.getRequired("endpoint")
+    fun completionWindowOrThrow(): String = completionWindow.getRequired("completion_window")
 
     /**
-     * The ID of the input file for the batch.
+     * The Unix timestamp (in seconds) for when the batch was created. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun inputFileId(): String = inputFileId.getRequired("input_file_id")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * The object type, which is always `batch`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("batch")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
     /**
-     * The current status of the batch.
+     * The OpenAI API endpoint used by the batch. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): Status = status.getRequired("status")
+    fun endpoint(): java.util.Optional<String> = endpoint.getOptional("endpoint")
 
     /**
-     * The Unix timestamp (in seconds) for when the batch was cancelled.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun cancelledAt(): Optional<Long> = cancelledAt.getOptional("cancelled_at")
+    fun endpointOrThrow(): String = endpoint.getRequired("endpoint")
 
     /**
-     * The Unix timestamp (in seconds) for when the batch started cancelling.
+     * The ID of the input file for the batch. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun cancellingAt(): Optional<Long> = cancellingAt.getOptional("cancelling_at")
+    fun inputFileId(): java.util.Optional<String> = inputFileId.getOptional("input_file_id")
 
     /**
-     * The Unix timestamp (in seconds) for when the batch was completed.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun completedAt(): Optional<Long> = completedAt.getOptional("completed_at")
+    fun inputFileIdOrThrow(): String = inputFileId.getRequired("input_file_id")
 
     /**
-     * The ID of the file containing the outputs of requests with errors.
+     * The object type, which is always `batch`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun errorFileId(): Optional<String> = errorFileId.getOptional("error_file_id")
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("batch")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun errors(): Optional<Errors> = errors.getOptional("errors")
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
-     * The Unix timestamp (in seconds) for when the batch expired.
+     * The current status of the batch. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun expiredAt(): Optional<Long> = expiredAt.getOptional("expired_at")
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
 
     /**
-     * The Unix timestamp (in seconds) for when the batch will expire.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
+    fun statusOrThrow(): Status = status.getRequired("status")
 
     /**
-     * The Unix timestamp (in seconds) for when the batch failed.
+     * The Unix timestamp (in seconds) for when the batch was cancelled. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun failedAt(): Optional<Long> = failedAt.getOptional("failed_at")
+    fun cancelledAt(): java.util.Optional<Long> = cancelledAt.getOptional("cancelled_at")
 
     /**
-     * The Unix timestamp (in seconds) for when the batch started finalizing.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun finalizingAt(): Optional<Long> = finalizingAt.getOptional("finalizing_at")
+    fun cancelledAtOrThrow(): Long = cancelledAt.getRequired("cancelled_at")
 
     /**
-     * The Unix timestamp (in seconds) for when the batch started processing.
+     * The Unix timestamp (in seconds) for when the batch started cancelling. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun inProgressAt(): Optional<Long> = inProgressAt.getOptional("in_progress_at")
+    fun cancellingAt(): java.util.Optional<Long> = cancellingAt.getOptional("cancelling_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun cancellingAtOrThrow(): Long = cancellingAt.getRequired("cancelling_at")
+
+    /**
+     * The Unix timestamp (in seconds) for when the batch was completed. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun completedAt(): java.util.Optional<Long> = completedAt.getOptional("completed_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun completedAtOrThrow(): Long = completedAt.getRequired("completed_at")
+
+    /**
+     * The ID of the file containing the outputs of requests with errors. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun errorFileId(): java.util.Optional<String> = errorFileId.getOptional("error_file_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun errorFileIdOrThrow(): String = errorFileId.getRequired("error_file_id")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun errors(): java.util.Optional<Errors> = errors.getOptional("errors")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun errorsOrThrow(): Errors = errors.getRequired("errors")
+
+    /**
+     * The Unix timestamp (in seconds) for when the batch expired. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun expiredAt(): java.util.Optional<Long> = expiredAt.getOptional("expired_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun expiredAtOrThrow(): Long = expiredAt.getRequired("expired_at")
+
+    /**
+     * The Unix timestamp (in seconds) for when the batch will expire. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun expiresAt(): java.util.Optional<Long> = expiresAt.getOptional("expires_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun expiresAtOrThrow(): Long = expiresAt.getRequired("expires_at")
+
+    /**
+     * The Unix timestamp (in seconds) for when the batch failed. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun failedAt(): java.util.Optional<Long> = failedAt.getOptional("failed_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun failedAtOrThrow(): Long = failedAt.getRequired("failed_at")
+
+    /**
+     * The Unix timestamp (in seconds) for when the batch started finalizing. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun finalizingAt(): java.util.Optional<Long> = finalizingAt.getOptional("finalizing_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun finalizingAtOrThrow(): Long = finalizingAt.getRequired("finalizing_at")
+
+    /**
+     * The Unix timestamp (in seconds) for when the batch started processing. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun inProgressAt(): java.util.Optional<Long> = inProgressAt.getOptional("in_progress_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun inProgressAtOrThrow(): Long = inProgressAt.getRequired("in_progress_at")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -262,48 +355,72 @@ private constructor(
      * API or the dashboard.
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * length of 512 characters. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+    fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
 
     /**
      * Model ID used to process the batch, like `gpt-6-astra`. OpenAI offers a wide range of models
      * with different capabilities, performance characteristics, and price points. Refer to the
      * [model guide](https://developers.openai.com/api/docs/models) to browse and compare available
-     * models.
+     * models. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun model(): Optional<String> = model.getOptional("model")
+    fun model(): java.util.Optional<String> = model.getOptional("model")
 
     /**
-     * The ID of the file containing the outputs of successfully executed requests.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun outputFileId(): Optional<String> = outputFileId.getOptional("output_file_id")
+    fun modelOrThrow(): String = model.getRequired("model")
 
     /**
-     * The request counts for different statuses within the batch.
+     * The ID of the file containing the outputs of successfully executed requests. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun requestCounts(): Optional<BatchRequestCounts> = requestCounts.getOptional("request_counts")
+    fun outputFileId(): java.util.Optional<String> = outputFileId.getOptional("output_file_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun outputFileIdOrThrow(): String = outputFileId.getRequired("output_file_id")
+
+    /**
+     * The request counts for different statuses within the batch. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun requestCounts(): java.util.Optional<BatchRequestCounts> =
+        requestCounts.getOptional("request_counts")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun requestCountsOrThrow(): BatchRequestCounts = requestCounts.getRequired("request_counts")
 
     /**
      * Represents token usage details including input tokens, output tokens, a breakdown of output
      * tokens, and the total tokens used. Only populated on batches created after September 7, 2025.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun usage(): Optional<BatchUsage> = usage.getOptional("usage")
+    fun usage(): java.util.Optional<BatchUsage> = usage.getOptional("usage")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun usageOrThrow(): BatchUsage = usage.getRequired("usage")
 
     /**
      * Returns the raw JSON value of [id].
@@ -952,17 +1069,13 @@ private constructor(
             return@apply
         }
 
-        id()
-        completionWindow()
-        createdAt()
-        endpoint()
-        inputFileId()
-        _object_().let {
-            if (it != JsonValue.from("batch")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        status().validate()
+        idOrThrow()
+        completionWindowOrThrow()
+        createdAtOrThrow()
+        endpointOrThrow()
+        inputFileIdOrThrow()
+        object_OrThrow()
+        statusOrThrow().validate()
         cancelledAt()
         cancellingAt()
         completedAt()
@@ -1211,18 +1324,31 @@ private constructor(
         ) : this(data, object_, mutableMapOf())
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun data(): Optional<List<BatchError>> = data.getOptional("data")
+        fun data(): java.util.Optional<List<BatchError>> = data.getOptional("data")
 
         /**
-         * The object type, which is always `list`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun object_(): Optional<String> = object_.getOptional("object")
+        fun dataOrThrow(): List<BatchError> = data.getRequired("data")
+
+        /**
+         * The object type, which is always `list`. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun object_(): java.util.Optional<String> = object_.getOptional("object")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun object_OrThrow(): String = object_.getRequired("object")
 
         /**
          * Returns the raw JSON value of [data].

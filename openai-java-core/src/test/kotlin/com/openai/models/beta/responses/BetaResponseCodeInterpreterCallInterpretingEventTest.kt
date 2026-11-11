@@ -23,9 +23,9 @@ internal class BetaResponseCodeInterpreterCallInterpretingEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseCodeInterpreterCallInterpretingEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseCodeInterpreterCallInterpretingEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseCodeInterpreterCallInterpretingEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseCodeInterpreterCallInterpretingEvent.itemId()).contains("item_id")
+        assertThat(betaResponseCodeInterpreterCallInterpretingEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseCodeInterpreterCallInterpretingEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseCodeInterpreterCallInterpretingEvent.agent())
             .contains(
                 BetaResponseCodeInterpreterCallInterpretingEvent.Agent.builder()

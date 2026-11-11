@@ -42,49 +42,79 @@ private constructor(
     ) : this(id, approvalRequestId, approve, type, reason, mutableMapOf())
 
     /**
-     * The unique ID of the approval response.
+     * The unique ID of the approval response. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The ID of the approval request being answered.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun approvalRequestId(): String = approvalRequestId.getRequired("approval_request_id")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * Whether the request was approved.
+     * The ID of the approval request being answered. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun approve(): Boolean = approve.getRequired("approve")
+    fun approvalRequestId(): java.util.Optional<String> =
+        approvalRequestId.getOptional("approval_request_id")
 
     /**
-     * The type of the item. Always `mcp_approval_response`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("mcp_approval_response")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun approvalRequestIdOrThrow(): String = approvalRequestId.getRequired("approval_request_id")
 
     /**
-     * Optional reason for the decision.
+     * Whether the request was approved. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun reason(): Optional<String> = reason.getOptional("reason")
+    fun approve(): java.util.Optional<Boolean> = approve.getOptional("approve")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun approveOrThrow(): Boolean = approve.getRequired("approve")
+
+    /**
+     * The type of the item. Always `mcp_approval_response`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("mcp_approval_response")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * Optional reason for the decision. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun reason(): java.util.Optional<String> = reason.getOptional("reason")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun reasonOrThrow(): String = reason.getRequired("reason")
 
     /**
      * Returns the raw JSON value of [id].
@@ -309,14 +339,10 @@ private constructor(
             return@apply
         }
 
-        id()
-        approvalRequestId()
-        approve()
-        _type().let {
-            if (it != JsonValue.from("mcp_approval_response")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        idOrThrow()
+        approvalRequestIdOrThrow()
+        approveOrThrow()
+        typeOrThrow()
         reason()
         validated = true
     }

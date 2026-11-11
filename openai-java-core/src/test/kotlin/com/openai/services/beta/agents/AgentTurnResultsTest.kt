@@ -83,7 +83,13 @@ internal class AgentTurnResultsTest {
         assertThat(result.turnId()).isEqualTo("root")
         assertThat(result.sessionId()).isEqualTo("s")
         assertThat(result.messages()).hasSize(2)
-        assertThat(result.messages()[0].content()[0].asOutputText()._allProperties()["annotations"])
+        assertThat(
+                result
+                    .messages()[0]
+                    .contentOrThrow()[0]
+                    .asOutputText()
+                    ._allProperties()["annotations"]
+            )
             .isEqualTo(com.openai.core.JsonValue.from(emptyList<Any>()))
         assertThat(AgentTurnResults.getFinalResult(stream)).isSameAs(result)
         assertThatThrownBy { (result.messages() as MutableList).clear() }
@@ -135,6 +141,20 @@ internal class AgentTurnResultsTest {
             source(listOf(turn("created"), message(phase = "null"), turn("completed"), idle()))
 
         assertThat(AgentTurnResults.getFinalResult(stream).outputText()).isEqualTo("Answer")
+    }
+
+    @Test
+    fun `completion with missing nested turn IDs reports a stream error`() {
+        val turns =
+            listOf("created", "completed").map { kind ->
+                turn(kind).replace(""""id":"root",""", "")
+            }
+        val failure =
+            catchThrowableOfType(
+                { AgentTurnResults.getFinalResult(source(turns + idle())) },
+                AgentTurnResultException::class.java,
+            )
+        assertThat(failure.reason()).isEqualTo(AgentTurnResultException.Reason.STREAM_ERROR)
     }
 
     @Test
@@ -521,7 +541,7 @@ internal class AgentTurnResultsTest {
             .isEqualTo(report.findings.single().itemId)
         assertThat(result.outputParsed().findings.single().state).isEqualTo(FindingState.FOUND)
         assertThat(result.outputParsed().next).isEmpty()
-        assertThat(tool.definition().asFunction().description())
+        assertThat(tool.definition().asFunction().descriptionOrThrow())
             .contains("A report with optional follow-up")
         assertThatThrownBy { tool.handler().apply(arguments - "next") }
             .hasMessageContaining("parameter shape")

@@ -41,43 +41,75 @@ private constructor(
     ) : this(action, fields, type, selectedOption, mutableMapOf())
 
     /**
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("submit")
-     * ```
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("action") @ExcludeMissing fun _action(): JsonValue = action
+    fun action(): java.util.Optional<JsonValue> {
+        val raw = action
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("submit")) ->
+                throw OpenAIInvalidDataException("`action` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun actionOrThrow(): JsonValue = action().orElseGet { action.getRequired("action") }
+
+    @JsonProperty("action") @ExcludeMissing fun _action(): JsonField<JsonValue> = action
 
     /**
      * Values for up to six active fields in the required action. The submitted field-value mapping
-     * and selected option must fit within 120 KiB of JSON.
+     * and selected option must fit within 120 KiB of JSON. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun fields(): List<Field> = fields.getRequired("fields")
+    fun fields(): java.util.Optional<List<Field>> = fields.getOptional("fields")
 
     /**
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("browser_authentication")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun fieldsOrThrow(): List<Field> = fields.getRequired("fields")
 
     /**
-     * The chosen method. Required when the required action contains options.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun selectedOption(): Optional<String> = selectedOption.getOptional("selected_option")
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("browser_authentication")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The chosen method. Required when the required action contains options. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun selectedOption(): java.util.Optional<String> = selectedOption.getOptional("selected_option")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun selectedOptionOrThrow(): String = selectedOption.getRequired("selected_option")
 
     /**
      * Returns the raw JSON value of [fields].
@@ -294,17 +326,9 @@ private constructor(
             return@apply
         }
 
-        _action().let {
-            if (it != JsonValue.from("submit")) {
-                throw OpenAIInvalidDataException("'action' is invalid, received $it")
-            }
-        }
-        fields().forEach { it.validate() }
-        _type().let {
-            if (it != JsonValue.from("browser_authentication")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        actionOrThrow()
+        fieldsOrThrow().forEach { it.validate() }
+        typeOrThrow()
         selectedOption()
         validated = true
     }
@@ -345,20 +369,32 @@ private constructor(
         ) : this(fieldId, value, mutableMapOf())
 
         /**
-         * The field ID from the required action.
+         * The field ID from the required action. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun fieldId(): String = fieldId.getRequired("field_id")
+        fun fieldId(): java.util.Optional<String> = fieldId.getOptional("field_id")
 
         /**
-         * The value to enter into the registered control.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun value(): String = value.getRequired("value")
+        fun fieldIdOrThrow(): String = fieldId.getRequired("field_id")
+
+        /**
+         * The value to enter into the registered control. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun value(): java.util.Optional<String> = value.getOptional("value")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun valueOrThrow(): String = value.getRequired("value")
 
         /**
          * Returns the raw JSON value of [fieldId].
@@ -512,8 +548,8 @@ private constructor(
                 return@apply
             }
 
-            fieldId()
-            value()
+            fieldIdOrThrow()
+            valueOrThrow()
             validated = true
         }
 

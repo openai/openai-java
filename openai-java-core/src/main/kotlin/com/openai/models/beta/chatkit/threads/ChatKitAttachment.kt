@@ -44,44 +44,69 @@ private constructor(
     ) : this(id, mimeType, name, previewUrl, type, mutableMapOf())
 
     /**
-     * Identifier for the attachment.
+     * Identifier for the attachment. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * MIME type of the attachment.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun mimeType(): String = mimeType.getRequired("mime_type")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * Original display name for the attachment.
+     * MIME type of the attachment. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun name(): String = name.getRequired("name")
+    fun mimeType(): java.util.Optional<String> = mimeType.getOptional("mime_type")
 
     /**
-     * Preview URL for rendering the attachment inline.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun previewUrl(): Optional<String> = previewUrl.getOptional("preview_url")
+    fun mimeTypeOrThrow(): String = mimeType.getRequired("mime_type")
 
     /**
-     * Attachment discriminator.
+     * Original display name for the attachment. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun type(): Type = type.getRequired("type")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
+
+    /**
+     * Preview URL for rendering the attachment inline. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun previewUrl(): java.util.Optional<String> = previewUrl.getOptional("preview_url")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun previewUrlOrThrow(): String = previewUrl.getRequired("preview_url")
+
+    /**
+     * Attachment discriminator. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): Type = type.getRequired("type")
 
     /**
      * Returns the raw JSON value of [id].
@@ -306,11 +331,11 @@ private constructor(
             return@apply
         }
 
-        id()
-        mimeType()
-        name()
+        idOrThrow()
+        mimeTypeOrThrow()
+        nameOrThrow()
         previewUrl()
-        type().validate()
+        typeOrThrow().validate()
         validated = true
     }
 

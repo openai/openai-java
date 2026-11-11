@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.admin.organization.ExternalKeyService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see ExternalKeyService.list */
 class ExternalKeyListPage
@@ -18,21 +16,22 @@ private constructor(
     private val response: ExternalKeyListPageResponse,
 ) : Page<ExternalKey> {
 
-    /**
-     * Delegates to [ExternalKeyListPageResponse], but gracefully handles missing data.
-     *
-     * @see ExternalKeyListPageResponse.data
-     */
-    fun data(): List<ExternalKey> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see ExternalKeyListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [ExternalKeyListPageResponse], but gracefully handles missing data.
-     *
-     * @see ExternalKeyListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<ExternalKey> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<ExternalKey> = data()
+    fun _data() = response._data()
+
+    /** @see ExternalKeyListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<ExternalKey> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

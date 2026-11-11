@@ -42,12 +42,17 @@ private constructor(
      *
      * `auto` allows the model to pick from among the allowed tools and generate a message.
      *
-     * `required` requires the model to call one or more of the allowed tools.
+     * `required` requires the model to call one or more of the allowed tools. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun mode(): Mode = mode.getRequired("mode")
+    fun mode(): java.util.Optional<Mode> = mode.getOptional("mode")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun modeOrThrow(): Mode = mode.getRequired("mode")
 
     /**
      * A list of tool definitions that the model should be allowed to call.
@@ -61,23 +66,39 @@ private constructor(
      * ]
      * ```
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun tools(): List<Tool> = tools.getRequired("tools")
+    fun tools(): java.util.Optional<List<Tool>> = tools.getOptional("tools")
 
     /**
-     * Allowed tool configuration type. Always `allowed_tools`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("allowed_tools")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun toolsOrThrow(): List<Tool> = tools.getRequired("tools")
+
+    /**
+     * Allowed tool configuration type. Always `allowed_tools`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("allowed_tools")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [mode].
@@ -276,13 +297,9 @@ private constructor(
             return@apply
         }
 
-        mode().validate()
-        tools().forEach { it.validate() }
-        _type().let {
-            if (it != JsonValue.from("allowed_tools")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        modeOrThrow().validate()
+        toolsOrThrow().forEach { it.validate() }
+        typeOrThrow()
         validated = true
     }
 

@@ -4,6 +4,7 @@ package com.openai.models.audio.voiceconsents
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -26,7 +27,7 @@ internal class VoiceConsentListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(voiceConsentListPageResponse.data())
+        assertThat(voiceConsentListPageResponse.data().getOrNull())
             .containsExactly(
                 VoiceConsent.builder()
                     .id("cons_1234")
@@ -35,7 +36,7 @@ internal class VoiceConsentListPageResponseTest {
                     .name("name")
                     .build()
             )
-        assertThat(voiceConsentListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(voiceConsentListPageResponse.hasMore()).contains(true)
         assertThat(voiceConsentListPageResponse.firstId()).contains("first_id")
         assertThat(voiceConsentListPageResponse.lastId()).contains("last_id")
 

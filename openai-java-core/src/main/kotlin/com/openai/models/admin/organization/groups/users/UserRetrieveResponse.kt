@@ -46,52 +46,83 @@ private constructor(
     ) : this(id, email, isServiceAccount, name, picture, userType, mutableMapOf())
 
     /**
-     * Identifier for the user.
+     * Identifier for the user. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * Email address of the user, or `null` for users without an email.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun email(): Optional<String> = email.getOptional("email")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * Whether the user is a service account.
+     * Email address of the user, or `null` for users without an email. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun isServiceAccount(): Optional<Boolean> = isServiceAccount.getOptional("is_service_account")
+    fun email(): java.util.Optional<String> = email.getOptional("email")
 
     /**
-     * Display name of the user.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): String = name.getRequired("name")
+    fun emailOrThrow(): String = email.getRequired("email")
 
     /**
-     * URL of the user's profile picture, if available.
+     * Whether the user is a service account. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun picture(): Optional<String> = picture.getOptional("picture")
+    fun isServiceAccount(): java.util.Optional<Boolean> =
+        isServiceAccount.getOptional("is_service_account")
 
     /**
-     * The type of user.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun userType(): UserType = userType.getRequired("user_type")
+    fun isServiceAccountOrThrow(): Boolean = isServiceAccount.getRequired("is_service_account")
+
+    /**
+     * Display name of the user. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
+
+    /**
+     * URL of the user's profile picture, if available. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun picture(): java.util.Optional<String> = picture.getOptional("picture")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun pictureOrThrow(): String = picture.getRequired("picture")
+
+    /**
+     * The type of user. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun userType(): java.util.Optional<UserType> = userType.getOptional("user_type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun userTypeOrThrow(): UserType = userType.getRequired("user_type")
 
     /**
      * Returns the raw JSON value of [id].
@@ -358,12 +389,12 @@ private constructor(
             return@apply
         }
 
-        id()
+        idOrThrow()
         email()
         isServiceAccount()
-        name()
+        nameOrThrow()
         picture()
-        userType().validate()
+        userTypeOrThrow().validate()
         validated = true
     }
 

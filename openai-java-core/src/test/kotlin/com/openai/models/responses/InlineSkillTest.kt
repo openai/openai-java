@@ -18,9 +18,9 @@ internal class InlineSkillTest {
                 .source(InlineSkillSource.builder().data("x").build())
                 .build()
 
-        assertThat(inlineSkill.description()).isEqualTo("description")
-        assertThat(inlineSkill.name()).isEqualTo("name")
-        assertThat(inlineSkill.source()).isEqualTo(InlineSkillSource.builder().data("x").build())
+        assertThat(inlineSkill.description()).contains("description")
+        assertThat(inlineSkill.name()).contains("name")
+        assertThat(inlineSkill.source()).contains(InlineSkillSource.builder().data("x").build())
 
         val jsonMapper = jsonMapper()
 

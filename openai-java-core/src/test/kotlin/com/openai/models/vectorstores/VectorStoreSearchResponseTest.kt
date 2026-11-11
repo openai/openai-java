@@ -5,6 +5,7 @@ package com.openai.models.vectorstores
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -36,16 +37,16 @@ internal class VectorStoreSearchResponseTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(vectorStoreSearchResponse.content())
+        assertThat(vectorStoreSearchResponse.content().getOrNull())
             .containsExactly(
                 VectorStoreSearchResponse.Content.builder()
                     .text("text")
                     .type(VectorStoreSearchResponse.Content.Type.TEXT)
                     .build()
             )
-        assertThat(vectorStoreSearchResponse.fileId()).isEqualTo("file_id")
-        assertThat(vectorStoreSearchResponse.filename()).isEqualTo("filename")
-        assertThat(vectorStoreSearchResponse.score()).isEqualTo(0.0)
+        assertThat(vectorStoreSearchResponse.fileId()).contains("file_id")
+        assertThat(vectorStoreSearchResponse.filename()).contains("filename")
+        assertThat(vectorStoreSearchResponse.score()).contains(0.0)
 
         val jsonMapper = jsonMapper()
 

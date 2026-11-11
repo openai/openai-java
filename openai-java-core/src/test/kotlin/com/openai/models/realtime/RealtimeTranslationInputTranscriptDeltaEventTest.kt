@@ -18,8 +18,8 @@ internal class RealtimeTranslationInputTranscriptDeltaEventTest {
                 .elapsedMs(0L)
                 .build()
 
-        assertThat(realtimeTranslationInputTranscriptDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(realtimeTranslationInputTranscriptDeltaEvent.eventId()).isEqualTo("event_id")
+        assertThat(realtimeTranslationInputTranscriptDeltaEvent.delta()).contains("delta")
+        assertThat(realtimeTranslationInputTranscriptDeltaEvent.eventId()).contains("event_id")
         assertThat(realtimeTranslationInputTranscriptDeltaEvent.elapsedMs()).contains(0L)
 
         val jsonMapper = jsonMapper()

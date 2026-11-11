@@ -21,10 +21,10 @@ internal class ResponseApplyPatchToolCallOutputTest {
                 .output("output")
                 .build()
 
-        assertThat(responseApplyPatchToolCallOutput.id()).isEqualTo("id")
-        assertThat(responseApplyPatchToolCallOutput.callId()).isEqualTo("call_id")
+        assertThat(responseApplyPatchToolCallOutput.id()).contains("id")
+        assertThat(responseApplyPatchToolCallOutput.callId()).contains("call_id")
         assertThat(responseApplyPatchToolCallOutput.status())
-            .isEqualTo(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
+            .contains(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
         assertThat(responseApplyPatchToolCallOutput.caller())
             .contains(ResponseApplyPatchToolCallOutput.Caller.ofDirect())
         assertThat(responseApplyPatchToolCallOutput.createdBy()).contains("created_by")

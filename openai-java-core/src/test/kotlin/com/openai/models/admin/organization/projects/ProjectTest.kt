@@ -22,8 +22,8 @@ internal class ProjectTest {
                 .status("status")
                 .build()
 
-        assertThat(project.id()).isEqualTo("id")
-        assertThat(project.createdAt()).isEqualTo(0L)
+        assertThat(project.id()).contains("id")
+        assertThat(project.createdAt()).contains(0L)
         assertThat(project.archivedAt()).contains(0L)
         assertThat(project.externalKeyId()).contains("external_key_id")
         assertThat(project.name()).contains("name")

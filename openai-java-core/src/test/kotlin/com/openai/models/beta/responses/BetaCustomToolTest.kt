@@ -22,7 +22,7 @@ internal class BetaCustomToolTest {
                 .formatText()
                 .build()
 
-        assertThat(betaCustomTool.name()).isEqualTo("name")
+        assertThat(betaCustomTool.name()).contains("name")
         assertThat(betaCustomTool.allowedCallers().getOrNull())
             .containsExactly(BetaCustomTool.AllowedCaller.DIRECT)
         assertThat(betaCustomTool.async()).contains(true)

@@ -31,7 +31,7 @@ internal class ChatCompletionFunctionToolTest {
                 .build()
 
         assertThat(chatCompletionFunctionTool.function())
-            .isEqualTo(
+            .contains(
                 FunctionDefinition.builder()
                     .name("name")
                     .description("description")

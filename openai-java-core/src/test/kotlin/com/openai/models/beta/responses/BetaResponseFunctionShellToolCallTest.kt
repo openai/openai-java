@@ -33,16 +33,16 @@ internal class BetaResponseFunctionShellToolCallTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(betaResponseFunctionShellToolCall.id()).isEqualTo("id")
+        assertThat(betaResponseFunctionShellToolCall.id()).contains("id")
         assertThat(betaResponseFunctionShellToolCall.action())
-            .isEqualTo(
+            .contains(
                 BetaResponseFunctionShellToolCall.Action.builder()
                     .addCommand("string")
                     .maxOutputLength(0L)
                     .timeoutMs(0L)
                     .build()
             )
-        assertThat(betaResponseFunctionShellToolCall.callId()).isEqualTo("call_id")
+        assertThat(betaResponseFunctionShellToolCall.callId()).contains("call_id")
         assertThat(betaResponseFunctionShellToolCall.environment())
             .contains(
                 BetaResponseFunctionShellToolCall.Environment.ofLocal(
@@ -50,7 +50,7 @@ internal class BetaResponseFunctionShellToolCallTest {
                 )
             )
         assertThat(betaResponseFunctionShellToolCall.status())
-            .isEqualTo(BetaResponseFunctionShellToolCall.Status.IN_PROGRESS)
+            .contains(BetaResponseFunctionShellToolCall.Status.IN_PROGRESS)
         assertThat(betaResponseFunctionShellToolCall.agent())
             .contains(
                 BetaResponseFunctionShellToolCall.Agent.builder().agentName("agent_name").build()

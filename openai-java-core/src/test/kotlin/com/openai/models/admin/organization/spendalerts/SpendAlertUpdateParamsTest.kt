@@ -61,16 +61,16 @@ internal class SpendAlertUpdateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.currency()).isEqualTo(SpendAlertUpdateParams.Currency.USD)
-        assertThat(body.interval()).isEqualTo(SpendAlertUpdateParams.Interval.MONTH)
-        assertThat(body.notificationChannel())
+        assertThat(body.currencyOrThrow()).isEqualTo(SpendAlertUpdateParams.Currency.USD)
+        assertThat(body.intervalOrThrow()).isEqualTo(SpendAlertUpdateParams.Interval.MONTH)
+        assertThat(body.notificationChannelOrThrow())
             .isEqualTo(
                 SpendAlertUpdateParams.NotificationChannel.builder()
                     .addRecipient("string")
                     .subjectPrefix("subject_prefix")
                     .build()
             )
-        assertThat(body.thresholdAmount()).isEqualTo(0L)
+        assertThat(body.thresholdAmountOrThrow()).isEqualTo(0L)
     }
 
     @Test
@@ -90,12 +90,12 @@ internal class SpendAlertUpdateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.currency()).isEqualTo(SpendAlertUpdateParams.Currency.USD)
-        assertThat(body.interval()).isEqualTo(SpendAlertUpdateParams.Interval.MONTH)
-        assertThat(body.notificationChannel())
+        assertThat(body.currencyOrThrow()).isEqualTo(SpendAlertUpdateParams.Currency.USD)
+        assertThat(body.intervalOrThrow()).isEqualTo(SpendAlertUpdateParams.Interval.MONTH)
+        assertThat(body.notificationChannelOrThrow())
             .isEqualTo(
                 SpendAlertUpdateParams.NotificationChannel.builder().addRecipient("string").build()
             )
-        assertThat(body.thresholdAmount()).isEqualTo(0L)
+        assertThat(body.thresholdAmountOrThrow()).isEqualTo(0L)
     }
 }

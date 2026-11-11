@@ -13,7 +13,7 @@ internal class ResponseOutputRefusalTest {
     fun createAndRoundtrip() {
         val responseOutputRefusal = ResponseOutputRefusal.builder().refusal("refusal").build()
 
-        assertThat(responseOutputRefusal.refusal()).isEqualTo("refusal")
+        assertThat(responseOutputRefusal.refusal()).contains("refusal")
 
         val jsonMapper = jsonMapper()
 

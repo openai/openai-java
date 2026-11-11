@@ -32,8 +32,8 @@ internal class ResponseErrorTest {
                 .type("type")
                 .build()
 
-        assertThat(responseError.code()).isEqualTo(ResponseError.Code.SERVER_ERROR)
-        assertThat(responseError.message()).isEqualTo("message")
+        assertThat(responseError.code()).contains(ResponseError.Code.SERVER_ERROR)
+        assertThat(responseError.message()).contains("message")
         assertThat(responseError.misalignment())
             .contains(
                 ResponseError.Misalignment.builder()

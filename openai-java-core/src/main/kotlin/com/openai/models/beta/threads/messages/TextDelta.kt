@@ -36,18 +36,29 @@ private constructor(
     ) : this(annotations, value, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun annotations(): Optional<List<AnnotationDelta>> = annotations.getOptional("annotations")
+    fun annotations(): java.util.Optional<List<AnnotationDelta>> =
+        annotations.getOptional("annotations")
 
     /**
-     * The data that makes up the text.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun value(): Optional<String> = value.getOptional("value")
+    fun annotationsOrThrow(): List<AnnotationDelta> = annotations.getRequired("annotations")
+
+    /**
+     * The data that makes up the text. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun value(): java.util.Optional<String> = value.getOptional("value")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun valueOrThrow(): String = value.getRequired("value")
 
     /**
      * Returns the raw JSON value of [annotations].

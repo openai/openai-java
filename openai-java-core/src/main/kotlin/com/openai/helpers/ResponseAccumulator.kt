@@ -338,20 +338,20 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                     if (snapshotsEnabled) {
                         finalizedOutput!!.clear()
                         reconstructionError = false
-                        replacePartial(created.response())
+                        replacePartial(created.responseOrThrow())
                     }
                 }
 
                 override fun visitCompleted(completed: ResponseCompletedEvent) {
-                    response = completed.response()
+                    response = completed.responseOrThrow()
                 }
 
                 override fun visitInProgress(inProgress: ResponseInProgressEvent) {
-                    if (snapshotsEnabled) replacePartial(inProgress.response())
+                    if (snapshotsEnabled) replacePartial(inProgress.responseOrThrow())
                 }
 
                 override fun visitQueued(queued: ResponseQueuedEvent) {
-                    if (snapshotsEnabled) replacePartial(queued.response())
+                    if (snapshotsEnabled) replacePartial(queued.responseOrThrow())
                 }
 
                 override fun visitCustomToolCallInputDelta(
@@ -359,9 +359,9 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 ) {
                     if (!snapshotsEnabled) return
                     append(
-                        customToolCallInputDelta.outputIndex(),
+                        customToolCallInputDelta.outputIndexOrThrow(),
                         customToolCallInputDelta._itemId(),
-                        customToolCallInputDelta.delta(),
+                        customToolCallInputDelta.deltaOrThrow(),
                     ) { item ->
                         item.customToolCall().orElse(null)?._input()?.asKnown()?.orElse(null)
                     }
@@ -372,12 +372,12 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 ) {
                     if (!snapshotsEnabled) return
                     updateItem(
-                        customToolCallInputDone.outputIndex(),
+                        customToolCallInputDone.outputIndexOrThrow(),
                         customToolCallInputDone._itemId(),
                     ) { item ->
                         val call = item?.customToolCall()?.orElse(null) ?: return@updateItem null
                         ResponseOutputItem.ofCustomToolCall(
-                            call.toBuilder().input(customToolCallInputDone.input()).build()
+                            call.toBuilder().input(customToolCallInputDone.inputOrThrow()).build()
                         )
                     }
                 }
@@ -386,14 +386,14 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                     // TODO: Confirm that this is a "terminal" event and will occur _instead of_
                     //   `ResponseCompletedEvent` or `ResponseIncompleteEvent`.
                     // Store the response so the reason for the failure can be interrogated.
-                    response = failed.response()
+                    response = failed.responseOrThrow()
                 }
 
                 override fun visitIncomplete(incomplete: ResponseIncompleteEvent) {
                     // TODO: Confirm that this is a "terminal" event and will occur _instead of_
                     //   `ResponseCompletedEvent` or `ResponseFailedEvent`.
                     // Store the response so the reason for the incompleteness can be interrogated.
-                    response = incomplete.response()
+                    response = incomplete.responseOrThrow()
                 }
 
                 // --------------------------------------------------------------------------------
@@ -439,7 +439,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                     contentPartAdded: ResponseContentPartAddedEvent
                 ) {
                     if (!snapshotsEnabled) return
-                    val part = contentPartAdded.part()
+                    val part = contentPartAdded.partOrThrow()
                     val content =
                         part
                             .outputText()
@@ -452,8 +452,8 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                             }
                     if (content != null)
                         updateContent(
-                            contentPartAdded.outputIndex(),
-                            contentPartAdded.contentIndex(),
+                            contentPartAdded.outputIndexOrThrow(),
+                            contentPartAdded.contentIndexOrThrow(),
                             contentPartAdded._itemId(),
                         ) {
                             PendingContent(content)
@@ -462,7 +462,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
 
                 override fun visitContentPartDone(contentPartDone: ResponseContentPartDoneEvent) {
                     if (!snapshotsEnabled) return
-                    val part = contentPartDone.part()
+                    val part = contentPartDone.partOrThrow()
                     val content =
                         part
                             .outputText()
@@ -475,8 +475,8 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                             }
                     if (content != null)
                         updateContent(
-                            contentPartDone.outputIndex(),
-                            contentPartDone.contentIndex(),
+                            contentPartDone.outputIndexOrThrow(),
+                            contentPartDone.contentIndexOrThrow(),
                             contentPartDone._itemId(),
                         ) {
                             PendingContent(content)
@@ -502,9 +502,9 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 ) {
                     if (!snapshotsEnabled) return
                     append(
-                        functionCallArgumentsDelta.outputIndex(),
+                        functionCallArgumentsDelta.outputIndexOrThrow(),
                         functionCallArgumentsDelta._itemId(),
-                        functionCallArgumentsDelta.delta(),
+                        functionCallArgumentsDelta.deltaOrThrow(),
                     ) { item ->
                         item.functionCall().orElse(null)?._arguments()?.asKnown()?.orElse(null)
                     }
@@ -515,7 +515,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 ) {
                     if (!snapshotsEnabled) return
                     updateItem(
-                        functionCallArgumentsDone.outputIndex(),
+                        functionCallArgumentsDone.outputIndexOrThrow(),
                         functionCallArgumentsDone._itemId(),
                     ) { item ->
                         val call = item?.functionCall()?.orElse(null) ?: return@updateItem null
@@ -523,7 +523,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                             ResponseOutputItem.ofFunctionCall(
                                 call
                                     .toBuilder()
-                                    .arguments(functionCallArgumentsDone.arguments())
+                                    .arguments(functionCallArgumentsDone.argumentsOrThrow())
                                     .build()
                             )
                         result
@@ -552,14 +552,19 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
 
                 override fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent) {
                     if (snapshotsEnabled)
-                        updateItem(outputItemAdded.outputIndex()) { outputItemAdded.item() }
+                        updateItem(outputItemAdded.outputIndexOrThrow()) {
+                            outputItemAdded.itemOrThrow()
+                        }
                 }
 
                 override fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent) {
                     if (snapshotsEnabled) {
                         if (!reconstructionError)
-                            finalizedOutput!![outputItemDone.outputIndex()] = outputItemDone.item()
-                        updateItem(outputItemDone.outputIndex()) { outputItemDone.item() }
+                            finalizedOutput!![outputItemDone.outputIndexOrThrow()] =
+                                outputItemDone.itemOrThrow()
+                        updateItem(outputItemDone.outputIndexOrThrow()) {
+                            outputItemDone.itemOrThrow()
+                        }
                     }
                 }
 
@@ -590,10 +595,10 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) {
                     if (!snapshotsEnabled) return
                     appendContent(
-                        refusalDelta.outputIndex(),
-                        refusalDelta.contentIndex(),
+                        refusalDelta.outputIndexOrThrow(),
+                        refusalDelta.contentIndexOrThrow(),
                         refusalDelta._itemId(),
-                        refusalDelta.delta(),
+                        refusalDelta.deltaOrThrow(),
                     ) { content ->
                         content.refusal().orElse(null)?._refusal()?.asKnown()?.orElse(null)
                     }
@@ -602,15 +607,15 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 override fun visitRefusalDone(refusalDone: ResponseRefusalDoneEvent) {
                     if (!snapshotsEnabled) return
                     updateContent(
-                        refusalDone.outputIndex(),
-                        refusalDone.contentIndex(),
+                        refusalDone.outputIndexOrThrow(),
+                        refusalDone.contentIndexOrThrow(),
                         refusalDone._itemId(),
                     ) { content ->
                         val refusal =
                             content?.part?.refusal()?.orElse(null) ?: return@updateContent null
                         val result =
                             ResponseOutputMessage.Content.ofRefusal(
-                                refusal.toBuilder().refusal(refusalDone.refusal()).build()
+                                refusal.toBuilder().refusal(refusalDone.refusalOrThrow()).build()
                             )
                         content.part = result
                         content.text = null
@@ -622,10 +627,10 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                     if (!snapshotsEnabled) return
                     val part =
                         appendContent(
-                            outputTextDelta.outputIndex(),
-                            outputTextDelta.contentIndex(),
+                            outputTextDelta.outputIndexOrThrow(),
+                            outputTextDelta.contentIndexOrThrow(),
                             outputTextDelta._itemId(),
-                            outputTextDelta.delta(),
+                            outputTextDelta.deltaOrThrow(),
                         ) { content ->
                             content.outputText().orElse(null)?._text()?.asKnown()?.orElse(null)
                         } ?: return
@@ -649,8 +654,8 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 override fun visitOutputTextDone(outputTextDone: ResponseTextDoneEvent) {
                     if (!snapshotsEnabled) return
                     updateContent(
-                        outputTextDone.outputIndex(),
-                        outputTextDone.contentIndex(),
+                        outputTextDone.outputIndexOrThrow(),
+                        outputTextDone.contentIndexOrThrow(),
                         outputTextDone._itemId(),
                     ) { content ->
                         val outputText =
@@ -663,10 +668,13 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                         if (outputText._text().asKnown().orElse(null) == null) {
                             content.part =
                                 ResponseOutputMessage.Content.ofOutputText(
-                                    outputText.toBuilder().text(outputTextDone.text()).build()
+                                    outputText
+                                        .toBuilder()
+                                        .text(outputTextDone.textOrThrow())
+                                        .build()
                                 )
                         }
-                        content.text = outputTextDone.text()
+                        content.text = outputTextDone.textOrThrow()
                         if (converted != null) content.logprobs = converted.toMutableList()
                         content
                     }
@@ -705,9 +713,9 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 ) {
                     if (!snapshotsEnabled) return
                     append(
-                        mcpCallArgumentsDelta.outputIndex(),
+                        mcpCallArgumentsDelta.outputIndexOrThrow(),
                         mcpCallArgumentsDelta._itemId(),
-                        mcpCallArgumentsDelta.delta(),
+                        mcpCallArgumentsDelta.deltaOrThrow(),
                     ) { item ->
                         item.mcpCall().orElse(null)?._arguments()?.asKnown()?.orElse(null)
                     }
@@ -718,12 +726,15 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 ) {
                     if (!snapshotsEnabled) return
                     updateItem(
-                        mcpCallArgumentsDone.outputIndex(),
+                        mcpCallArgumentsDone.outputIndexOrThrow(),
                         mcpCallArgumentsDone._itemId(),
                     ) { item ->
                         val call = item?.mcpCall()?.orElse(null) ?: return@updateItem null
                         ResponseOutputItem.ofMcpCall(
-                            call.toBuilder().arguments(mcpCallArgumentsDone.arguments()).build()
+                            call
+                                .toBuilder()
+                                .arguments(mcpCallArgumentsDone.argumentsOrThrow())
+                                .build()
                         )
                     }
                 }
@@ -760,8 +771,8 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                         outputTextAnnotationAdded._annotationIndex().asKnown().orElse(null)
                             ?: return
                     updateContent(
-                        outputTextAnnotationAdded.outputIndex(),
-                        outputTextAnnotationAdded.contentIndex(),
+                        outputTextAnnotationAdded.outputIndexOrThrow(),
+                        outputTextAnnotationAdded.contentIndexOrThrow(),
                         outputTextAnnotationAdded._itemId(),
                     ) { content ->
                         val text =

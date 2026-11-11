@@ -57,11 +57,11 @@ class ResponsesDelegationPolymorphismTest {
         val config =
             event
                 .asSessionUpdated()
-                .session()
+                .sessionOrThrow()
                 .delegation()
                 .get()
                 .asResponses()
-                .responses()
+                .responsesOrThrow()
                 .validate()
         assertThat(config.toolChoice().get().isLiveSpecificFileSearchParam()).isTrue()
         assertThat(config.tools().get().single().isShell()).isTrue()
@@ -77,7 +77,9 @@ class ResponsesDelegationPolymorphismTest {
         assertThat(
                 shell.match(
                     ResponsesDelegationConfig.Tool.Handler.builder<String>()
-                        .onShell { it.environment().get().asContainerReference().containerId() }
+                        .onShell {
+                            it.environment().get().asContainerReference().containerIdOrThrow()
+                        }
                         .build()
                 )
             )
@@ -109,7 +111,7 @@ class ResponsesDelegationPolymorphismTest {
         val choice = config.toolChoice().get()
         val shell = config.tools().get().single()
 
-        assertThat(shell.asShell().environment().get().asContainerReference().containerId())
+        assertThat(shell.asShell().environment().get().asContainerReference().containerIdOrThrow())
             .isEqualTo("ctr_test")
         assertThat(
                 choice.match(

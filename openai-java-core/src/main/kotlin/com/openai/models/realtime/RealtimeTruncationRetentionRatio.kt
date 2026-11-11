@@ -47,34 +47,53 @@ private constructor(
      * Fraction of post-instruction conversation tokens to retain (`0.0` - `1.0`) when the
      * conversation exceeds the input token limit. Setting this to `0.8` means that messages will be
      * dropped until 80% of the maximum allowed tokens are used. This helps reduce the frequency of
-     * truncations and improve cache rates.
+     * truncations and improve cache rates. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun retentionRatio(): Double = retentionRatio.getRequired("retention_ratio")
+    fun retentionRatio(): java.util.Optional<Double> = retentionRatio.getOptional("retention_ratio")
 
     /**
-     * Use retention ratio truncation.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("retention_ratio")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun retentionRatioOrThrow(): Double = retentionRatio.getRequired("retention_ratio")
+
+    /**
+     * Use retention ratio truncation. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("retention_ratio")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Optional custom token limits for this truncation strategy. If not provided, the model's
-     * default token limits will be used.
+     * default token limits will be used. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun tokenLimits(): Optional<TokenLimits> = tokenLimits.getOptional("token_limits")
+    fun tokenLimits(): java.util.Optional<TokenLimits> = tokenLimits.getOptional("token_limits")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun tokenLimitsOrThrow(): TokenLimits = tokenLimits.getRequired("token_limits")
 
     /**
      * Returns the raw JSON value of [retentionRatio].
@@ -262,12 +281,8 @@ private constructor(
             return@apply
         }
 
-        retentionRatio()
-        _type().let {
-            if (it != JsonValue.from("retention_ratio")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        retentionRatioOrThrow()
+        typeOrThrow()
         tokenLimits().ifPresent { it.validate() }
         validated = true
     }
@@ -313,12 +328,19 @@ private constructor(
          * Maximum tokens allowed in the conversation after instructions (which including tool
          * definitions). For example, setting this to 5,000 would mean that truncation would occur
          * when the conversation exceeds 5,000 tokens after instructions. This cannot be higher than
-         * the model's context window size minus the maximum output tokens.
+         * the model's context window size minus the maximum output tokens. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun postInstructions(): Optional<Long> = postInstructions.getOptional("post_instructions")
+        fun postInstructions(): java.util.Optional<Long> =
+            postInstructions.getOptional("post_instructions")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun postInstructionsOrThrow(): Long = postInstructions.getRequired("post_instructions")
 
         /**
          * Returns the raw JSON value of [postInstructions].

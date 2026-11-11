@@ -7,7 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.admin.organization.UserService
 import java.util.Objects
-import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** @see UserService.list */
@@ -18,29 +17,30 @@ private constructor(
     private val response: UserListPageResponse,
 ) : Page<OrganizationUser> {
 
-    /**
-     * Delegates to [UserListPageResponse], but gracefully handles missing data.
-     *
-     * @see UserListPageResponse.data
-     */
-    fun data(): List<OrganizationUser> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see UserListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [UserListPageResponse], but gracefully handles missing data.
-     *
-     * @see UserListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<OrganizationUser> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    /**
-     * Delegates to [UserListPageResponse], but gracefully handles missing data.
-     *
-     * @see UserListPageResponse.lastId
-     */
-    fun lastId(): Optional<String> = response._lastId().getOptional("last_id")
+    fun _data() = response._data()
 
-    override fun items(): List<OrganizationUser> = data()
+    /** @see UserListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    /** @see UserListPageResponse.lastId */
+    fun lastId() = response.lastId()
+
+    fun lastIdOrThrow(): String = lastId().orElseGet { response._lastId().getRequired("last_id") }
+
+    fun _lastId() = response._lastId()
+
+    override fun items(): List<OrganizationUser> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean =
         hasMore().orElse(true) && items().isNotEmpty() && lastId().isPresent

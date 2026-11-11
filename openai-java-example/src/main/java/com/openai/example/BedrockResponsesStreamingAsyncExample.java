@@ -20,7 +20,7 @@ public final class BedrockResponsesStreamingAsyncExample {
 
         client.responses()
                 .createStreaming(params)
-                .subscribe(event -> event.outputTextDelta().ifPresent(delta -> System.out.print(delta.delta())))
+                .subscribe(event -> event.outputTextDelta().ifPresent(delta -> System.out.print(delta.deltaOrThrow())))
                 .onCompleteFuture()
                 .join();
     }

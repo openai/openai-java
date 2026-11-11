@@ -37,7 +37,7 @@ internal class UploadCompleteParamsTest {
 
         val body = params._body()
 
-        assertThat(body.partIds()).containsExactly("string")
+        assertThat(body.partIdsOrThrow()).containsExactly("string")
         assertThat(body.md5()).contains("md5")
     }
 
@@ -48,6 +48,6 @@ internal class UploadCompleteParamsTest {
 
         val body = params._body()
 
-        assertThat(body.partIds()).containsExactly("string")
+        assertThat(body.partIdsOrThrow()).containsExactly("string")
     }
 }

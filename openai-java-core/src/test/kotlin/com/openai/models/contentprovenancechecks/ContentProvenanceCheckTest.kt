@@ -4,6 +4,7 @@ package com.openai.models.contentprovenancechecks
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -26,10 +27,10 @@ internal class ContentProvenanceCheckTest {
                 )
                 .build()
 
-        assertThat(contentProvenanceCheck.createdAt()).isEqualTo(0L)
+        assertThat(contentProvenanceCheck.createdAt()).contains(0L)
         assertThat(contentProvenanceCheck.object_())
-            .isEqualTo(ContentProvenanceCheck.Object.CONTENT_PROVENANCE_CHECK)
-        assertThat(contentProvenanceCheck.results())
+            .contains(ContentProvenanceCheck.Object.CONTENT_PROVENANCE_CHECK)
+        assertThat(contentProvenanceCheck.results().getOrNull())
             .containsExactly(
                 ContentProvenanceCheck.Result.ofC2pa(
                     ContentProvenanceCheck.Result.C2pa.builder()

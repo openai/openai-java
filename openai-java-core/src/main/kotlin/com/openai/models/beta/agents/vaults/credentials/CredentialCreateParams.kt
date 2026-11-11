@@ -36,30 +36,23 @@ private constructor(
 
     fun vaultId(): Optional<String> = Optional.ofNullable(vaultId)
 
-    /**
-     * The authentication method and write-only secret values to store.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun auth(): CredentialAuthCreateParam = body.auth()
+    /** @see Body.auth */
+    fun auth(): java.util.Optional<CredentialAuthCreateParam> = body.auth()
 
-    /**
-     * The name is trimmed before storage. It must contain 1 to 256 UTF-8 bytes after trimming.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = body.name()
+    /** @see Body.authOrThrow */
+    fun authOrThrow(): CredentialAuthCreateParam = body.authOrThrow()
 
-    /**
-     * Up to 16 string key-value pairs, with keys up to 64 and values up to 512 characters. Defaults
-     * to an empty map.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun metadata(): Optional<Metadata> = body.metadata()
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
+
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
+
+    /** @see Body.metadata */
+    fun metadata(): java.util.Optional<Metadata> = body.metadata()
+
+    /** @see Body.metadataOrThrow */
+    fun metadataOrThrow(): Metadata = body.metadataOrThrow()
 
     /**
      * Returns the raw JSON value of [auth].
@@ -369,29 +362,46 @@ private constructor(
         ) : this(auth, name, metadata, mutableMapOf())
 
         /**
-         * The authentication method and write-only secret values to store.
+         * The authentication method and write-only secret values to store. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun auth(): CredentialAuthCreateParam = auth.getRequired("auth")
+        fun auth(): java.util.Optional<CredentialAuthCreateParam> = auth.getOptional("auth")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun authOrThrow(): CredentialAuthCreateParam = auth.getRequired("auth")
 
         /**
          * The name is trimmed before storage. It must contain 1 to 256 UTF-8 bytes after trimming.
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): String = name.getRequired("name")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
 
         /**
          * Up to 16 string key-value pairs, with keys up to 64 and values up to 512 characters.
-         * Defaults to an empty map.
+         * Defaults to an empty map. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+        fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
 
         /**
          * Returns the raw JSON value of [auth].
@@ -594,8 +604,8 @@ private constructor(
                 return@apply
             }
 
-            auth().validate()
-            name()
+            authOrThrow().validate()
+            nameOrThrow()
             metadata().ifPresent { it.validate() }
             validated = true
         }

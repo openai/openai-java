@@ -19,9 +19,9 @@ internal class InstructionsAppendedEventTest {
                 .clientEventId("evt_instructions_001")
                 .build()
 
-        assertThat(instructionsAppendedEvent.endMs()).isEqualTo(1400L)
-        assertThat(instructionsAppendedEvent.eventId()).isEqualTo("evt_instructions_002")
-        assertThat(instructionsAppendedEvent.startMs()).isEqualTo(1200L)
+        assertThat(instructionsAppendedEvent.endMs()).contains(1400L)
+        assertThat(instructionsAppendedEvent.eventId()).contains("evt_instructions_002")
+        assertThat(instructionsAppendedEvent.startMs()).contains(1200L)
         assertThat(instructionsAppendedEvent.clientEventId()).contains("evt_instructions_001")
 
         val jsonMapper = jsonMapper()

@@ -21,9 +21,9 @@ internal class SessionUsageUpdatedEventTest {
                 )
                 .build()
 
-        assertThat(sessionUsageUpdatedEvent.eventId()).isEqualTo("evt_usage_001")
+        assertThat(sessionUsageUpdatedEvent.eventId()).contains("evt_usage_001")
         assertThat(sessionUsageUpdatedEvent.usage())
-            .isEqualTo(SessionUsage.builder().seconds(32.5).build())
+            .contains(SessionUsage.builder().seconds(32.5).build())
         assertThat(sessionUsageUpdatedEvent.clientEventId()).contains("client_event_id")
         assertThat(sessionUsageUpdatedEvent.contextWindow())
             .contains(SessionUsageUpdatedEvent.ContextWindow.builder().usageRatio(0.12).build())

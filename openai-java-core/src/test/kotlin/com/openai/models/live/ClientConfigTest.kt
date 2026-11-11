@@ -22,7 +22,7 @@ internal class ClientConfigTest {
                 .build()
 
         assertThat(clientConfig.dataChannel())
-            .isEqualTo(
+            .contains(
                 DataChannelConfig.builder()
                     .allowedClientEventsOfStrings(listOf("string"))
                     .allowedServerEventsAll()

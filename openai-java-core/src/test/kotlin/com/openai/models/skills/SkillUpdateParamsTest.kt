@@ -35,6 +35,6 @@ internal class SkillUpdateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.defaultVersion()).isEqualTo("default_version")
+        assertThat(body.defaultVersionOrThrow()).isEqualTo("default_version")
     }
 }

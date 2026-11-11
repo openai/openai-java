@@ -25,7 +25,7 @@ internal class TranscriptionTextDeltaEventTest {
                 .segmentId("segment_id")
                 .build()
 
-        assertThat(transcriptionTextDeltaEvent.delta()).isEqualTo("delta")
+        assertThat(transcriptionTextDeltaEvent.delta()).contains("delta")
         assertThat(transcriptionTextDeltaEvent.logprobs().getOrNull())
             .containsExactly(
                 TranscriptionTextDeltaEvent.Logprob.builder()

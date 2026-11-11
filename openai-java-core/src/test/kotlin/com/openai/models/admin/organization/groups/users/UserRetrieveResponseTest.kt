@@ -21,12 +21,12 @@ internal class UserRetrieveResponseTest {
                 .userType(UserRetrieveResponse.UserType.USER)
                 .build()
 
-        assertThat(userRetrieveResponse.id()).isEqualTo("id")
+        assertThat(userRetrieveResponse.id()).contains("id")
         assertThat(userRetrieveResponse.email()).contains("email")
         assertThat(userRetrieveResponse.isServiceAccount()).contains(true)
-        assertThat(userRetrieveResponse.name()).isEqualTo("name")
+        assertThat(userRetrieveResponse.name()).contains("name")
         assertThat(userRetrieveResponse.picture()).contains("picture")
-        assertThat(userRetrieveResponse.userType()).isEqualTo(UserRetrieveResponse.UserType.USER)
+        assertThat(userRetrieveResponse.userType()).contains(UserRetrieveResponse.UserType.USER)
 
         val jsonMapper = jsonMapper()
 

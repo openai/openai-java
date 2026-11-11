@@ -33,7 +33,7 @@ internal class AgentSessionEnvironmentConnectedEventTest {
                 .build()
 
         assertThat(agentSessionEnvironmentConnectedEvent.environment())
-            .isEqualTo(
+            .contains(
                 AgentSessionEnvironmentState.builder()
                     .id("id")
                     .error(
@@ -47,8 +47,8 @@ internal class AgentSessionEnvironmentConnectedEventTest {
                     .type("type")
                     .build()
             )
-        assertThat(agentSessionEnvironmentConnectedEvent.eventId()).isEqualTo("event_id")
-        assertThat(agentSessionEnvironmentConnectedEvent.sessionId()).isEqualTo("session_id")
+        assertThat(agentSessionEnvironmentConnectedEvent.eventId()).contains("event_id")
+        assertThat(agentSessionEnvironmentConnectedEvent.sessionId()).contains("session_id")
         assertThat(agentSessionEnvironmentConnectedEvent.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()

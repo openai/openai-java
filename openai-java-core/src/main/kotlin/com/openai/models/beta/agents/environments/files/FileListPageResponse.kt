@@ -43,36 +43,56 @@ private constructor(
     ) : this(data, hasMore, next, object_, mutableMapOf())
 
     /**
-     * Files available on the current page.
+     * Files available on the current page. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun data(): List<EnvironmentFile> = data.getRequired("data")
+    fun data(): java.util.Optional<List<EnvironmentFile>> = data.getOptional("data")
 
     /**
-     * Whether more files follow this page.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun hasMore(): Boolean = hasMore.getRequired("has_more")
+    fun dataOrThrow(): List<EnvironmentFile> = data.getRequired("data")
 
     /**
-     * The opaque cursor to use when requesting the next page, if any.
+     * Whether more files follow this page. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun next(): Optional<String> = next.getOptional("next")
+    fun hasMore(): java.util.Optional<Boolean> = hasMore.getOptional("has_more")
 
     /**
-     * The object type. Always `page`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun object_(): Object = object_.getRequired("object")
+    fun hasMoreOrThrow(): Boolean = hasMore.getRequired("has_more")
+
+    /**
+     * The opaque cursor to use when requesting the next page, if any. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun next(): java.util.Optional<String> = next.getOptional("next")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nextOrThrow(): String = next.getRequired("next")
+
+    /**
+     * The object type. Always `page`. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<Object> = object_.getOptional("object")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): Object = object_.getRequired("object")
 
     /**
      * Returns the raw JSON value of [data].
@@ -289,10 +309,10 @@ private constructor(
             return@apply
         }
 
-        data().forEach { it.validate() }
-        hasMore()
+        dataOrThrow().forEach { it.validate() }
+        hasMoreOrThrow()
         next()
-        object_().validate()
+        object_OrThrow().validate()
         validated = true
     }
 

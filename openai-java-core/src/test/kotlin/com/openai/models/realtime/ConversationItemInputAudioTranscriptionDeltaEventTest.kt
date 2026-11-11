@@ -23,9 +23,8 @@ internal class ConversationItemInputAudioTranscriptionDeltaEventTest {
                 )
                 .build()
 
-        assertThat(conversationItemInputAudioTranscriptionDeltaEvent.eventId())
-            .isEqualTo("event_id")
-        assertThat(conversationItemInputAudioTranscriptionDeltaEvent.itemId()).isEqualTo("item_id")
+        assertThat(conversationItemInputAudioTranscriptionDeltaEvent.eventId()).contains("event_id")
+        assertThat(conversationItemInputAudioTranscriptionDeltaEvent.itemId()).contains("item_id")
         assertThat(conversationItemInputAudioTranscriptionDeltaEvent.contentIndex()).contains(0L)
         assertThat(conversationItemInputAudioTranscriptionDeltaEvent.delta()).contains("delta")
         assertThat(conversationItemInputAudioTranscriptionDeltaEvent.logprobs().getOrNull())

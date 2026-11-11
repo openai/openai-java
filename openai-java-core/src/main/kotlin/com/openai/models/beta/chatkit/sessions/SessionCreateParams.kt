@@ -33,48 +33,37 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * A free-form string that identifies your end user; ensures this Session can access other
-     * objects that have the same `user` scope.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun user(): String = body.user()
+    /** @see Body.user */
+    fun user(): java.util.Optional<String> = body.user()
 
-    /**
-     * Workflow that powers the session.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun workflow(): ChatSessionWorkflowParam = body.workflow()
+    /** @see Body.userOrThrow */
+    fun userOrThrow(): String = body.userOrThrow()
 
-    /**
-     * Optional overrides for ChatKit runtime configuration features
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun chatkitConfiguration(): Optional<ChatSessionChatKitConfigurationParam> =
+    /** @see Body.workflow */
+    fun workflow(): java.util.Optional<ChatSessionWorkflowParam> = body.workflow()
+
+    /** @see Body.workflowOrThrow */
+    fun workflowOrThrow(): ChatSessionWorkflowParam = body.workflowOrThrow()
+
+    /** @see Body.chatkitConfiguration */
+    fun chatkitConfiguration(): java.util.Optional<ChatSessionChatKitConfigurationParam> =
         body.chatkitConfiguration()
 
-    /**
-     * Optional override for session expiration timing in seconds from creation. Defaults to 10
-     * minutes.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun expiresAfter(): Optional<ChatSessionExpiresAfterParam> = body.expiresAfter()
+    /** @see Body.chatkitConfigurationOrThrow */
+    fun chatkitConfigurationOrThrow(): ChatSessionChatKitConfigurationParam =
+        body.chatkitConfigurationOrThrow()
 
-    /**
-     * Optional override for per-minute request limits. When omitted, defaults to 10.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun rateLimits(): Optional<ChatSessionRateLimitsParam> = body.rateLimits()
+    /** @see Body.expiresAfter */
+    fun expiresAfter(): java.util.Optional<ChatSessionExpiresAfterParam> = body.expiresAfter()
+
+    /** @see Body.expiresAfterOrThrow */
+    fun expiresAfterOrThrow(): ChatSessionExpiresAfterParam = body.expiresAfterOrThrow()
+
+    /** @see Body.rateLimits */
+    fun rateLimits(): java.util.Optional<ChatSessionRateLimitsParam> = body.rateLimits()
+
+    /** @see Body.rateLimitsOrThrow */
+    fun rateLimitsOrThrow(): ChatSessionRateLimitsParam = body.rateLimitsOrThrow()
 
     /**
      * Returns the raw JSON value of [user].
@@ -421,48 +410,80 @@ private constructor(
 
         /**
          * A free-form string that identifies your end user; ensures this Session can access other
-         * objects that have the same `user` scope.
+         * objects that have the same `user` scope. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun user(): String = user.getRequired("user")
+        fun user(): java.util.Optional<String> = user.getOptional("user")
 
         /**
-         * Workflow that powers the session.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun workflow(): ChatSessionWorkflowParam = workflow.getRequired("workflow")
+        fun userOrThrow(): String = user.getRequired("user")
 
         /**
-         * Optional overrides for ChatKit runtime configuration features
+         * Workflow that powers the session. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun chatkitConfiguration(): Optional<ChatSessionChatKitConfigurationParam> =
+        fun workflow(): java.util.Optional<ChatSessionWorkflowParam> =
+            workflow.getOptional("workflow")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun workflowOrThrow(): ChatSessionWorkflowParam = workflow.getRequired("workflow")
+
+        /**
+         * Optional overrides for ChatKit runtime configuration features Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun chatkitConfiguration(): java.util.Optional<ChatSessionChatKitConfigurationParam> =
             chatkitConfiguration.getOptional("chatkit_configuration")
 
         /**
-         * Optional override for session expiration timing in seconds from creation. Defaults to 10
-         * minutes.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun expiresAfter(): Optional<ChatSessionExpiresAfterParam> =
+        fun chatkitConfigurationOrThrow(): ChatSessionChatKitConfigurationParam =
+            chatkitConfiguration.getRequired("chatkit_configuration")
+
+        /**
+         * Optional override for session expiration timing in seconds from creation. Defaults to 10
+         * minutes. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun expiresAfter(): java.util.Optional<ChatSessionExpiresAfterParam> =
             expiresAfter.getOptional("expires_after")
 
         /**
-         * Optional override for per-minute request limits. When omitted, defaults to 10.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun rateLimits(): Optional<ChatSessionRateLimitsParam> =
+        fun expiresAfterOrThrow(): ChatSessionExpiresAfterParam =
+            expiresAfter.getRequired("expires_after")
+
+        /**
+         * Optional override for per-minute request limits. When omitted, defaults to 10. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun rateLimits(): java.util.Optional<ChatSessionRateLimitsParam> =
             rateLimits.getOptional("rate_limits")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun rateLimitsOrThrow(): ChatSessionRateLimitsParam = rateLimits.getRequired("rate_limits")
 
         /**
          * Returns the raw JSON value of [user].
@@ -714,8 +735,8 @@ private constructor(
                 return@apply
             }
 
-            user()
-            workflow().validate()
+            userOrThrow()
+            workflowOrThrow().validate()
             chatkitConfiguration().ifPresent { it.validate() }
             expiresAfter().ifPresent { it.validate() }
             rateLimits().ifPresent { it.validate() }

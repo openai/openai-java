@@ -21,15 +21,15 @@ internal class GcpExternalStorageProviderTest {
                 .workloadIdentityProviderId("workload_identity_provider_id")
                 .build()
 
-        assertThat(gcpExternalStorageProvider.audience()).isEqualTo("audience")
-        assertThat(gcpExternalStorageProvider.bucket()).isEqualTo("bucket")
-        assertThat(gcpExternalStorageProvider.region()).isEqualTo("region")
+        assertThat(gcpExternalStorageProvider.audience()).contains("audience")
+        assertThat(gcpExternalStorageProvider.bucket()).contains("bucket")
+        assertThat(gcpExternalStorageProvider.region()).contains("region")
         assertThat(gcpExternalStorageProvider.workloadIdentityPoolId())
-            .isEqualTo("workload_identity_pool_id")
+            .contains("workload_identity_pool_id")
         assertThat(gcpExternalStorageProvider.workloadIdentityProjectNumber())
-            .isEqualTo("workload_identity_project_number")
+            .contains("workload_identity_project_number")
         assertThat(gcpExternalStorageProvider.workloadIdentityProviderId())
-            .isEqualTo("workload_identity_provider_id")
+            .contains("workload_identity_provider_id")
 
         val jsonMapper = jsonMapper()
 

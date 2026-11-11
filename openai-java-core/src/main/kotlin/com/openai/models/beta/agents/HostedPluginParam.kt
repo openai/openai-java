@@ -41,41 +41,66 @@ private constructor(
     ) : this(description, name, source, type, mutableMapOf())
 
     /**
-     * The plugin description declared in `.codex-plugin/plugin.json`.
+     * The plugin description declared in `.codex-plugin/plugin.json`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun description(): String = description.getRequired("description")
+    fun description(): java.util.Optional<String> = description.getOptional("description")
 
     /**
-     * The plugin name declared in `.codex-plugin/plugin.json`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): String = name.getRequired("name")
+    fun descriptionOrThrow(): String = description.getRequired("description")
 
     /**
-     * Provides ZIP bytes encoded with standard base64.
+     * The plugin name declared in `.codex-plugin/plugin.json`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun source(): InlineCapabilitySourceParam = source.getRequired("source")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
 
     /**
-     * The type of the object. Always `inline`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("inline")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun nameOrThrow(): String = name.getRequired("name")
+
+    /**
+     * Provides ZIP bytes encoded with standard base64. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun source(): java.util.Optional<InlineCapabilitySourceParam> = source.getOptional("source")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sourceOrThrow(): InlineCapabilitySourceParam = source.getRequired("source")
+
+    /**
+     * The type of the object. Always `inline`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("inline")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [description].
@@ -283,14 +308,10 @@ private constructor(
             return@apply
         }
 
-        description()
-        name()
-        source().validate()
-        _type().let {
-            if (it != JsonValue.from("inline")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        descriptionOrThrow()
+        nameOrThrow()
+        sourceOrThrow().validate()
+        typeOrThrow()
         validated = true
     }
 

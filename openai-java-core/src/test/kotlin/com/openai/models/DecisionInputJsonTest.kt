@@ -17,7 +17,7 @@ internal class DecisionInputJsonTest {
                 .build()
 
         assertThat(decisionInputJson.data())
-            .isEqualTo(
+            .contains(
                 DecisionInputJson.Data.ofUnionMember0(
                     DecisionInputJson.Data.UnionMember0.builder().build()
                 )

@@ -73,13 +73,13 @@ public final class ResponsesFunctionCallingRawExample {
                 .maxOutputTokens(2048)
                 .input(ResponseCreateParams.Input.ofResponse(inputs));
 
-        client.responses().create(createParamsBuilder.build()).output().forEach(item -> {
+        client.responses().create(createParamsBuilder.build()).outputOrThrow().forEach(item -> {
             if (item.isFunctionCall()) {
                 ResponseFunctionToolCall functionCall = item.asFunctionCall();
 
                 inputs.add(ResponseInputItem.ofFunctionCall(functionCall));
                 inputs.add(ResponseInputItem.ofFunctionCallOutput(ResponseInputItem.FunctionCallOutput.builder()
-                        .callId(functionCall.callId())
+                        .callId(functionCall.callIdOrThrow())
                         .output(callFunction(functionCall))
                         .build()));
             }
@@ -88,11 +88,11 @@ public final class ResponsesFunctionCallingRawExample {
         // Pass the function call results back to the model to complete the process.
         createParamsBuilder.input(ResponseCreateParams.Input.ofResponse(inputs));
 
-        client.responses().create(createParamsBuilder.build()).output().stream()
+        client.responses().create(createParamsBuilder.build()).outputOrThrow().stream()
                 .flatMap(item -> item.message().stream())
-                .flatMap(message -> message.content().stream())
+                .flatMap(message -> message.contentOrThrow().stream())
                 .flatMap(content -> content.outputText().stream())
-                .forEach(outputText -> System.out.println(outputText.text()));
+                .forEach(outputText -> System.out.println(outputText.textOrThrow()));
     }
 
     private static String callFunction(ResponseFunctionToolCall function) {
@@ -100,7 +100,7 @@ public final class ResponsesFunctionCallingRawExample {
         JsonValue arguments;
 
         try {
-            arguments = JsonValue.from(mapper.readTree(function.arguments()));
+            arguments = JsonValue.from(mapper.readTree(function.argumentsOrThrow()));
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Bad function arguments", e);
         }
@@ -108,7 +108,7 @@ public final class ResponsesFunctionCallingRawExample {
         String sdkName = ((JsonObject) arguments).values().get("name").asStringOrThrow();
         Object result;
 
-        switch (function.name()) {
+        switch (function.nameOrThrow()) {
             case "get-sdk-quality":
                 result = new SdkQuality(sdkName, sdkName.contains("OpenAI") ? "It's robust and polished!" : "*shrug*");
                 break;
@@ -118,7 +118,7 @@ public final class ResponsesFunctionCallingRawExample {
                 break;
 
             default:
-                throw new IllegalArgumentException("Unknown function: " + function.name());
+                throw new IllegalArgumentException("Unknown function: " + function.nameOrThrow());
         }
 
         try {

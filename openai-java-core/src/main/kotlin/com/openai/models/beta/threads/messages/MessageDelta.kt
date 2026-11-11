@@ -38,20 +38,30 @@ private constructor(
     ) : this(content, role, mutableMapOf())
 
     /**
-     * The content of the message in array of text and/or images.
+     * The content of the message in array of text and/or images. Returns empty if the JSON property
+     * is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun content(): Optional<List<MessageContentDelta>> = content.getOptional("content")
+    fun content(): java.util.Optional<List<MessageContentDelta>> = content.getOptional("content")
 
     /**
-     * The entity that produced the message. One of `user` or `assistant`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun role(): Optional<Role> = role.getOptional("role")
+    fun contentOrThrow(): List<MessageContentDelta> = content.getRequired("content")
+
+    /**
+     * The entity that produced the message. One of `user` or `assistant`. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun role(): java.util.Optional<Role> = role.getOptional("role")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun roleOrThrow(): Role = role.getRequired("role")
 
     /**
      * Returns the raw JSON value of [content].

@@ -38,7 +38,7 @@ internal constructor(
 
     fun sessionId(): Optional<String> = Optional.ofNullable(sessionId)
 
-    fun turnId(): Optional<String> = Optional.ofNullable(turn?.id())
+    fun turnId(): Optional<String> = Optional.ofNullable(turn?.idOrThrow())
 
     /** Completed assistant messages available before collection stopped. */
     fun messages(): List<AgentSessionMessage> = messages

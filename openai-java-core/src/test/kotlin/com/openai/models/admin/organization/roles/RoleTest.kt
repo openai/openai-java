@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.roles
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -21,12 +22,12 @@ internal class RoleTest {
                 .resourceType("resource_type")
                 .build()
 
-        assertThat(role.id()).isEqualTo("id")
+        assertThat(role.id()).contains("id")
         assertThat(role.description()).contains("description")
-        assertThat(role.name()).isEqualTo("name")
-        assertThat(role.permissions()).containsExactly("string")
-        assertThat(role.predefinedRole()).isEqualTo(true)
-        assertThat(role.resourceType()).isEqualTo("resource_type")
+        assertThat(role.name()).contains("name")
+        assertThat(role.permissions().getOrNull()).containsExactly("string")
+        assertThat(role.predefinedRole()).contains(true)
+        assertThat(role.resourceType()).contains("resource_type")
 
         val jsonMapper = jsonMapper()
 

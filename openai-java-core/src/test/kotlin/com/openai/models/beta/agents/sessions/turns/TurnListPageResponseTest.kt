@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
 import com.openai.models.beta.agents.SessionTurnError
 import com.openai.models.beta.agents.TokenUsage
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -54,7 +55,7 @@ internal class TurnListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(turnListPageResponse.data())
+        assertThat(turnListPageResponse.data().getOrNull())
             .containsExactly(
                 Turn.builder()
                     .id("id")
@@ -88,7 +89,7 @@ internal class TurnListPageResponseTest {
                     .build()
             )
         assertThat(turnListPageResponse.firstId()).contains("first_id")
-        assertThat(turnListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(turnListPageResponse.hasMore()).contains(true)
         assertThat(turnListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

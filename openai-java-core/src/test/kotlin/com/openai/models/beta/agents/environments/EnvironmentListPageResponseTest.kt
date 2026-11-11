@@ -7,6 +7,7 @@ import com.openai.core.jsonMapper
 import com.openai.models.beta.agents.HostedEnvironmentFileId
 import com.openai.models.beta.agents.HostedPlugin
 import com.openai.models.beta.agents.HostedSkillReference
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -47,7 +48,7 @@ internal class EnvironmentListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(environmentListPageResponse.data())
+        assertThat(environmentListPageResponse.data().getOrNull())
             .containsExactly(
                 EnvironmentInfo.builder()
                     .id("id")
@@ -75,7 +76,7 @@ internal class EnvironmentListPageResponseTest {
                     .build()
             )
         assertThat(environmentListPageResponse.firstId()).contains("first_id")
-        assertThat(environmentListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(environmentListPageResponse.hasMore()).contains(true)
         assertThat(environmentListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

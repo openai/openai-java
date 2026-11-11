@@ -13,8 +13,8 @@ internal class AssistantDeletedTest {
     fun createAndRoundtrip() {
         val assistantDeleted = AssistantDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(assistantDeleted.id()).isEqualTo("id")
-        assertThat(assistantDeleted.deleted()).isEqualTo(true)
+        assertThat(assistantDeleted.id()).contains("id")
+        assertThat(assistantDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

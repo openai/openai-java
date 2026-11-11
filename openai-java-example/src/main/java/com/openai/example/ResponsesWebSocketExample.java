@@ -29,7 +29,7 @@ public final class ResponsesWebSocketExample {
             connection.send(ResponsesClientEvent.ofResponseCreate(ResponsesClientEvent.ResponseCreate.builder()
                     .model("gpt-4o-mini")
                     .store(false)
-                    .previousResponseId(first.id())
+                    .previousResponseId(first.idOrThrow())
                     .input("Now say goodbye in one short sentence.")
                     .build()));
             Response second = connection.finalResponse();

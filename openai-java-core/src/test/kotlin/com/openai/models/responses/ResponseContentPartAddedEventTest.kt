@@ -45,11 +45,11 @@ internal class ResponseContentPartAddedEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseContentPartAddedEvent.contentIndex()).isEqualTo(0L)
-        assertThat(responseContentPartAddedEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseContentPartAddedEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseContentPartAddedEvent.contentIndex()).contains(0L)
+        assertThat(responseContentPartAddedEvent.itemId()).contains("item_id")
+        assertThat(responseContentPartAddedEvent.outputIndex()).contains(0L)
         assertThat(responseContentPartAddedEvent.part())
-            .isEqualTo(
+            .contains(
                 ResponseContentPartAddedEvent.Part.ofOutputText(
                     ResponseOutputText.builder()
                         .addAnnotation(
@@ -77,7 +77,7 @@ internal class ResponseContentPartAddedEventTest {
                         .build()
                 )
             )
-        assertThat(responseContentPartAddedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseContentPartAddedEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

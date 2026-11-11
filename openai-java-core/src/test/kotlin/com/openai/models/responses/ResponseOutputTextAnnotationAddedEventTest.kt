@@ -37,11 +37,11 @@ internal class ResponseOutputTextAnnotationAddedEventTest {
                         .build()
                 )
             )
-        assertThat(responseOutputTextAnnotationAddedEvent.annotationIndex()).isEqualTo(0L)
-        assertThat(responseOutputTextAnnotationAddedEvent.contentIndex()).isEqualTo(0L)
-        assertThat(responseOutputTextAnnotationAddedEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseOutputTextAnnotationAddedEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseOutputTextAnnotationAddedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseOutputTextAnnotationAddedEvent.annotationIndex()).contains(0L)
+        assertThat(responseOutputTextAnnotationAddedEvent.contentIndex()).contains(0L)
+        assertThat(responseOutputTextAnnotationAddedEvent.itemId()).contains("item_id")
+        assertThat(responseOutputTextAnnotationAddedEvent.outputIndex()).contains(0L)
+        assertThat(responseOutputTextAnnotationAddedEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

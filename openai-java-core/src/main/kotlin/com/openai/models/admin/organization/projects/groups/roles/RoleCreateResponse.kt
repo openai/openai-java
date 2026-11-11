@@ -36,33 +36,53 @@ private constructor(
     ) : this(group, object_, role, mutableMapOf())
 
     /**
-     * Summary information about a group returned in role assignment responses.
+     * Summary information about a group returned in role assignment responses. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun group(): Group = group.getRequired("group")
+    fun group(): java.util.Optional<Group> = group.getOptional("group")
 
     /**
-     * Always `group.role`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("group.role")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun groupOrThrow(): Group = group.getRequired("group")
 
     /**
-     * Details about a role that can be assigned through the public Roles API.
+     * Always `group.role`. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun role(): Role = role.getRequired("role")
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("group.role")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * Details about a role that can be assigned through the public Roles API. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun role(): java.util.Optional<Role> = role.getOptional("role")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun roleOrThrow(): Role = role.getRequired("role")
 
     /**
      * Returns the raw JSON value of [group].
@@ -231,13 +251,9 @@ private constructor(
             return@apply
         }
 
-        group().validate()
-        _object_().let {
-            if (it != JsonValue.from("group.role")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        role().validate()
+        groupOrThrow().validate()
+        object_OrThrow()
+        roleOrThrow().validate()
         validated = true
     }
 
@@ -286,49 +302,84 @@ private constructor(
         ) : this(id, createdAt, name, object_, scimManaged, mutableMapOf())
 
         /**
-         * Identifier for the group.
+         * Identifier for the group. The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun id(): String = id.getRequired("id")
+        fun id(): java.util.Optional<String> = id.getOptional("id")
 
         /**
-         * Unix timestamp (in seconds) when the group was created.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun createdAt(): Long = createdAt.getRequired("created_at")
+        fun idOrThrow(): String = id.getRequired("id")
 
         /**
-         * Display name of the group.
+         * Unix timestamp (in seconds) when the group was created. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): String = name.getRequired("name")
+        fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
         /**
-         * Always `group`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("group")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+        fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
         /**
-         * Whether the group is managed through SCIM.
+         * Display name of the group. The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun scimManaged(): Boolean = scimManaged.getRequired("scim_managed")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
+
+        /**
+         * Always `group`. The schema requires this property. Returns empty if the JSON property is
+         * missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun object_(): java.util.Optional<JsonValue> {
+            val raw = object_
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("group")) ->
+                    throw OpenAIInvalidDataException("`object` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+        @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+        /**
+         * Whether the group is managed through SCIM. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun scimManaged(): java.util.Optional<Boolean> = scimManaged.getOptional("scim_managed")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun scimManagedOrThrow(): Boolean = scimManaged.getRequired("scim_managed")
 
         /**
          * Returns the raw JSON value of [id].
@@ -554,15 +605,11 @@ private constructor(
                 return@apply
             }
 
-            id()
-            createdAt()
-            name()
-            _object_().let {
-                if (it != JsonValue.from("group")) {
-                    throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                }
-            }
-            scimManaged()
+            idOrThrow()
+            createdAtOrThrow()
+            nameOrThrow()
+            object_OrThrow()
+            scimManagedOrThrow()
             validated = true
         }
 

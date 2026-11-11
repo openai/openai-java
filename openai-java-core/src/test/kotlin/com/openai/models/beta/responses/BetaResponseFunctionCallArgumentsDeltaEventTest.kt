@@ -24,10 +24,10 @@ internal class BetaResponseFunctionCallArgumentsDeltaEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseFunctionCallArgumentsDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(betaResponseFunctionCallArgumentsDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseFunctionCallArgumentsDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseFunctionCallArgumentsDeltaEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseFunctionCallArgumentsDeltaEvent.delta()).contains("delta")
+        assertThat(betaResponseFunctionCallArgumentsDeltaEvent.itemId()).contains("item_id")
+        assertThat(betaResponseFunctionCallArgumentsDeltaEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseFunctionCallArgumentsDeltaEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseFunctionCallArgumentsDeltaEvent.agent())
             .contains(
                 BetaResponseFunctionCallArgumentsDeltaEvent.Agent.builder()

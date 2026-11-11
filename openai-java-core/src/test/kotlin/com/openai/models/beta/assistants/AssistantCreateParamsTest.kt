@@ -113,7 +113,7 @@ internal class AssistantCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_4_1)
+        assertThat(body.modelOrThrow()).isEqualTo(ChatModel.GPT_4_1)
         assertThat(body.description()).contains("description")
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.metadata())
@@ -165,6 +165,6 @@ internal class AssistantCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_4_1)
+        assertThat(body.modelOrThrow()).isEqualTo(ChatModel.GPT_4_1)
     }
 }

@@ -63,65 +63,105 @@ private constructor(
     )
 
     /**
-     * The index of the content part that the text content is finalized.
+     * The index of the content part that the text content is finalized. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun contentIndex(): Long = contentIndex.getRequired("content_index")
+    fun contentIndex(): java.util.Optional<Long> = contentIndex.getOptional("content_index")
 
     /**
-     * The ID of the output item that the text content is finalized.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun itemId(): String = itemId.getRequired("item_id")
+    fun contentIndexOrThrow(): Long = contentIndex.getRequired("content_index")
 
     /**
-     * The log probabilities of the tokens in the delta.
+     * The ID of the output item that the text content is finalized. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun logprobs(): List<Logprob> = logprobs.getRequired("logprobs")
+    fun itemId(): java.util.Optional<String> = itemId.getOptional("item_id")
 
     /**
-     * The index of the output item that the text content is finalized.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun outputIndex(): Long = outputIndex.getRequired("output_index")
+    fun itemIdOrThrow(): String = itemId.getRequired("item_id")
 
     /**
-     * The sequence number for this event.
+     * The log probabilities of the tokens in the delta. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
+    fun logprobs(): java.util.Optional<List<Logprob>> = logprobs.getOptional("logprobs")
 
     /**
-     * The text content that is finalized.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun text(): String = text.getRequired("text")
+    fun logprobsOrThrow(): List<Logprob> = logprobs.getRequired("logprobs")
 
     /**
-     * The type of the event. Always `response.output_text.done`.
+     * The index of the output item that the text content is finalized. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.output_text.done")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun outputIndex(): java.util.Optional<Long> = outputIndex.getOptional("output_index")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun outputIndexOrThrow(): Long = outputIndex.getRequired("output_index")
+
+    /**
+     * The sequence number for this event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun sequenceNumber(): java.util.Optional<Long> = sequenceNumber.getOptional("sequence_number")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sequenceNumberOrThrow(): Long = sequenceNumber.getRequired("sequence_number")
+
+    /**
+     * The text content that is finalized. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun text(): java.util.Optional<String> = text.getOptional("text")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun textOrThrow(): String = text.getRequired("text")
+
+    /**
+     * The type of the event. Always `response.output_text.done`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.output_text.done")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [contentIndex].
@@ -410,17 +450,13 @@ private constructor(
             return@apply
         }
 
-        contentIndex()
-        itemId()
-        logprobs().forEach { it.validate() }
-        outputIndex()
-        sequenceNumber()
-        text()
-        _type().let {
-            if (it != JsonValue.from("response.output_text.done")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        contentIndexOrThrow()
+        itemIdOrThrow()
+        logprobsOrThrow().forEach { it.validate() }
+        outputIndexOrThrow()
+        sequenceNumberOrThrow()
+        textOrThrow()
+        typeOrThrow()
         validated = true
     }
 
@@ -471,28 +507,47 @@ private constructor(
         ) : this(token, logprob, topLogprobs, mutableMapOf())
 
         /**
-         * A possible text token.
+         * A possible text token. The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun token(): String = token.getRequired("token")
+        fun token(): java.util.Optional<String> = token.getOptional("token")
 
         /**
-         * The log probability of this token.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun logprob(): Double = logprob.getRequired("logprob")
+        fun tokenOrThrow(): String = token.getRequired("token")
 
         /**
-         * The log probabilities of up to 20 of the most likely tokens.
+         * The log probability of this token. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun topLogprobs(): Optional<List<TopLogprob>> = topLogprobs.getOptional("top_logprobs")
+        fun logprob(): java.util.Optional<Double> = logprob.getOptional("logprob")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun logprobOrThrow(): Double = logprob.getRequired("logprob")
+
+        /**
+         * The log probabilities of up to 20 of the most likely tokens. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun topLogprobs(): java.util.Optional<List<TopLogprob>> =
+            topLogprobs.getOptional("top_logprobs")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun topLogprobsOrThrow(): List<TopLogprob> = topLogprobs.getRequired("top_logprobs")
 
         /**
          * Returns the raw JSON value of [token].
@@ -684,8 +739,8 @@ private constructor(
                 return@apply
             }
 
-            token()
-            logprob()
+            tokenOrThrow()
+            logprobOrThrow()
             topLogprobs().ifPresent { it.forEach { it.validate() } }
             validated = true
         }
@@ -727,20 +782,31 @@ private constructor(
             ) : this(token, logprob, mutableMapOf())
 
             /**
-             * A possible text token.
+             * A possible text token. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun token(): Optional<String> = token.getOptional("token")
+            fun token(): java.util.Optional<String> = token.getOptional("token")
 
             /**
-             * The log probability of this token.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun logprob(): Optional<Double> = logprob.getOptional("logprob")
+            fun tokenOrThrow(): String = token.getRequired("token")
+
+            /**
+             * The log probability of this token. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun logprob(): java.util.Optional<Double> = logprob.getOptional("logprob")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun logprobOrThrow(): Double = logprob.getRequired("logprob")
 
             /**
              * Returns the raw JSON value of [token].

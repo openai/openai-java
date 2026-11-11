@@ -13,7 +13,7 @@ internal class TextContentBlockParamTest {
     fun createAndRoundtrip() {
         val textContentBlockParam = TextContentBlockParam.builder().text("text").build()
 
-        assertThat(textContentBlockParam.text()).isEqualTo("text")
+        assertThat(textContentBlockParam.text()).contains("text")
 
         val jsonMapper = jsonMapper()
 

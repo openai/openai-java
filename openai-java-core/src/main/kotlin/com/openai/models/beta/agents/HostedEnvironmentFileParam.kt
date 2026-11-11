@@ -265,33 +265,56 @@ private constructor(
         ) : this(fileId, path, type, mutableMapOf())
 
         /**
-         * The ID of the uploaded file.
+         * The ID of the uploaded file. The schema requires this property. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun fileId(): String = fileId.getRequired("file_id")
+        fun fileId(): java.util.Optional<String> = fileId.getOptional("file_id")
 
         /**
-         * The absolute destination path inside `/workspace`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun path(): String = path.getRequired("path")
+        fun fileIdOrThrow(): String = fileId.getRequired("file_id")
 
         /**
-         * The type of the object. Always `file_id`.
+         * The absolute destination path inside `/workspace`. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("file_id")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun path(): java.util.Optional<String> = path.getOptional("path")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun pathOrThrow(): String = path.getRequired("path")
+
+        /**
+         * The type of the object. Always `file_id`. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("file_id")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [fileId].
@@ -463,13 +486,9 @@ private constructor(
                 return@apply
             }
 
-            fileId()
-            path()
-            _type().let {
-                if (it != JsonValue.from("file_id")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            fileIdOrThrow()
+            pathOrThrow()
+            typeOrThrow()
             validated = true
         }
 
@@ -531,33 +550,56 @@ private constructor(
         ) : this(data, path, type, mutableMapOf())
 
         /**
-         * The standard-base64-encoded file contents.
+         * The standard-base64-encoded file contents. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun data(): String = data.getRequired("data")
+        fun data(): java.util.Optional<String> = data.getOptional("data")
 
         /**
-         * The absolute destination path inside `/workspace`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun path(): String = path.getRequired("path")
+        fun dataOrThrow(): String = data.getRequired("data")
 
         /**
-         * The type of the object. Always `inline`.
+         * The absolute destination path inside `/workspace`. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("inline")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun path(): java.util.Optional<String> = path.getOptional("path")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun pathOrThrow(): String = path.getRequired("path")
+
+        /**
+         * The type of the object. Always `inline`. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("inline")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [data].
@@ -729,13 +771,9 @@ private constructor(
                 return@apply
             }
 
-            data()
-            path()
-            _type().let {
-                if (it != JsonValue.from("inline")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            dataOrThrow()
+            pathOrThrow()
+            typeOrThrow()
             validated = true
         }
 

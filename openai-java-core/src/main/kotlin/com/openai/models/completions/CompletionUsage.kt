@@ -57,46 +57,74 @@ private constructor(
     )
 
     /**
-     * Number of tokens in the generated completion.
+     * Number of tokens in the generated completion. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun completionTokens(): Long = completionTokens.getRequired("completion_tokens")
+    fun completionTokens(): java.util.Optional<Long> =
+        completionTokens.getOptional("completion_tokens")
 
     /**
-     * Number of tokens in the prompt.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun promptTokens(): Long = promptTokens.getRequired("prompt_tokens")
+    fun completionTokensOrThrow(): Long = completionTokens.getRequired("completion_tokens")
 
     /**
-     * Total number of tokens used in the request (prompt + completion).
+     * Number of tokens in the prompt. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun totalTokens(): Long = totalTokens.getRequired("total_tokens")
+    fun promptTokens(): java.util.Optional<Long> = promptTokens.getOptional("prompt_tokens")
 
     /**
-     * Breakdown of tokens used in a completion.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun completionTokensDetails(): Optional<CompletionTokensDetails> =
+    fun promptTokensOrThrow(): Long = promptTokens.getRequired("prompt_tokens")
+
+    /**
+     * Total number of tokens used in the request (prompt + completion). The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun totalTokens(): java.util.Optional<Long> = totalTokens.getOptional("total_tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun totalTokensOrThrow(): Long = totalTokens.getRequired("total_tokens")
+
+    /**
+     * Breakdown of tokens used in a completion. Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun completionTokensDetails(): java.util.Optional<CompletionTokensDetails> =
         completionTokensDetails.getOptional("completion_tokens_details")
 
     /**
-     * Breakdown of tokens used in the prompt.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun promptTokensDetails(): Optional<PromptTokensDetails> =
+    fun completionTokensDetailsOrThrow(): CompletionTokensDetails =
+        completionTokensDetails.getRequired("completion_tokens_details")
+
+    /**
+     * Breakdown of tokens used in the prompt. Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun promptTokensDetails(): java.util.Optional<PromptTokensDetails> =
         promptTokensDetails.getOptional("prompt_tokens_details")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun promptTokensDetailsOrThrow(): PromptTokensDetails =
+        promptTokensDetails.getRequired("prompt_tokens_details")
 
     /**
      * Returns the raw JSON value of [completionTokens].
@@ -341,9 +369,9 @@ private constructor(
             return@apply
         }
 
-        completionTokens()
-        promptTokens()
-        totalTokens()
+        completionTokensOrThrow()
+        promptTokensOrThrow()
+        totalTokensOrThrow()
         completionTokensDetails().ifPresent { it.validate() }
         promptTokensDetails().ifPresent { it.validate() }
         validated = true
@@ -410,48 +438,80 @@ private constructor(
 
         /**
          * When using Predicted Outputs, the number of tokens in the prediction that appeared in the
-         * completion.
+         * completion. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun acceptedPredictionTokens(): Optional<Long> =
+        fun acceptedPredictionTokens(): java.util.Optional<Long> =
             acceptedPredictionTokens.getOptional("accepted_prediction_tokens")
 
         /**
-         * Audio input tokens generated by the model.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun audioTokens(): Optional<Long> = audioTokens.getOptional("audio_tokens")
+        fun acceptedPredictionTokensOrThrow(): Long =
+            acceptedPredictionTokens.getRequired("accepted_prediction_tokens")
 
         /**
-         * Tokens generated by the model for reasoning.
+         * Audio input tokens generated by the model. Returns empty if the JSON property is missing
+         * or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun reasoningTokens(): Optional<Long> = reasoningTokens.getOptional("reasoning_tokens")
+        fun audioTokens(): java.util.Optional<Long> = audioTokens.getOptional("audio_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun audioTokensOrThrow(): Long = audioTokens.getRequired("audio_tokens")
+
+        /**
+         * Tokens generated by the model for reasoning. Returns empty if the JSON property is
+         * missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun reasoningTokens(): java.util.Optional<Long> =
+            reasoningTokens.getOptional("reasoning_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun reasoningTokensOrThrow(): Long = reasoningTokens.getRequired("reasoning_tokens")
 
         /**
          * When using Predicted Outputs, the number of tokens in the prediction that did not appear
          * in the completion. However, like reasoning tokens, these tokens are still counted in the
          * total completion tokens for purposes of billing, output, and context window limits.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun rejectedPredictionTokens(): Optional<Long> =
+        fun rejectedPredictionTokens(): java.util.Optional<Long> =
             rejectedPredictionTokens.getOptional("rejected_prediction_tokens")
 
         /**
-         * Text output tokens generated by the model.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun textTokens(): Optional<Long> = textTokens.getOptional("text_tokens")
+        fun rejectedPredictionTokensOrThrow(): Long =
+            rejectedPredictionTokens.getRequired("rejected_prediction_tokens")
+
+        /**
+         * Text output tokens generated by the model. Returns empty if the JSON property is missing
+         * or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun textTokens(): java.util.Optional<Long> = textTokens.getOptional("text_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun textTokensOrThrow(): Long = textTokens.getRequired("text_tokens")
 
         /**
          * Returns the raw JSON value of [acceptedPredictionTokens].
@@ -788,44 +848,75 @@ private constructor(
         )
 
         /**
-         * Audio input tokens present in the prompt.
+         * Audio input tokens present in the prompt. Returns empty if the JSON property is missing
+         * or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun audioTokens(): Optional<Long> = audioTokens.getOptional("audio_tokens")
+        fun audioTokens(): java.util.Optional<Long> = audioTokens.getOptional("audio_tokens")
 
         /**
-         * The unadjusted number of prompt tokens written to cache.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun cacheWriteTokens(): Optional<Long> = cacheWriteTokens.getOptional("cache_write_tokens")
+        fun audioTokensOrThrow(): Long = audioTokens.getRequired("audio_tokens")
 
         /**
-         * Cached tokens present in the prompt.
+         * The unadjusted number of prompt tokens written to cache. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun cachedTokens(): Optional<Long> = cachedTokens.getOptional("cached_tokens")
+        fun cacheWriteTokens(): java.util.Optional<Long> =
+            cacheWriteTokens.getOptional("cache_write_tokens")
 
         /**
-         * Image input tokens present in the prompt.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun imageTokens(): Optional<Long> = imageTokens.getOptional("image_tokens")
+        fun cacheWriteTokensOrThrow(): Long = cacheWriteTokens.getRequired("cache_write_tokens")
 
         /**
-         * Text input tokens present in the prompt.
+         * Cached tokens present in the prompt. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun textTokens(): Optional<Long> = textTokens.getOptional("text_tokens")
+        fun cachedTokens(): java.util.Optional<Long> = cachedTokens.getOptional("cached_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun cachedTokensOrThrow(): Long = cachedTokens.getRequired("cached_tokens")
+
+        /**
+         * Image input tokens present in the prompt. Returns empty if the JSON property is missing
+         * or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun imageTokens(): java.util.Optional<Long> = imageTokens.getOptional("image_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun imageTokensOrThrow(): Long = imageTokens.getRequired("image_tokens")
+
+        /**
+         * Text input tokens present in the prompt. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun textTokens(): java.util.Optional<Long> = textTokens.getOptional("text_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun textTokensOrThrow(): Long = textTokens.getRequired("text_tokens")
 
         /**
          * Returns the raw JSON value of [audioTokens].

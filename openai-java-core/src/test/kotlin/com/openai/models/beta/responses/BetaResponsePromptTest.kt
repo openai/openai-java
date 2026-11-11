@@ -23,7 +23,7 @@ internal class BetaResponsePromptTest {
                 .version("version")
                 .build()
 
-        assertThat(betaResponsePrompt.id()).isEqualTo("id")
+        assertThat(betaResponsePrompt.id()).contains("id")
         assertThat(betaResponsePrompt.variables())
             .contains(
                 BetaResponsePrompt.Variables.builder()

@@ -18,9 +18,9 @@ internal class EvalDeleteResponseTest {
                 .object_("eval.deleted")
                 .build()
 
-        assertThat(evalDeleteResponse.deleted()).isEqualTo(true)
-        assertThat(evalDeleteResponse.evalId()).isEqualTo("eval_abc123")
-        assertThat(evalDeleteResponse.object_()).isEqualTo("eval.deleted")
+        assertThat(evalDeleteResponse.deleted()).contains(true)
+        assertThat(evalDeleteResponse.evalId()).contains("eval_abc123")
+        assertThat(evalDeleteResponse.object_()).contains("eval.deleted")
 
         val jsonMapper = jsonMapper()
 

@@ -59,71 +59,109 @@ private constructor(
     ) : this(id, callId, pendingSafetyChecks, status, type, action, actions, agent, mutableMapOf())
 
     /**
-     * The unique ID of the computer call.
+     * The unique ID of the computer call. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * An identifier used when responding to the tool call with output.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun callId(): String = callId.getRequired("call_id")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The pending safety checks for the computer call.
+     * An identifier used when responding to the tool call with output. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun pendingSafetyChecks(): List<PendingSafetyCheck> =
+    fun callId(): java.util.Optional<String> = callId.getOptional("call_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun callIdOrThrow(): String = callId.getRequired("call_id")
+
+    /**
+     * The pending safety checks for the computer call. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun pendingSafetyChecks(): java.util.Optional<List<PendingSafetyCheck>> =
+        pendingSafetyChecks.getOptional("pending_safety_checks")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun pendingSafetyChecksOrThrow(): List<PendingSafetyCheck> =
         pendingSafetyChecks.getRequired("pending_safety_checks")
 
     /**
      * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated when
-     * items are returned via API.
+     * items are returned via API. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): Status = status.getRequired("status")
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
 
     /**
-     * The type of the computer call. Always `computer_call`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun type(): Type = type.getRequired("type")
+    fun statusOrThrow(): Status = status.getRequired("status")
 
     /**
-     * A click action.
+     * The type of the computer call. Always `computer_call`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun action(): Optional<BetaComputerAction> = action.getOptional("action")
+    fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): Type = type.getRequired("type")
+
+    /**
+     * A click action. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun action(): java.util.Optional<BetaComputerAction> = action.getOptional("action")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun actionOrThrow(): BetaComputerAction = action.getRequired("action")
 
     /**
      * Flattened batched actions for `computer_use`. Each action includes an `type` discriminator
-     * and action-specific fields.
+     * and action-specific fields. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun actions(): Optional<List<BetaComputerAction>> = actions.getOptional("actions")
+    fun actions(): java.util.Optional<List<BetaComputerAction>> = actions.getOptional("actions")
 
     /**
-     * The agent that produced this item.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun agent(): Optional<Agent> = agent.getOptional("agent")
+    fun actionsOrThrow(): List<BetaComputerAction> = actions.getRequired("actions")
+
+    /**
+     * The agent that produced this item. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun agent(): java.util.Optional<Agent> = agent.getOptional("agent")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun agentOrThrow(): Agent = agent.getRequired("agent")
 
     /**
      * Returns the raw JSON value of [id].
@@ -584,11 +622,11 @@ private constructor(
             return@apply
         }
 
-        id()
-        callId()
-        pendingSafetyChecks().forEach { it.validate() }
-        status().validate()
-        type().validate()
+        idOrThrow()
+        callIdOrThrow()
+        pendingSafetyChecksOrThrow().forEach { it.validate() }
+        statusOrThrow().validate()
+        typeOrThrow().validate()
         action().ifPresent { it.validate() }
         actions().ifPresent { it.forEach { it.validate() } }
         agent().ifPresent { it.validate() }
@@ -637,28 +675,46 @@ private constructor(
         ) : this(id, code, message, mutableMapOf())
 
         /**
-         * The ID of the pending safety check.
+         * The ID of the pending safety check. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun id(): String = id.getRequired("id")
+        fun id(): java.util.Optional<String> = id.getOptional("id")
 
         /**
-         * The type of the pending safety check.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun code(): Optional<String> = code.getOptional("code")
+        fun idOrThrow(): String = id.getRequired("id")
 
         /**
-         * Details about the pending safety check.
+         * The type of the pending safety check. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun message(): Optional<String> = message.getOptional("message")
+        fun code(): java.util.Optional<String> = code.getOptional("code")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun codeOrThrow(): String = code.getRequired("code")
+
+        /**
+         * Details about the pending safety check. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun message(): java.util.Optional<String> = message.getOptional("message")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun messageOrThrow(): String = message.getRequired("message")
 
         /**
          * Returns the raw JSON value of [id].
@@ -839,7 +895,7 @@ private constructor(
                 return@apply
             }
 
-            id()
+            idOrThrow()
             code()
             message()
             validated = true
@@ -1182,12 +1238,18 @@ private constructor(
         ) : this(agentName, mutableMapOf())
 
         /**
-         * The canonical name of the agent that produced this item.
+         * The canonical name of the agent that produced this item. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun agentName(): String = agentName.getRequired("agent_name")
+        fun agentName(): java.util.Optional<String> = agentName.getOptional("agent_name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun agentNameOrThrow(): String = agentName.getRequired("agent_name")
 
         /**
          * Returns the raw JSON value of [agentName].
@@ -1310,7 +1372,7 @@ private constructor(
                 return@apply
             }
 
-            agentName()
+            agentNameOrThrow()
             validated = true
         }
 

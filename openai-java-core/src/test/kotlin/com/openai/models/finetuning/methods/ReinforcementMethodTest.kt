@@ -36,7 +36,7 @@ internal class ReinforcementMethodTest {
                 .build()
 
         assertThat(reinforcementMethod.grader())
-            .isEqualTo(
+            .contains(
                 ReinforcementMethod.Grader.ofStringCheck(
                     StringCheckGrader.builder()
                         .input("input")

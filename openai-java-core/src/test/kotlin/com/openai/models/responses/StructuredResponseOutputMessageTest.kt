@@ -11,6 +11,7 @@ import com.openai.core.X
 import com.openai.core.checkAllDelegation
 import com.openai.core.checkAllDelegatorReadFunctionsAreTested
 import com.openai.core.checkOneDelegationRead
+import com.openai.core.withJsonGetters
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
@@ -53,18 +54,19 @@ internal class StructuredResponseOutputMessageTest {
         @JvmStatic
         private fun delegationTestCases() =
             listOf(
-                DelegationReadTestCase("id", STRING),
-                // `content()` is a special case and has its own test function.
-                DelegationReadTestCase("_role", JSON_VALUE),
-                DelegationReadTestCase("phase", Optional.of(MESSAGE_PHASE)),
-                DelegationReadTestCase("status", MESSAGE_STATUS),
-                DelegationReadTestCase("_type", JSON_VALUE),
-                DelegationReadTestCase("_id", JSON_FIELD),
-                // `_content()` is a special case and has its own test function.
-                DelegationReadTestCase("_phase", JsonField.of(MESSAGE_PHASE)),
-                DelegationReadTestCase("_status", JSON_FIELD),
-                DelegationReadTestCase("_allProperties", MAP),
-            )
+                    DelegationReadTestCase("id", STRING),
+                    // `content()` is a special case and has its own test function.
+                    DelegationReadTestCase("_role", JSON_VALUE),
+                    DelegationReadTestCase("phase", Optional.of(MESSAGE_PHASE)),
+                    DelegationReadTestCase("status", MESSAGE_STATUS),
+                    DelegationReadTestCase("_type", JSON_VALUE),
+                    DelegationReadTestCase("_id", JSON_FIELD),
+                    // `_content()` is a special case and has its own test function.
+                    DelegationReadTestCase("_phase", JsonField.of(MESSAGE_PHASE)),
+                    DelegationReadTestCase("_status", JSON_FIELD),
+                    DelegationReadTestCase("_allProperties", MAP),
+                )
+                .withJsonGetters(ResponseOutputMessage::class.java)
 
         // The list order follows the declaration order in `ResponseOutputMessage.Content` for
         // easier maintenance.
@@ -133,7 +135,8 @@ internal class StructuredResponseOutputMessageTest {
         checkAllDelegatorReadFunctionsAreTested(
             delegator::class,
             delegationTestCases(),
-            exceptionalTestedFns = setOf("content", "_content", "validate", "isValid"),
+            exceptionalTestedFns =
+                setOf("content", "contentOrThrow", "_content", "validate", "isValid"),
             nonDelegatingFns = setOf("equals", "hashCode", "toString"),
         )
     }
@@ -168,7 +171,8 @@ internal class StructuredResponseOutputMessageTest {
         // indirectly via the `content` field initializer.
         val input = JsonField.of(listOf(CONTENT))
         `when`(mockDelegate._content()).thenReturn(input)
-        val output = delegator.content() // Without an underscore.
+        val output = delegator.contentOrThrow() // Without an underscore.
+        assertThat(delegator.content()).contains(output)
 
         verify(mockDelegate, times(1))._content()
         verifyNoMoreInteractions(mockDelegate)

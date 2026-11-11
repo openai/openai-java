@@ -31,15 +31,15 @@ internal class ResponseSteerFailedEventTest {
                 .build()
 
         assertThat(responseSteerFailedEvent.error())
-            .isEqualTo(
+            .contains(
                 ResponseSteerFailedEvent.Error.builder()
                     .code(ResponseSteerErrorCode.RESPONSE_NOT_FOUND)
                     .message("message")
                     .build()
             )
-        assertThat(responseSteerFailedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseSteerFailedEvent.sequenceNumber()).contains(0L)
         assertThat(responseSteerFailedEvent.steer())
-            .isEqualTo(
+            .contains(
                 ResponseSteerFailedEvent.Steer.builder()
                     .input("string")
                     .previousResponseId("previous_response_id")

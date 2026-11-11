@@ -19,10 +19,10 @@ internal class ResponseShellCallCommandAddedEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseShellCallCommandAddedEvent.command()).isEqualTo("command")
-        assertThat(responseShellCallCommandAddedEvent.commandIndex()).isEqualTo(0L)
-        assertThat(responseShellCallCommandAddedEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseShellCallCommandAddedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseShellCallCommandAddedEvent.command()).contains("command")
+        assertThat(responseShellCallCommandAddedEvent.commandIndex()).contains(0L)
+        assertThat(responseShellCallCommandAddedEvent.outputIndex()).contains(0L)
+        assertThat(responseShellCallCommandAddedEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

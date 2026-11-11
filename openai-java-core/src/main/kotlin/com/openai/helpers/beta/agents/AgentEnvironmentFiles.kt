@@ -53,7 +53,7 @@ object AgentEnvironmentFiles {
                 val params = uploadParams(source)
                 params.file().use {
                     val uploaded = client.files().create(params, options)
-                    prepared.add(reference(destination, uploaded.id()))
+                    prepared.add(reference(destination, uploaded.idOrThrow()))
                 }
             }
         } catch (error: Exception) {
@@ -124,7 +124,7 @@ object AgentEnvironmentFiles {
                         request.whenCompleteAsync { uploaded, failure ->
                             try {
                                 if (failure != null) throw failure
-                                prepared.add(reference(destination, uploaded.id()))
+                                prepared.add(reference(destination, uploaded.idOrThrow()))
                                 closeSource(input)
                                 next(index + 1)
                             } catch (error: Throwable) {
@@ -188,7 +188,7 @@ object AgentEnvironmentFiles {
         var id: String? = null
         try {
             val params = uploadParams(selected.second)
-            params.file().use { id = client.files().create(params, options).id() }
+            params.file().use { id = client.files().create(params, options).idOrThrow() }
             val file =
                 client
                     .beta()
@@ -346,7 +346,8 @@ object AgentEnvironmentFiles {
             HostedEnvironmentFileParam.FileId.builder().path(destination).fileId(id).build()
         )
 
-    private fun ids(files: List<HostedEnvironmentFileParam>) = files.map { it.asFileId().fileId() }
+    private fun ids(files: List<HostedEnvironmentFileParam>) =
+        files.map { it.asFileId().fileIdOrThrow() }
 
     private fun unwrap(error: Throwable): Throwable =
         if (error is CompletionException && error.cause != null) unwrap(error.cause!!) else error

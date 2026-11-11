@@ -27,8 +27,8 @@ internal class RoleCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.permissions()).containsExactly("string")
-        assertThat(body.roleName()).isEqualTo("role_name")
+        assertThat(body.permissionsOrThrow()).containsExactly("string")
+        assertThat(body.roleNameOrThrow()).isEqualTo("role_name")
         assertThat(body.description()).contains("description")
     }
 
@@ -39,7 +39,7 @@ internal class RoleCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.permissions()).containsExactly("string")
-        assertThat(body.roleName()).isEqualTo("role_name")
+        assertThat(body.permissionsOrThrow()).containsExactly("string")
+        assertThat(body.roleNameOrThrow()).isEqualTo("role_name")
     }
 }

@@ -27,6 +27,6 @@ public final class AudioTranscriptionsExample {
 
         Transcription transcription =
                 client.audio().transcriptions().create(createParams).asTranscription();
-        System.out.println(transcription.text());
+        System.out.println(transcription.textOrThrow());
     }
 }

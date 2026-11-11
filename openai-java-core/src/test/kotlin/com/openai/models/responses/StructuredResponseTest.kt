@@ -14,6 +14,7 @@ import com.openai.core.X
 import com.openai.core.checkAllDelegation
 import com.openai.core.checkAllDelegatorReadFunctionsAreTested
 import com.openai.core.checkOneDelegationRead
+import com.openai.core.withJsonGetters
 import com.openai.models.ChatModel
 import com.openai.models.ResponsesModel
 import java.util.Optional
@@ -60,85 +61,87 @@ internal class StructuredResponseTest {
         @JvmStatic
         private fun delegationTestCases() =
             listOf(
-                DelegationReadTestCase("id", STRING),
-                DelegationReadTestCase("accessPrograms", OPTIONAL),
-                DelegationReadTestCase("_accessPrograms", JSON_FIELD),
-                DelegationReadTestCase("createdAt", DOUBLE),
-                DelegationReadTestCase("error", OPTIONAL),
-                DelegationReadTestCase("incompleteDetails", OPTIONAL),
-                DelegationReadTestCase("instructions", OPTIONAL),
-                DelegationReadTestCase("metadata", OPTIONAL),
-                DelegationReadTestCase("model", RESPONSES_MODEL),
-                DelegationReadTestCase("moderation", OPTIONAL),
-                DelegationReadTestCase("_object_", JSON_VALUE),
-                // `output()` is a special case and has its own test function.
-                DelegationReadTestCase("parallelToolCalls", BOOLEAN),
-                DelegationReadTestCase("temperature", OPTIONAL),
-                DelegationReadTestCase("toolChoice", TOOL_CHOICE),
-                DelegationReadTestCase("tools", LIST),
-                DelegationReadTestCase("toolUsage", OPTIONAL),
-                DelegationReadTestCase("_toolUsage", JSON_FIELD),
-                DelegationReadTestCase("topP", OPTIONAL),
-                DelegationReadTestCase("maxToolCalls", OPTIONAL),
-                DelegationReadTestCase("topLogprobs", OPTIONAL),
-                DelegationReadTestCase("maxOutputTokens", OPTIONAL),
-                DelegationReadTestCase("previousResponseId", OPTIONAL),
-                DelegationReadTestCase("prompt", OPTIONAL),
-                DelegationReadTestCase("promptCacheDiagnostics", OPTIONAL),
-                DelegationReadTestCase("promptCacheKey", OPTIONAL),
-                DelegationReadTestCase("promptCacheOptions", OPTIONAL),
-                DelegationReadTestCase("promptCacheRetention", OPTIONAL),
-                DelegationReadTestCase("reasoning", OPTIONAL),
-                DelegationReadTestCase("safetyIdentifier", OPTIONAL),
-                DelegationReadTestCase("serviceTier", OPTIONAL),
-                DelegationReadTestCase("status", OPTIONAL),
-                DelegationReadTestCase("text", OPTIONAL),
-                DelegationReadTestCase("truncation", OPTIONAL),
-                DelegationReadTestCase("usage", OPTIONAL),
-                DelegationReadTestCase("user", OPTIONAL),
-                DelegationReadTestCase("_id", JSON_FIELD),
-                DelegationReadTestCase("_createdAt", JSON_FIELD),
-                DelegationReadTestCase("_error", JSON_FIELD),
-                DelegationReadTestCase("_incompleteDetails", JSON_FIELD),
-                DelegationReadTestCase("_instructions", JSON_FIELD),
-                DelegationReadTestCase("_metadata", JSON_FIELD),
-                DelegationReadTestCase("_model", JSON_FIELD),
-                DelegationReadTestCase("_moderation", JSON_FIELD),
-                // `_output()` is a special case and has its own test function.
-                DelegationReadTestCase("_parallelToolCalls", JSON_FIELD),
-                DelegationReadTestCase("_temperature", JSON_FIELD),
-                DelegationReadTestCase("_toolChoice", JSON_FIELD),
-                DelegationReadTestCase("_tools", JSON_FIELD),
-                DelegationReadTestCase("_topP", JSON_FIELD),
-                DelegationReadTestCase("_maxToolCalls", JSON_FIELD),
-                DelegationReadTestCase("_topLogprobs", JSON_FIELD),
-                DelegationReadTestCase("_maxOutputTokens", JSON_FIELD),
-                DelegationReadTestCase("_previousResponseId", JSON_FIELD),
-                DelegationReadTestCase("_prompt", JSON_FIELD),
-                DelegationReadTestCase("_promptCacheDiagnostics", JSON_FIELD),
-                DelegationReadTestCase("_promptCacheKey", JSON_FIELD),
-                DelegationReadTestCase("_promptCacheOptions", JSON_FIELD),
-                DelegationReadTestCase("_promptCacheRetention", JSON_FIELD),
-                DelegationReadTestCase("_reasoning", JSON_FIELD),
-                DelegationReadTestCase("_safetyIdentifier", JSON_FIELD),
-                DelegationReadTestCase("_serviceTier", JSON_FIELD),
-                DelegationReadTestCase("_status", JSON_FIELD),
-                DelegationReadTestCase("_text", JSON_FIELD),
-                DelegationReadTestCase("_truncation", JSON_FIELD),
-                DelegationReadTestCase("_usage", JSON_FIELD),
-                DelegationReadTestCase("_user", JSON_FIELD),
-                DelegationReadTestCase("background", OPTIONAL),
-                DelegationReadTestCase("_background", JSON_FIELD),
-                DelegationReadTestCase("completedAt", OPTIONAL),
-                DelegationReadTestCase("_completedAt", JSON_FIELD),
-                DelegationReadTestCase("conversation", OPTIONAL),
-                DelegationReadTestCase("_conversation", JSON_FIELD),
-                DelegationReadTestCase("image", Optional.of(IMAGE)),
-                DelegationReadTestCase("_image", JsonField.of(IMAGE)),
-                DelegationReadTestCase("_allProperties", MAP),
-                // `validate()` and `isValid()` (which calls `validate()`) are tested separately,
-                // as they require special handling.
-            )
+                    DelegationReadTestCase("id", STRING),
+                    DelegationReadTestCase("accessPrograms", OPTIONAL),
+                    DelegationReadTestCase("_accessPrograms", JSON_FIELD),
+                    DelegationReadTestCase("createdAt", DOUBLE),
+                    DelegationReadTestCase("error", OPTIONAL),
+                    DelegationReadTestCase("incompleteDetails", OPTIONAL),
+                    DelegationReadTestCase("instructions", OPTIONAL),
+                    DelegationReadTestCase("metadata", OPTIONAL),
+                    DelegationReadTestCase("model", RESPONSES_MODEL),
+                    DelegationReadTestCase("moderation", OPTIONAL),
+                    DelegationReadTestCase("_object_", JSON_VALUE),
+                    // `output()` is a special case and has its own test function.
+                    DelegationReadTestCase("parallelToolCalls", BOOLEAN),
+                    DelegationReadTestCase("temperature", OPTIONAL),
+                    DelegationReadTestCase("toolChoice", TOOL_CHOICE),
+                    DelegationReadTestCase("tools", LIST),
+                    DelegationReadTestCase("toolUsage", OPTIONAL),
+                    DelegationReadTestCase("_toolUsage", JSON_FIELD),
+                    DelegationReadTestCase("topP", OPTIONAL),
+                    DelegationReadTestCase("maxToolCalls", OPTIONAL),
+                    DelegationReadTestCase("topLogprobs", OPTIONAL),
+                    DelegationReadTestCase("maxOutputTokens", OPTIONAL),
+                    DelegationReadTestCase("previousResponseId", OPTIONAL),
+                    DelegationReadTestCase("prompt", OPTIONAL),
+                    DelegationReadTestCase("promptCacheDiagnostics", OPTIONAL),
+                    DelegationReadTestCase("promptCacheKey", OPTIONAL),
+                    DelegationReadTestCase("promptCacheOptions", OPTIONAL),
+                    DelegationReadTestCase("promptCacheRetention", OPTIONAL),
+                    DelegationReadTestCase("reasoning", OPTIONAL),
+                    DelegationReadTestCase("safetyIdentifier", OPTIONAL),
+                    DelegationReadTestCase("serviceTier", OPTIONAL),
+                    DelegationReadTestCase("status", OPTIONAL),
+                    DelegationReadTestCase("text", OPTIONAL),
+                    DelegationReadTestCase("truncation", OPTIONAL),
+                    DelegationReadTestCase("usage", OPTIONAL),
+                    DelegationReadTestCase("user", OPTIONAL),
+                    DelegationReadTestCase("_id", JSON_FIELD),
+                    DelegationReadTestCase("_createdAt", JSON_FIELD),
+                    DelegationReadTestCase("_error", JSON_FIELD),
+                    DelegationReadTestCase("_incompleteDetails", JSON_FIELD),
+                    DelegationReadTestCase("_instructions", JSON_FIELD),
+                    DelegationReadTestCase("_metadata", JSON_FIELD),
+                    DelegationReadTestCase("_model", JSON_FIELD),
+                    DelegationReadTestCase("_moderation", JSON_FIELD),
+                    // `_output()` is a special case and has its own test function.
+                    DelegationReadTestCase("_parallelToolCalls", JSON_FIELD),
+                    DelegationReadTestCase("_temperature", JSON_FIELD),
+                    DelegationReadTestCase("_toolChoice", JSON_FIELD),
+                    DelegationReadTestCase("_tools", JSON_FIELD),
+                    DelegationReadTestCase("_topP", JSON_FIELD),
+                    DelegationReadTestCase("_maxToolCalls", JSON_FIELD),
+                    DelegationReadTestCase("_topLogprobs", JSON_FIELD),
+                    DelegationReadTestCase("_maxOutputTokens", JSON_FIELD),
+                    DelegationReadTestCase("_previousResponseId", JSON_FIELD),
+                    DelegationReadTestCase("_prompt", JSON_FIELD),
+                    DelegationReadTestCase("_promptCacheDiagnostics", JSON_FIELD),
+                    DelegationReadTestCase("_promptCacheKey", JSON_FIELD),
+                    DelegationReadTestCase("_promptCacheOptions", JSON_FIELD),
+                    DelegationReadTestCase("_promptCacheRetention", JSON_FIELD),
+                    DelegationReadTestCase("_reasoning", JSON_FIELD),
+                    DelegationReadTestCase("_safetyIdentifier", JSON_FIELD),
+                    DelegationReadTestCase("_serviceTier", JSON_FIELD),
+                    DelegationReadTestCase("_status", JSON_FIELD),
+                    DelegationReadTestCase("_text", JSON_FIELD),
+                    DelegationReadTestCase("_truncation", JSON_FIELD),
+                    DelegationReadTestCase("_usage", JSON_FIELD),
+                    DelegationReadTestCase("_user", JSON_FIELD),
+                    DelegationReadTestCase("background", OPTIONAL),
+                    DelegationReadTestCase("_background", JSON_FIELD),
+                    DelegationReadTestCase("completedAt", OPTIONAL),
+                    DelegationReadTestCase("_completedAt", JSON_FIELD),
+                    DelegationReadTestCase("conversation", OPTIONAL),
+                    DelegationReadTestCase("_conversation", JSON_FIELD),
+                    DelegationReadTestCase("image", Optional.of(IMAGE)),
+                    DelegationReadTestCase("_image", JsonField.of(IMAGE)),
+                    DelegationReadTestCase("_allProperties", MAP),
+                    // `validate()` and `isValid()` (which calls `validate()`) are tested
+                    // separately,
+                    // as they require special handling.
+                )
+                .withJsonGetters(Response::class.java)
     }
 
     // New instances of the `mockDelegate` and `delegator` are required for each test case (each
@@ -164,7 +167,8 @@ internal class StructuredResponseTest {
         checkAllDelegatorReadFunctionsAreTested(
             delegator::class,
             delegationTestCases(),
-            exceptionalTestedFns = setOf("output", "_output", "validate", "isValid"),
+            exceptionalTestedFns =
+                setOf("output", "outputOrThrow", "_output", "validate", "isValid"),
             nonDelegatingFns = setOf("equals", "hashCode", "toString"),
         )
     }
@@ -182,7 +186,8 @@ internal class StructuredResponseTest {
         // indirectly via the `output` field initializer.
         val input = JsonField.of(listOf(OUTPUT_ITEM))
         `when`(mockDelegate._output()).thenReturn(input)
-        val output = delegator.output() // Without an underscore.
+        val output = delegator.outputOrThrow() // Without an underscore.
+        assertThat(delegator.output()).contains(output)
 
         verify(mockDelegate, times(1))._output()
         verifyNoMoreInteractions(mockDelegate)

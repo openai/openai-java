@@ -20,7 +20,7 @@ internal class FilePathDeltaAnnotationTest {
                 .text("text")
                 .build()
 
-        assertThat(filePathDeltaAnnotation.index()).isEqualTo(0L)
+        assertThat(filePathDeltaAnnotation.index()).contains(0L)
         assertThat(filePathDeltaAnnotation.endIndex()).contains(0L)
         assertThat(filePathDeltaAnnotation.filePath())
             .contains(FilePathDeltaAnnotation.FilePath.builder().fileId("file_id").build())

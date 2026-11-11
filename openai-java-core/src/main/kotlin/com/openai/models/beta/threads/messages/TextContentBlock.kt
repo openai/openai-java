@@ -33,23 +33,39 @@ private constructor(
     ) : this(text, type, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun text(): Text = text.getRequired("text")
+    fun text(): java.util.Optional<Text> = text.getOptional("text")
 
     /**
-     * Always `text`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("text")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun textOrThrow(): Text = text.getRequired("text")
+
+    /**
+     * Always `text`. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("text")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [text].
@@ -185,12 +201,8 @@ private constructor(
             return@apply
         }
 
-        text().validate()
-        _type().let {
-            if (it != JsonValue.from("text")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        textOrThrow().validate()
+        typeOrThrow()
         validated = true
     }
 

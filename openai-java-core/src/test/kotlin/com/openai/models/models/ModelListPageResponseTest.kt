@@ -5,6 +5,7 @@ package com.openai.models.models
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
 import java.time.LocalDate
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -24,7 +25,7 @@ internal class ModelListPageResponseTest {
                 )
                 .build()
 
-        assertThat(modelListPageResponse.data())
+        assertThat(modelListPageResponse.data().getOrNull())
             .containsExactly(
                 Model.builder()
                     .id("id")

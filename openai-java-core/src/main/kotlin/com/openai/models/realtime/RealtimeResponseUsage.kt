@@ -63,46 +63,72 @@ private constructor(
      * Details about the input tokens used in the Response. Cached tokens are tokens from previous
      * turns in the conversation that are included as context for the current response. Cached
      * tokens here are counted as a subset of input tokens, meaning input tokens will include cached
-     * and uncached tokens.
+     * and uncached tokens. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun inputTokenDetails(): Optional<RealtimeResponseUsageInputTokenDetails> =
+    fun inputTokenDetails(): java.util.Optional<RealtimeResponseUsageInputTokenDetails> =
         inputTokenDetails.getOptional("input_token_details")
 
     /**
-     * The number of input tokens used in the Response, including text and audio tokens.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun inputTokens(): Optional<Long> = inputTokens.getOptional("input_tokens")
+    fun inputTokenDetailsOrThrow(): RealtimeResponseUsageInputTokenDetails =
+        inputTokenDetails.getRequired("input_token_details")
 
     /**
-     * Details about the output tokens used in the Response.
+     * The number of input tokens used in the Response, including text and audio tokens. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun outputTokenDetails(): Optional<RealtimeResponseUsageOutputTokenDetails> =
+    fun inputTokens(): java.util.Optional<Long> = inputTokens.getOptional("input_tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun inputTokensOrThrow(): Long = inputTokens.getRequired("input_tokens")
+
+    /**
+     * Details about the output tokens used in the Response. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun outputTokenDetails(): java.util.Optional<RealtimeResponseUsageOutputTokenDetails> =
         outputTokenDetails.getOptional("output_token_details")
 
     /**
-     * The number of output tokens sent in the Response, including text and audio tokens.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun outputTokens(): Optional<Long> = outputTokens.getOptional("output_tokens")
+    fun outputTokenDetailsOrThrow(): RealtimeResponseUsageOutputTokenDetails =
+        outputTokenDetails.getRequired("output_token_details")
+
+    /**
+     * The number of output tokens sent in the Response, including text and audio tokens. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun outputTokens(): java.util.Optional<Long> = outputTokens.getOptional("output_tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun outputTokensOrThrow(): Long = outputTokens.getRequired("output_tokens")
 
     /**
      * The total number of tokens in the Response including input and output text and audio tokens.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun totalTokens(): Optional<Long> = totalTokens.getOptional("total_tokens")
+    fun totalTokens(): java.util.Optional<Long> = totalTokens.getOptional("total_tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun totalTokensOrThrow(): Long = totalTokens.getRequired("total_tokens")
 
     /**
      * Returns the raw JSON value of [inputTokenDetails].

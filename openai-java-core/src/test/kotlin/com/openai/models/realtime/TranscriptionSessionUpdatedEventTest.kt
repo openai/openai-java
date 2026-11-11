@@ -46,9 +46,9 @@ internal class TranscriptionSessionUpdatedEventTest {
                 )
                 .build()
 
-        assertThat(transcriptionSessionUpdatedEvent.eventId()).isEqualTo("event_id")
+        assertThat(transcriptionSessionUpdatedEvent.eventId()).contains("event_id")
         assertThat(transcriptionSessionUpdatedEvent.session())
-            .isEqualTo(
+            .contains(
                 TranscriptionSessionUpdatedEvent.Session.builder()
                     .clientSecret(
                         TranscriptionSessionUpdatedEvent.Session.ClientSecret.builder()

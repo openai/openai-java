@@ -44,8 +44,8 @@ internal class ErrorDiagnosticsTransportTest {
                             listOf(
                                 error.type().orElse(null),
                                 error.param().orElse(null),
-                                error.code().toString(),
-                                error.message(),
+                                error.codeOrThrow().toString(),
+                                error.messageOrThrow(),
                             )
                         }
                         Route.ASYNC -> {
@@ -60,8 +60,8 @@ internal class ErrorDiagnosticsTransportTest {
                             listOf(
                                 error.type().orElse(null),
                                 error.param().orElse(null),
-                                error.code().toString(),
-                                error.message(),
+                                error.codeOrThrow().toString(),
+                                error.messageOrThrow(),
                             )
                         }
                         Route.BETA_BLOCKING -> {
@@ -70,8 +70,8 @@ internal class ErrorDiagnosticsTransportTest {
                             listOf(
                                 error.type().orElse(null),
                                 error.param().orElse(null),
-                                error.code().toString(),
-                                error.message(),
+                                error.codeOrThrow().toString(),
+                                error.messageOrThrow(),
                             )
                         }
                         Route.BETA_ASYNC -> {
@@ -87,8 +87,8 @@ internal class ErrorDiagnosticsTransportTest {
                             listOf(
                                 error.type().orElse(null),
                                 error.param().orElse(null),
-                                error.code().toString(),
-                                error.message(),
+                                error.codeOrThrow().toString(),
+                                error.messageOrThrow(),
                             )
                         }
                     }

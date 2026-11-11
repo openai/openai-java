@@ -38,6 +38,6 @@ internal class PermissionCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.projectIds()).containsExactly("string")
+        assertThat(body.projectIdsOrThrow()).containsExactly("string")
     }
 }

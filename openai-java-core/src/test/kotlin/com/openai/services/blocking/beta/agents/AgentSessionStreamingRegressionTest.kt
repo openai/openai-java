@@ -97,7 +97,7 @@ internal class AgentSessionStreamingRegressionTest {
             agentSessionStreamResponse.stream().forEach { agentSession ->
                 agentSession.validate()
                 received++
-                deltas.add(agentSession.asTurnOutputTextDelta().delta())
+                deltas.add(agentSession.asTurnOutputTextDelta().deltaOrThrow())
             }
         }
         assertThat(deltas).containsExactly("hello")

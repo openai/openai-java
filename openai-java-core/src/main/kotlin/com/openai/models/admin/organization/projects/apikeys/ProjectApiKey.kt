@@ -67,80 +67,132 @@ private constructor(
     )
 
     /**
-     * The identifier, which can be referenced in API endpoints
+     * The identifier, which can be referenced in API endpoints The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The Unix timestamp (in seconds) of when the API key was created
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The Unix timestamp (in seconds) of when the API key was last used.
+     * The Unix timestamp (in seconds) of when the API key was created The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun lastUsedAt(): Optional<Long> = lastUsedAt.getOptional("last_used_at")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * The name of the API key
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): String = name.getRequired("name")
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
     /**
-     * The object type, which is always `organization.project.api_key`
+     * The Unix timestamp (in seconds) of when the API key was last used. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("organization.project.api_key")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun lastUsedAt(): java.util.Optional<Long> = lastUsedAt.getOptional("last_used_at")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun owner(): Owner = owner.getRequired("owner")
+    fun lastUsedAtOrThrow(): Long = lastUsedAt.getRequired("last_used_at")
 
     /**
-     * Whether the API key's owner currently has effective access to the project.
+     * The name of the API key The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun ownerProjectAccess(): OwnerProjectAccess =
+    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nameOrThrow(): String = name.getRequired("name")
+
+    /**
+     * The object type, which is always `organization.project.api_key` The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("organization.project.api_key")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun owner(): java.util.Optional<Owner> = owner.getOptional("owner")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun ownerOrThrow(): Owner = owner.getRequired("owner")
+
+    /**
+     * Whether the API key's owner currently has effective access to the project. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun ownerProjectAccess(): java.util.Optional<OwnerProjectAccess> =
+        ownerProjectAccess.getOptional("owner_project_access")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun ownerProjectAccessOrThrow(): OwnerProjectAccess =
         ownerProjectAccess.getRequired("owner_project_access")
 
     /**
-     * The redacted value of the API key
+     * The redacted value of the API key The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun redactedValue(): String = redactedValue.getRequired("redacted_value")
+    fun redactedValue(): java.util.Optional<String> = redactedValue.getOptional("redacted_value")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun redactedValueOrThrow(): String = redactedValue.getRequired("redacted_value")
 
     /**
      * The Unix timestamp (in seconds) when the API key expires, or null if it does not expire.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
+    fun expiresAt(): java.util.Optional<Long> = expiresAt.getOptional("expires_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun expiresAtOrThrow(): Long = expiresAt.getRequired("expires_at")
 
     /**
      * Returns the raw JSON value of [id].
@@ -482,18 +534,14 @@ private constructor(
             return@apply
         }
 
-        id()
-        createdAt()
+        idOrThrow()
+        createdAtOrThrow()
         lastUsedAt()
-        name()
-        _object_().let {
-            if (it != JsonValue.from("organization.project.api_key")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        owner().validate()
-        ownerProjectAccess().validate()
-        redactedValue()
+        nameOrThrow()
+        object_OrThrow()
+        ownerOrThrow().validate()
+        ownerProjectAccessOrThrow().validate()
+        redactedValueOrThrow()
         expiresAt()
         validated = true
     }
@@ -542,29 +590,46 @@ private constructor(
         ) : this(serviceAccount, type, user, mutableMapOf())
 
         /**
-         * The service account that owns a project API key.
+         * The service account that owns a project API key. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun serviceAccount(): Optional<ServiceAccount> =
+        fun serviceAccount(): java.util.Optional<ServiceAccount> =
             serviceAccount.getOptional("service_account")
 
         /**
-         * `user` or `service_account`
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun type(): Optional<Type> = type.getOptional("type")
+        fun serviceAccountOrThrow(): ServiceAccount = serviceAccount.getRequired("service_account")
 
         /**
-         * The user that owns a project API key.
+         * `user` or `service_account` Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun user(): Optional<User> = user.getOptional("user")
+        fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): Type = type.getRequired("type")
+
+        /**
+         * The user that owns a project API key. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun user(): java.util.Optional<User> = user.getOptional("user")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun userOrThrow(): User = user.getRequired("user")
 
         /**
          * Returns the raw JSON value of [serviceAccount].
@@ -774,40 +839,60 @@ private constructor(
             ) : this(id, createdAt, name, role, mutableMapOf())
 
             /**
-             * The identifier, which can be referenced in API endpoints
+             * The identifier, which can be referenced in API endpoints The schema requires this
+             * property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun id(): String = id.getRequired("id")
+            fun id(): java.util.Optional<String> = id.getOptional("id")
 
             /**
-             * The Unix timestamp (in seconds) of when the service account was created.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun createdAt(): Long = createdAt.getRequired("created_at")
+            fun idOrThrow(): String = id.getRequired("id")
 
             /**
-             * The name of the service account.
+             * The Unix timestamp (in seconds) of when the service account was created. The schema
+             * requires this property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun name(): String = name.getRequired("name")
+            fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
             /**
-             * The service account's project role.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun role(): String = role.getRequired("role")
+            fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+            /**
+             * The name of the service account. The schema requires this property. Returns empty if
+             * the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun name(): java.util.Optional<String> = name.getOptional("name")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun nameOrThrow(): String = name.getRequired("name")
+
+            /**
+             * The service account's project role. The schema requires this property. Returns empty
+             * if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun role(): java.util.Optional<String> = role.getOptional("role")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun roleOrThrow(): String = role.getRequired("role")
 
             /**
              * Returns the raw JSON value of [id].
@@ -1018,10 +1103,10 @@ private constructor(
                     return@apply
                 }
 
-                id()
-                createdAt()
-                name()
-                role()
+                idOrThrow()
+                createdAtOrThrow()
+                nameOrThrow()
+                roleOrThrow()
                 validated = true
             }
 
@@ -1235,49 +1320,74 @@ private constructor(
             ) : this(id, createdAt, email, name, role, mutableMapOf())
 
             /**
-             * The identifier, which can be referenced in API endpoints
+             * The identifier, which can be referenced in API endpoints The schema requires this
+             * property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun id(): String = id.getRequired("id")
+            fun id(): java.util.Optional<String> = id.getOptional("id")
 
             /**
-             * The Unix timestamp (in seconds) of when the user was created.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun createdAt(): Long = createdAt.getRequired("created_at")
+            fun idOrThrow(): String = id.getRequired("id")
 
             /**
-             * The email address of the user.
+             * The Unix timestamp (in seconds) of when the user was created. The schema requires
+             * this property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun email(): String = email.getRequired("email")
+            fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
             /**
-             * The name of the user.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun name(): String = name.getRequired("name")
+            fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
             /**
-             * The user's project role.
+             * The email address of the user. The schema requires this property. Returns empty if
+             * the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun role(): String = role.getRequired("role")
+            fun email(): java.util.Optional<String> = email.getOptional("email")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun emailOrThrow(): String = email.getRequired("email")
+
+            /**
+             * The name of the user. The schema requires this property. Returns empty if the JSON
+             * property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun name(): java.util.Optional<String> = name.getOptional("name")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun nameOrThrow(): String = name.getRequired("name")
+
+            /**
+             * The user's project role. The schema requires this property. Returns empty if the JSON
+             * property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun role(): java.util.Optional<String> = role.getOptional("role")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun roleOrThrow(): String = role.getRequired("role")
 
             /**
              * Returns the raw JSON value of [id].
@@ -1513,11 +1623,11 @@ private constructor(
                     return@apply
                 }
 
-                id()
-                createdAt()
-                email()
-                name()
-                role()
+                idOrThrow()
+                createdAtOrThrow()
+                emailOrThrow()
+                nameOrThrow()
+                roleOrThrow()
                 validated = true
             }
 

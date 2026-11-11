@@ -24,7 +24,7 @@ internal class FunctionToolCallDeltaTest {
                 )
                 .build()
 
-        assertThat(functionToolCallDelta.index()).isEqualTo(0L)
+        assertThat(functionToolCallDelta.index()).contains(0L)
         assertThat(functionToolCallDelta.id()).contains("id")
         assertThat(functionToolCallDelta.function())
             .contains(

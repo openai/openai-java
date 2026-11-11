@@ -18,8 +18,8 @@ internal class BetaResponseInjectCreatedEventTest {
                 .streamId("stream_id")
                 .build()
 
-        assertThat(betaResponseInjectCreatedEvent.responseId()).isEqualTo("response_id")
-        assertThat(betaResponseInjectCreatedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseInjectCreatedEvent.responseId()).contains("response_id")
+        assertThat(betaResponseInjectCreatedEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseInjectCreatedEvent.streamId()).contains("stream_id")
 
         val jsonMapper = jsonMapper()

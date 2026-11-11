@@ -23,9 +23,9 @@ internal class BetaResponseMcpCallInProgressEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseMcpCallInProgressEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseMcpCallInProgressEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseMcpCallInProgressEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseMcpCallInProgressEvent.itemId()).contains("item_id")
+        assertThat(betaResponseMcpCallInProgressEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseMcpCallInProgressEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseMcpCallInProgressEvent.agent())
             .contains(
                 BetaResponseMcpCallInProgressEvent.Agent.builder().agentName("agent_name").build()

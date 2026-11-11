@@ -5,6 +5,7 @@ package com.openai.models.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -36,9 +37,9 @@ internal class ToolSearchOutputNamespaceToolTest {
                 )
                 .build()
 
-        assertThat(toolSearchOutputNamespaceTool.description()).isEqualTo("description")
-        assertThat(toolSearchOutputNamespaceTool.name()).isEqualTo("x")
-        assertThat(toolSearchOutputNamespaceTool.tools())
+        assertThat(toolSearchOutputNamespaceTool.description()).contains("description")
+        assertThat(toolSearchOutputNamespaceTool.name()).contains("x")
+        assertThat(toolSearchOutputNamespaceTool.tools().getOrNull())
             .containsExactly(
                 ToolSearchOutputNamespaceTool.Tool.ofFunction(
                     ToolSearchOutputNamespaceTool.Tool.Function.builder()

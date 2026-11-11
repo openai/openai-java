@@ -14,8 +14,8 @@ internal class InputAudioBufferDtmfEventReceivedEventTest {
         val inputAudioBufferDtmfEventReceivedEvent =
             InputAudioBufferDtmfEventReceivedEvent.builder().event("event").receivedAt(0L).build()
 
-        assertThat(inputAudioBufferDtmfEventReceivedEvent.event()).isEqualTo("event")
-        assertThat(inputAudioBufferDtmfEventReceivedEvent.receivedAt()).isEqualTo(0L)
+        assertThat(inputAudioBufferDtmfEventReceivedEvent.event()).contains("event")
+        assertThat(inputAudioBufferDtmfEventReceivedEvent.receivedAt()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

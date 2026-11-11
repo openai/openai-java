@@ -19,10 +19,10 @@ internal class StringCheckGraderTest {
                 .reference("reference")
                 .build()
 
-        assertThat(stringCheckGrader.input()).isEqualTo("input")
-        assertThat(stringCheckGrader.name()).isEqualTo("name")
-        assertThat(stringCheckGrader.operation()).isEqualTo(StringCheckGrader.Operation.EQ)
-        assertThat(stringCheckGrader.reference()).isEqualTo("reference")
+        assertThat(stringCheckGrader.input()).contains("input")
+        assertThat(stringCheckGrader.name()).contains("name")
+        assertThat(stringCheckGrader.operation()).contains(StringCheckGrader.Operation.EQ)
+        assertThat(stringCheckGrader.reference()).contains("reference")
 
         val jsonMapper = jsonMapper()
 

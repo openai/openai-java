@@ -4,6 +4,7 @@ package com.openai.models.beta.chatkit.threads
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -28,8 +29,8 @@ internal class ChatKitThreadAssistantMessageItemTest {
                 .threadId("thread_id")
                 .build()
 
-        assertThat(chatkitThreadAssistantMessageItem.id()).isEqualTo("id")
-        assertThat(chatkitThreadAssistantMessageItem.content())
+        assertThat(chatkitThreadAssistantMessageItem.id()).contains("id")
+        assertThat(chatkitThreadAssistantMessageItem.content().getOrNull())
             .containsExactly(
                 ChatKitResponseOutputText.builder()
                     .addFileAnnotation(
@@ -40,8 +41,8 @@ internal class ChatKitThreadAssistantMessageItemTest {
                     .text("text")
                     .build()
             )
-        assertThat(chatkitThreadAssistantMessageItem.createdAt()).isEqualTo(0L)
-        assertThat(chatkitThreadAssistantMessageItem.threadId()).isEqualTo("thread_id")
+        assertThat(chatkitThreadAssistantMessageItem.createdAt()).contains(0L)
+        assertThat(chatkitThreadAssistantMessageItem.threadId()).contains("thread_id")
 
         val jsonMapper = jsonMapper()
 

@@ -37,33 +37,61 @@ private constructor(
     ) : this(bucket, region, tenancyOcid, type, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun bucket(): String = bucket.getRequired("bucket")
-
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun region(): String = region.getRequired("region")
-
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun tenancyOcid(): String = tenancyOcid.getRequired("tenancy_ocid")
-
-    /**
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("oci")
-     * ```
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun bucket(): java.util.Optional<String> = bucket.getOptional("bucket")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun bucketOrThrow(): String = bucket.getRequired("bucket")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun region(): java.util.Optional<String> = region.getOptional("region")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun regionOrThrow(): String = region.getRequired("region")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun tenancyOcid(): java.util.Optional<String> = tenancyOcid.getOptional("tenancy_ocid")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun tenancyOcidOrThrow(): String = tenancyOcid.getRequired("tenancy_ocid")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("oci")) -> throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [bucket].
@@ -256,14 +284,10 @@ private constructor(
             return@apply
         }
 
-        bucket()
-        region()
-        tenancyOcid()
-        _type().let {
-            if (it != JsonValue.from("oci")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        bucketOrThrow()
+        regionOrThrow()
+        tenancyOcidOrThrow()
+        typeOrThrow()
         validated = true
     }
 

@@ -84,7 +84,7 @@ internal class EvalCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.dataSourceConfig())
+        assertThat(body.dataSourceConfigOrThrow())
             .isEqualTo(
                 EvalCreateParams.DataSourceConfig.ofCustom(
                     EvalCreateParams.DataSourceConfig.Custom.builder()
@@ -97,7 +97,7 @@ internal class EvalCreateParamsTest {
                         .build()
                 )
             )
-        assertThat(body.testingCriteria())
+        assertThat(body.testingCriteriaOrThrow())
             .containsExactly(
                 EvalCreateParams.TestingCriterion.ofLabelModel(
                     EvalCreateParams.TestingCriterion.LabelModel.builder()
@@ -152,7 +152,7 @@ internal class EvalCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.dataSourceConfig())
+        assertThat(body.dataSourceConfigOrThrow())
             .isEqualTo(
                 EvalCreateParams.DataSourceConfig.ofCustom(
                     EvalCreateParams.DataSourceConfig.Custom.builder()
@@ -164,7 +164,7 @@ internal class EvalCreateParamsTest {
                         .build()
                 )
             )
-        assertThat(body.testingCriteria())
+        assertThat(body.testingCriteriaOrThrow())
             .containsExactly(
                 EvalCreateParams.TestingCriterion.ofLabelModel(
                     EvalCreateParams.TestingCriterion.LabelModel.builder()

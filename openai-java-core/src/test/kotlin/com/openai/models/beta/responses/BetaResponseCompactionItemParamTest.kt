@@ -20,8 +20,7 @@ internal class BetaResponseCompactionItemParamTest {
                 )
                 .build()
 
-        assertThat(betaResponseCompactionItemParam.encryptedContent())
-            .isEqualTo("encrypted_content")
+        assertThat(betaResponseCompactionItemParam.encryptedContent()).contains("encrypted_content")
         assertThat(betaResponseCompactionItemParam.id()).contains("cmp_123")
         assertThat(betaResponseCompactionItemParam.agent())
             .contains(

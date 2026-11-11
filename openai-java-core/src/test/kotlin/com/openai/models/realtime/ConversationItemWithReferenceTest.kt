@@ -3,6 +3,7 @@
 package com.openai.models.realtime
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -49,7 +50,7 @@ internal class ConversationItemWithReferenceTest {
             )
         assertThat(conversationItemWithReference.name()).contains("name")
         assertThat(conversationItemWithReference.object_())
-            .contains(ConversationItemWithReference.Object.REALTIME_ITEM)
+            .contains(JsonValue.from("realtime.item"))
         assertThat(conversationItemWithReference.output()).contains("output")
         assertThat(conversationItemWithReference.role())
             .contains(ConversationItemWithReference.Role.USER)

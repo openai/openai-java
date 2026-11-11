@@ -44,57 +44,92 @@ private constructor(
     ) : this(createdAt, groupId, groupName, groupType, object_, projectId, mutableMapOf())
 
     /**
-     * Unix timestamp (in seconds) when the group was granted project access.
+     * Unix timestamp (in seconds) when the group was granted project access. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * Identifier of the group that has access to the project.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun groupId(): String = groupId.getRequired("group_id")
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
     /**
-     * Display name of the group.
+     * Identifier of the group that has access to the project. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun groupName(): String = groupName.getRequired("group_name")
+    fun groupId(): java.util.Optional<String> = groupId.getOptional("group_id")
 
     /**
-     * The type of the group.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun groupType(): GroupType = groupType.getRequired("group_type")
+    fun groupIdOrThrow(): String = groupId.getRequired("group_id")
 
     /**
-     * Always `project.group`.
+     * Display name of the group. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("project.group")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun groupName(): java.util.Optional<String> = groupName.getOptional("group_name")
 
     /**
-     * Identifier of the project.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun projectId(): String = projectId.getRequired("project_id")
+    fun groupNameOrThrow(): String = groupName.getRequired("group_name")
+
+    /**
+     * The type of the group. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun groupType(): java.util.Optional<GroupType> = groupType.getOptional("group_type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun groupTypeOrThrow(): GroupType = groupType.getRequired("group_type")
+
+    /**
+     * Always `project.group`. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("project.group")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * Identifier of the project. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun projectId(): java.util.Optional<String> = projectId.getOptional("project_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun projectIdOrThrow(): String = projectId.getRequired("project_id")
 
     /**
      * Returns the raw JSON value of [createdAt].
@@ -338,16 +373,12 @@ private constructor(
             return@apply
         }
 
-        createdAt()
-        groupId()
-        groupName()
-        groupType().validate()
-        _object_().let {
-            if (it != JsonValue.from("project.group")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        projectId()
+        createdAtOrThrow()
+        groupIdOrThrow()
+        groupNameOrThrow()
+        groupTypeOrThrow().validate()
+        object_OrThrow()
+        projectIdOrThrow()
         validated = true
     }
 

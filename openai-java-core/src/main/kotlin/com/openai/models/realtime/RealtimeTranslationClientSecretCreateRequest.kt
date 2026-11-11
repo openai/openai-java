@@ -40,23 +40,33 @@ private constructor(
 
     /**
      * Realtime translation session configuration. Translation sessions stream source audio in and
-     * translated audio plus transcript deltas out continuously.
+     * translated audio plus transcript deltas out continuously. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun session(): RealtimeTranslationSessionCreateRequest = session.getRequired("session")
+    fun session(): java.util.Optional<RealtimeTranslationSessionCreateRequest> =
+        session.getOptional("session")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sessionOrThrow(): RealtimeTranslationSessionCreateRequest = session.getRequired("session")
 
     /**
      * Configuration for the client secret expiration. Expiration refers to the time after which a
      * client secret will no longer be valid for creating sessions. The session itself may continue
      * after that time once started. A secret can be used to create multiple sessions until it
-     * expires.
+     * expires. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun expiresAfter(): Optional<ExpiresAfter> = expiresAfter.getOptional("expires_after")
+    fun expiresAfter(): java.util.Optional<ExpiresAfter> = expiresAfter.getOptional("expires_after")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun expiresAfterOrThrow(): ExpiresAfter = expiresAfter.getRequired("expires_after")
 
     /**
      * Returns the raw JSON value of [session].
@@ -229,7 +239,7 @@ private constructor(
             return@apply
         }
 
-        session().validate()
+        sessionOrThrow().validate()
         expiresAfter().ifPresent { it.validate() }
         validated = true
     }
@@ -275,28 +285,46 @@ private constructor(
         /**
          * The anchor point for the client secret expiration, meaning that `seconds` will be added
          * to the `created_at` time of the client secret to produce an expiration timestamp. Only
-         * `created_at` is currently supported.
+         * `created_at` is currently supported. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun anchor(): Optional<Anchor> = anchor.getOptional("anchor")
+        fun anchor(): java.util.Optional<JsonValue> {
+            val raw = JsonValue.from(anchor)
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("created_at")) ->
+                    throw OpenAIInvalidDataException("`anchor` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun anchorOrThrow(): JsonValue =
+            anchor().orElseGet { JsonValue.from(anchor).getRequired("anchor") }
+
+        @JsonProperty("anchor")
+        @ExcludeMissing
+        fun _anchor(): JsonField<JsonValue> = JsonValue.from(anchor)
 
         /**
          * The number of seconds from the anchor point to the expiration. Select a value between
          * `10` and `7200` (2 hours). This default to 600 seconds (10 minutes) if not specified.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun seconds(): Optional<Long> = seconds.getOptional("seconds")
+        fun seconds(): java.util.Optional<Long> = seconds.getOptional("seconds")
 
         /**
-         * Returns the raw JSON value of [anchor].
-         *
-         * Unlike [anchor], this method doesn't throw if the JSON field has an unexpected type.
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonField<Anchor> = anchor
+        fun secondsOrThrow(): Long = seconds.getRequired("seconds")
 
         /**
          * Returns the raw JSON value of [seconds].
@@ -430,7 +458,7 @@ private constructor(
                 return@apply
             }
 
-            anchor().ifPresent { it.validate() }
+            anchor()
             seconds()
             validated = true
         }

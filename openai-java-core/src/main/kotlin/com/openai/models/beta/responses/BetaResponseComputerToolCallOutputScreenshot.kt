@@ -35,33 +35,52 @@ private constructor(
 
     /**
      * Specifies the event type. For a computer screenshot, this property is always set to
-     * `computer_screenshot`.
+     * `computer_screenshot`. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("computer_screenshot")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("computer_screenshot")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The identifier of an uploaded file that contains the screenshot.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun fileId(): Optional<String> = fileId.getOptional("file_id")
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
-     * The URL of the screenshot image.
+     * The identifier of an uploaded file that contains the screenshot. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun imageUrl(): Optional<String> = imageUrl.getOptional("image_url")
+    fun fileId(): java.util.Optional<String> = fileId.getOptional("file_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun fileIdOrThrow(): String = fileId.getRequired("file_id")
+
+    /**
+     * The URL of the screenshot image. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun imageUrl(): java.util.Optional<String> = imageUrl.getOptional("image_url")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun imageUrlOrThrow(): String = imageUrl.getRequired("image_url")
 
     /**
      * Returns the raw JSON value of [fileId].
@@ -221,11 +240,7 @@ private constructor(
             return@apply
         }
 
-        _type().let {
-            if (it != JsonValue.from("computer_screenshot")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        typeOrThrow()
         fileId()
         imageUrl()
         validated = true

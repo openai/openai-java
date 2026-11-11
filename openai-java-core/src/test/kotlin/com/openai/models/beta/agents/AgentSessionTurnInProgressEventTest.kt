@@ -53,10 +53,10 @@ internal class AgentSessionTurnInProgressEventTest {
                 .turnId("turn_id")
                 .build()
 
-        assertThat(agentSessionTurnInProgressEvent.eventId()).isEqualTo("event_id")
-        assertThat(agentSessionTurnInProgressEvent.sessionId()).isEqualTo("session_id")
+        assertThat(agentSessionTurnInProgressEvent.eventId()).contains("event_id")
+        assertThat(agentSessionTurnInProgressEvent.sessionId()).contains("session_id")
         assertThat(agentSessionTurnInProgressEvent.turn())
-            .isEqualTo(
+            .contains(
                 Turn.builder()
                     .id("id")
                     .agentId("agent_id")
@@ -88,7 +88,7 @@ internal class AgentSessionTurnInProgressEventTest {
                     )
                     .build()
             )
-        assertThat(agentSessionTurnInProgressEvent.turnId()).isEqualTo("turn_id")
+        assertThat(agentSessionTurnInProgressEvent.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()
 

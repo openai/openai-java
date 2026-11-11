@@ -37,29 +37,44 @@ private constructor(
     ) : this(expiresAt, session, value, mutableMapOf())
 
     /**
-     * Expiration timestamp for the client secret, in seconds since epoch.
+     * Expiration timestamp for the client secret, in seconds since epoch. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun expiresAt(): Long = expiresAt.getRequired("expires_at")
+    fun expiresAt(): java.util.Optional<Long> = expiresAt.getOptional("expires_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun expiresAtOrThrow(): Long = expiresAt.getRequired("expires_at")
 
     /**
      * A Realtime translation session. Translation sessions continuously translate input audio into
-     * the configured output language.
+     * the configured output language. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun session(): RealtimeTranslationSession = session.getRequired("session")
+    fun session(): java.util.Optional<RealtimeTranslationSession> = session.getOptional("session")
 
     /**
-     * The generated client secret value.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun value(): String = value.getRequired("value")
+    fun sessionOrThrow(): RealtimeTranslationSession = session.getRequired("session")
+
+    /**
+     * The generated client secret value. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun value(): java.util.Optional<String> = value.getOptional("value")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun valueOrThrow(): String = value.getRequired("value")
 
     /**
      * Returns the raw JSON value of [expiresAt].
@@ -247,9 +262,9 @@ private constructor(
             return@apply
         }
 
-        expiresAt()
-        session().validate()
-        value()
+        expiresAtOrThrow()
+        sessionOrThrow().validate()
+        valueOrThrow()
         validated = true
     }
 

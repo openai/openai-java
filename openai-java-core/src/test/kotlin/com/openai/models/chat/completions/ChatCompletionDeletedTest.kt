@@ -13,8 +13,8 @@ internal class ChatCompletionDeletedTest {
     fun createAndRoundtrip() {
         val chatCompletionDeleted = ChatCompletionDeleted.builder().id("id").deleted(true).build()
 
-        assertThat(chatCompletionDeleted.id()).isEqualTo("id")
-        assertThat(chatCompletionDeleted.deleted()).isEqualTo(true)
+        assertThat(chatCompletionDeleted.id()).contains("id")
+        assertThat(chatCompletionDeleted.deleted()).contains(true)
 
         val jsonMapper = jsonMapper()
 

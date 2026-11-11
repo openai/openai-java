@@ -42,34 +42,53 @@ private constructor(
      * Base64-encoded raw audio in the startup-selected format, without a WAV or other container
      * header. Primary WebSocket only; media transports use their audio track. Audio appends have no
      * acknowledgment. Reflected sideband server events reuse this event type and audio key, with no
-     * timestamps or event_id; their audio is always mono PCM16LE at 24 kHz.
+     * timestamps or event_id; their audio is always mono PCM16LE at 24 kHz. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun audio(): String = audio.getRequired("audio")
+    fun audio(): java.util.Optional<String> = audio.getOptional("audio")
 
     /**
-     * The Live client event type. Always `session.input_audio.append`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("session.input_audio.append")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun audioOrThrow(): String = audio.getRequired("audio")
+
+    /**
+     * The Live client event type. Always `session.input_audio.append`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("session.input_audio.append")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Optional client identifier for correlating this command with a server event's client_event_id
-     * or error.client_event_id.
+     * or error.client_event_id. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun eventId(): Optional<String> = eventId.getOptional("event_id")
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
      * Returns the raw JSON value of [audio].
@@ -247,12 +266,8 @@ private constructor(
             return@apply
         }
 
-        audio()
-        _type().let {
-            if (it != JsonValue.from("session.input_audio.append")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        audioOrThrow()
+        typeOrThrow()
         eventId()
         validated = true
     }

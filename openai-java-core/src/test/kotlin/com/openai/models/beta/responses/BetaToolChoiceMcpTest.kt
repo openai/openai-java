@@ -14,7 +14,7 @@ internal class BetaToolChoiceMcpTest {
         val betaToolChoiceMcp =
             BetaToolChoiceMcp.builder().serverLabel("server_label").name("name").build()
 
-        assertThat(betaToolChoiceMcp.serverLabel()).isEqualTo("server_label")
+        assertThat(betaToolChoiceMcp.serverLabel()).contains("server_label")
         assertThat(betaToolChoiceMcp.name()).contains("name")
 
         val jsonMapper = jsonMapper()

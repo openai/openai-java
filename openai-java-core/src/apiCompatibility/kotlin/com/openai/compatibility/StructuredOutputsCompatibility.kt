@@ -42,24 +42,24 @@ internal object StructuredOutputsCompatibility {
     ): Optional<CompatibilityOutput> {
         completion.validate()
         completion.isValid()
-        return completion.choices().first().message().content()
+        return completion.choicesOrThrow().first().messageOrThrow().content()
     }
 
     fun validateChatOutput(completion: StructuredChatCompletion<CompatibilityOutput>): Boolean {
         completion.validate()
-        val choice = completion.choices().first()
+        val choice = completion.choicesOrThrow().first()
         choice.validate()
-        val message = choice.message()
+        val message = choice.messageOrThrow()
         message.validate()
         return completion.isValid() && choice.isValid() && message.isValid()
     }
 
     fun responseOutput(response: StructuredResponse<CompatibilityOutput>): CompatibilityOutput? =
         response
-            .output()
+            .outputOrThrow()
             .firstOrNull { it.isMessage() }
             ?.asMessage()
-            ?.content()
+            ?.contentOrThrow()
             ?.firstOrNull { it.isOutputText() }
             ?.asOutputText()
 
@@ -69,11 +69,11 @@ internal object StructuredOutputsCompatibility {
 
     fun validateResponseOutput(response: StructuredResponse<CompatibilityOutput>): Boolean {
         response.validate()
-        val item = response.output().first()
+        val item = response.outputOrThrow().first()
         item.validate()
         val message = item.asMessage()
         message.validate()
-        val content = message.content().first()
+        val content = message.contentOrThrow().first()
         content.validate()
         return response.isValid() && item.isValid() && message.isValid() && content.isValid()
     }

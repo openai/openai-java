@@ -81,115 +81,186 @@ private constructor(
     )
 
     /**
-     * Unique identifier for the video job.
+     * Unique identifier for the video job. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * Unix timestamp (seconds) for when the job completed, if finished.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun completedAt(): Optional<Long> = completedAt.getOptional("completed_at")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * Unix timestamp (seconds) for when the job was created.
+     * Unix timestamp (seconds) for when the job completed, if finished. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun completedAt(): java.util.Optional<Long> = completedAt.getOptional("completed_at")
 
     /**
-     * Error payload that explains why generation failed, if applicable.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun error(): Optional<VideoCreateError> = error.getOptional("error")
+    fun completedAtOrThrow(): Long = completedAt.getRequired("completed_at")
 
     /**
-     * Unix timestamp (seconds) for when the downloadable assets expire, if set.
+     * Unix timestamp (seconds) for when the job was created. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * The video generation model that produced the job.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun model(): VideoModel = model.getRequired("model")
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
     /**
-     * The object type, which is always `video`.
+     * Error payload that explains why generation failed, if applicable. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("video")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun error(): java.util.Optional<VideoCreateError> = error.getOptional("error")
 
     /**
-     * Approximate completion percentage for the generation task.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun progress(): Long = progress.getRequired("progress")
+    fun errorOrThrow(): VideoCreateError = error.getRequired("error")
 
     /**
-     * The prompt that was used to generate the video.
+     * Unix timestamp (seconds) for when the downloadable assets expire, if set. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun prompt(): Optional<String> = prompt.getOptional("prompt")
+    fun expiresAt(): java.util.Optional<Long> = expiresAt.getOptional("expires_at")
 
     /**
-     * Identifier of the source video if this video is a remix.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun remixedFromVideoId(): Optional<String> =
+    fun expiresAtOrThrow(): Long = expiresAt.getRequired("expires_at")
+
+    /**
+     * The video generation model that produced the job. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun model(): java.util.Optional<VideoModel> = model.getOptional("model")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun modelOrThrow(): VideoModel = model.getRequired("model")
+
+    /**
+     * The object type, which is always `video`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("video")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * Approximate completion percentage for the generation task. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun progress(): java.util.Optional<Long> = progress.getOptional("progress")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun progressOrThrow(): Long = progress.getRequired("progress")
+
+    /**
+     * The prompt that was used to generate the video. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun prompt(): java.util.Optional<String> = prompt.getOptional("prompt")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun promptOrThrow(): String = prompt.getRequired("prompt")
+
+    /**
+     * Identifier of the source video if this video is a remix. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun remixedFromVideoId(): java.util.Optional<String> =
         remixedFromVideoId.getOptional("remixed_from_video_id")
 
     /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun remixedFromVideoIdOrThrow(): String =
+        remixedFromVideoId.getRequired("remixed_from_video_id")
+
+    /**
      * Duration of the generated clip in seconds. For extensions, this is the stitched total
-     * duration.
+     * duration. The schema requires this property. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun seconds(): VideoSeconds = seconds.getRequired("seconds")
+    fun seconds(): java.util.Optional<VideoSeconds> = seconds.getOptional("seconds")
 
     /**
-     * The resolution of the generated video.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun size(): VideoSize = size.getRequired("size")
+    fun secondsOrThrow(): VideoSeconds = seconds.getRequired("seconds")
 
     /**
-     * Current lifecycle status of the video job.
+     * The resolution of the generated video. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): Status = status.getRequired("status")
+    fun size(): java.util.Optional<VideoSize> = size.getOptional("size")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sizeOrThrow(): VideoSize = size.getRequired("size")
+
+    /**
+     * Current lifecycle status of the video job. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): Status = status.getRequired("status")
 
     /**
      * Returns the raw JSON value of [id].
@@ -650,23 +721,19 @@ private constructor(
             return@apply
         }
 
-        id()
+        idOrThrow()
         completedAt()
-        createdAt()
+        createdAtOrThrow()
         error().ifPresent { it.validate() }
         expiresAt()
-        model()
-        _object_().let {
-            if (it != JsonValue.from("video")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        progress()
+        modelOrThrow()
+        object_OrThrow()
+        progressOrThrow()
         prompt()
         remixedFromVideoId()
-        seconds()
-        size().validate()
-        status().validate()
+        secondsOrThrow()
+        sizeOrThrow().validate()
+        statusOrThrow().validate()
         validated = true
     }
 

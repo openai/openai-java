@@ -87,10 +87,10 @@ internal class ResponseAccumulatorTest {
         accumulator.accumulate(authoritative)
         val result = accumulator.response()
         assertThat(accumulator.snapshot().get()).isSameAs(result)
-        assertThat(result.id()).isEqualTo("resp_final")
+        assertThat(result.idOrThrow()).isEqualTo("resp_final")
         assertThat(result._status().isMissing()).isTrue()
         assertThat(result._output().isMissing()).isTrue()
-        assertThat(originalPartial.id()).isEqualTo("resp_start")
+        assertThat(originalPartial.idOrThrow()).isEqualTo("resp_start")
         accumulator.accumulate(created)
         assertThat(accumulator.snapshot().get()).isSameAs(result)
     }
@@ -113,9 +113,9 @@ internal class ResponseAccumulatorTest {
             assertThat(accumulator.accumulate(event)).isSameAs(event)
         }
         val before = accumulator.snapshot().get()
-        val content = before.output().single().asMessage().content()
-        assertThat(content[0].asOutputText().text()).isEqualTo("hello")
-        assertThat(content[1].asRefusal().refusal()).isEqualTo("cannot")
+        val content = before.outputOrThrow().single().asMessage().contentOrThrow()
+        assertThat(content[0].asOutputText().textOrThrow()).isEqualTo("hello")
+        assertThat(content[1].asRefusal().refusalOrThrow()).isEqualTo("cannot")
         val next =
             mapper.readValue(
                 """{"type":"response.output_text.done","sequence_number":6,"output_index":0,"content_index":0,"item_id":"m","text":"hello final","logprobs":[]}""",
@@ -123,9 +123,25 @@ internal class ResponseAccumulatorTest {
             )
         accumulator.accumulate(next)
         val after = accumulator.snapshot().get()
-        assertThat(before.output().single().asMessage().content()[0].asOutputText().text())
+        assertThat(
+                before
+                    .outputOrThrow()
+                    .single()
+                    .asMessage()
+                    .contentOrThrow()[0]
+                    .asOutputText()
+                    .textOrThrow()
+            )
             .isEqualTo("hello")
-        assertThat(after.output().single().asMessage().content()[0].asOutputText().text())
+        assertThat(
+                after
+                    .outputOrThrow()
+                    .single()
+                    .asMessage()
+                    .contentOrThrow()[0]
+                    .asOutputText()
+                    .textOrThrow()
+            )
             .isEqualTo("hello final")
         val tree = mapper.valueToTree<com.fasterxml.jackson.databind.JsonNode>(after)
         assertThat(tree.path("output")[0].path("from_server").asBoolean()).isTrue()
@@ -172,19 +188,27 @@ internal class ResponseAccumulatorTest {
         )
         val last = accumulator.snapshot().get()
         assertThat(last).isSameAs(valid)
-        val text = last.output().single().asMessage().content()[0].asOutputText()
-        assertThat(text.text()).isEqualTo("See references.")
-        assertThat(text.annotations().map { it.asUrlCitation().title() })
+        val text = last.outputOrThrow().single().asMessage().contentOrThrow()[0].asOutputText()
+        assertThat(text.textOrThrow()).isEqualTo("See references.")
+        assertThat(text.annotationsOrThrow().map { it.asUrlCitation().titleOrThrow() })
             .containsExactly("updated", "second")
         assertThat(
                 text
-                    .annotations()[0]
+                    .annotationsOrThrow()[0]
                     .asUrlCitation()
                     ._allProperties()["provider_tag"]
                     ?.convert(String::class.java)
             )
             .isEqualTo("kept")
-        assertThat(before.output().single().asMessage().content()[0].asOutputText().annotations())
+        assertThat(
+                before
+                    .outputOrThrow()
+                    .single()
+                    .asMessage()
+                    .contentOrThrow()[0]
+                    .asOutputText()
+                    .annotationsOrThrow()
+            )
             .isEmpty()
         assertThatThrownBy { accumulator.response() }
             .isExactlyInstanceOf(IllegalStateException::class.java)
@@ -224,17 +248,36 @@ internal class ResponseAccumulatorTest {
             accumulator.accumulate(args)
         }
         val last = accumulator.snapshot().get()
-        assertThat(last.output()[0].asMessage().content()[0].asOutputText().text())
+        assertThat(
+                last.outputOrThrow()[0].asMessage().contentOrThrow()[0].asOutputText().textOrThrow()
+            )
             .isEqualTo("prefix" + fragment.repeat(32_769))
-        assertThat(last.output()[0].asMessage().content()[1].asRefusal().refusal())
+        assertThat(
+                last.outputOrThrow()[0].asMessage().contentOrThrow()[1].asRefusal().refusalOrThrow()
+            )
             .isEqualTo("sorry" + fragment.repeat(32_769))
-        assertThat(last.output()[1].asFunctionCall().arguments())
+        assertThat(last.outputOrThrow()[1].asFunctionCall().argumentsOrThrow())
             .isEqualTo("{" + fragment.repeat(32_769))
-        assertThat(before.output()[0].asMessage().content()[0].asOutputText().text())
+        assertThat(
+                before
+                    .outputOrThrow()[0]
+                    .asMessage()
+                    .contentOrThrow()[0]
+                    .asOutputText()
+                    .textOrThrow()
+            )
             .isEqualTo("prefix$fragment")
-        assertThat(before.output()[0].asMessage().content()[1].asRefusal().refusal())
+        assertThat(
+                before
+                    .outputOrThrow()[0]
+                    .asMessage()
+                    .contentOrThrow()[1]
+                    .asRefusal()
+                    .refusalOrThrow()
+            )
             .isEqualTo("sorry$fragment")
-        assertThat(before.output()[1].asFunctionCall().arguments()).isEqualTo("{$fragment")
+        assertThat(before.outputOrThrow()[1].asFunctionCall().argumentsOrThrow())
+            .isEqualTo("{$fragment")
         accumulator.accumulate(
             event(
                 """{"type":"response.output_item.done","sequence_number":4,"output_index":0,"item":{"id":"replacement","type":"message","role":"assistant","status":"completed","content":[{"type":"output_text","text":"authoritative","annotations":[]}]}}"""
@@ -248,10 +291,18 @@ internal class ResponseAccumulatorTest {
             )
         )
         val replaced = accumulator.snapshot().get()
-        assertThat(replaced.output()[0].asMessage().content().single().asOutputText().text())
+        assertThat(
+                replaced
+                    .outputOrThrow()[0]
+                    .asMessage()
+                    .contentOrThrow()
+                    .single()
+                    .asOutputText()
+                    .textOrThrow()
+            )
             .isEqualTo("authoritative")
-        assertThat(replaced.output()[1].asFunctionCall().arguments()).isEqualTo("{}")
-        assertThat(last.output()[1].asFunctionCall().arguments()).endsWith(fragment)
+        assertThat(replaced.outputOrThrow()[1].asFunctionCall().argumentsOrThrow()).isEqualTo("{}")
+        assertThat(last.outputOrThrow()[1].asFunctionCall().argumentsOrThrow()).endsWith(fragment)
     }
 
     @ParameterizedTest
@@ -283,9 +334,10 @@ internal class ResponseAccumulatorTest {
             """{"type":"response.output_text.annotation.added","sequence_number":3,"output_index":0,"content_index":0,"item_id":"m","annotation_index":0,"annotation":{"type":"file_citation","file_id":"file-1","filename":"test","index":0}}"""
         )
         val first = state.snapshot().get()
-        val originalText = first.output()[0].asMessage().content()[0].asOutputText()
-        assertThat(first.output()[1].asCustomToolCall().input()).isEqualTo("patch first")
-        assertThat(originalText.logprobs().get().single().token()).isEqualTo("A")
+        val originalText = first.outputOrThrow()[0].asMessage().contentOrThrow()[0].asOutputText()
+        assertThat(first.outputOrThrow()[1].asCustomToolCall().inputOrThrow())
+            .isEqualTo("patch first")
+        assertThat(originalText.logprobs().get().single().tokenOrThrow()).isEqualTo("A")
         assertThat(
                 originalText
                     .logprobs()
@@ -295,7 +347,7 @@ internal class ResponseAccumulatorTest {
                     ?.convert(String::class.java)
             )
             .isEqualTo("kept")
-        assertThat(originalText.annotations()).hasSize(1)
+        assertThat(originalText.annotationsOrThrow()).hasSize(1)
         send(
             """{"type":"response.custom_tool_call_input.delta","sequence_number":4,"output_index":1,"item_id":"old","delta":"incorrect"}"""
         )
@@ -310,11 +362,17 @@ internal class ResponseAccumulatorTest {
             """{"type":"response.output_text.delta","sequence_number":7,"output_index":0,"content_index":0,"item_id":"m","delta":"B","logprobs":[{"token":"B","logprob":-0.2,"top_logprobs":[]}]}"""
         )
         val partial = state.snapshot().get()
-        assertThat(partial.output()[1].asCustomToolCall().input()).isEqualTo("patch first second")
+        assertThat(partial.outputOrThrow()[1].asCustomToolCall().inputOrThrow())
+            .isEqualTo("patch first second")
         assertThat(
-                partial.output()[0].asMessage().content()[0].asOutputText().logprobs().get().map {
-                    it.token()
-                }
+                partial
+                    .outputOrThrow()[0]
+                    .asMessage()
+                    .contentOrThrow()[0]
+                    .asOutputText()
+                    .logprobs()
+                    .get()
+                    .map { it.tokenOrThrow() }
             )
             .containsExactly("A", "B")
         send(
@@ -329,14 +387,16 @@ internal class ResponseAccumulatorTest {
             )
         }
         val last = state.snapshot().get()
-        val text = last.output()[0].asMessage().content()[0].asOutputText()
-        assertThat(last.output()[1].asCustomToolCall().input()).isEqualTo("authoritative patch")
-        assertThat(text.text()).isEqualTo("final")
-        assertThat(text.logprobs().get().map { it.token() }).containsExactly("final")
-        assertThat(text.annotations()).hasSize(1)
-        assertThat(originalText.text()).isEqualTo("A")
-        assertThat(originalText.logprobs().get().map { it.token() }).containsExactly("A")
-        assertThat(first.output()[1].asCustomToolCall().input()).isEqualTo("patch first")
+        val text = last.outputOrThrow()[0].asMessage().contentOrThrow()[0].asOutputText()
+        assertThat(last.outputOrThrow()[1].asCustomToolCall().inputOrThrow())
+            .isEqualTo("authoritative patch")
+        assertThat(text.textOrThrow()).isEqualTo("final")
+        assertThat(text.logprobs().get().map { it.tokenOrThrow() }).containsExactly("final")
+        assertThat(text.annotationsOrThrow()).hasSize(1)
+        assertThat(originalText.textOrThrow()).isEqualTo("A")
+        assertThat(originalText.logprobs().get().map { it.tokenOrThrow() }).containsExactly("A")
+        assertThat(first.outputOrThrow()[1].asCustomToolCall().inputOrThrow())
+            .isEqualTo("patch first")
         assertThatThrownBy { state.response() }
             .isExactlyInstanceOf(IllegalStateException::class.java)
     }
@@ -366,29 +426,57 @@ internal class ResponseAccumulatorTest {
         repeat(128) { state.accumulate(done) }
         val completed = state.snapshot().get()
         // An immutable completed string can be shared without copying its large payload.
-        assertThat(completed.output()[0].asMessage().content()[0].asOutputText().text() === text)
+        assertThat(
+                completed
+                    .outputOrThrow()[0]
+                    .asMessage()
+                    .contentOrThrow()[0]
+                    .asOutputText()
+                    .textOrThrow() === text
+            )
             .isTrue()
         send(
             """{"type":"response.output_text.delta","sequence_number":2,"output_index":0,"content_index":0,"item_id":"m","delta":"!"}"""
         )
         val appended = state.snapshot().get()
-        assertThat(appended.output()[0].asMessage().content()[0].asOutputText().text())
+        assertThat(
+                appended
+                    .outputOrThrow()[0]
+                    .asMessage()
+                    .contentOrThrow()[0]
+                    .asOutputText()
+                    .textOrThrow()
+            )
             .isEqualTo(text + "!")
         state.accumulate(done)
         assertThat(
                 state
                     .snapshot()
                     .get()
-                    .output()[0]
+                    .outputOrThrow()[0]
                     .asMessage()
-                    .content()[0]
+                    .contentOrThrow()[0]
                     .asOutputText()
-                    .text() === text
+                    .textOrThrow() === text
             )
             .isTrue()
-        assertThat(completed.output()[0].asMessage().content()[0].asOutputText().text() === text)
+        assertThat(
+                completed
+                    .outputOrThrow()[0]
+                    .asMessage()
+                    .contentOrThrow()[0]
+                    .asOutputText()
+                    .textOrThrow() === text
+            )
             .isTrue()
-        assertThat(appended.output()[0].asMessage().content()[0].asOutputText().text())
+        assertThat(
+                appended
+                    .outputOrThrow()[0]
+                    .asMessage()
+                    .contentOrThrow()[0]
+                    .asOutputText()
+                    .textOrThrow()
+            )
             .isEqualTo(text + "!")
     }
 
@@ -413,10 +501,18 @@ internal class ResponseAccumulatorTest {
         send(
             """{"type":"response.output_text.delta","sequence_number":3,"output_index":0,"content_index":0,"item_id":"m","delta":"!","logprobs":[{"token":"!","logprob":-0.1,"top_logprobs":[]}]}"""
         )
-        val text = state.snapshot().get().output()[0].asMessage().content()[0].asOutputText()
-        assertThat(text.text()).isEqualTo("final!")
-        assertThat(text.logprobs().get().map { it.token() }).containsExactly("!")
-        assertThat(completed.output()[0].asMessage().content()[0].asOutputText().text())
+        val text =
+            state.snapshot().get().outputOrThrow()[0].asMessage().contentOrThrow()[0].asOutputText()
+        assertThat(text.textOrThrow()).isEqualTo("final!")
+        assertThat(text.logprobs().get().map { it.tokenOrThrow() }).containsExactly("!")
+        assertThat(
+                completed
+                    .outputOrThrow()[0]
+                    .asMessage()
+                    .contentOrThrow()[0]
+                    .asOutputText()
+                    .textOrThrow()
+            )
             .isEqualTo("final")
     }
 
@@ -445,7 +541,7 @@ internal class ResponseAccumulatorTest {
             )
         }
         val before = state.snapshot().get()
-        assertThat(before.output()).hasSize(count)
+        assertThat(before.outputOrThrow()).hasSize(count)
         val sample =
             mapper
                 .readValue(
@@ -461,15 +557,38 @@ internal class ResponseAccumulatorTest {
             )
         }
         val last = state.snapshot().get()
-        assertThat(last.output()).hasSize(count)
-        assertThat(last.output().last().asMessage().content().single().asOutputText().annotations())
+        assertThat(last.outputOrThrow()).hasSize(count)
+        assertThat(
+                last
+                    .outputOrThrow()
+                    .last()
+                    .asMessage()
+                    .contentOrThrow()
+                    .single()
+                    .asOutputText()
+                    .annotationsOrThrow()
+            )
             .hasSize(count)
         assertThat(
-                last.output().first().asMessage().content().single().asOutputText().annotations()
+                last
+                    .outputOrThrow()
+                    .first()
+                    .asMessage()
+                    .contentOrThrow()
+                    .single()
+                    .asOutputText()
+                    .annotationsOrThrow()
             )
             .isEmpty()
         assertThat(
-                before.output().last().asMessage().content().single().asOutputText().annotations()
+                before
+                    .outputOrThrow()
+                    .last()
+                    .asMessage()
+                    .contentOrThrow()
+                    .single()
+                    .asOutputText()
+                    .annotationsOrThrow()
             )
             .isEmpty()
     }
@@ -499,7 +618,7 @@ internal class ResponseAccumulatorTest {
         accumulator.accumulate(ResponseStreamEvent.ofCompleted(responseCompletedEvent()))
 
         assertThatNoException().isThrownBy { accumulator.response() }
-        assertThat(accumulator.response().id()).isEqualTo("response-id")
+        assertThat(accumulator.response().idOrThrow()).isEqualTo("response-id")
     }
 
     @Test
@@ -511,7 +630,7 @@ internal class ResponseAccumulatorTest {
         // No deserialization is attempted, so the `Class<T>` does not matter. Deserialization is
         // beyond the scope of this test; it is tested elsewhere at a lower level.
         assertThatNoException().isThrownBy { accumulator.response(String::class.java) }
-        assertThat(accumulator.response(String::class.java).id()).isEqualTo("response-id")
+        assertThat(accumulator.response(String::class.java).idOrThrow()).isEqualTo("response-id")
         assertThat(accumulator.response(String::class.java).responseType)
             .isEqualTo(String::class.java)
     }
@@ -525,7 +644,7 @@ internal class ResponseAccumulatorTest {
         assertThatNoException().isThrownBy {
             accumulator.accumulate(responseRateLimitsUpdatedEvent())
         }
-        assertThat(accumulator.response().id()).isEqualTo("response-id")
+        assertThat(accumulator.response().idOrThrow()).isEqualTo("response-id")
     }
 
     @Test
@@ -576,7 +695,7 @@ internal class ResponseAccumulatorTest {
 
         val response = accumulator.response()
 
-        assertThat(response.id()).isEqualTo("response-id")
+        assertThat(response.idOrThrow()).isEqualTo("response-id")
     }
 
     @ParameterizedTest
@@ -615,7 +734,7 @@ internal class ResponseAccumulatorTest {
         )
 
         assertThat(accumulator.response()).isSameAs(completed)
-        assertThat(accumulator.response().output())
+        assertThat(accumulator.response().outputOrThrow())
             .containsExactly(ResponseOutputItem.ofCompaction(compaction))
     }
 
@@ -631,7 +750,7 @@ internal class ResponseAccumulatorTest {
 
         val response = accumulator.response()
 
-        assertThat(response.id()).isEqualTo("response-id")
+        assertThat(response.idOrThrow()).isEqualTo("response-id")
     }
 
     @Test
@@ -646,7 +765,7 @@ internal class ResponseAccumulatorTest {
 
         val response = accumulator.response()
 
-        assertThat(response.id()).isEqualTo("response-id")
+        assertThat(response.idOrThrow()).isEqualTo("response-id")
     }
 
     private fun responseCreatedEvent() =

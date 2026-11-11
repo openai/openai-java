@@ -17,7 +17,7 @@ internal class RealtimeTranslationInputAudioBufferAppendEventTest {
                 .eventId("event_id")
                 .build()
 
-        assertThat(realtimeTranslationInputAudioBufferAppendEvent.audio()).isEqualTo("audio")
+        assertThat(realtimeTranslationInputAudioBufferAppendEvent.audio()).contains("audio")
         assertThat(realtimeTranslationInputAudioBufferAppendEvent.eventId()).contains("event_id")
 
         val jsonMapper = jsonMapper()

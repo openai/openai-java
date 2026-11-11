@@ -40,31 +40,44 @@ private constructor(
 
     /**
      * Configuration for automatic thread titling. When omitted, automatic thread titling is enabled
-     * by default.
+     * by default. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun automaticThreadTitling(): Optional<AutomaticThreadTitling> =
+    fun automaticThreadTitling(): java.util.Optional<AutomaticThreadTitling> =
         automaticThreadTitling.getOptional("automatic_thread_titling")
 
     /**
-     * Configuration for upload enablement and limits. When omitted, uploads are disabled by default
-     * (max_files 10, max_file_size 512 MB).
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun fileUpload(): Optional<FileUpload> = fileUpload.getOptional("file_upload")
+    fun automaticThreadTitlingOrThrow(): AutomaticThreadTitling =
+        automaticThreadTitling.getRequired("automatic_thread_titling")
+
+    /**
+     * Configuration for upload enablement and limits. When omitted, uploads are disabled by default
+     * (max_files 10, max_file_size 512 MB). Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun fileUpload(): java.util.Optional<FileUpload> = fileUpload.getOptional("file_upload")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun fileUploadOrThrow(): FileUpload = fileUpload.getRequired("file_upload")
 
     /**
      * Configuration for chat history retention. When omitted, history is enabled by default with no
-     * limit on recent_threads (null).
+     * limit on recent_threads (null). Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun history(): Optional<History> = history.getOptional("history")
+    fun history(): java.util.Optional<History> = history.getOptional("history")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun historyOrThrow(): History = history.getRequired("history")
 
     /**
      * Returns the raw JSON value of [automaticThreadTitling].
@@ -289,12 +302,18 @@ private constructor(
         ) : this(enabled, mutableMapOf())
 
         /**
-         * Enable automatic thread title generation. Defaults to true.
+         * Enable automatic thread title generation. Defaults to true. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun enabled(): Optional<Boolean> = enabled.getOptional("enabled")
+        fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
 
         /**
          * Returns the raw JSON value of [enabled].
@@ -466,29 +485,46 @@ private constructor(
         ) : this(enabled, maxFileSize, maxFiles, mutableMapOf())
 
         /**
-         * Enable uploads for this session. Defaults to false.
+         * Enable uploads for this session. Defaults to false. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun enabled(): Optional<Boolean> = enabled.getOptional("enabled")
+        fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
 
         /**
          * Maximum size in megabytes for each uploaded file. Defaults to 512 MB, which is the
-         * maximum allowable size.
+         * maximum allowable size. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun maxFileSize(): Optional<Long> = maxFileSize.getOptional("max_file_size")
+        fun maxFileSize(): java.util.Optional<Long> = maxFileSize.getOptional("max_file_size")
 
         /**
-         * Maximum number of files that can be uploaded to the session. Defaults to 10.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun maxFiles(): Optional<Long> = maxFiles.getOptional("max_files")
+        fun maxFileSizeOrThrow(): Long = maxFileSize.getRequired("max_file_size")
+
+        /**
+         * Maximum number of files that can be uploaded to the session. Defaults to 10. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun maxFiles(): java.util.Optional<Long> = maxFiles.getOptional("max_files")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun maxFilesOrThrow(): Long = maxFiles.getRequired("max_files")
 
         /**
          * Returns the raw JSON value of [enabled].
@@ -718,20 +754,32 @@ private constructor(
         ) : this(enabled, recentThreads, mutableMapOf())
 
         /**
-         * Enables chat users to access previous ChatKit threads. Defaults to true.
+         * Enables chat users to access previous ChatKit threads. Defaults to true. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun enabled(): Optional<Boolean> = enabled.getOptional("enabled")
+        fun enabled(): java.util.Optional<Boolean> = enabled.getOptional("enabled")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun enabledOrThrow(): Boolean = enabled.getRequired("enabled")
 
         /**
          * Number of recent ChatKit threads users have access to. Defaults to unlimited when unset.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun recentThreads(): Optional<Long> = recentThreads.getOptional("recent_threads")
+        fun recentThreads(): java.util.Optional<Long> = recentThreads.getOptional("recent_threads")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun recentThreadsOrThrow(): Long = recentThreads.getRequired("recent_threads")
 
         /**
          * Returns the raw JSON value of [enabled].

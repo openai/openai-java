@@ -1,9 +1,19 @@
 package com.openai.models.embeddings
 
+import com.openai.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class EmbeddingValueTest {
+
+    @Test
+    fun rawEmbeddingPreservesMalformedBase64() {
+        val input = "not valid base64!"
+        val embedding =
+            Embedding.builder().index(0L).embedding(EmbeddingValue.ofBase64(input)).build()
+        assertThat(embedding._embedding().asUnknown()).contains(JsonValue.from(input))
+        assertThat(embedding._embeddingValue().asKnown().get().asBase64()).isEqualTo(input)
+    }
 
     @Test
     fun create_setThenAdd() {
@@ -14,8 +24,8 @@ internal class EmbeddingValueTest {
                 .index(0L)
                 .build()
 
-        assertThat(embedding.embedding()).containsExactly(1.0f, 2.0f, 3.0f)
-        assertThat(embedding.index()).isEqualTo(0L)
+        assertThat(embedding.embeddingOrThrow()).containsExactly(1.0f, 2.0f, 3.0f)
+        assertThat(embedding.indexOrThrow()).isEqualTo(0L)
     }
 
     @Test
@@ -27,8 +37,8 @@ internal class EmbeddingValueTest {
                 .index(0L)
                 .build()
 
-        assertThat(embedding.embedding()).containsExactly(1.0f, 2.0f)
-        assertThat(embedding.index()).isEqualTo(0L)
+        assertThat(embedding.embeddingOrThrow()).containsExactly(1.0f, 2.0f)
+        assertThat(embedding.indexOrThrow()).isEqualTo(0L)
     }
 
     @Test

@@ -70,8 +70,9 @@ internal class ResponseAccumulatorMcpProgressTest {
             websocket,
             """{"type":"response.mcp_call_arguments.delta","sequence_number":2,"output_index":0,"item_id":"mcp_current","delta":"{}"}""",
         )
-        assertThat(state.snapshot().get().output().single().asMcpCall().arguments()).isEqualTo("{}")
-        assertThat(before.output().single().asMcpCall().arguments()).isEmpty()
+        assertThat(state.snapshot().get().outputOrThrow().single().asMcpCall().argumentsOrThrow())
+            .isEqualTo("{}")
+        assertThat(before.outputOrThrow().single().asMcpCall().argumentsOrThrow()).isEmpty()
     }
 
     @ParameterizedTest(name = "{displayName} websocket={0}")
@@ -84,7 +85,8 @@ internal class ResponseAccumulatorMcpProgressTest {
             websocket,
             """{"type":"response.mcp_call_arguments.done","sequence_number":2,"output_index":0,"item_id":"mcp_current","arguments":"{}"}""",
         )
-        assertThat(state.snapshot().get().output().single().asMcpCall().arguments()).isEqualTo("{}")
+        assertThat(state.snapshot().get().outputOrThrow().single().asMcpCall().argumentsOrThrow())
+            .isEqualTo("{}")
     }
 
     @ParameterizedTest(name = "{displayName} websocket={0}")
@@ -96,11 +98,11 @@ internal class ResponseAccumulatorMcpProgressTest {
         progress(state, websocket, "delta", "\"part\":")
         progress(state, websocket, "delta", "1}")
         val partial = state.snapshot().get()
-        val call = partial.output().single().asMcpCall()
-        assertThat(call.arguments()).isEqualTo("{\"part\":1}")
-        assertThat(call.id()).isEqualTo("mcp_current")
-        assertThat(call.name()).isEqualTo("lookup")
-        assertThat(call.serverLabel()).isEqualTo("fixture")
+        val call = partial.outputOrThrow().single().asMcpCall()
+        assertThat(call.argumentsOrThrow()).isEqualTo("{\"part\":1}")
+        assertThat(call.idOrThrow()).isEqualTo("mcp_current")
+        assertThat(call.nameOrThrow()).isEqualTo("lookup")
+        assertThat(call.serverLabelOrThrow()).isEqualTo("fixture")
         assertThat(
                 mapper
                     .valueToTree<com.fasterxml.jackson.databind.JsonNode>(call)
@@ -118,31 +120,36 @@ internal class ResponseAccumulatorMcpProgressTest {
             .isTrue()
         progress(state, websocket, "done", "{\"done\":2}")
         val done = state.snapshot().get()
-        assertThat(done.output().single().asMcpCall().arguments()).isEqualTo("{\"done\":2}")
+        assertThat(done.outputOrThrow().single().asMcpCall().argumentsOrThrow())
+            .isEqualTo("{\"done\":2}")
         assertThat(
                 mapper
-                    .valueToTree<com.fasterxml.jackson.databind.JsonNode>(done.output().single())
+                    .valueToTree<com.fasterxml.jackson.databind.JsonNode>(
+                        done.outputOrThrow().single()
+                    )
                     .path("fixture_metadata")
                     .path("keep")
                     .asBoolean()
             )
             .isTrue()
-        assertThat(partial.output().single().asMcpCall().arguments()).isEqualTo("{\"part\":1}")
-        assertThat(seed.output().single().asMcpCall().arguments()).isEqualTo("{")
+        assertThat(partial.outputOrThrow().single().asMcpCall().argumentsOrThrow())
+            .isEqualTo("{\"part\":1}")
+        assertThat(seed.outputOrThrow().single().asMcpCall().argumentsOrThrow()).isEqualTo("{")
         send(
             state,
             websocket,
             """{"type":"response.output_item.done","sequence_number":7,"output_index":0,"item":${mcpItem("mcp_current", "{\"full\":3}", "completed")}}""",
         )
-        assertThat(state.snapshot().get().output().single().asMcpCall().arguments())
+        assertThat(state.snapshot().get().outputOrThrow().single().asMcpCall().argumentsOrThrow())
             .isEqualTo("{\"full\":3}")
         send(state, websocket, terminal(mcpItem("mcp_current", "{\"final\":4}")))
         val authoritative = state.response()
-        assertThat(authoritative.output().single().asMcpCall().arguments())
+        assertThat(authoritative.outputOrThrow().single().asMcpCall().argumentsOrThrow())
             .isEqualTo("{\"final\":4}")
         progress(state, websocket, "done", "{\"late\":5}")
         assertThat(state.snapshot().get()).isSameAs(authoritative)
-        assertThat(done.output().single().asMcpCall().arguments()).isEqualTo("{\"done\":2}")
+        assertThat(done.outputOrThrow().single().asMcpCall().argumentsOrThrow())
+            .isEqualTo("{\"done\":2}")
     }
 
     @ParameterizedTest(name = "{displayName} websocket={0}")
@@ -186,7 +193,7 @@ internal class ResponseAccumulatorMcpProgressTest {
         progress(state, websocket, "done", "{\"done\":1}")
         assertThatThrownBy { state.snapshot() }.isInstanceOf(IllegalStateException::class.java)
         send(state, websocket, terminal(mcpItem("mcp_current", "{\"final\":2}")))
-        assertThat(state.response().output().single().asMcpCall().arguments())
+        assertThat(state.response().outputOrThrow().single().asMcpCall().argumentsOrThrow())
             .isEqualTo("{\"final\":2}")
     }
 }

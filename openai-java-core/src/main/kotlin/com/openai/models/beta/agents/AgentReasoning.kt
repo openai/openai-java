@@ -36,20 +36,30 @@ private constructor(
     ) : this(effort, summary, mutableMapOf())
 
     /**
-     * The requested reasoning effort, or `null` when the model selects its own default.
+     * The requested reasoning effort, or `null` when the model selects its own default. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun effort(): Optional<Effort> = effort.getOptional("effort")
+    fun effort(): java.util.Optional<Effort> = effort.getOptional("effort")
 
     /**
-     * The requested reasoning summary format, or `null` when summaries are disabled.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun summary(): Optional<Summary> = summary.getOptional("summary")
+    fun effortOrThrow(): Effort = effort.getRequired("effort")
+
+    /**
+     * The requested reasoning summary format, or `null` when summaries are disabled. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun summary(): java.util.Optional<Summary> = summary.getOptional("summary")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun summaryOrThrow(): Summary = summary.getRequired("summary")
 
     /**
      * Returns the raw JSON value of [effort].

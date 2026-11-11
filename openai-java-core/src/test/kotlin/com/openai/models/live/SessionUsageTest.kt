@@ -13,7 +13,7 @@ internal class SessionUsageTest {
     fun createAndRoundtrip() {
         val sessionUsage = SessionUsage.builder().seconds(0.0).build()
 
-        assertThat(sessionUsage.seconds()).isEqualTo(0.0)
+        assertThat(sessionUsage.seconds()).contains(0.0)
 
         val jsonMapper = jsonMapper()
 

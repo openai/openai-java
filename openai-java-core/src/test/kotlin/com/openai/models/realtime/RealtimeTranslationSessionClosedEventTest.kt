@@ -14,7 +14,7 @@ internal class RealtimeTranslationSessionClosedEventTest {
         val realtimeTranslationSessionClosedEvent =
             RealtimeTranslationSessionClosedEvent.builder().eventId("event_id").build()
 
-        assertThat(realtimeTranslationSessionClosedEvent.eventId()).isEqualTo("event_id")
+        assertThat(realtimeTranslationSessionClosedEvent.eventId()).contains("event_id")
 
         val jsonMapper = jsonMapper()
 

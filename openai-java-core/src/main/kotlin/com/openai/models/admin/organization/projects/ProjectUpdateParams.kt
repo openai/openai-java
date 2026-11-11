@@ -31,30 +31,23 @@ private constructor(
 
     fun projectId(): Optional<String> = Optional.ofNullable(projectId)
 
-    /**
-     * External key ID to associate with the project.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun externalKeyId(): Optional<String> = body.externalKeyId()
+    /** @see Body.externalKeyId */
+    fun externalKeyId(): java.util.Optional<String> = body.externalKeyId()
 
-    /**
-     * Geography for the project. Deprecated: use `residency` when creating a project to configure
-     * data residency. This field is retained for backward compatibility.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    @Deprecated("deprecated") fun geography(): Optional<String> = body.geography()
+    /** @see Body.externalKeyIdOrThrow */
+    fun externalKeyIdOrThrow(): String = body.externalKeyIdOrThrow()
 
-    /**
-     * The updated name of the project, this name appears in reports.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun name(): Optional<String> = body.name()
+    /** @see Body.geography */
+    @Deprecated("deprecated") fun geography(): java.util.Optional<String> = body.geography()
+
+    /** @see Body.geographyOrThrow */
+    @Deprecated("deprecated") fun geographyOrThrow(): String = body.geographyOrThrow()
+
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
+
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
 
     /**
      * Returns the raw JSON value of [externalKeyId].
@@ -344,30 +337,50 @@ private constructor(
         ) : this(externalKeyId, geography, name, mutableMapOf())
 
         /**
-         * External key ID to associate with the project.
+         * External key ID to associate with the project. Returns empty if the JSON property is
+         * missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun externalKeyId(): Optional<String> = externalKeyId.getOptional("external_key_id")
+        fun externalKeyId(): java.util.Optional<String> =
+            externalKeyId.getOptional("external_key_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun externalKeyIdOrThrow(): String = externalKeyId.getRequired("external_key_id")
 
         /**
          * Geography for the project. Deprecated: use `residency` when creating a project to
-         * configure data residency. This field is retained for backward compatibility.
+         * configure data residency. This field is retained for backward compatibility. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
         @Deprecated("deprecated")
-        fun geography(): Optional<String> = geography.getOptional("geography")
+        fun geography(): java.util.Optional<String> = geography.getOptional("geography")
 
         /**
-         * The updated name of the project, this name appears in reports.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun name(): Optional<String> = name.getOptional("name")
+        @Deprecated("deprecated")
+        fun geographyOrThrow(): String = geography.getRequired("geography")
+
+        /**
+         * The updated name of the project, this name appears in reports. Returns empty if the JSON
+         * property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
 
         /**
          * Returns the raw JSON value of [externalKeyId].

@@ -294,25 +294,42 @@ private constructor(
         ) : this(rate, type, mutableMapOf())
 
         /**
-         * Audio sample rate in hertz. Live WebSocket PCM audio supports 16000 or 24000 Hz.
+         * Audio sample rate in hertz. Live WebSocket PCM audio supports 16000 or 24000 Hz. The
+         * schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun rate(): Rate = rate.getRequired("rate")
+        fun rate(): java.util.Optional<Rate> = rate.getOptional("rate")
 
         /**
-         * The audio encoding. Always `audio/pcm`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("audio/pcm")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun rateOrThrow(): Rate = rate.getRequired("rate")
+
+        /**
+         * The audio encoding. Always `audio/pcm`. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("audio/pcm")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [rate].
@@ -451,12 +468,8 @@ private constructor(
                 return@apply
             }
 
-            rate().validate()
-            _type().let {
-                if (it != JsonValue.from("audio/pcm")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            rateOrThrow().validate()
+            typeOrThrow()
             validated = true
         }
 
@@ -649,25 +662,42 @@ private constructor(
         ) : this(rate, type, mutableMapOf())
 
         /**
-         * Audio sample rate in hertz. G.711 audio uses 8000 Hz.
+         * Audio sample rate in hertz. G.711 audio uses 8000 Hz. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun rate(): Long = rate.getRequired("rate")
+        fun rate(): java.util.Optional<Long> = rate.getOptional("rate")
 
         /**
-         * The audio encoding. Always `audio/pcmu`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("audio/pcmu")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun rateOrThrow(): Long = rate.getRequired("rate")
+
+        /**
+         * The audio encoding. Always `audio/pcmu`. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("audio/pcmu")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [rate].
@@ -806,12 +836,8 @@ private constructor(
                 return@apply
             }
 
-            rate()
-            _type().let {
-                if (it != JsonValue.from("audio/pcmu")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            rateOrThrow()
+            typeOrThrow()
             validated = true
         }
 
@@ -869,25 +895,42 @@ private constructor(
         ) : this(rate, type, mutableMapOf())
 
         /**
-         * Audio sample rate in hertz. G.711 audio uses 8000 Hz.
+         * Audio sample rate in hertz. G.711 audio uses 8000 Hz. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun rate(): Long = rate.getRequired("rate")
+        fun rate(): java.util.Optional<Long> = rate.getOptional("rate")
 
         /**
-         * The audio encoding. Always `audio/pcma`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("audio/pcma")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun rateOrThrow(): Long = rate.getRequired("rate")
+
+        /**
+         * The audio encoding. Always `audio/pcma`. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("audio/pcma")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [rate].
@@ -1026,12 +1069,8 @@ private constructor(
                 return@apply
             }
 
-            rate()
-            _type().let {
-                if (it != JsonValue.from("audio/pcma")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            rateOrThrow()
+            typeOrThrow()
             validated = true
         }
 

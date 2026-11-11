@@ -87,75 +87,121 @@ private constructor(
     )
 
     /**
-     * The index of the content part containing the audio.
+     * The index of the content part containing the audio. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun contentIndex(): Long = contentIndex.getRequired("content_index")
+    fun contentIndex(): java.util.Optional<Long> = contentIndex.getOptional("content_index")
 
     /**
-     * The unique ID of the server event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun contentIndexOrThrow(): Long = contentIndex.getRequired("content_index")
 
     /**
-     * The ID of the item containing the audio that is being transcribed.
+     * The unique ID of the server event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun itemId(): String = itemId.getRequired("item_id")
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
     /**
-     * The transcribed text.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun transcript(): String = transcript.getRequired("transcript")
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
-     * The event type, must be `conversation.item.input_audio_transcription.completed`.
+     * The ID of the item containing the audio that is being transcribed. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("conversation.item.input_audio_transcription.completed")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun itemId(): java.util.Optional<String> = itemId.getOptional("item_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun itemIdOrThrow(): String = itemId.getRequired("item_id")
+
+    /**
+     * The transcribed text. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun transcript(): java.util.Optional<String> = transcript.getOptional("transcript")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun transcriptOrThrow(): String = transcript.getRequired("transcript")
+
+    /**
+     * The event type, must be `conversation.item.input_audio_transcription.completed`. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("conversation.item.input_audio_transcription.completed")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Usage statistics for the transcription, this is billed according to the ASR model's pricing
-     * rather than the realtime model's pricing.
+     * rather than the realtime model's pricing. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun usage(): Usage = usage.getRequired("usage")
+    fun usage(): java.util.Optional<Usage> = usage.getOptional("usage")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun usageOrThrow(): Usage = usage.getRequired("usage")
 
     /**
      * The languages detected in the audio. Returned by `gpt-transcribe`. An empty array indicates
-     * that no language could be reliably detected.
+     * that no language could be reliably detected. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun languages(): Optional<List<TranscriptionLanguage>> = languages.getOptional("languages")
+    fun languages(): java.util.Optional<List<TranscriptionLanguage>> =
+        languages.getOptional("languages")
 
     /**
-     * The log probabilities of the transcription.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun logprobs(): Optional<List<LogProbProperties>> = logprobs.getOptional("logprobs")
+    fun languagesOrThrow(): List<TranscriptionLanguage> = languages.getRequired("languages")
+
+    /**
+     * The log probabilities of the transcription. Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun logprobs(): java.util.Optional<List<LogProbProperties>> = logprobs.getOptional("logprobs")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun logprobsOrThrow(): List<LogProbProperties> = logprobs.getRequired("logprobs")
 
     /**
      * Returns the raw JSON value of [contentIndex].
@@ -514,16 +560,12 @@ private constructor(
             return@apply
         }
 
-        contentIndex()
-        eventId()
-        itemId()
-        transcript()
-        _type().let {
-            if (it != JsonValue.from("conversation.item.input_audio_transcription.completed")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        usage().validate()
+        contentIndexOrThrow()
+        eventIdOrThrow()
+        itemIdOrThrow()
+        transcriptOrThrow()
+        typeOrThrow()
+        usageOrThrow().validate()
         languages().ifPresent { it.forEach { it.validate() } }
         logprobs().ifPresent { it.forEach { it.validate() } }
         validated = true
@@ -849,53 +891,86 @@ private constructor(
             )
 
             /**
-             * Number of input tokens billed for this request.
+             * Number of input tokens billed for this request. The schema requires this property.
+             * Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun inputTokens(): Long = inputTokens.getRequired("input_tokens")
+            fun inputTokens(): java.util.Optional<Long> = inputTokens.getOptional("input_tokens")
 
             /**
-             * Number of output tokens generated.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun outputTokens(): Long = outputTokens.getRequired("output_tokens")
+            fun inputTokensOrThrow(): Long = inputTokens.getRequired("input_tokens")
 
             /**
-             * Total number of tokens used (input + output).
+             * Number of output tokens generated. The schema requires this property. Returns empty
+             * if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun totalTokens(): Long = totalTokens.getRequired("total_tokens")
+            fun outputTokens(): java.util.Optional<Long> = outputTokens.getOptional("output_tokens")
 
             /**
-             * The type of the usage object. Always `tokens` for this variant.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("tokens")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun outputTokensOrThrow(): Long = outputTokens.getRequired("output_tokens")
 
             /**
-             * Details about the input tokens billed for this request.
+             * Total number of tokens used (input + output). The schema requires this property.
+             * Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun inputTokenDetails(): Optional<InputTokenDetails> =
+            fun totalTokens(): java.util.Optional<Long> = totalTokens.getOptional("total_tokens")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun totalTokensOrThrow(): Long = totalTokens.getRequired("total_tokens")
+
+            /**
+             * The type of the usage object. Always `tokens` for this variant. The schema requires
+             * this property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("tokens")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+            /**
+             * Details about the input tokens billed for this request. Returns empty if the JSON
+             * property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun inputTokenDetails(): java.util.Optional<InputTokenDetails> =
                 inputTokenDetails.getOptional("input_token_details")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun inputTokenDetailsOrThrow(): InputTokenDetails =
+                inputTokenDetails.getRequired("input_token_details")
 
             /**
              * Returns the raw JSON value of [inputTokens].
@@ -1142,14 +1217,10 @@ private constructor(
                     return@apply
                 }
 
-                inputTokens()
-                outputTokens()
-                totalTokens()
-                _type().let {
-                    if (it != JsonValue.from("tokens")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
+                inputTokensOrThrow()
+                outputTokensOrThrow()
+                totalTokensOrThrow()
+                typeOrThrow()
                 inputTokenDetails().ifPresent { it.validate() }
                 validated = true
             }
@@ -1196,20 +1267,33 @@ private constructor(
                 ) : this(audioTokens, textTokens, mutableMapOf())
 
                 /**
-                 * Number of audio tokens billed for this request.
+                 * Number of audio tokens billed for this request. Returns empty if the JSON
+                 * property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun audioTokens(): Optional<Long> = audioTokens.getOptional("audio_tokens")
+                fun audioTokens(): java.util.Optional<Long> =
+                    audioTokens.getOptional("audio_tokens")
 
                 /**
-                 * Number of text tokens billed for this request.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun textTokens(): Optional<Long> = textTokens.getOptional("text_tokens")
+                fun audioTokensOrThrow(): Long = audioTokens.getRequired("audio_tokens")
+
+                /**
+                 * Number of text tokens billed for this request. Returns empty if the JSON property
+                 * is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun textTokens(): java.util.Optional<Long> = textTokens.getOptional("text_tokens")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun textTokensOrThrow(): Long = textTokens.getRequired("text_tokens")
 
                 /**
                  * Returns the raw JSON value of [audioTokens].
@@ -1458,26 +1542,42 @@ private constructor(
             ) : this(seconds, type, mutableMapOf())
 
             /**
-             * Duration of the input audio in seconds.
+             * Duration of the input audio in seconds. The schema requires this property. Returns
+             * empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun seconds(): Double = seconds.getRequired("seconds")
+            fun seconds(): java.util.Optional<Double> = seconds.getOptional("seconds")
 
             /**
-             * The type of the usage object. Always `duration` for this variant.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("duration")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun secondsOrThrow(): Double = seconds.getRequired("seconds")
+
+            /**
+             * The type of the usage object. Always `duration` for this variant. The schema requires
+             * this property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("duration")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
             /**
              * Returns the raw JSON value of [seconds].
@@ -1631,12 +1731,8 @@ private constructor(
                     return@apply
                 }
 
-                seconds()
-                _type().let {
-                    if (it != JsonValue.from("duration")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
+                secondsOrThrow()
+                typeOrThrow()
                 validated = true
             }
 

@@ -67,7 +67,7 @@ internal class RoleCreateResponseTest {
                 .build()
 
         assertThat(roleCreateResponse.role())
-            .isEqualTo(
+            .contains(
                 Role.builder()
                     .id("id")
                     .description("description")
@@ -78,7 +78,7 @@ internal class RoleCreateResponseTest {
                     .build()
             )
         assertThat(roleCreateResponse.user())
-            .isEqualTo(
+            .contains(
                 OrganizationUser.builder()
                     .id("id")
                     .addedAt(0L)

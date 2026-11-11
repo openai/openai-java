@@ -18,9 +18,9 @@ internal class InputAudioBufferSpeechStartedEventTest {
                 .itemId("item_id")
                 .build()
 
-        assertThat(inputAudioBufferSpeechStartedEvent.audioStartMs()).isEqualTo(0L)
-        assertThat(inputAudioBufferSpeechStartedEvent.eventId()).isEqualTo("event_id")
-        assertThat(inputAudioBufferSpeechStartedEvent.itemId()).isEqualTo("item_id")
+        assertThat(inputAudioBufferSpeechStartedEvent.audioStartMs()).contains(0L)
+        assertThat(inputAudioBufferSpeechStartedEvent.eventId()).contains("event_id")
+        assertThat(inputAudioBufferSpeechStartedEvent.itemId()).contains("item_id")
 
         val jsonMapper = jsonMapper()
 

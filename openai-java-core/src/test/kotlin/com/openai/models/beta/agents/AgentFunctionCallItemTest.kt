@@ -22,13 +22,13 @@ internal class AgentFunctionCallItemTest {
                 .turnId("turn_id")
                 .build()
 
-        assertThat(agentFunctionCallItem.id()).isEqualTo("id")
+        assertThat(agentFunctionCallItem.id()).contains("id")
         assertThat(agentFunctionCallItem._arguments())
             .isEqualTo(JsonValue.from(mapOf<String, Any>()))
-        assertThat(agentFunctionCallItem.callId()).isEqualTo("call_id")
-        assertThat(agentFunctionCallItem.name()).isEqualTo("name")
-        assertThat(agentFunctionCallItem.status()).isEqualTo(AgentFunctionCallStatus.IN_PROGRESS)
-        assertThat(agentFunctionCallItem.turnId()).isEqualTo("turn_id")
+        assertThat(agentFunctionCallItem.callId()).contains("call_id")
+        assertThat(agentFunctionCallItem.name()).contains("name")
+        assertThat(agentFunctionCallItem.status()).contains(AgentFunctionCallStatus.IN_PROGRESS)
+        assertThat(agentFunctionCallItem.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()
 

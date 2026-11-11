@@ -50,42 +50,67 @@ private constructor(
     ) : this(sequenceNumber, steer, type, streamId, mutableMapOf())
 
     /**
-     * The sequence number for this event.
+     * The sequence number for this event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
+    fun sequenceNumber(): java.util.Optional<Long> = sequenceNumber.getOptional("sequence_number")
 
     /**
-     * The accepted steering submission.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun steer(): Steer = steer.getRequired("steer")
+    fun sequenceNumberOrThrow(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
-     * The event discriminator. Always `response.steer.accepted`.
+     * The accepted steering submission. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.steer.accepted")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun steer(): java.util.Optional<Steer> = steer.getOptional("steer")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun steerOrThrow(): Steer = steer.getRequired("steer")
+
+    /**
+     * The event discriminator. Always `response.steer.accepted`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.steer.accepted")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * The WebSocket lane that emitted this event. This field is present when the target response's
-     * `response.create` event supplied a `stream_id`.
+     * `response.create` event supplied a `stream_id`. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun streamId(): Optional<String> = streamId.getOptional("stream_id")
+    fun streamId(): java.util.Optional<String> = streamId.getOptional("stream_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun streamIdOrThrow(): String = streamId.getRequired("stream_id")
 
     /**
      * Returns the raw JSON value of [sequenceNumber].
@@ -286,13 +311,9 @@ private constructor(
             return@apply
         }
 
-        sequenceNumber()
-        steer().validate()
-        _type().let {
-            if (it != JsonValue.from("response.steer.accepted")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        sequenceNumberOrThrow()
+        steerOrThrow().validate()
+        typeOrThrow()
         streamId()
         validated = true
     }
@@ -335,20 +356,34 @@ private constructor(
         ) : this(id, previousResponseId, mutableMapOf())
 
         /**
-         * The ID assigned to the steering submission.
+         * The ID assigned to the steering submission. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun id(): String = id.getRequired("id")
+        fun id(): java.util.Optional<String> = id.getOptional("id")
 
         /**
-         * The ID of the response being steered.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun previousResponseId(): String = previousResponseId.getRequired("previous_response_id")
+        fun idOrThrow(): String = id.getRequired("id")
+
+        /**
+         * The ID of the response being steered. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun previousResponseId(): java.util.Optional<String> =
+            previousResponseId.getOptional("previous_response_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun previousResponseIdOrThrow(): String =
+            previousResponseId.getRequired("previous_response_id")
 
         /**
          * Returns the raw JSON value of [id].
@@ -508,8 +543,8 @@ private constructor(
                 return@apply
             }
 
-            id()
-            previousResponseId()
+            idOrThrow()
+            previousResponseIdOrThrow()
             validated = true
         }
 

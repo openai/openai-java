@@ -31,13 +31,11 @@ private constructor(
 
     fun certificateId(): Optional<String> = Optional.ofNullable(certificateId)
 
-    /**
-     * The updated name for the certificate
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun name(): Optional<String> = body.name()
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
+
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
 
     /**
      * Returns the raw JSON value of [name].
@@ -262,12 +260,18 @@ private constructor(
         ) : this(name, mutableMapOf())
 
         /**
-         * The updated name for the certificate
+         * The updated name for the certificate Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): Optional<String> = name.getOptional("name")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
 
         /**
          * Returns the raw JSON value of [name].

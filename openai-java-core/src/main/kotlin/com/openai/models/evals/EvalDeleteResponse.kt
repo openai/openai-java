@@ -33,22 +33,40 @@ private constructor(
     ) : this(deleted, evalId, object_, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun deleted(): Boolean = deleted.getRequired("deleted")
+    fun deleted(): java.util.Optional<Boolean> = deleted.getOptional("deleted")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun evalId(): String = evalId.getRequired("eval_id")
+    fun deletedOrThrow(): Boolean = deleted.getRequired("deleted")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun object_(): String = object_.getRequired("object")
+    fun evalId(): java.util.Optional<String> = evalId.getOptional("eval_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun evalIdOrThrow(): String = evalId.getRequired("eval_id")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<String> = object_.getOptional("object")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): String = object_.getRequired("object")
 
     /**
      * Returns the raw JSON value of [deleted].
@@ -220,9 +238,9 @@ private constructor(
             return@apply
         }
 
-        deleted()
-        evalId()
-        object_()
+        deletedOrThrow()
+        evalIdOrThrow()
+        object_OrThrow()
         validated = true
     }
 

@@ -4,6 +4,7 @@ package com.openai.models.finetuning.checkpoints.permissions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -25,7 +26,7 @@ internal class PermissionListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(permissionListPageResponse.data())
+        assertThat(permissionListPageResponse.data().getOrNull())
             .containsExactly(
                 PermissionListResponse.builder()
                     .id("id")
@@ -33,7 +34,7 @@ internal class PermissionListPageResponseTest {
                     .projectId("project_id")
                     .build()
             )
-        assertThat(permissionListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(permissionListPageResponse.hasMore()).contains(true)
         assertThat(permissionListPageResponse.firstId()).contains("first_id")
         assertThat(permissionListPageResponse.lastId()).contains("last_id")
 

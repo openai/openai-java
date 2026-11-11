@@ -21,8 +21,8 @@ internal class ResponseReasoningItemTest {
                 .status(ResponseReasoningItem.Status.IN_PROGRESS)
                 .build()
 
-        assertThat(responseReasoningItem.id()).isEqualTo("id")
-        assertThat(responseReasoningItem.summary())
+        assertThat(responseReasoningItem.id()).contains("id")
+        assertThat(responseReasoningItem.summary().getOrNull())
             .containsExactly(ResponseReasoningItem.Summary.builder().text("text").build())
         assertThat(responseReasoningItem.content().getOrNull())
             .containsExactly(ResponseReasoningItem.Content.builder().text("text").build())

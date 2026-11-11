@@ -14,9 +14,9 @@ internal class LocalSkillTest {
         val localSkill =
             LocalSkill.builder().description("description").name("name").path("path").build()
 
-        assertThat(localSkill.description()).isEqualTo("description")
-        assertThat(localSkill.name()).isEqualTo("name")
-        assertThat(localSkill.path()).isEqualTo("path")
+        assertThat(localSkill.description()).contains("description")
+        assertThat(localSkill.name()).contains("name")
+        assertThat(localSkill.path()).contains("path")
 
         val jsonMapper = jsonMapper()
 

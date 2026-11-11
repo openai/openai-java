@@ -47,41 +47,66 @@ private constructor(
     ) : this(displayHeight, displayWidth, environment, type, mutableMapOf())
 
     /**
-     * The height of the computer display.
+     * The height of the computer display. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun displayHeight(): Long = displayHeight.getRequired("display_height")
+    fun displayHeight(): java.util.Optional<Long> = displayHeight.getOptional("display_height")
 
     /**
-     * The width of the computer display.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun displayWidth(): Long = displayWidth.getRequired("display_width")
+    fun displayHeightOrThrow(): Long = displayHeight.getRequired("display_height")
 
     /**
-     * The type of computer environment to control.
+     * The width of the computer display. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun environment(): Environment = environment.getRequired("environment")
+    fun displayWidth(): java.util.Optional<Long> = displayWidth.getOptional("display_width")
 
     /**
-     * The type of the computer use tool. Always `computer_use_preview`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("computer_use_preview")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun displayWidthOrThrow(): Long = displayWidth.getRequired("display_width")
+
+    /**
+     * The type of computer environment to control. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun environment(): java.util.Optional<Environment> = environment.getOptional("environment")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun environmentOrThrow(): Environment = environment.getRequired("environment")
+
+    /**
+     * The type of the computer use tool. Always `computer_use_preview`. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("computer_use_preview")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [displayHeight].
@@ -287,14 +312,10 @@ private constructor(
             return@apply
         }
 
-        displayHeight()
-        displayWidth()
-        environment().validate()
-        _type().let {
-            if (it != JsonValue.from("computer_use_preview")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        displayHeightOrThrow()
+        displayWidthOrThrow()
+        environmentOrThrow().validate()
+        typeOrThrow()
         validated = true
     }
 

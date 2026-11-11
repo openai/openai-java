@@ -25,9 +25,9 @@ internal class BetaResponseCustomToolCallItemTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(betaResponseCustomToolCallItem.callId()).isEqualTo("call_id")
-        assertThat(betaResponseCustomToolCallItem.input()).isEqualTo("input")
-        assertThat(betaResponseCustomToolCallItem.name()).isEqualTo("name")
+        assertThat(betaResponseCustomToolCallItem.callId()).contains("call_id")
+        assertThat(betaResponseCustomToolCallItem.input()).contains("input")
+        assertThat(betaResponseCustomToolCallItem.name()).contains("name")
         assertThat(betaResponseCustomToolCallItem.id()).contains("id")
         assertThat(betaResponseCustomToolCallItem.agent())
             .contains(BetaResponseCustomToolCall.Agent.builder().agentName("agent_name").build())
@@ -36,7 +36,7 @@ internal class BetaResponseCustomToolCallItemTest {
             .contains(BetaResponseCustomToolCall.Caller.ofDirect())
         assertThat(betaResponseCustomToolCallItem.namespace()).contains("namespace")
         assertThat(betaResponseCustomToolCallItem.status())
-            .isEqualTo(BetaResponseCustomToolCallItem.Status.IN_PROGRESS)
+            .contains(BetaResponseCustomToolCallItem.Status.IN_PROGRESS)
         assertThat(betaResponseCustomToolCallItem.createdBy()).contains("created_by")
 
         val jsonMapper = jsonMapper()

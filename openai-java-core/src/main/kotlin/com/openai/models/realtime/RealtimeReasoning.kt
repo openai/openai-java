@@ -34,12 +34,16 @@ private constructor(
 
     /**
      * Constrains effort on reasoning for reasoning-capable Realtime models such as
-     * `gpt-realtime-2`.
+     * `gpt-realtime-2`. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun effort(): Optional<RealtimeReasoningEffort> = effort.getOptional("effort")
+    fun effort(): java.util.Optional<RealtimeReasoningEffort> = effort.getOptional("effort")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun effortOrThrow(): RealtimeReasoningEffort = effort.getRequired("effort")
 
     /**
      * Returns the raw JSON value of [effort].

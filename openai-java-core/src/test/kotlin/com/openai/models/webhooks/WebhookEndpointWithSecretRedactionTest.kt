@@ -22,7 +22,7 @@ internal class WebhookEndpointWithSecretRedactionTest {
         assertThat(webhookEndpointWithSecret.toString())
             .doesNotContain(secret)
             .contains("signingSecret=[REDACTED]")
-        assertThat(webhookEndpointWithSecret.signingSecret()).isEqualTo(secret)
+        assertThat(webhookEndpointWithSecret.signingSecretOrThrow()).isEqualTo(secret)
 
         val mapper = jsonMapper()
         val serialized = mapper.readTree(mapper.writeValueAsString(webhookEndpointWithSecret))

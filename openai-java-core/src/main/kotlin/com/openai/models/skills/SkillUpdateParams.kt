@@ -32,13 +32,11 @@ private constructor(
 
     fun skillId(): Optional<String> = Optional.ofNullable(skillId)
 
-    /**
-     * The skill version number to set as default.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun defaultVersion(): String = body.defaultVersion()
+    /** @see Body.defaultVersion */
+    fun defaultVersion(): java.util.Optional<String> = body.defaultVersion()
+
+    /** @see Body.defaultVersionOrThrow */
+    fun defaultVersionOrThrow(): String = body.defaultVersionOrThrow()
 
     /**
      * Returns the raw JSON value of [defaultVersion].
@@ -280,12 +278,19 @@ private constructor(
         ) : this(defaultVersion, mutableMapOf())
 
         /**
-         * The skill version number to set as default.
+         * The skill version number to set as default. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun defaultVersion(): String = defaultVersion.getRequired("default_version")
+        fun defaultVersion(): java.util.Optional<String> =
+            defaultVersion.getOptional("default_version")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun defaultVersionOrThrow(): String = defaultVersion.getRequired("default_version")
 
         /**
          * Returns the raw JSON value of [defaultVersion].
@@ -417,7 +422,7 @@ private constructor(
                 return@apply
             }
 
-            defaultVersion()
+            defaultVersionOrThrow()
             validated = true
         }
 

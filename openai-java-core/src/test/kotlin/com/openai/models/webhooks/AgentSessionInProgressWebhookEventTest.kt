@@ -24,10 +24,10 @@ internal class AgentSessionInProgressWebhookEventTest {
                 )
                 .build()
 
-        assertThat(agentSessionInProgressWebhookEvent.id()).isEqualTo("id")
-        assertThat(agentSessionInProgressWebhookEvent.createdAt()).isEqualTo(0L)
+        assertThat(agentSessionInProgressWebhookEvent.id()).contains("id")
+        assertThat(agentSessionInProgressWebhookEvent.createdAt()).contains(0L)
         assertThat(agentSessionInProgressWebhookEvent.data())
-            .isEqualTo(
+            .contains(
                 AgentSessionInProgressWebhookEvent.Data.builder()
                     .id("id")
                     .environmentType("environment_type")

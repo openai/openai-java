@@ -32,9 +32,9 @@ internal class MessageDeltaEventTest {
                 )
                 .build()
 
-        assertThat(messageDeltaEvent.id()).isEqualTo("id")
+        assertThat(messageDeltaEvent.id()).contains("id")
         assertThat(messageDeltaEvent.delta())
-            .isEqualTo(
+            .contains(
                 MessageDelta.builder()
                     .addContent(
                         ImageFileDeltaBlock.builder()

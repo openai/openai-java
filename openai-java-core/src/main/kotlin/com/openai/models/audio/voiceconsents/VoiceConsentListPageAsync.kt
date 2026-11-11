@@ -7,10 +7,8 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.audio.VoiceConsentServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see VoiceConsentServiceAsync.list */
 class VoiceConsentListPageAsync
@@ -21,21 +19,23 @@ private constructor(
     private val response: VoiceConsentListPageResponse,
 ) : PageAsync<VoiceConsent> {
 
-    /**
-     * Delegates to [VoiceConsentListPageResponse], but gracefully handles missing data.
-     *
-     * @see VoiceConsentListPageResponse.data
-     */
-    fun data(): List<VoiceConsent> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see VoiceConsentListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [VoiceConsentListPageResponse], but gracefully handles missing data.
-     *
-     * @see VoiceConsentListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<VoiceConsent> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<VoiceConsent> = data()
+    fun _data() = response._data()
+
+    /** @see VoiceConsentListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<VoiceConsent> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

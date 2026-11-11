@@ -14,7 +14,7 @@ internal class FragmentedCompletionTextTest {
         repeat(10_000) { accumulator.accumulate(fragment) }
         accumulator.accumulate(chunk(ChatCompletionChunk.Choice.Delta.builder().build(), true))
         val completion = accumulator.chatCompletion()
-        val message = completion.choices().single().message()
+        val message = completion.choicesOrThrow().single().messageOrThrow()
         assertThat(message.content()).hasValue("aλ😀".repeat(10_000))
         assertThat(message.refusal()).hasValue("no".repeat(10_000))
         // Inspect retained storage directly rather than relying on nondeterministic GC timing.
@@ -34,7 +34,7 @@ internal class FragmentedCompletionTextTest {
                 .build()
         )
         val completionWithUsage = accumulator.chatCompletion()
-        assertThat(completionWithUsage.choices()).isEqualTo(completion.choices())
+        assertThat(completionWithUsage.choicesOrThrow()).isEqualTo(completion.choicesOrThrow())
         assertThat(completionWithUsage.usage()).hasValue(usage)
         assertThat(completion.usage()).isEmpty()
         assertThat(accumulator.chatCompletion()).isSameAs(completionWithUsage)
@@ -47,7 +47,7 @@ internal class FragmentedCompletionTextTest {
             chunk(ChatCompletionChunk.Choice.Delta.builder().content("").build(), false)
         )
         accumulator.accumulate(chunk(ChatCompletionChunk.Choice.Delta.builder().build(), true))
-        val message = accumulator.chatCompletion().choices().single().message()
+        val message = accumulator.chatCompletion().choicesOrThrow().single().messageOrThrow()
         assertThat(message.content()).hasValue("")
         assertThat(message.refusal()).isEmpty()
     }
@@ -66,14 +66,16 @@ internal class FragmentedCompletionTextTest {
                 true,
                 1,
             )
-        accumulator.accumulate(first.toBuilder().addChoice(second.choices().single()).build())
+        accumulator.accumulate(
+            first.toBuilder().addChoice(second.choicesOrThrow().single()).build()
+        )
 
-        val choices = accumulator.chatCompletion().choices()
+        val choices = accumulator.chatCompletion().choicesOrThrow()
         assertThat(choices).hasSize(2)
-        assertThat(choices[0].message().content()).hasValue("first")
-        assertThat(choices[0].message().refusal()).hasValue("")
-        assertThat(choices[1].message().content()).hasValue("second")
-        assertThat(choices[1].message().refusal()).hasValue("no")
+        assertThat(choices[0].messageOrThrow().content()).hasValue("first")
+        assertThat(choices[0].messageOrThrow().refusal()).hasValue("")
+        assertThat(choices[1].messageOrThrow().content()).hasValue("second")
+        assertThat(choices[1].messageOrThrow().refusal()).hasValue("no")
     }
 
     private fun chunk(delta: ChatCompletionChunk.Choice.Delta, finished: Boolean, index: Long = 0) =

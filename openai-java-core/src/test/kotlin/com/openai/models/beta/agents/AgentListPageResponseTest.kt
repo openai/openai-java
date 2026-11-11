@@ -5,6 +5,7 @@ package com.openai.models.beta.agents
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -67,7 +68,7 @@ internal class AgentListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(agentListPageResponse.data())
+        assertThat(agentListPageResponse.data().getOrNull())
             .containsExactly(
                 Agent.builder()
                     .id("id")
@@ -111,7 +112,7 @@ internal class AgentListPageResponseTest {
                     .build()
             )
         assertThat(agentListPageResponse.firstId()).contains("first_id")
-        assertThat(agentListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(agentListPageResponse.hasMore()).contains(true)
         assertThat(agentListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

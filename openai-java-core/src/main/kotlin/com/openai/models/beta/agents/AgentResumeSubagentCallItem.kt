@@ -47,57 +47,93 @@ private constructor(
     ) : this(id, recipientAgentId, senderAgentId, status, turnId, type, mutableMapOf())
 
     /**
-     * The ID of the tool call item.
+     * The ID of the tool call item. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The ID of the agent to resume.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun recipientAgentId(): String = recipientAgentId.getRequired("recipient_agent_id")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The ID of the agent requesting the resume.
+     * The ID of the agent to resume. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun senderAgentId(): String = senderAgentId.getRequired("sender_agent_id")
+    fun recipientAgentId(): java.util.Optional<String> =
+        recipientAgentId.getOptional("recipient_agent_id")
 
     /**
-     * The status of the tool call.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun status(): AgentFunctionCallStatus = status.getRequired("status")
+    fun recipientAgentIdOrThrow(): String = recipientAgentId.getRequired("recipient_agent_id")
 
     /**
-     * The ID of the turn that contains this item.
+     * The ID of the agent requesting the resume. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun turnId(): String = turnId.getRequired("turn_id")
+    fun senderAgentId(): java.util.Optional<String> = senderAgentId.getOptional("sender_agent_id")
 
     /**
-     * The item type. Always `resume_subagent_call`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("resume_subagent_call")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun senderAgentIdOrThrow(): String = senderAgentId.getRequired("sender_agent_id")
+
+    /**
+     * The status of the tool call. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun status(): java.util.Optional<AgentFunctionCallStatus> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): AgentFunctionCallStatus = status.getRequired("status")
+
+    /**
+     * The ID of the turn that contains this item. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun turnId(): java.util.Optional<String> = turnId.getOptional("turn_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun turnIdOrThrow(): String = turnId.getRequired("turn_id")
+
+    /**
+     * The item type. Always `resume_subagent_call`. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("resume_subagent_call")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [id].
@@ -353,16 +389,12 @@ private constructor(
             return@apply
         }
 
-        id()
-        recipientAgentId()
-        senderAgentId()
-        status().validate()
-        turnId()
-        _type().let {
-            if (it != JsonValue.from("resume_subagent_call")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        idOrThrow()
+        recipientAgentIdOrThrow()
+        senderAgentIdOrThrow()
+        statusOrThrow().validate()
+        turnIdOrThrow()
+        typeOrThrow()
         validated = true
     }
 

@@ -19,7 +19,8 @@ internal class BetaResponsesServerEventStreamIdTest {
 
         assertThat(betaResponsesServerEvent.streamId()).contains("stream_id")
         assertThat(betaResponsesServerEvent.responseAudioDelta()).isPresent
-        assertThat(betaResponsesServerEvent.asResponseAudioDelta().delta()).isEqualTo("delta")
+        assertThat(betaResponsesServerEvent.asResponseAudioDelta().deltaOrThrow())
+            .isEqualTo("delta")
         assertThat(jsonMapper().writeValueAsString(betaResponsesServerEvent)).contains("stream_id")
         assertThat(betaResponsesServerEvent.validate()).isSameAs(betaResponsesServerEvent)
         assertThat(betaResponsesServerEvent.isValid()).isTrue()

@@ -24,7 +24,7 @@ internal class DecisionItemCreateEventTest {
                 .build()
 
         assertThat(decisionItemCreateEvent.item())
-            .isEqualTo(
+            .contains(
                 DecisionItemCreateEvent.Item.builder()
                     .content("string")
                     .id("id")

@@ -41,9 +41,9 @@ internal class FileSearchToolCallTest {
                 )
                 .build()
 
-        assertThat(fileSearchToolCall.id()).isEqualTo("id")
+        assertThat(fileSearchToolCall.id()).contains("id")
         assertThat(fileSearchToolCall.fileSearch())
-            .isEqualTo(
+            .contains(
                 FileSearchToolCall.FileSearch.builder()
                     .rankingOptions(
                         FileSearchToolCall.FileSearch.RankingOptions.builder()

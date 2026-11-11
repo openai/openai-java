@@ -7,6 +7,7 @@ import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantToolChoiceOption
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -95,7 +96,7 @@ internal class RunListPageResponseTest {
                 .object_("list")
                 .build()
 
-        assertThat(runListPageResponse.data())
+        assertThat(runListPageResponse.data().getOrNull())
             .containsExactly(
                 Run.builder()
                     .id("id")
@@ -168,10 +169,10 @@ internal class RunListPageResponseTest {
                     .topP(0.0)
                     .build()
             )
-        assertThat(runListPageResponse.firstId()).isEqualTo("run_abc123")
-        assertThat(runListPageResponse.hasMore()).isEqualTo(false)
-        assertThat(runListPageResponse.lastId()).isEqualTo("run_abc456")
-        assertThat(runListPageResponse.object_()).isEqualTo("list")
+        assertThat(runListPageResponse.firstId()).contains("run_abc123")
+        assertThat(runListPageResponse.hasMore()).contains(false)
+        assertThat(runListPageResponse.lastId()).contains("run_abc456")
+        assertThat(runListPageResponse.object_()).contains("list")
 
         val jsonMapper = jsonMapper()
 

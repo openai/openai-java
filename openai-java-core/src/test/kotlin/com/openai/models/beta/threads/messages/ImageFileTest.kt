@@ -13,7 +13,7 @@ internal class ImageFileTest {
     fun createAndRoundtrip() {
         val imageFile = ImageFile.builder().fileId("file_id").detail(ImageFile.Detail.AUTO).build()
 
-        assertThat(imageFile.fileId()).isEqualTo("file_id")
+        assertThat(imageFile.fileId()).contains("file_id")
         assertThat(imageFile.detail()).contains(ImageFile.Detail.AUTO)
 
         val jsonMapper = jsonMapper()

@@ -50,50 +50,80 @@ private constructor(
     /**
      * The nested Responses streaming event. Dispatch on its type field. Response lifecycle
      * snapshots omit input and clear instructions, tools, and output to keep messages small;
-     * consume granular output events for the generated content.
+     * consume granular output events for the generated content. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun event(): Event = event.getRequired("event")
+    fun event(): java.util.Optional<Event> = event.getOptional("event")
 
     /**
-     * The unique ID of the Live server event.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun eventOrThrow(): Event = event.getRequired("event")
 
     /**
-     * The event type, always `response.event`.
+     * The unique ID of the Live server event. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("response.event")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
     /**
-     * The event_id of the client command associated with this server event, when supplied.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun clientEventId(): Optional<String> = clientEventId.getOptional("client_event_id")
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
+
+    /**
+     * The event type, always `response.event`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("response.event")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The event_id of the client command associated with this server event, when supplied. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun clientEventId(): java.util.Optional<String> = clientEventId.getOptional("client_event_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun clientEventIdOrThrow(): String = clientEventId.getRequired("client_event_id")
 
     /**
      * The Live delegation associated with the nested Responses event. May be null or omitted when
-     * the event cannot be correlated with a delegation.
+     * the event cannot be correlated with a delegation. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun delegationId(): Optional<String> = delegationId.getOptional("delegation_id")
+    fun delegationId(): java.util.Optional<String> = delegationId.getOptional("delegation_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun delegationIdOrThrow(): String = delegationId.getRequired("delegation_id")
 
     /**
      * Returns the raw JSON value of [event].
@@ -326,13 +356,9 @@ private constructor(
             return@apply
         }
 
-        event().validate()
-        eventId()
-        _type().let {
-            if (it != JsonValue.from("response.event")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        eventOrThrow().validate()
+        eventIdOrThrow()
+        typeOrThrow()
         clientEventId()
         delegationId()
         validated = true

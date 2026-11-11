@@ -13,7 +13,7 @@ internal class ResponseConversationParamTest {
     fun createAndRoundtrip() {
         val responseConversationParam = ResponseConversationParam.builder().id("conv_123").build()
 
-        assertThat(responseConversationParam.id()).isEqualTo("conv_123")
+        assertThat(responseConversationParam.id()).contains("conv_123")
 
         val jsonMapper = jsonMapper()
 

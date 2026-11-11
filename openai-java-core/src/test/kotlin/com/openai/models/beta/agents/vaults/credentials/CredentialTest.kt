@@ -41,9 +41,9 @@ internal class CredentialTest {
                 .vaultId("vault_id")
                 .build()
 
-        assertThat(credential.id()).isEqualTo("id")
+        assertThat(credential.id()).contains("id")
         assertThat(credential.auth())
-            .isEqualTo(
+            .contains(
                 CredentialAuth.ofMcpO(
                     CredentialAuth.McpOAuth.builder()
                         .expiresAt("expires_at")
@@ -60,16 +60,16 @@ internal class CredentialTest {
                         .build()
                 )
             )
-        assertThat(credential.createdAt()).isEqualTo(0L)
+        assertThat(credential.createdAt()).contains(0L)
         assertThat(credential.metadata())
-            .isEqualTo(
+            .contains(
                 Credential.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(credential.name()).isEqualTo("name")
-        assertThat(credential.updatedAt()).isEqualTo(0L)
-        assertThat(credential.vaultId()).isEqualTo("vault_id")
+        assertThat(credential.name()).contains("name")
+        assertThat(credential.updatedAt()).contains(0L)
+        assertThat(credential.vaultId()).contains("vault_id")
 
         val jsonMapper = jsonMapper()
 

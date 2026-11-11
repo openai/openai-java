@@ -23,9 +23,9 @@ internal class BetaResponseMcpListToolsFailedEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseMcpListToolsFailedEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseMcpListToolsFailedEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseMcpListToolsFailedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseMcpListToolsFailedEvent.itemId()).contains("item_id")
+        assertThat(betaResponseMcpListToolsFailedEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseMcpListToolsFailedEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseMcpListToolsFailedEvent.agent())
             .contains(
                 BetaResponseMcpListToolsFailedEvent.Agent.builder().agentName("agent_name").build()

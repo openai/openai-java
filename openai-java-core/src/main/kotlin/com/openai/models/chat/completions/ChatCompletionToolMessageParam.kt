@@ -49,33 +49,53 @@ private constructor(
     ) : this(content, role, toolCallId, mutableMapOf())
 
     /**
-     * The contents of the tool message.
+     * The contents of the tool message. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun content(): Content = content.getRequired("content")
+    fun content(): java.util.Optional<Content> = content.getOptional("content")
 
     /**
-     * The role of the messages author, in this case `tool`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("tool")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("role") @ExcludeMissing fun _role(): JsonValue = role
+    fun contentOrThrow(): Content = content.getRequired("content")
 
     /**
-     * Tool call that this message is responding to.
+     * The role of the messages author, in this case `tool`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun toolCallId(): String = toolCallId.getRequired("tool_call_id")
+    fun role(): java.util.Optional<JsonValue> {
+        val raw = role
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("tool")) ->
+                throw OpenAIInvalidDataException("`role` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun roleOrThrow(): JsonValue = role().orElseGet { role.getRequired("role") }
+
+    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<JsonValue> = role
+
+    /**
+     * Tool call that this message is responding to. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun toolCallId(): java.util.Optional<String> = toolCallId.getOptional("tool_call_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun toolCallIdOrThrow(): String = toolCallId.getRequired("tool_call_id")
 
     /**
      * Returns the raw JSON value of [content].
@@ -265,13 +285,9 @@ private constructor(
             return@apply
         }
 
-        content().validate()
-        _role().let {
-            if (it != JsonValue.from("tool")) {
-                throw OpenAIInvalidDataException("'role' is invalid, received $it")
-            }
-        }
-        toolCallId()
+        contentOrThrow().validate()
+        roleOrThrow()
+        toolCallIdOrThrow()
         validated = true
     }
 

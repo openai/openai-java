@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
 import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.responses.ResponseInputText
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -31,8 +32,8 @@ internal class MessageTest {
                 .phase(Message.Phase.COMMENTARY)
                 .build()
 
-        assertThat(message.id()).isEqualTo("id")
-        assertThat(message.content())
+        assertThat(message.id()).contains("id")
+        assertThat(message.content().getOrNull())
             .containsExactly(
                 Message.Content.ofInputText(
                     ResponseInputText.builder()
@@ -45,8 +46,8 @@ internal class MessageTest {
                         .build()
                 )
             )
-        assertThat(message.role()).isEqualTo(Message.Role.UNKNOWN)
-        assertThat(message.status()).isEqualTo(Message.Status.IN_PROGRESS)
+        assertThat(message.role()).contains(Message.Role.UNKNOWN)
+        assertThat(message.status()).contains(Message.Status.IN_PROGRESS)
         assertThat(message.phase()).contains(Message.Phase.COMMENTARY)
 
         val jsonMapper = jsonMapper()

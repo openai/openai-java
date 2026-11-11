@@ -491,23 +491,41 @@ private constructor(
 
         /**
          * Represents a message within a
-         * [thread](https://developers.openai.com/api/docs/assistants/migration).
+         * [thread](https://developers.openai.com/api/docs/assistants/migration). The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun data(): Message = data.getRequired("data")
+        fun data(): java.util.Optional<Message> = data.getOptional("data")
 
         /**
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("thread.message.created")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
+        fun dataOrThrow(): Message = data.getRequired("data")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun event(): java.util.Optional<JsonValue> {
+            val raw = event
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("thread.message.created")) ->
+                    throw OpenAIInvalidDataException("`event` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun eventOrThrow(): JsonValue = event().orElseGet { event.getRequired("event") }
+
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<JsonValue> = event
 
         /**
          * Returns the raw JSON value of [data].
@@ -653,12 +671,8 @@ private constructor(
                 return@apply
             }
 
-            data().validate()
-            _event().let {
-                if (it != JsonValue.from("thread.message.created")) {
-                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
-                }
-            }
+            dataOrThrow().validate()
+            eventOrThrow()
             validated = true
         }
 
@@ -720,23 +734,41 @@ private constructor(
 
         /**
          * Represents a message within a
-         * [thread](https://developers.openai.com/api/docs/assistants/migration).
+         * [thread](https://developers.openai.com/api/docs/assistants/migration). The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun data(): Message = data.getRequired("data")
+        fun data(): java.util.Optional<Message> = data.getOptional("data")
 
         /**
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("thread.message.in_progress")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
+        fun dataOrThrow(): Message = data.getRequired("data")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun event(): java.util.Optional<JsonValue> {
+            val raw = event
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("thread.message.in_progress")) ->
+                    throw OpenAIInvalidDataException("`event` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun eventOrThrow(): JsonValue = event().orElseGet { event.getRequired("event") }
+
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<JsonValue> = event
 
         /**
          * Returns the raw JSON value of [data].
@@ -882,12 +914,8 @@ private constructor(
                 return@apply
             }
 
-            data().validate()
-            _event().let {
-                if (it != JsonValue.from("thread.message.in_progress")) {
-                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
-                }
-            }
+            dataOrThrow().validate()
+            eventOrThrow()
             validated = true
         }
 
@@ -950,23 +978,41 @@ private constructor(
         ) : this(data, event, mutableMapOf())
 
         /**
-         * Represents a message delta i.e. any changed fields on a message during streaming.
+         * Represents a message delta i.e. any changed fields on a message during streaming. The
+         * schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun data(): MessageDeltaEvent = data.getRequired("data")
+        fun data(): java.util.Optional<MessageDeltaEvent> = data.getOptional("data")
 
         /**
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("thread.message.delta")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
+        fun dataOrThrow(): MessageDeltaEvent = data.getRequired("data")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun event(): java.util.Optional<JsonValue> {
+            val raw = event
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("thread.message.delta")) ->
+                    throw OpenAIInvalidDataException("`event` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun eventOrThrow(): JsonValue = event().orElseGet { event.getRequired("event") }
+
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<JsonValue> = event
 
         /**
          * Returns the raw JSON value of [data].
@@ -1109,12 +1155,8 @@ private constructor(
                 return@apply
             }
 
-            data().validate()
-            _event().let {
-                if (it != JsonValue.from("thread.message.delta")) {
-                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
-                }
-            }
+            dataOrThrow().validate()
+            eventOrThrow()
             validated = true
         }
 
@@ -1176,23 +1218,41 @@ private constructor(
 
         /**
          * Represents a message within a
-         * [thread](https://developers.openai.com/api/docs/assistants/migration).
+         * [thread](https://developers.openai.com/api/docs/assistants/migration). The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun data(): Message = data.getRequired("data")
+        fun data(): java.util.Optional<Message> = data.getOptional("data")
 
         /**
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("thread.message.completed")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
+        fun dataOrThrow(): Message = data.getRequired("data")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun event(): java.util.Optional<JsonValue> {
+            val raw = event
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("thread.message.completed")) ->
+                    throw OpenAIInvalidDataException("`event` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun eventOrThrow(): JsonValue = event().orElseGet { event.getRequired("event") }
+
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<JsonValue> = event
 
         /**
          * Returns the raw JSON value of [data].
@@ -1338,12 +1398,8 @@ private constructor(
                 return@apply
             }
 
-            data().validate()
-            _event().let {
-                if (it != JsonValue.from("thread.message.completed")) {
-                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
-                }
-            }
+            dataOrThrow().validate()
+            eventOrThrow()
             validated = true
         }
 
@@ -1405,23 +1461,41 @@ private constructor(
 
         /**
          * Represents a message within a
-         * [thread](https://developers.openai.com/api/docs/assistants/migration).
+         * [thread](https://developers.openai.com/api/docs/assistants/migration). The schema
+         * requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun data(): Message = data.getRequired("data")
+        fun data(): java.util.Optional<Message> = data.getOptional("data")
 
         /**
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("thread.message.incomplete")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
+        fun dataOrThrow(): Message = data.getRequired("data")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun event(): java.util.Optional<JsonValue> {
+            val raw = event
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("thread.message.incomplete")) ->
+                    throw OpenAIInvalidDataException("`event` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun eventOrThrow(): JsonValue = event().orElseGet { event.getRequired("event") }
+
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<JsonValue> = event
 
         /**
          * Returns the raw JSON value of [data].
@@ -1567,12 +1641,8 @@ private constructor(
                 return@apply
             }
 
-            data().validate()
-            _event().let {
-                if (it != JsonValue.from("thread.message.incomplete")) {
-                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
-                }
-            }
+            dataOrThrow().validate()
+            eventOrThrow()
             validated = true
         }
 

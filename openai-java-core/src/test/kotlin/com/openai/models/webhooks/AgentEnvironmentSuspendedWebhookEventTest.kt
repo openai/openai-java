@@ -18,10 +18,10 @@ internal class AgentEnvironmentSuspendedWebhookEventTest {
                 .data(AgentEnvironmentSuspendedWebhookEvent.Data.builder().id("id").build())
                 .build()
 
-        assertThat(agentEnvironmentSuspendedWebhookEvent.id()).isEqualTo("id")
-        assertThat(agentEnvironmentSuspendedWebhookEvent.createdAt()).isEqualTo(0L)
+        assertThat(agentEnvironmentSuspendedWebhookEvent.id()).contains("id")
+        assertThat(agentEnvironmentSuspendedWebhookEvent.createdAt()).contains(0L)
         assertThat(agentEnvironmentSuspendedWebhookEvent.data())
-            .isEqualTo(AgentEnvironmentSuspendedWebhookEvent.Data.builder().id("id").build())
+            .contains(AgentEnvironmentSuspendedWebhookEvent.Data.builder().id("id").build())
 
         val jsonMapper = jsonMapper()
 

@@ -37,41 +37,66 @@ private constructor(
     ) : this(name, source, type, imageTag, mutableMapOf())
 
     /**
-     * The name of the grader.
+     * The name of the grader. The schema requires this property. Returns empty if the JSON property
+     * is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun name(): String = name.getRequired("name")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
 
     /**
-     * The source code of the python script.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun source(): String = source.getRequired("source")
+    fun nameOrThrow(): String = name.getRequired("name")
 
     /**
-     * The object type, which is always `python`.
+     * The source code of the python script. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("python")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun source(): java.util.Optional<String> = source.getOptional("source")
 
     /**
-     * The image tag to use for the python script.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun imageTag(): Optional<String> = imageTag.getOptional("image_tag")
+    fun sourceOrThrow(): String = source.getRequired("source")
+
+    /**
+     * The object type, which is always `python`. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("python")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The image tag to use for the python script. Returns empty if the JSON property is missing or
+     * null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun imageTag(): java.util.Optional<String> = imageTag.getOptional("image_tag")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun imageTagOrThrow(): String = imageTag.getRequired("image_tag")
 
     /**
      * Returns the raw JSON value of [name].
@@ -262,13 +287,9 @@ private constructor(
             return@apply
         }
 
-        name()
-        source()
-        _type().let {
-            if (it != JsonValue.from("python")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        nameOrThrow()
+        sourceOrThrow()
+        typeOrThrow()
         imageTag()
         validated = true
     }

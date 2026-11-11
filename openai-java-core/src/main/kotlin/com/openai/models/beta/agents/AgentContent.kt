@@ -263,25 +263,43 @@ private constructor(
         ) : this(encryptedContent, type, mutableMapOf())
 
         /**
-         * The encrypted content payload.
+         * The encrypted content payload. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun encryptedContent(): String = encryptedContent.getRequired("encrypted_content")
+        fun encryptedContent(): java.util.Optional<String> =
+            encryptedContent.getOptional("encrypted_content")
 
         /**
-         * The content type. Always `encrypted_content`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("encrypted_content")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun encryptedContentOrThrow(): String = encryptedContent.getRequired("encrypted_content")
+
+        /**
+         * The content type. Always `encrypted_content`. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("encrypted_content")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [encryptedContent].
@@ -434,12 +452,8 @@ private constructor(
                 return@apply
             }
 
-            encryptedContent()
-            _type().let {
-                if (it != JsonValue.from("encrypted_content")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            encryptedContentOrThrow()
+            typeOrThrow()
             validated = true
         }
 

@@ -25,17 +25,17 @@ internal class ProjectSpendAlertTest {
                 .thresholdAmount(0L)
                 .build()
 
-        assertThat(projectSpendAlert.id()).isEqualTo("id")
-        assertThat(projectSpendAlert.currency()).isEqualTo(ProjectSpendAlert.Currency.USD)
-        assertThat(projectSpendAlert.interval()).isEqualTo(ProjectSpendAlert.Interval.MONTH)
+        assertThat(projectSpendAlert.id()).contains("id")
+        assertThat(projectSpendAlert.currency()).contains(ProjectSpendAlert.Currency.USD)
+        assertThat(projectSpendAlert.interval()).contains(ProjectSpendAlert.Interval.MONTH)
         assertThat(projectSpendAlert.notificationChannel())
-            .isEqualTo(
+            .contains(
                 ProjectSpendAlert.NotificationChannel.builder()
                     .addRecipient("string")
                     .subjectPrefix("subject_prefix")
                     .build()
             )
-        assertThat(projectSpendAlert.thresholdAmount()).isEqualTo(0L)
+        assertThat(projectSpendAlert.thresholdAmount()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

@@ -18,9 +18,9 @@ internal class ResponseCodeInterpreterCallCompletedEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseCodeInterpreterCallCompletedEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseCodeInterpreterCallCompletedEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseCodeInterpreterCallCompletedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseCodeInterpreterCallCompletedEvent.itemId()).contains("item_id")
+        assertThat(responseCodeInterpreterCallCompletedEvent.outputIndex()).contains(0L)
+        assertThat(responseCodeInterpreterCallCompletedEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

@@ -21,12 +21,12 @@ internal class ResponseAudioTranscriptDoneEventTest {
                 .transcript("transcript")
                 .build()
 
-        assertThat(responseAudioTranscriptDoneEvent.contentIndex()).isEqualTo(0L)
-        assertThat(responseAudioTranscriptDoneEvent.eventId()).isEqualTo("event_id")
-        assertThat(responseAudioTranscriptDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseAudioTranscriptDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseAudioTranscriptDoneEvent.responseId()).isEqualTo("response_id")
-        assertThat(responseAudioTranscriptDoneEvent.transcript()).isEqualTo("transcript")
+        assertThat(responseAudioTranscriptDoneEvent.contentIndex()).contains(0L)
+        assertThat(responseAudioTranscriptDoneEvent.eventId()).contains("event_id")
+        assertThat(responseAudioTranscriptDoneEvent.itemId()).contains("item_id")
+        assertThat(responseAudioTranscriptDoneEvent.outputIndex()).contains(0L)
+        assertThat(responseAudioTranscriptDoneEvent.responseId()).contains("response_id")
+        assertThat(responseAudioTranscriptDoneEvent.transcript()).contains("transcript")
 
         val jsonMapper = jsonMapper()
 

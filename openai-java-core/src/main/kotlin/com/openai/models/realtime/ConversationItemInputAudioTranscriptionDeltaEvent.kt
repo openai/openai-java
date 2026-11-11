@@ -51,61 +51,94 @@ private constructor(
     ) : this(eventId, itemId, type, contentIndex, delta, logprobs, mutableMapOf())
 
     /**
-     * The unique ID of the server event.
+     * The unique ID of the server event. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun eventId(): String = eventId.getRequired("event_id")
+    fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
     /**
-     * The ID of the item containing the audio that is being transcribed.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun itemId(): String = itemId.getRequired("item_id")
+    fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
     /**
-     * The event type, must be `conversation.item.input_audio_transcription.delta`.
+     * The ID of the item containing the audio that is being transcribed. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("conversation.item.input_audio_transcription.delta")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun itemId(): java.util.Optional<String> = itemId.getOptional("item_id")
 
     /**
-     * The index of the content part in the item's content array.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun contentIndex(): Optional<Long> = contentIndex.getOptional("content_index")
+    fun itemIdOrThrow(): String = itemId.getRequired("item_id")
 
     /**
-     * The text delta.
+     * The event type, must be `conversation.item.input_audio_transcription.delta`. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun delta(): Optional<String> = delta.getOptional("delta")
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("conversation.item.input_audio_transcription.delta")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+    /**
+     * The index of the content part in the item's content array. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun contentIndex(): java.util.Optional<Long> = contentIndex.getOptional("content_index")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun contentIndexOrThrow(): Long = contentIndex.getRequired("content_index")
+
+    /**
+     * The text delta. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun delta(): java.util.Optional<String> = delta.getOptional("delta")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun deltaOrThrow(): String = delta.getRequired("delta")
 
     /**
      * The log probabilities of the transcription. These can be enabled by configuring the session
      * with `"include": ["item.input_audio_transcription.logprobs"]`. Each entry in the array
      * corresponds a log probability of which token would be selected for this chunk of
      * transcription. This can help to identify if it was possible there were multiple valid options
-     * for a given chunk of transcription.
+     * for a given chunk of transcription. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun logprobs(): Optional<List<LogProbProperties>> = logprobs.getOptional("logprobs")
+    fun logprobs(): java.util.Optional<List<LogProbProperties>> = logprobs.getOptional("logprobs")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun logprobsOrThrow(): List<LogProbProperties> = logprobs.getRequired("logprobs")
 
     /**
      * Returns the raw JSON value of [eventId].
@@ -379,13 +412,9 @@ private constructor(
             return@apply
         }
 
-        eventId()
-        itemId()
-        _type().let {
-            if (it != JsonValue.from("conversation.item.input_audio_transcription.delta")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        eventIdOrThrow()
+        itemIdOrThrow()
+        typeOrThrow()
         contentIndex()
         delta()
         logprobs().ifPresent { it.forEach { it.validate() } }

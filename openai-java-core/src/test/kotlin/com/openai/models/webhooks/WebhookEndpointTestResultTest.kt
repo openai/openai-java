@@ -18,9 +18,9 @@ internal class WebhookEndpointTestResultTest {
                 .webhookEndpointId("webhook_endpoint_id")
                 .build()
 
-        assertThat(webhookEndpointTestResult.eventType()).isEqualTo("event_type")
-        assertThat(webhookEndpointTestResult.statusCode()).isEqualTo(0L)
-        assertThat(webhookEndpointTestResult.webhookEndpointId()).isEqualTo("webhook_endpoint_id")
+        assertThat(webhookEndpointTestResult.eventType()).contains("event_type")
+        assertThat(webhookEndpointTestResult.statusCode()).contains(0L)
+        assertThat(webhookEndpointTestResult.webhookEndpointId()).contains("webhook_endpoint_id")
 
         val jsonMapper = jsonMapper()
 

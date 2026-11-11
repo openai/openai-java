@@ -165,15 +165,15 @@ internal class WebhookVerificationTest {
                 val actual =
                     when (type) {
                         "live.call.incoming" ->
-                            event.asLiveCallIncoming().data().sipMediaSecurity().map {
+                            event.asLiveCallIncoming().dataOrThrow().sipMediaSecurity().map {
                                 it.asString()
                             }
                         "live.transport.incoming" ->
-                            event.asLiveTransportIncoming().data().sipMediaSecurity().map {
+                            event.asLiveTransportIncoming().dataOrThrow().sipMediaSecurity().map {
                                 it.asString()
                             }
                         else ->
-                            event.asRealtimeCallIncoming().data().sipMediaSecurity().map {
+                            event.asRealtimeCallIncoming().dataOrThrow().sipMediaSecurity().map {
                                 it.asString()
                             }
                     }
@@ -200,8 +200,9 @@ internal class WebhookVerificationTest {
             val event = mode.unwrap(options, params(payload = payload))
             val caseId =
                 when (type) {
-                    "safety.warning_issued" -> event.asSafetyWarningIssued().data().id()
-                    else -> event.asSafetyDeactivationIssued().data().id()
+                    "safety.warning_issued" ->
+                        event.asSafetyWarningIssued().dataOrThrow().idOrThrow()
+                    else -> event.asSafetyDeactivationIssued().dataOrThrow().idOrThrow()
                 }
             assertThat(caseId).isEqualTo("safety-case-test")
             val serialized = mapper.writeValueAsString(event)

@@ -71,14 +71,14 @@ public final class ResponsesStructuredOutputsStreamingAsyncExample {
                 .subscribe(event -> accumulator
                         .accumulate(event)
                         .outputTextDelta()
-                        .ifPresent(textEvent -> System.out.print(textEvent.delta())))
+                        .ifPresent(textEvent -> System.out.print(textEvent.deltaOrThrow())))
                 .onCompleteFuture()
                 .join();
         System.out.println();
 
-        accumulator.response(BookList.class).output().stream()
+        accumulator.response(BookList.class).outputOrThrow().stream()
                 .flatMap(item -> item.message().stream())
-                .flatMap(message -> message.content().stream())
+                .flatMap(message -> message.contentOrThrow().stream())
                 .flatMap(content -> content.outputText().stream())
                 .flatMap(bookList -> bookList.books.stream())
                 .forEach(book -> System.out.println(" - " + book));

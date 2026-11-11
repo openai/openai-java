@@ -340,33 +340,56 @@ private constructor(
         ) : this(queries, query, type, mutableMapOf())
 
         /**
-         * The search queries, when multiple queries were used.
+         * The search queries, when multiple queries were used. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun queries(): Optional<List<String>> = queries.getOptional("queries")
+        fun queries(): java.util.Optional<List<String>> = queries.getOptional("queries")
 
         /**
-         * The search query, when a single query was used.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun query(): Optional<String> = query.getOptional("query")
+        fun queriesOrThrow(): List<String> = queries.getRequired("queries")
 
         /**
-         * The type of the object. Always `search`.
+         * The search query, when a single query was used. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("search")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun query(): java.util.Optional<String> = query.getOptional("query")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun queryOrThrow(): String = query.getRequired("query")
+
+        /**
+         * The type of the object. Always `search`. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("search")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [queries].
@@ -544,11 +567,7 @@ private constructor(
 
             queries()
             query()
-            _type().let {
-                if (it != JsonValue.from("search")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            typeOrThrow()
             validated = true
         }
 
@@ -610,25 +629,42 @@ private constructor(
         ) : this(type, url, mutableMapOf())
 
         /**
-         * The type of the object. Always `open_page`.
+         * The type of the object. Always `open_page`. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("open_page")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("open_page")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
 
         /**
-         * The URL of the page that was opened.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun url(): Optional<String> = url.getOptional("url")
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+        /**
+         * The URL of the page that was opened. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun url(): java.util.Optional<String> = url.getOptional("url")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun urlOrThrow(): String = url.getRequired("url")
 
         /**
          * Returns the raw JSON value of [url].
@@ -756,11 +792,7 @@ private constructor(
                 return@apply
             }
 
-            _type().let {
-                if (it != JsonValue.from("open_page")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            typeOrThrow()
             url()
             validated = true
         }
@@ -821,33 +853,56 @@ private constructor(
         ) : this(pattern, type, url, mutableMapOf())
 
         /**
-         * The text pattern that was searched for.
+         * The text pattern that was searched for. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun pattern(): Optional<String> = pattern.getOptional("pattern")
+        fun pattern(): java.util.Optional<String> = pattern.getOptional("pattern")
 
         /**
-         * The type of the object. Always `find_in_page`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("find_in_page")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun patternOrThrow(): String = pattern.getRequired("pattern")
 
         /**
-         * The URL of the page that was searched.
+         * The type of the object. Always `find_in_page`. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun url(): Optional<String> = url.getOptional("url")
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("find_in_page")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+        /**
+         * The URL of the page that was searched. The schema requires this property. Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun url(): java.util.Optional<String> = url.getOptional("url")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun urlOrThrow(): String = url.getRequired("url")
 
         /**
          * Returns the raw JSON value of [pattern].
@@ -1010,11 +1065,7 @@ private constructor(
             }
 
             pattern()
-            _type().let {
-                if (it != JsonValue.from("find_in_page")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            typeOrThrow()
             url()
             validated = true
         }

@@ -20,10 +20,10 @@ internal class AgentSessionEnvironmentResetEventTest {
                 .turnId("turn_id")
                 .build()
 
-        assertThat(agentSessionEnvironmentResetEvent.environmentId()).isEqualTo("environment_id")
-        assertThat(agentSessionEnvironmentResetEvent.eventId()).isEqualTo("event_id")
-        assertThat(agentSessionEnvironmentResetEvent.resetCount()).isEqualTo(0L)
-        assertThat(agentSessionEnvironmentResetEvent.sessionId()).isEqualTo("session_id")
+        assertThat(agentSessionEnvironmentResetEvent.environmentId()).contains("environment_id")
+        assertThat(agentSessionEnvironmentResetEvent.eventId()).contains("event_id")
+        assertThat(agentSessionEnvironmentResetEvent.resetCount()).contains(0L)
+        assertThat(agentSessionEnvironmentResetEvent.sessionId()).contains("session_id")
         assertThat(agentSessionEnvironmentResetEvent.turnId()).contains("turn_id")
 
         val jsonMapper = jsonMapper()

@@ -19,10 +19,10 @@ internal class ChatKitWidgetItemTest {
                 .widget("widget")
                 .build()
 
-        assertThat(chatkitWidgetItem.id()).isEqualTo("id")
-        assertThat(chatkitWidgetItem.createdAt()).isEqualTo(0L)
-        assertThat(chatkitWidgetItem.threadId()).isEqualTo("thread_id")
-        assertThat(chatkitWidgetItem.widget()).isEqualTo("widget")
+        assertThat(chatkitWidgetItem.id()).contains("id")
+        assertThat(chatkitWidgetItem.createdAt()).contains(0L)
+        assertThat(chatkitWidgetItem.threadId()).contains("thread_id")
+        assertThat(chatkitWidgetItem.widget()).contains("widget")
 
         val jsonMapper = jsonMapper()
 

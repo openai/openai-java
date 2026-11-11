@@ -35,33 +35,53 @@ private constructor(
     ) : this(id, delta, object_, mutableMapOf())
 
     /**
-     * The identifier of the message, which can be referenced in API endpoints.
+     * The identifier of the message, which can be referenced in API endpoints. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The delta containing the fields that have changed on the Message.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun delta(): MessageDelta = delta.getRequired("delta")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The object type, which is always `thread.message.delta`.
+     * The delta containing the fields that have changed on the Message. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("thread.message.delta")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun delta(): java.util.Optional<MessageDelta> = delta.getOptional("delta")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun deltaOrThrow(): MessageDelta = delta.getRequired("delta")
+
+    /**
+     * The object type, which is always `thread.message.delta`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("thread.message.delta")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * Returns the raw JSON value of [id].
@@ -231,13 +251,9 @@ private constructor(
             return@apply
         }
 
-        id()
-        delta().validate()
-        _object_().let {
-            if (it != JsonValue.from("thread.message.delta")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
+        idOrThrow()
+        deltaOrThrow().validate()
+        object_OrThrow()
         validated = true
     }
 

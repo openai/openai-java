@@ -14,7 +14,7 @@ internal class ChatCompletionContentPartRefusalTest {
         val chatCompletionContentPartRefusal =
             ChatCompletionContentPartRefusal.builder().refusal("refusal").build()
 
-        assertThat(chatCompletionContentPartRefusal.refusal()).isEqualTo("refusal")
+        assertThat(chatCompletionContentPartRefusal.refusal()).contains("refusal")
 
         val jsonMapper = jsonMapper()
 

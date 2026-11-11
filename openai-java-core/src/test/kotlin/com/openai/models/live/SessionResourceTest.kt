@@ -68,9 +68,9 @@ internal class SessionResourceTest {
                 )
                 .build()
 
-        assertThat(sessionResource.id()).isEqualTo("id")
-        assertThat(sessionResource.expiresAt()).isEqualTo(0L)
-        assertThat(sessionResource.model()).isEqualTo(SessionResource.Model.GPT_LIVE_1)
+        assertThat(sessionResource.id()).contains("id")
+        assertThat(sessionResource.expiresAt()).contains(0L)
+        assertThat(sessionResource.model()).contains(SessionResource.Model.GPT_LIVE_1)
         assertThat(sessionResource.audio())
             .contains(
                 SessionResource.Audio.builder()

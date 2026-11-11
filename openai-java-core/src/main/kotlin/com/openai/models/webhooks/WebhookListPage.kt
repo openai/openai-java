@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.WebhookService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see WebhookService.list */
 class WebhookListPage
@@ -18,22 +16,23 @@ private constructor(
     private val response: WebhookEndpointList,
 ) : Page<WebhookEndpoint> {
 
-    /**
-     * Delegates to [WebhookEndpointList], but gracefully handles missing data.
-     *
-     * @see WebhookEndpointList.data
-     */
-    fun data(): List<WebhookEndpoint> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see WebhookEndpointList.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [WebhookEndpointList], but gracefully handles missing data.
-     *
-     * @see WebhookEndpointList.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<WebhookEndpoint> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<WebhookEndpoint> = data()
+    fun _data() = response._data()
+
+    /** @see WebhookEndpointList.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<WebhookEndpoint> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

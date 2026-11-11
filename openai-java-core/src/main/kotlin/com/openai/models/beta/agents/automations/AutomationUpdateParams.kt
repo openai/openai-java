@@ -32,52 +32,41 @@ private constructor(
 
     fun automationId(): Optional<String> = Optional.ofNullable(automationId)
 
-    /**
-     * Only accepted for periodic automations.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun expression(): Optional<String> = body.expression()
+    /** @see Body.expression */
+    fun expression(): java.util.Optional<String> = body.expression()
 
-    /**
-     * Replaces all metadata; omit to leave unchanged.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun metadata(): Optional<Metadata> = body.metadata()
+    /** @see Body.expressionOrThrow */
+    fun expressionOrThrow(): String = body.expressionOrThrow()
 
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun name(): Optional<String> = body.name()
+    /** @see Body.metadata */
+    fun metadata(): java.util.Optional<Metadata> = body.metadata()
 
-    /**
-     * A future Unix timestamp in seconds; accepted only before a one-time scheduled invocation
-     * exists.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun runAt(): Optional<Long> = body.runAt()
+    /** @see Body.metadataOrThrow */
+    fun metadataOrThrow(): Metadata = body.metadataOrThrow()
 
-    /**
-     * Replaces the complete target, retaining its type and any creator session.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun target(): Optional<AutomationTargetParam> = body.target()
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
 
-    /**
-     * Only accepted for periodic automations.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun timezone(): Optional<String> = body.timezone()
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
+
+    /** @see Body.runAt */
+    fun runAt(): java.util.Optional<Long> = body.runAt()
+
+    /** @see Body.runAtOrThrow */
+    fun runAtOrThrow(): Long = body.runAtOrThrow()
+
+    /** @see Body.target */
+    fun target(): java.util.Optional<AutomationTargetParam> = body.target()
+
+    /** @see Body.targetOrThrow */
+    fun targetOrThrow(): AutomationTargetParam = body.targetOrThrow()
+
+    /** @see Body.timezone */
+    fun timezone(): java.util.Optional<String> = body.timezone()
+
+    /** @see Body.timezoneOrThrow */
+    fun timezoneOrThrow(): String = body.timezoneOrThrow()
 
     /**
      * Returns the raw JSON value of [expression].
@@ -429,51 +418,87 @@ private constructor(
         ) : this(expression, metadata, name, runAt, target, timezone, mutableMapOf())
 
         /**
-         * Only accepted for periodic automations.
+         * Only accepted for periodic automations. Returns empty if the JSON property is missing or
+         * null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun expression(): Optional<String> = expression.getOptional("expression")
+        fun expression(): java.util.Optional<String> = expression.getOptional("expression")
 
         /**
-         * Replaces all metadata; omit to leave unchanged.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+        fun expressionOrThrow(): String = expression.getRequired("expression")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Replaces all metadata; omit to leave unchanged. Returns empty if the JSON property is
+         * missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): Optional<String> = name.getOptional("name")
+        fun metadata(): java.util.Optional<Metadata> = metadata.getOptional("metadata")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
+
+        /**
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
 
         /**
          * A future Unix timestamp in seconds; accepted only before a one-time scheduled invocation
-         * exists.
+         * exists. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun runAt(): Optional<Long> = runAt.getOptional("run_at")
+        fun runAt(): java.util.Optional<Long> = runAt.getOptional("run_at")
 
         /**
-         * Replaces the complete target, retaining its type and any creator session.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun target(): Optional<AutomationTargetParam> = target.getOptional("target")
+        fun runAtOrThrow(): Long = runAt.getRequired("run_at")
 
         /**
-         * Only accepted for periodic automations.
+         * Replaces the complete target, retaining its type and any creator session. Returns empty
+         * if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun timezone(): Optional<String> = timezone.getOptional("timezone")
+        fun target(): java.util.Optional<AutomationTargetParam> = target.getOptional("target")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun targetOrThrow(): AutomationTargetParam = target.getRequired("target")
+
+        /**
+         * Only accepted for periodic automations. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun timezone(): java.util.Optional<String> = timezone.getOptional("timezone")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun timezoneOrThrow(): String = timezone.getRequired("timezone")
 
         /**
          * Returns the raw JSON value of [expression].

@@ -17,9 +17,9 @@ internal class ChatCompletionAudioParamTest {
                 .voice(ChatCompletionAudioParam.Voice.UnionMember1.ALLOY)
                 .build()
 
-        assertThat(chatCompletionAudioParam.format()).isEqualTo(ChatCompletionAudioParam.Format.WAV)
+        assertThat(chatCompletionAudioParam.format()).contains(ChatCompletionAudioParam.Format.WAV)
         assertThat(chatCompletionAudioParam.voice())
-            .isEqualTo(
+            .contains(
                 ChatCompletionAudioParam.Voice.ofUnionMember1(
                     ChatCompletionAudioParam.Voice.UnionMember1.ALLOY
                 )

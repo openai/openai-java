@@ -73,13 +73,13 @@ public final class ResponsesStructuredOutputsStreamingExample {
             streamResponse.stream()
                     .peek(accumulator::accumulate)
                     .flatMap(event -> event.outputTextDelta().stream())
-                    .forEach(textEvent -> System.out.print(textEvent.delta()));
+                    .forEach(textEvent -> System.out.print(textEvent.deltaOrThrow()));
             System.out.println();
         }
 
-        accumulator.response(BookList.class).output().stream()
+        accumulator.response(BookList.class).outputOrThrow().stream()
                 .flatMap(item -> item.message().stream())
-                .flatMap(message -> message.content().stream())
+                .flatMap(message -> message.contentOrThrow().stream())
                 .flatMap(content -> content.outputText().stream())
                 .flatMap(bookList -> bookList.books.stream())
                 .forEach(book -> System.out.println(" - " + book));

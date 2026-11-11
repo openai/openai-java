@@ -22,9 +22,9 @@ internal class RequiredActionFunctionToolCallTest {
                 )
                 .build()
 
-        assertThat(requiredActionFunctionToolCall.id()).isEqualTo("id")
+        assertThat(requiredActionFunctionToolCall.id()).contains("id")
         assertThat(requiredActionFunctionToolCall.function())
-            .isEqualTo(
+            .contains(
                 RequiredActionFunctionToolCall.Function.builder()
                     .arguments("arguments")
                     .name("name")

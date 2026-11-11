@@ -4,6 +4,7 @@ package com.openai.models.embeddings
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -20,11 +21,11 @@ internal class CreateEmbeddingResponseTest {
                 )
                 .build()
 
-        assertThat(createEmbeddingResponse.data())
+        assertThat(createEmbeddingResponse.data().getOrNull())
             .containsExactly(Embedding.builder().addEmbedding(0.0f).index(0L).build())
-        assertThat(createEmbeddingResponse.model()).isEqualTo("model")
+        assertThat(createEmbeddingResponse.model()).contains("model")
         assertThat(createEmbeddingResponse.usage())
-            .isEqualTo(
+            .contains(
                 CreateEmbeddingResponse.Usage.builder().promptTokens(0L).totalTokens(0L).build()
             )
 

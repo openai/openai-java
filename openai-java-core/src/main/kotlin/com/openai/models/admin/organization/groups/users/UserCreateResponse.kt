@@ -34,33 +34,53 @@ private constructor(
     ) : this(groupId, object_, userId, mutableMapOf())
 
     /**
-     * Identifier of the group the user was added to.
+     * Identifier of the group the user was added to. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun groupId(): String = groupId.getRequired("group_id")
+    fun groupId(): java.util.Optional<String> = groupId.getOptional("group_id")
 
     /**
-     * Always `group.user`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("group.user")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun groupIdOrThrow(): String = groupId.getRequired("group_id")
 
     /**
-     * Identifier of the user that was added.
+     * Always `group.user`. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun userId(): String = userId.getRequired("user_id")
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("group.user")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * Identifier of the user that was added. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun userId(): java.util.Optional<String> = userId.getOptional("user_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun userIdOrThrow(): String = userId.getRequired("user_id")
 
     /**
      * Returns the raw JSON value of [groupId].
@@ -229,13 +249,9 @@ private constructor(
             return@apply
         }
 
-        groupId()
-        _object_().let {
-            if (it != JsonValue.from("group.user")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        userId()
+        groupIdOrThrow()
+        object_OrThrow()
+        userIdOrThrow()
         validated = true
     }
 

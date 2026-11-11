@@ -14,7 +14,7 @@ internal class ChatSessionHistoryTest {
         val chatSessionHistory =
             ChatSessionHistory.builder().enabled(true).recentThreads(0L).build()
 
-        assertThat(chatSessionHistory.enabled()).isEqualTo(true)
+        assertThat(chatSessionHistory.enabled()).contains(true)
         assertThat(chatSessionHistory.recentThreads()).contains(0L)
 
         val jsonMapper = jsonMapper()

@@ -108,9 +108,11 @@ internal class BedrockOpenAIOkHttpClientTest {
 
         val completion = client.chat().completions().create(runtimeChatParams())
 
-        assertThat(completion.choices().single().message().content()).hasValue("Hello")
-        assertThat(completion.choices().single().finishReason().toString()).isEqualTo("stop")
-        assertThat(completion.usage().get().totalTokens()).isEqualTo(7)
+        assertThat(completion.choicesOrThrow().single().messageOrThrow().content())
+            .hasValue("Hello")
+        assertThat(completion.choicesOrThrow().single().finishReasonOrThrow().toString())
+            .isEqualTo("stop")
+        assertThat(completion.usage().get().totalTokensOrThrow()).isEqualTo(7)
         val request =
             findAll(postRequestedFor(urlPathEqualTo("/openai/v1/chat/completions"))).single()
         assertThat(request.getHeader("Authorization")).contains("/us-east-1/bedrock/aws4_request")
@@ -152,8 +154,9 @@ internal class BedrockOpenAIOkHttpClientTest {
                         .build()
                 )
 
-        assertThat(completion.choices().single().message().content()).hasValue("Hello")
-        assertThat(response.id()).isEqualTo("resp_runtime")
+        assertThat(completion.choicesOrThrow().single().messageOrThrow().content())
+            .hasValue("Hello")
+        assertThat(response.idOrThrow()).isEqualTo("resp_runtime")
         assertThat(
                 findAll(postRequestedFor(urlPathEqualTo("/openai/v1/chat/completions")))
                     .single()
@@ -199,7 +202,7 @@ internal class BedrockOpenAIOkHttpClientTest {
                         .build()
                 )
 
-        assertThat(response.id()).isEqualTo("resp_runtime_sigv4")
+        assertThat(response.idOrThrow()).isEqualTo("resp_runtime_sigv4")
         val request = findAll(postRequestedFor(urlPathEqualTo("/openai/v1/responses"))).single()
         assertThat(request.getHeader("Authorization")).contains("/us-east-1/bedrock/aws4_request")
         assertThat(request.bodyAsString).contains("us.openai.gpt-5.6-terra")
@@ -239,8 +242,8 @@ internal class BedrockOpenAIOkHttpClientTest {
 
         client.chat().completions().createStreaming(runtimeChatParams()).use { stream ->
             stream.stream().forEach { chunk ->
-                val choice = chunk.choices().single()
-                choice.delta().content().ifPresent(chunks::add)
+                val choice = chunk.choicesOrThrow().single()
+                choice.deltaOrThrow().content().ifPresent(chunks::add)
                 choice.finishReason().ifPresent { finishReasons.add(it.toString()) }
             }
         }
@@ -291,7 +294,7 @@ internal class BedrockOpenAIOkHttpClientTest {
 
         client.chat().completions().createStreaming(params).use { stream ->
             stream.stream().forEach { chunk ->
-                chunk.choices().single().delta().content().ifPresent(chunks::add)
+                chunk.choicesOrThrow().single().deltaOrThrow().content().ifPresent(chunks::add)
             }
         }
 
@@ -356,7 +359,7 @@ internal class BedrockOpenAIOkHttpClientTest {
 
         client.responses().createStreaming(params).use { stream ->
             stream.stream().forEach { event ->
-                event.outputTextDelta().ifPresent { chunks.add(it.delta()) }
+                event.outputTextDelta().ifPresent { chunks.add(it.deltaOrThrow()) }
             }
         }
 
@@ -391,7 +394,8 @@ internal class BedrockOpenAIOkHttpClientTest {
 
         val completion = client.chat().completions().create(runtimeChatParams()).join()
 
-        assertThat(completion.choices().single().message().content()).hasValue("Hello")
+        assertThat(completion.choicesOrThrow().single().messageOrThrow().content())
+            .hasValue("Hello")
         assertThat(
                 findAll(postRequestedFor(urlPathEqualTo("/openai/v1/chat/completions")))
                     .single()
@@ -410,7 +414,7 @@ internal class BedrockOpenAIOkHttpClientTest {
 
         val models = client.models().list()
 
-        assertThat(models.data()).isEmpty()
+        assertThat(models.items()).isEmpty()
         assertThat(providerCalls).hasValue(2)
         verify(2, getRequestedFor(urlPathEqualTo("/models")))
         val requests = findAll(getRequestedFor(urlPathEqualTo("/models")))
@@ -427,7 +431,7 @@ internal class BedrockOpenAIOkHttpClientTest {
 
         val models = client.models().list().join()
 
-        assertThat(models.data()).isEmpty()
+        assertThat(models.items()).isEmpty()
         assertThat(providerCalls).hasValue(2)
         verify(2, getRequestedFor(urlPathEqualTo("/models")))
         client.close()
@@ -446,7 +450,7 @@ internal class BedrockOpenAIOkHttpClientTest {
 
         val models = client.models().list()
 
-        assertThat(models.data()).isEmpty()
+        assertThat(models.items()).isEmpty()
         assertThat(providerCalls).hasValue(2)
         val requests = findAll(getRequestedFor(urlPathEqualTo("/models")))
         assertThat(requests.map { it.getHeader("Authorization") }).allMatch { authorization ->
@@ -469,7 +473,7 @@ internal class BedrockOpenAIOkHttpClientTest {
 
         val models = client.models().list()
 
-        assertThat(models.data()).isEmpty()
+        assertThat(models.items()).isEmpty()
         assertThat(providerCalls).hasValue(2)
         val requests = findAll(getRequestedFor(urlPathEqualTo("/models")))
         assertThat(requests.map { it.getHeader("Authorization") })
@@ -491,7 +495,7 @@ internal class BedrockOpenAIOkHttpClientTest {
 
         val models = client.models().list()
 
-        assertThat(models.data()).isEmpty()
+        assertThat(models.items()).isEmpty()
         assertThat(
                 findAll(getRequestedFor(urlPathEqualTo("/models")))
                     .single()

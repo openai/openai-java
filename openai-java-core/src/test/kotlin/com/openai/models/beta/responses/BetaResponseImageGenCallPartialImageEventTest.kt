@@ -29,12 +29,12 @@ internal class BetaResponseImageGenCallPartialImageEventTest {
                 .size("size")
                 .build()
 
-        assertThat(betaResponseImageGenCallPartialImageEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseImageGenCallPartialImageEvent.outputIndex()).isEqualTo(0L)
+        assertThat(betaResponseImageGenCallPartialImageEvent.itemId()).contains("item_id")
+        assertThat(betaResponseImageGenCallPartialImageEvent.outputIndex()).contains(0L)
         assertThat(betaResponseImageGenCallPartialImageEvent.partialImageB64())
-            .isEqualTo("partial_image_b64")
-        assertThat(betaResponseImageGenCallPartialImageEvent.partialImageIndex()).isEqualTo(0L)
-        assertThat(betaResponseImageGenCallPartialImageEvent.sequenceNumber()).isEqualTo(0L)
+            .contains("partial_image_b64")
+        assertThat(betaResponseImageGenCallPartialImageEvent.partialImageIndex()).contains(0L)
+        assertThat(betaResponseImageGenCallPartialImageEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseImageGenCallPartialImageEvent.agent())
             .contains(
                 BetaResponseImageGenCallPartialImageEvent.Agent.builder()

@@ -18,9 +18,9 @@ internal class ResponseMcpCallFailedTest {
                 .outputIndex(0L)
                 .build()
 
-        assertThat(responseMcpCallFailed.eventId()).isEqualTo("event_id")
-        assertThat(responseMcpCallFailed.itemId()).isEqualTo("item_id")
-        assertThat(responseMcpCallFailed.outputIndex()).isEqualTo(0L)
+        assertThat(responseMcpCallFailed.eventId()).contains("event_id")
+        assertThat(responseMcpCallFailed.itemId()).contains("item_id")
+        assertThat(responseMcpCallFailed.outputIndex()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

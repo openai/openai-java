@@ -24,7 +24,7 @@ internal class EvalCustomDataSourceConfigTest {
                 .build()
 
         assertThat(evalCustomDataSourceConfig.schema())
-            .isEqualTo(
+            .contains(
                 EvalCustomDataSourceConfig.Schema.builder()
                     .putAdditionalProperty("type", JsonValue.from("object"))
                     .putAdditionalProperty("properties", JsonValue.from("bar"))

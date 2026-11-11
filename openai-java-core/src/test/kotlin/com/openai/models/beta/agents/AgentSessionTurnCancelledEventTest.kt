@@ -66,10 +66,10 @@ internal class AgentSessionTurnCancelledEventTest {
                 )
                 .build()
 
-        assertThat(agentSessionTurnCancelledEvent.eventId()).isEqualTo("event_id")
-        assertThat(agentSessionTurnCancelledEvent.sessionId()).isEqualTo("session_id")
+        assertThat(agentSessionTurnCancelledEvent.eventId()).contains("event_id")
+        assertThat(agentSessionTurnCancelledEvent.sessionId()).contains("session_id")
         assertThat(agentSessionTurnCancelledEvent.turn())
-            .isEqualTo(
+            .contains(
                 Turn.builder()
                     .id("id")
                     .agentId("agent_id")
@@ -101,7 +101,7 @@ internal class AgentSessionTurnCancelledEventTest {
                     )
                     .build()
             )
-        assertThat(agentSessionTurnCancelledEvent.turnId()).isEqualTo("turn_id")
+        assertThat(agentSessionTurnCancelledEvent.turnId()).contains("turn_id")
         assertThat(agentSessionTurnCancelledEvent.usage())
             .contains(
                 TokenUsage.builder()

@@ -22,9 +22,9 @@ internal class ChatCompletionMessageFunctionToolCallTest {
                 )
                 .build()
 
-        assertThat(chatCompletionMessageFunctionToolCall.id()).isEqualTo("id")
+        assertThat(chatCompletionMessageFunctionToolCall.id()).contains("id")
         assertThat(chatCompletionMessageFunctionToolCall.function())
-            .isEqualTo(
+            .contains(
                 ChatCompletionMessageFunctionToolCall.Function.builder()
                     .arguments("arguments")
                     .name("name")

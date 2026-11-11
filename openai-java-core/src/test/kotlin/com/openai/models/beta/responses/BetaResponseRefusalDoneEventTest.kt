@@ -21,11 +21,11 @@ internal class BetaResponseRefusalDoneEventTest {
                 .agent(BetaResponseRefusalDoneEvent.Agent.builder().agentName("agent_name").build())
                 .build()
 
-        assertThat(betaResponseRefusalDoneEvent.contentIndex()).isEqualTo(0L)
-        assertThat(betaResponseRefusalDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseRefusalDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseRefusalDoneEvent.refusal()).isEqualTo("refusal")
-        assertThat(betaResponseRefusalDoneEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseRefusalDoneEvent.contentIndex()).contains(0L)
+        assertThat(betaResponseRefusalDoneEvent.itemId()).contains("item_id")
+        assertThat(betaResponseRefusalDoneEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseRefusalDoneEvent.refusal()).contains("refusal")
+        assertThat(betaResponseRefusalDoneEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseRefusalDoneEvent.agent())
             .contains(BetaResponseRefusalDoneEvent.Agent.builder().agentName("agent_name").build())
 

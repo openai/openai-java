@@ -31,7 +31,6 @@ import java.util.Objects
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see InputItemServiceAsync.list */
 class InputItemListPageAsync
@@ -42,22 +41,23 @@ private constructor(
     private val response: BetaResponseItemList,
 ) : PageAsync<BetaResponseItem> {
 
-    /**
-     * Delegates to [BetaResponseItemList], but gracefully handles missing data.
-     *
-     * @see BetaResponseItemList.data
-     */
-    fun data(): List<BetaResponseItem> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see BetaResponseItemList.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [BetaResponseItemList], but gracefully handles missing data.
-     *
-     * @see BetaResponseItemList.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<BetaResponseItem> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<BetaResponseItem> = data()
+    fun _data() = response._data()
+
+    /** @see BetaResponseItemList.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<BetaResponseItem> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

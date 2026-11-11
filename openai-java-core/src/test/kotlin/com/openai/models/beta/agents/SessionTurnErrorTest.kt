@@ -17,8 +17,8 @@ internal class SessionTurnErrorTest {
                 .message("message")
                 .build()
 
-        assertThat(sessionTurnError.code()).isEqualTo(SessionTurnError.Code.CONTEXT_LENGTH_EXCEEDED)
-        assertThat(sessionTurnError.message()).isEqualTo("message")
+        assertThat(sessionTurnError.code()).contains(SessionTurnError.Code.CONTEXT_LENGTH_EXCEEDED)
+        assertThat(sessionTurnError.message()).contains("message")
 
         val jsonMapper = jsonMapper()
 

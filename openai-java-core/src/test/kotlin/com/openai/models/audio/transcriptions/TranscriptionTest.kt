@@ -34,7 +34,7 @@ internal class TranscriptionTest {
                 )
                 .build()
 
-        assertThat(transcription.text()).isEqualTo("text")
+        assertThat(transcription.text()).contains("text")
         assertThat(transcription.languages().getOrNull())
             .containsExactly(TranscriptionLanguage.builder().code("code").build())
         assertThat(transcription.logprobs().getOrNull())

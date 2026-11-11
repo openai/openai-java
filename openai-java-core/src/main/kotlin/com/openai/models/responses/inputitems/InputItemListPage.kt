@@ -29,7 +29,6 @@ import com.openai.models.responses.ResponseToolSearchOutputItem
 import com.openai.services.blocking.responses.InputItemService
 import java.util.Objects
 import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see InputItemService.list */
 class InputItemListPage
@@ -39,21 +38,23 @@ private constructor(
     private val response: ResponseItemList,
 ) : Page<ResponseItem> {
 
-    /**
-     * Delegates to [ResponseItemList], but gracefully handles missing data.
-     *
-     * @see ResponseItemList.data
-     */
-    fun data(): List<ResponseItem> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see ResponseItemList.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [ResponseItemList], but gracefully handles missing data.
-     *
-     * @see ResponseItemList.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<ResponseItem> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<ResponseItem> = data()
+    fun _data() = response._data()
+
+    /** @see ResponseItemList.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<ResponseItem> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

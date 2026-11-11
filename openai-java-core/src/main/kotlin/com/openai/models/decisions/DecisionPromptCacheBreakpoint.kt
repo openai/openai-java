@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
+import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.collectAllProperties
@@ -31,17 +32,27 @@ private constructor(
     ) : this(mode, mutableMapOf())
 
     /**
-     * The breakpoint mode. Always `explicit`.
+     * The breakpoint mode. Always `explicit`. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("explicit")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonValue = mode
+    fun mode(): java.util.Optional<JsonValue> {
+        val raw = mode
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("explicit")) ->
+                throw OpenAIInvalidDataException("`mode` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun modeOrThrow(): JsonValue = mode().orElseGet { mode.getRequired("mode") }
+
+    @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<JsonValue> = mode
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -147,11 +158,7 @@ private constructor(
             return@apply
         }
 
-        _mode().let {
-            if (it != JsonValue.from("explicit")) {
-                throw OpenAIInvalidDataException("'mode' is invalid, received $it")
-            }
-        }
+        modeOrThrow()
         validated = true
     }
 

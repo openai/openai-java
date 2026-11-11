@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.certificates
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -29,7 +30,7 @@ internal class CertificateActivatePageResponseTest {
                 )
                 .build()
 
-        assertThat(certificateActivatePageResponse.data())
+        assertThat(certificateActivatePageResponse.data().getOrNull())
             .containsExactly(
                 CertificateActivateResponse.builder()
                     .id("id")

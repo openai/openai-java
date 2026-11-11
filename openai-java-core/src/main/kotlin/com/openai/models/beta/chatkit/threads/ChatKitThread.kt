@@ -53,58 +53,93 @@ private constructor(
     ) : this(id, createdAt, object_, status, title, user, mutableMapOf())
 
     /**
-     * Identifier of the thread.
+     * Identifier of the thread. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * Unix timestamp (in seconds) for when the thread was created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * Type discriminator that is always `chatkit.thread`.
+     * Unix timestamp (in seconds) for when the thread was created. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("chatkit.thread")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * Current status for the thread. Defaults to `active` for newly created threads.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun status(): Status = status.getRequired("status")
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * Type discriminator that is always `chatkit.thread`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("chatkit.thread")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * Current status for the thread. Defaults to `active` for newly created threads. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): Status = status.getRequired("status")
 
     /**
      * Optional human-readable title for the thread. Defaults to null when no title has been
-     * generated.
+     * generated. The schema requires this property. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun title(): Optional<String> = title.getOptional("title")
+    fun title(): java.util.Optional<String> = title.getOptional("title")
 
     /**
-     * Free-form string that identifies your end user who owns the thread.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun user(): String = user.getRequired("user")
+    fun titleOrThrow(): String = title.getRequired("title")
+
+    /**
+     * Free-form string that identifies your end user who owns the thread. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun user(): java.util.Optional<String> = user.getOptional("user")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun userOrThrow(): String = user.getRequired("user")
 
     /**
      * Returns the raw JSON value of [id].
@@ -384,16 +419,12 @@ private constructor(
             return@apply
         }
 
-        id()
-        createdAt()
-        _object_().let {
-            if (it != JsonValue.from("chatkit.thread")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        status().validate()
+        idOrThrow()
+        createdAtOrThrow()
+        object_OrThrow()
+        statusOrThrow().validate()
         title()
-        user()
+        userOrThrow()
         validated = true
     }
 
@@ -691,25 +722,42 @@ private constructor(
             ) : this(reason, type, mutableMapOf())
 
             /**
-             * Reason that the thread was locked. Defaults to null when no reason is recorded.
+             * Reason that the thread was locked. Defaults to null when no reason is recorded. The
+             * schema requires this property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun reason(): Optional<String> = reason.getOptional("reason")
+            fun reason(): java.util.Optional<String> = reason.getOptional("reason")
 
             /**
-             * Status discriminator that is always `locked`.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("locked")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun reasonOrThrow(): String = reason.getRequired("reason")
+
+            /**
+             * Status discriminator that is always `locked`. The schema requires this property.
+             * Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("locked")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
             /**
              * Returns the raw JSON value of [reason].
@@ -852,11 +900,7 @@ private constructor(
                 }
 
                 reason()
-                _type().let {
-                    if (it != JsonValue.from("locked")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
+                typeOrThrow()
                 validated = true
             }
 
@@ -916,25 +960,42 @@ private constructor(
             ) : this(reason, type, mutableMapOf())
 
             /**
-             * Reason that the thread was closed. Defaults to null when no reason is recorded.
+             * Reason that the thread was closed. Defaults to null when no reason is recorded. The
+             * schema requires this property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun reason(): Optional<String> = reason.getOptional("reason")
+            fun reason(): java.util.Optional<String> = reason.getOptional("reason")
 
             /**
-             * Status discriminator that is always `closed`.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("closed")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            fun reasonOrThrow(): String = reason.getRequired("reason")
+
+            /**
+             * Status discriminator that is always `closed`. The schema requires this property.
+             * Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("closed")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
             /**
              * Returns the raw JSON value of [reason].
@@ -1077,11 +1138,7 @@ private constructor(
                 }
 
                 reason()
-                _type().let {
-                    if (it != JsonValue.from("closed")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
+                typeOrThrow()
                 validated = true
             }
 

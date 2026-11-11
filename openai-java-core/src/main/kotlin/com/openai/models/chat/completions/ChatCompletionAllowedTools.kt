@@ -40,12 +40,17 @@ private constructor(
      *
      * `auto` allows the model to pick from among the allowed tools and generate a message.
      *
-     * `required` requires the model to call one or more of the allowed tools.
+     * `required` requires the model to call one or more of the allowed tools. The schema requires
+     * this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun mode(): Mode = mode.getRequired("mode")
+    fun mode(): java.util.Optional<Mode> = mode.getOptional("mode")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun modeOrThrow(): Mode = mode.getRequired("mode")
 
     /**
      * A list of tool definitions that the model should be allowed to call.
@@ -58,10 +63,16 @@ private constructor(
      * ]
      * ```
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun tools(): List<Tool> = tools.getRequired("tools")
+    fun tools(): java.util.Optional<List<Tool>> = tools.getOptional("tools")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun toolsOrThrow(): List<Tool> = tools.getRequired("tools")
 
     /**
      * Returns the raw JSON value of [mode].
@@ -237,8 +248,8 @@ private constructor(
             return@apply
         }
 
-        mode().validate()
-        tools().forEach { it.validate() }
+        modeOrThrow().validate()
+        toolsOrThrow().forEach { it.validate() }
         validated = true
     }
 

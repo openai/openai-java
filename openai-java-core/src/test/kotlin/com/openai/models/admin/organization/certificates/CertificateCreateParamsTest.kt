@@ -19,7 +19,7 @@ internal class CertificateCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.certificate()).isEqualTo("certificate")
+        assertThat(body.certificateOrThrow()).isEqualTo("certificate")
         assertThat(body.name()).contains("name")
     }
 
@@ -29,6 +29,6 @@ internal class CertificateCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.certificate()).isEqualTo("certificate")
+        assertThat(body.certificateOrThrow()).isEqualTo("certificate")
     }
 }

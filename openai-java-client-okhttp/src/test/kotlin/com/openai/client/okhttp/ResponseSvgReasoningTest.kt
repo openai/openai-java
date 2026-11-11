@@ -30,7 +30,7 @@ internal class ResponseSvgReasoningTest {
                     )
                     val response = client.responses().retrieve("resp_fixture")
                     val reasoning =
-                        response.tools().single().asImageGeneration().svg().get().reasoning()
+                        response.toolsOrThrow().single().asImageGeneration().svg().get().reasoning()
                     val effort = reasoning.flatMap { it.effort() }.map { it.asString() }
                     assertThat(effort.orElse(null)).isEqualTo(expected)
                     assertThat(server.takeRequest(1, TimeUnit.SECONDS)?.path)

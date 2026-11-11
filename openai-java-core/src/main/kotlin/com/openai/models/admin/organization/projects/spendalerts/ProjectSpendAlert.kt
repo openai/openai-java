@@ -49,58 +49,95 @@ private constructor(
     ) : this(id, currency, interval, notificationChannel, object_, thresholdAmount, mutableMapOf())
 
     /**
-     * The identifier, which can be referenced in API endpoints.
+     * The identifier, which can be referenced in API endpoints. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The currency for the threshold amount.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun currency(): Currency = currency.getRequired("currency")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The time interval for evaluating spend against the threshold.
+     * The currency for the threshold amount. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun interval(): Interval = interval.getRequired("interval")
+    fun currency(): java.util.Optional<Currency> = currency.getOptional("currency")
 
     /**
-     * Email notification settings for a spend alert.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun notificationChannel(): NotificationChannel =
+    fun currencyOrThrow(): Currency = currency.getRequired("currency")
+
+    /**
+     * The time interval for evaluating spend against the threshold. The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun interval(): java.util.Optional<Interval> = interval.getOptional("interval")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun intervalOrThrow(): Interval = interval.getRequired("interval")
+
+    /**
+     * Email notification settings for a spend alert. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun notificationChannel(): java.util.Optional<NotificationChannel> =
+        notificationChannel.getOptional("notification_channel")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun notificationChannelOrThrow(): NotificationChannel =
         notificationChannel.getRequired("notification_channel")
 
     /**
-     * The object type, which is always `project.spend_alert`.
+     * The object type, which is always `project.spend_alert`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("project.spend_alert")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("project.spend_alert")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The alert threshold amount, in cents.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun thresholdAmount(): Long = thresholdAmount.getRequired("threshold_amount")
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * The alert threshold amount, in cents. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun thresholdAmount(): java.util.Optional<Long> =
+        thresholdAmount.getOptional("threshold_amount")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun thresholdAmountOrThrow(): Long = thresholdAmount.getRequired("threshold_amount")
 
     /**
      * Returns the raw JSON value of [id].
@@ -355,16 +392,12 @@ private constructor(
             return@apply
         }
 
-        id()
-        currency().validate()
-        interval().validate()
-        notificationChannel().validate()
-        _object_().let {
-            if (it != JsonValue.from("project.spend_alert")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        thresholdAmount()
+        idOrThrow()
+        currencyOrThrow().validate()
+        intervalOrThrow().validate()
+        notificationChannelOrThrow().validate()
+        object_OrThrow()
+        thresholdAmountOrThrow()
         validated = true
     }
 
@@ -678,33 +711,57 @@ private constructor(
         ) : this(recipients, type, subjectPrefix, mutableMapOf())
 
         /**
-         * Email addresses that receive the spend alert notification.
+         * Email addresses that receive the spend alert notification. The schema requires this
+         * property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun recipients(): List<String> = recipients.getRequired("recipients")
+        fun recipients(): java.util.Optional<List<String>> = recipients.getOptional("recipients")
 
         /**
-         * The notification channel type. Currently only `email` is supported.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("email")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun recipientsOrThrow(): List<String> = recipients.getRequired("recipients")
 
         /**
-         * Optional subject prefix for alert emails.
+         * The notification channel type. Currently only `email` is supported. The schema requires
+         * this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun subjectPrefix(): Optional<String> = subjectPrefix.getOptional("subject_prefix")
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("email")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+        /**
+         * Optional subject prefix for alert emails. Returns empty if the JSON property is missing
+         * or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun subjectPrefix(): java.util.Optional<String> =
+            subjectPrefix.getOptional("subject_prefix")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun subjectPrefixOrThrow(): String = subjectPrefix.getRequired("subject_prefix")
 
         /**
          * Returns the raw JSON value of [recipients].
@@ -900,12 +957,8 @@ private constructor(
                 return@apply
             }
 
-            recipients()
-            _type().let {
-                if (it != JsonValue.from("email")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            recipientsOrThrow()
+            typeOrThrow()
             subjectPrefix()
             validated = true
         }

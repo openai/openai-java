@@ -43,7 +43,7 @@ internal class GraderRunParamsTest {
 
         val body = params._body()
 
-        assertThat(body.grader())
+        assertThat(body.graderOrThrow())
             .isEqualTo(
                 GraderRunParams.Grader.ofStringCheck(
                     StringCheckGrader.builder()
@@ -54,7 +54,7 @@ internal class GraderRunParamsTest {
                         .build()
                 )
             )
-        assertThat(body.modelSample()).isEqualTo("model_sample")
+        assertThat(body.modelSampleOrThrow()).isEqualTo("model_sample")
         assertThat(body._item()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
     }
 
@@ -75,7 +75,7 @@ internal class GraderRunParamsTest {
 
         val body = params._body()
 
-        assertThat(body.grader())
+        assertThat(body.graderOrThrow())
             .isEqualTo(
                 GraderRunParams.Grader.ofStringCheck(
                     StringCheckGrader.builder()
@@ -86,6 +86,6 @@ internal class GraderRunParamsTest {
                         .build()
                 )
             )
-        assertThat(body.modelSample()).isEqualTo("model_sample")
+        assertThat(body.modelSampleOrThrow()).isEqualTo("model_sample")
     }
 }

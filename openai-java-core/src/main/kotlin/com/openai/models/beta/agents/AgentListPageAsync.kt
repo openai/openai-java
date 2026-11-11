@@ -7,10 +7,8 @@ import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.beta.AgentServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.jvm.optionals.getOrNull
 
 /** @see AgentServiceAsync.list */
 class AgentListPageAsync
@@ -21,21 +19,22 @@ private constructor(
     private val response: AgentListPageResponse,
 ) : PageAsync<Agent> {
 
-    /**
-     * Delegates to [AgentListPageResponse], but gracefully handles missing data.
-     *
-     * @see AgentListPageResponse.data
-     */
-    fun data(): List<Agent> = response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see AgentListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [AgentListPageResponse], but gracefully handles missing data.
-     *
-     * @see AgentListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<Agent> = data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<Agent> = data()
+    fun _data() = response._data()
+
+    /** @see AgentListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<Agent> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

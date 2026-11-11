@@ -24,10 +24,10 @@ internal class BetaResponseCustomToolCallInputDoneEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseCustomToolCallInputDoneEvent.input()).isEqualTo("input")
-        assertThat(betaResponseCustomToolCallInputDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseCustomToolCallInputDoneEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseCustomToolCallInputDoneEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseCustomToolCallInputDoneEvent.input()).contains("input")
+        assertThat(betaResponseCustomToolCallInputDoneEvent.itemId()).contains("item_id")
+        assertThat(betaResponseCustomToolCallInputDoneEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseCustomToolCallInputDoneEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseCustomToolCallInputDoneEvent.agent())
             .contains(
                 BetaResponseCustomToolCallInputDoneEvent.Agent.builder()

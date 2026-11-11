@@ -14,9 +14,9 @@ internal class OrganizationGroupUserTest {
         val organizationGroupUser =
             OrganizationGroupUser.builder().id("id").email("email").name("name").build()
 
-        assertThat(organizationGroupUser.id()).isEqualTo("id")
+        assertThat(organizationGroupUser.id()).contains("id")
         assertThat(organizationGroupUser.email()).contains("email")
-        assertThat(organizationGroupUser.name()).isEqualTo("name")
+        assertThat(organizationGroupUser.name()).contains("name")
 
         val jsonMapper = jsonMapper()
 

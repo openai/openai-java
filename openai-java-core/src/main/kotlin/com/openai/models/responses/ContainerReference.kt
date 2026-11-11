@@ -33,25 +33,40 @@ private constructor(
     ) : this(containerId, type, mutableMapOf())
 
     /**
-     * The ID of the referenced container.
+     * The ID of the referenced container. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun containerId(): String = containerId.getRequired("container_id")
+    fun containerId(): java.util.Optional<String> = containerId.getOptional("container_id")
 
     /**
-     * References a container created with the /v1/containers endpoint
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("container_reference")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun containerIdOrThrow(): String = containerId.getRequired("container_id")
+
+    /**
+     * References a container created with the /v1/containers endpoint The schema requires this
+     * property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("container_reference")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
      * Returns the raw JSON value of [containerId].
@@ -199,12 +214,8 @@ private constructor(
             return@apply
         }
 
-        containerId()
-        _type().let {
-            if (it != JsonValue.from("container_reference")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
+        containerIdOrThrow()
+        typeOrThrow()
         validated = true
     }
 

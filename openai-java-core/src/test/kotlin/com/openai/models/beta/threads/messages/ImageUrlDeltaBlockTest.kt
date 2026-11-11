@@ -22,7 +22,7 @@ internal class ImageUrlDeltaBlockTest {
                 )
                 .build()
 
-        assertThat(imageUrlDeltaBlock.index()).isEqualTo(0L)
+        assertThat(imageUrlDeltaBlock.index()).contains(0L)
         assertThat(imageUrlDeltaBlock.imageUrl())
             .contains(
                 ImageUrlDelta.builder()

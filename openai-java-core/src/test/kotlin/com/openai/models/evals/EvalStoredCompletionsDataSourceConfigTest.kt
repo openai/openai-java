@@ -27,7 +27,7 @@ internal class EvalStoredCompletionsDataSourceConfigTest {
                 .build()
 
         assertThat(evalStoredCompletionsDataSourceConfig.schema())
-            .isEqualTo(
+            .contains(
                 EvalStoredCompletionsDataSourceConfig.Schema.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()

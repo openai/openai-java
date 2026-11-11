@@ -24,10 +24,10 @@ internal class VaultTest {
                 .name("name")
                 .build()
 
-        assertThat(vault.id()).isEqualTo("id")
-        assertThat(vault.createdAt()).isEqualTo(0L)
+        assertThat(vault.id()).contains("id")
+        assertThat(vault.createdAt()).contains(0L)
         assertThat(vault.metadata())
-            .isEqualTo(
+            .contains(
                 Vault.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()

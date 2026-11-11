@@ -5,6 +5,7 @@ package com.openai.models.videos
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -62,7 +63,7 @@ internal class VideoListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(videoListPageResponse.data())
+        assertThat(videoListPageResponse.data().getOrNull())
             .containsExactly(
                 Video.builder()
                     .id("id")
@@ -107,7 +108,7 @@ internal class VideoListPageResponseTest {
                     .build()
             )
         assertThat(videoListPageResponse.firstId()).contains("first_id")
-        assertThat(videoListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(videoListPageResponse.hasMore()).contains(true)
         assertThat(videoListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

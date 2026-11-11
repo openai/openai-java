@@ -3,6 +3,7 @@
 package com.openai.models.beta.agents.automations.invocations
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -24,17 +25,16 @@ internal class AutomationInvocationTest {
                 .status(AutomationInvocation.Status.QUEUED)
                 .build()
 
-        assertThat(automationInvocation.id()).isEqualTo("id")
-        assertThat(automationInvocation.automationId()).isEqualTo("automation_id")
-        assertThat(automationInvocation.createdAt()).isEqualTo(0L)
+        assertThat(automationInvocation.id()).contains("id")
+        assertThat(automationInvocation.automationId()).contains("automation_id")
+        assertThat(automationInvocation.createdAt()).contains(0L)
         assertThat(automationInvocation.error())
             .contains(AutomationInvocation.Error.builder().code("code").message("message").build())
         assertThat(automationInvocation.scheduledAt()).contains(0L)
         assertThat(automationInvocation.sessionId()).contains("session_id")
-        assertThat(automationInvocation.skipReason())
-            .contains(AutomationInvocation.SkipReason.PENDING_DELIVERY)
-        assertThat(automationInvocation.source()).isEqualTo(AutomationInvocationSource.ofManual())
-        assertThat(automationInvocation.status()).isEqualTo(AutomationInvocation.Status.QUEUED)
+        assertThat(automationInvocation.skipReason()).contains(JsonValue.from("pending_delivery"))
+        assertThat(automationInvocation.source()).contains(AutomationInvocationSource.ofManual())
+        assertThat(automationInvocation.status()).contains(AutomationInvocation.Status.QUEUED)
 
         val jsonMapper = jsonMapper()
 

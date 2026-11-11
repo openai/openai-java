@@ -63,13 +63,13 @@ public final class ResponsesFunctionCallingExample {
                 .maxOutputTokens(2048)
                 .input(ResponseCreateParams.Input.ofResponse(inputs));
 
-        client.responses().create(createParamsBuilder.build()).output().forEach(item -> {
+        client.responses().create(createParamsBuilder.build()).outputOrThrow().forEach(item -> {
             if (item.isFunctionCall()) {
                 ResponseFunctionToolCall functionCall = item.asFunctionCall();
 
                 inputs.add(ResponseInputItem.ofFunctionCall(functionCall));
                 inputs.add(ResponseInputItem.ofFunctionCallOutput(ResponseInputItem.FunctionCallOutput.builder()
-                        .callId(functionCall.callId())
+                        .callId(functionCall.callIdOrThrow())
                         .outputAsJson(callFunction(functionCall))
                         .build()));
             }
@@ -78,21 +78,21 @@ public final class ResponsesFunctionCallingExample {
         // Pass the function call results back to the model to complete the process.
         createParamsBuilder.input(ResponseCreateParams.Input.ofResponse(inputs));
 
-        client.responses().create(createParamsBuilder.build()).output().stream()
+        client.responses().create(createParamsBuilder.build()).outputOrThrow().stream()
                 .flatMap(item -> item.message().stream())
-                .flatMap(message -> message.content().stream())
+                .flatMap(message -> message.contentOrThrow().stream())
                 .flatMap(content -> content.outputText().stream())
-                .forEach(outputText -> System.out.println(outputText.text()));
+                .forEach(outputText -> System.out.println(outputText.textOrThrow()));
     }
 
     private static Object callFunction(ResponseFunctionToolCall function) {
-        switch (function.name()) {
+        switch (function.nameOrThrow()) {
             case "GetSdkQuality":
                 return function.arguments(GetSdkQuality.class).execute();
             case "GetSdkScore":
                 return function.arguments(GetSdkScore.class).execute();
             default:
-                throw new IllegalArgumentException("Unknown function: " + function.name());
+                throw new IllegalArgumentException("Unknown function: " + function.nameOrThrow());
         }
     }
 }

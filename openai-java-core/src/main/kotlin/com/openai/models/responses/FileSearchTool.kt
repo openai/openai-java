@@ -65,49 +65,79 @@ private constructor(
     ) : this(type, vectorStoreIds, filters, maxNumResults, rankingOptions, mutableMapOf())
 
     /**
-     * The type of the file search tool. Always `file_search`.
+     * The type of the file search tool. Always `file_search`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("file_search")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun type(): java.util.Optional<JsonValue> {
+        val raw = type
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("file_search")) ->
+                throw OpenAIInvalidDataException("`type` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
 
     /**
-     * The IDs of the vector stores to search.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun vectorStoreIds(): List<String> = vectorStoreIds.getRequired("vector_store_ids")
+    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
-     * A filter to apply.
+     * The IDs of the vector stores to search. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun filters(): Optional<Filters> = filters.getOptional("filters")
+    fun vectorStoreIds(): java.util.Optional<List<String>> =
+        vectorStoreIds.getOptional("vector_store_ids")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun vectorStoreIdsOrThrow(): List<String> = vectorStoreIds.getRequired("vector_store_ids")
+
+    /**
+     * A filter to apply. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun filters(): java.util.Optional<Filters> = filters.getOptional("filters")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun filtersOrThrow(): Filters = filters.getRequired("filters")
 
     /**
      * The maximum number of results to return. This number should be between 1 and 50 inclusive.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun maxNumResults(): Optional<Long> = maxNumResults.getOptional("max_num_results")
+    fun maxNumResults(): java.util.Optional<Long> = maxNumResults.getOptional("max_num_results")
 
     /**
-     * Ranking options for search.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun rankingOptions(): Optional<RankingOptions> = rankingOptions.getOptional("ranking_options")
+    fun maxNumResultsOrThrow(): Long = maxNumResults.getRequired("max_num_results")
+
+    /**
+     * Ranking options for search. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun rankingOptions(): java.util.Optional<RankingOptions> =
+        rankingOptions.getOptional("ranking_options")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun rankingOptionsOrThrow(): RankingOptions = rankingOptions.getRequired("ranking_options")
 
     /**
      * Returns the raw JSON value of [vectorStoreIds].
@@ -361,12 +391,8 @@ private constructor(
             return@apply
         }
 
-        _type().let {
-            if (it != JsonValue.from("file_search")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        vectorStoreIds()
+        typeOrThrow()
+        vectorStoreIdsOrThrow()
         filters().ifPresent { it.validate() }
         maxNumResults()
         rankingOptions().ifPresent { it.validate() }
@@ -664,29 +690,49 @@ private constructor(
 
         /**
          * Weights that control how reciprocal rank fusion balances semantic embedding matches
-         * versus sparse keyword matches when hybrid search is enabled.
+         * versus sparse keyword matches when hybrid search is enabled. Returns empty if the JSON
+         * property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun hybridSearch(): Optional<HybridSearch> = hybridSearch.getOptional("hybrid_search")
+        fun hybridSearch(): java.util.Optional<HybridSearch> =
+            hybridSearch.getOptional("hybrid_search")
 
         /**
-         * The ranker to use for the file search.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun ranker(): Optional<Ranker> = ranker.getOptional("ranker")
+        fun hybridSearchOrThrow(): HybridSearch = hybridSearch.getRequired("hybrid_search")
+
+        /**
+         * The ranker to use for the file search. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun ranker(): java.util.Optional<Ranker> = ranker.getOptional("ranker")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun rankerOrThrow(): Ranker = ranker.getRequired("ranker")
 
         /**
          * The score threshold for the file search, a number between 0 and 1. Numbers closer to 1
          * will attempt to return only the most relevant results, but may return fewer results.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun scoreThreshold(): Optional<Double> = scoreThreshold.getOptional("score_threshold")
+        fun scoreThreshold(): java.util.Optional<Double> =
+            scoreThreshold.getOptional("score_threshold")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun scoreThresholdOrThrow(): Double = scoreThreshold.getRequired("score_threshold")
 
         /**
          * Returns the raw JSON value of [hybridSearch].
@@ -914,22 +960,33 @@ private constructor(
             ) : this(embeddingWeight, textWeight, mutableMapOf())
 
             /**
-             * The weight of the embedding in the reciprocal ranking fusion.
+             * The weight of the embedding in the reciprocal ranking fusion. The schema requires
+             * this property. Returns empty if the JSON property is missing or null.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            fun embeddingWeight(): Double = embeddingWeight.getRequired("embedding_weight")
+            fun embeddingWeight(): java.util.Optional<Double> =
+                embeddingWeight.getOptional("embedding_weight")
 
             /**
-             * The weight of the text in the reciprocal ranking fusion.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
              */
-            fun textWeight(): Double = textWeight.getRequired("text_weight")
+            fun embeddingWeightOrThrow(): Double = embeddingWeight.getRequired("embedding_weight")
+
+            /**
+             * The weight of the text in the reciprocal ranking fusion. The schema requires this
+             * property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun textWeight(): java.util.Optional<Double> = textWeight.getOptional("text_weight")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun textWeightOrThrow(): Double = textWeight.getRequired("text_weight")
 
             /**
              * Returns the raw JSON value of [embeddingWeight].
@@ -1098,8 +1155,8 @@ private constructor(
                     return@apply
                 }
 
-                embeddingWeight()
-                textWeight()
+                embeddingWeightOrThrow()
+                textWeightOrThrow()
                 validated = true
             }
 

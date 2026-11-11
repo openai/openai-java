@@ -17,8 +17,8 @@ internal class ResponseSteerEventTest {
                 .previousResponseId("previous_response_id")
                 .build()
 
-        assertThat(responseSteerEvent.input()).isEqualTo(ResponseSteerInput.ofText("string"))
-        assertThat(responseSteerEvent.previousResponseId()).isEqualTo("previous_response_id")
+        assertThat(responseSteerEvent.input()).contains(ResponseSteerInput.ofText("string"))
+        assertThat(responseSteerEvent.previousResponseId()).contains("previous_response_id")
 
         val jsonMapper = jsonMapper()
 

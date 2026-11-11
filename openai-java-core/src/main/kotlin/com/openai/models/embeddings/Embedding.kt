@@ -40,48 +40,69 @@ private constructor(
     /**
      * The embedding vector, which is a list of floats. The length of vector depends on the model as
      * listed in the [embedding guide](https://developers.openai.com/api/docs/guides/embeddings).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun embedding(): List<Float> = embeddingValue().asFloats()
+    fun embedding(): java.util.Optional<List<Float>> =
+        embedding.getOptional("embedding").map { it.asFloats() }
 
     /**
-     * The embedding data in its original format (either float list or base64 string). This method
-     * provides efficient access to the embedding data without unnecessary conversions.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
+    fun embeddingOrThrow(): List<Float> = embedding.getRequired("embedding").asFloats()
+
     fun embeddingValue(): EmbeddingValue = embedding.getRequired("embedding")
 
     /**
-     * The index of the embedding in the list of embeddings.
+     * The index of the embedding in the list of embeddings. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun index(): Long = index.getRequired("index")
+    fun index(): java.util.Optional<Long> = index.getOptional("index")
 
     /**
-     * The object type, which is always "embedding".
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("embedding")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun indexOrThrow(): Long = index.getRequired("index")
+
+    /**
+     * The object type, which is always "embedding". The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("embedding")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * Returns the raw JSON value of [embedding].
      *
      * Unlike [embedding], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _embedding(): JsonField<List<Float>> = embedding.map { it.asFloats() }
+    fun _embedding(): JsonField<List<Float>> =
+        try {
+            embedding.map { it.asFloats() }
+        } catch (e: IllegalArgumentException) {
+            JsonValue.from(embedding)
+        } catch (e: IllegalStateException) {
+            JsonValue.from(embedding)
+        }
 
     /**
      * Returns the raw JSON value of [embedding].
@@ -289,12 +310,8 @@ private constructor(
         }
 
         embeddingValue().validate()
-        index()
-        _object_().let {
-            if (it != JsonValue.from("embedding")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
+        indexOrThrow()
+        object_OrThrow()
         validated = true
     }
 

@@ -44,50 +44,81 @@ private constructor(
     ) : this(currency, enforcement, interval, object_, thresholdAmount, mutableMapOf())
 
     /**
-     * The currency for the threshold amount. Currently, only `USD` is supported.
+     * The currency for the threshold amount. Currently, only `USD` is supported. The schema
+     * requires this property. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun currency(): Currency = currency.getRequired("currency")
+    fun currency(): java.util.Optional<Currency> = currency.getOptional("currency")
 
     /**
-     * The current enforcement state of the hard spend limit.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun enforcement(): Enforcement = enforcement.getRequired("enforcement")
+    fun currencyOrThrow(): Currency = currency.getRequired("currency")
+
+    /**
+     * The current enforcement state of the hard spend limit. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun enforcement(): java.util.Optional<Enforcement> = enforcement.getOptional("enforcement")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun enforcementOrThrow(): Enforcement = enforcement.getRequired("enforcement")
 
     /**
      * The time interval for evaluating spend against the threshold. Currently, only `month` is
-     * supported.
+     * supported. The schema requires this property. Returns empty if the JSON property is missing
+     * or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun interval(): Interval = interval.getRequired("interval")
+    fun interval(): java.util.Optional<Interval> = interval.getOptional("interval")
 
     /**
-     * The object type, which is always `project.spend_limit`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("project.spend_limit")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun intervalOrThrow(): Interval = interval.getRequired("interval")
 
     /**
-     * The hard spend limit amount, in cents.
+     * The object type, which is always `project.spend_limit`. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun thresholdAmount(): Long = thresholdAmount.getRequired("threshold_amount")
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("project.spend_limit")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * The hard spend limit amount, in cents. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun thresholdAmount(): java.util.Optional<Long> =
+        thresholdAmount.getOptional("threshold_amount")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun thresholdAmountOrThrow(): Long = thresholdAmount.getRequired("threshold_amount")
 
     /**
      * Returns the raw JSON value of [currency].
@@ -335,15 +366,11 @@ private constructor(
             return@apply
         }
 
-        currency()
-        enforcement().validate()
-        interval()
-        _object_().let {
-            if (it != JsonValue.from("project.spend_limit")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        thresholdAmount()
+        currencyOrThrow()
+        enforcementOrThrow().validate()
+        intervalOrThrow()
+        object_OrThrow()
+        thresholdAmountOrThrow()
         validated = true
     }
 
@@ -515,12 +542,18 @@ private constructor(
         ) : this(status, mutableMapOf())
 
         /**
-         * Whether the hard spend limit is currently enforcing.
+         * Whether the hard spend limit is currently enforcing. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun status(): Status = status.getRequired("status")
+        fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun statusOrThrow(): Status = status.getRequired("status")
 
         /**
          * Returns the raw JSON value of [status].
@@ -652,7 +685,7 @@ private constructor(
                 return@apply
             }
 
-            status()
+            statusOrThrow()
             validated = true
         }
 

@@ -31,11 +31,11 @@ internal class AdminApiKeyTest {
                 .name("Administration Key")
                 .build()
 
-        assertThat(adminApiKey.id()).isEqualTo("key_abc")
-        assertThat(adminApiKey.createdAt()).isEqualTo(1711471533L)
+        assertThat(adminApiKey.id()).contains("key_abc")
+        assertThat(adminApiKey.createdAt()).contains(1711471533L)
         assertThat(adminApiKey.expiresAt()).contains(1714063533L)
         assertThat(adminApiKey.owner())
-            .isEqualTo(
+            .contains(
                 AdminApiKey.Owner.builder()
                     .id("sa_456")
                     .createdAt(1711471533L)
@@ -45,7 +45,7 @@ internal class AdminApiKeyTest {
                     .type("user")
                     .build()
             )
-        assertThat(adminApiKey.redactedValue()).isEqualTo("sk-admin...def")
+        assertThat(adminApiKey.redactedValue()).contains("sk-admin...def")
         assertThat(adminApiKey.lastUsedAt()).contains(1711471534L)
         assertThat(adminApiKey.name()).contains("Administration Key")
 

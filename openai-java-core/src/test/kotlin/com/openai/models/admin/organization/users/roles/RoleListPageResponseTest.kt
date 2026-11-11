@@ -5,6 +5,7 @@ package com.openai.models.admin.organization.users.roles
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -47,7 +48,7 @@ internal class RoleListPageResponseTest {
                 .next("next")
                 .build()
 
-        assertThat(roleListPageResponse.data())
+        assertThat(roleListPageResponse.data().getOrNull())
             .containsExactly(
                 RoleListResponse.builder()
                     .id("id")
@@ -77,7 +78,7 @@ internal class RoleListPageResponseTest {
                     .updatedAt(0L)
                     .build()
             )
-        assertThat(roleListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(roleListPageResponse.hasMore()).contains(true)
         assertThat(roleListPageResponse.next()).contains("next")
 
         val jsonMapper = jsonMapper()

@@ -28,20 +28,17 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = body.name()
+    /** @see Body.name */
+    fun name(): java.util.Optional<String> = body.name()
 
-    /**
-     * The number of seconds until the API key expires. Omit this field for a key that does not
-     * expire.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun expiresInSeconds(): Optional<Long> = body.expiresInSeconds()
+    /** @see Body.nameOrThrow */
+    fun nameOrThrow(): String = body.nameOrThrow()
+
+    /** @see Body.expiresInSeconds */
+    fun expiresInSeconds(): java.util.Optional<Long> = body.expiresInSeconds()
+
+    /** @see Body.expiresInSecondsOrThrow */
+    fun expiresInSecondsOrThrow(): Long = body.expiresInSecondsOrThrow()
 
     /**
      * Returns the raw JSON value of [name].
@@ -294,19 +291,32 @@ private constructor(
         ) : this(name, expiresInSeconds, mutableMapOf())
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun name(): String = name.getRequired("name")
+        fun name(): java.util.Optional<String> = name.getOptional("name")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun nameOrThrow(): String = name.getRequired("name")
 
         /**
          * The number of seconds until the API key expires. Omit this field for a key that does not
-         * expire.
+         * expire. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun expiresInSeconds(): Optional<Long> = expiresInSeconds.getOptional("expires_in_seconds")
+        fun expiresInSeconds(): java.util.Optional<Long> =
+            expiresInSeconds.getOptional("expires_in_seconds")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun expiresInSecondsOrThrow(): Long = expiresInSeconds.getRequired("expires_in_seconds")
 
         /**
          * Returns the raw JSON value of [name].
@@ -466,7 +476,7 @@ private constructor(
                 return@apply
             }
 
-            name()
+            nameOrThrow()
             expiresInSeconds()
             validated = true
         }

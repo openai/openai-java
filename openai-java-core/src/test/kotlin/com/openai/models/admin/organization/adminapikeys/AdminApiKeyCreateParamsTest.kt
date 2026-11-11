@@ -22,7 +22,7 @@ internal class AdminApiKeyCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.name()).isEqualTo("New Admin Key")
+        assertThat(body.nameOrThrow()).isEqualTo("New Admin Key")
         assertThat(body.expiresInSeconds()).contains(2592000L)
     }
 
@@ -32,6 +32,6 @@ internal class AdminApiKeyCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.name()).isEqualTo("New Admin Key")
+        assertThat(body.nameOrThrow()).isEqualTo("New Admin Key")
     }
 }

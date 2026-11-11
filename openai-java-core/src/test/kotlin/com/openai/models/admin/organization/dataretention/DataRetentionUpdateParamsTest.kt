@@ -23,7 +23,7 @@ internal class DataRetentionUpdateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.retentionType())
+        assertThat(body.retentionTypeOrThrow())
             .isEqualTo(DataRetentionUpdateParams.RetentionType.ZERO_DATA_RETENTION)
     }
 }

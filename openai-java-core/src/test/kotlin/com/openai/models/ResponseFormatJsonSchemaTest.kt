@@ -29,7 +29,7 @@ internal class ResponseFormatJsonSchemaTest {
                 .build()
 
         assertThat(responseFormatJsonSchema.jsonSchema())
-            .isEqualTo(
+            .contains(
                 ResponseFormatJsonSchema.JsonSchema.builder()
                     .name("name")
                     .description("description")

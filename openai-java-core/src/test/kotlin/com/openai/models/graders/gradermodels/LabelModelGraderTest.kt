@@ -4,6 +4,7 @@ package com.openai.models.graders.gradermodels
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -26,7 +27,7 @@ internal class LabelModelGraderTest {
                 .addPassingLabel("string")
                 .build()
 
-        assertThat(labelModelGrader.input())
+        assertThat(labelModelGrader.input().getOrNull())
             .containsExactly(
                 LabelModelGrader.Input.builder()
                     .content("string")
@@ -34,10 +35,10 @@ internal class LabelModelGraderTest {
                     .type(LabelModelGrader.Input.Type.MESSAGE)
                     .build()
             )
-        assertThat(labelModelGrader.labels()).containsExactly("string")
-        assertThat(labelModelGrader.model()).isEqualTo("model")
-        assertThat(labelModelGrader.name()).isEqualTo("name")
-        assertThat(labelModelGrader.passingLabels()).containsExactly("string")
+        assertThat(labelModelGrader.labels().getOrNull()).containsExactly("string")
+        assertThat(labelModelGrader.model()).contains("model")
+        assertThat(labelModelGrader.name()).contains("name")
+        assertThat(labelModelGrader.passingLabels().getOrNull()).containsExactly("string")
 
         val jsonMapper = jsonMapper()
 

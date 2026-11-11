@@ -67,10 +67,10 @@ internal class SessionClosedEventTest {
                 .clientEventId("evt_close_001")
                 .build()
 
-        assertThat(sessionClosedEvent.eventId()).isEqualTo("evt_closed_001")
-        assertThat(sessionClosedEvent.reason()).isEqualTo(SessionClosedEvent.Reason.CLOSE_REQUESTED)
+        assertThat(sessionClosedEvent.eventId()).contains("evt_closed_001")
+        assertThat(sessionClosedEvent.reason()).contains(SessionClosedEvent.Reason.CLOSE_REQUESTED)
         assertThat(sessionClosedEvent.session())
-            .isEqualTo(
+            .contains(
                 SessionResource.builder()
                     .id("live_abc123")
                     .expiresAt(1788555600L)
@@ -119,7 +119,7 @@ internal class SessionClosedEventTest {
                     .build()
             )
         assertThat(sessionClosedEvent.usage())
-            .isEqualTo(SessionUsage.builder().seconds(45.8).build())
+            .contains(SessionUsage.builder().seconds(45.8).build())
         assertThat(sessionClosedEvent.clientEventId()).contains("evt_close_001")
 
         val jsonMapper = jsonMapper()

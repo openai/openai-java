@@ -18,9 +18,9 @@ internal class ResponseWebSearchCallCompletedEventTest {
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseWebSearchCallCompletedEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseWebSearchCallCompletedEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseWebSearchCallCompletedEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(responseWebSearchCallCompletedEvent.itemId()).contains("item_id")
+        assertThat(responseWebSearchCallCompletedEvent.outputIndex()).contains(0L)
+        assertThat(responseWebSearchCallCompletedEvent.sequenceNumber()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

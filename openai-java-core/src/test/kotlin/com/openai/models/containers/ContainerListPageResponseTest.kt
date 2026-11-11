@@ -4,6 +4,7 @@ package com.openai.models.containers
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -41,7 +42,7 @@ internal class ContainerListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(containerListPageResponse.data())
+        assertThat(containerListPageResponse.data().getOrNull())
             .containsExactly(
                 ContainerListResponse.builder()
                     .id("id")
@@ -65,9 +66,9 @@ internal class ContainerListPageResponseTest {
                     )
                     .build()
             )
-        assertThat(containerListPageResponse.firstId()).isEqualTo("first_id")
-        assertThat(containerListPageResponse.hasMore()).isEqualTo(true)
-        assertThat(containerListPageResponse.lastId()).isEqualTo("last_id")
+        assertThat(containerListPageResponse.firstId()).contains("first_id")
+        assertThat(containerListPageResponse.hasMore()).contains(true)
+        assertThat(containerListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()
 

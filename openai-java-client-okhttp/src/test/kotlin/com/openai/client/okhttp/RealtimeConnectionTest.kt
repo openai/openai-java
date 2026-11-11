@@ -196,7 +196,10 @@ class RealtimeConnectionTest {
                             """{"type":"input_audio_buffer.cleared","event_id":"restored"}"""
                         )
                     assertThat(
-                            waiting.get(5, TimeUnit.SECONDS).asInputAudioBufferCleared().eventId()
+                            waiting
+                                .get(5, TimeUnit.SECONDS)
+                                .asInputAudioBufferCleared()
+                                .eventIdOrThrow()
                         )
                         .isEqualTo("restored")
                 }
@@ -301,7 +304,12 @@ class RealtimeConnectionTest {
                 opened
                     .poll(5, TimeUnit.SECONDS)!!
                     .onMessage("""{"type":"input_audio_buffer.cleared","event_id":"recovered"}""")
-                assertThat(waiting.get(5, TimeUnit.SECONDS).asInputAudioBufferCleared().eventId())
+                assertThat(
+                        waiting
+                            .get(5, TimeUnit.SECONDS)
+                            .asInputAudioBufferCleared()
+                            .eventIdOrThrow()
+                    )
                     .isEqualTo("recovered")
             }
         }
@@ -538,7 +546,7 @@ class RealtimeConnectionTest {
                                 if (!received.isDone) {
                                     callbackStarted.countDown()
                                     received.complete(
-                                        it.receive().asInputAudioBufferCleared().eventId()
+                                        it.receive().asInputAudioBufferCleared().eventIdOrThrow()
                                     )
                                 }
                             }
@@ -661,7 +669,7 @@ class RealtimeConnectionTest {
                                 nextEvent
                                     .get(5, TimeUnit.SECONDS)
                                     .asInputAudioBufferCleared()
-                                    .eventId()
+                                    .eventIdOrThrow()
                             )
                             .isEqualTo("fresh")
                         val exhausted = it.receiveAsync()
@@ -835,7 +843,7 @@ class RealtimeConnectionTest {
                                 pending
                                     .get(5, TimeUnit.SECONDS)
                                     .asInputAudioBufferCleared()
-                                    .eventId()
+                                    .eventIdOrThrow()
                             )
                             .isEqualTo("refreshed")
                         assertThat(
@@ -955,7 +963,7 @@ class RealtimeConnectionTest {
                                         next
                                             .get(5, TimeUnit.SECONDS)
                                             .asInputAudioBufferCleared()
-                                            .eventId()
+                                            .eventIdOrThrow()
                                     )
                                     .isEqualTo("second")
                             }
@@ -992,7 +1000,7 @@ class RealtimeConnectionTest {
                             .isEqualTo("input_audio_buffer.clear")
                         val recovered =
                             connection.receiveAsync().thenApply {
-                                assertThat(it.asInputAudioBufferCleared().eventId())
+                                assertThat(it.asInputAudioBufferCleared().eventIdOrThrow())
                                     .isEqualTo("first")
                                 connection.reconnect().use { next ->
                                     assertThat(fresh.messages).isEmpty()
@@ -1098,14 +1106,15 @@ class RealtimeConnectionTest {
                                 if (async) it.receiveAsync().get(8, TimeUnit.SECONDS)
                                 else it.receive()
                             assertThat(error.isError()).isTrue()
-                            assertThat(error.asError().error().message()).isEqualTo("test")
+                            assertThat(error.asError().errorOrThrow().messageOrThrow())
+                                .isEqualTo("test")
                             socket.send(
                                 """{"type":"input_audio_buffer.cleared","event_id":"clear$round"}"""
                             )
                             val cleared =
                                 if (async) it.receiveAsync().get(8, TimeUnit.SECONDS)
                                 else it.receive()
-                            assertThat(cleared.asInputAudioBufferCleared().eventId())
+                            assertThat(cleared.asInputAudioBufferCleared().eventIdOrThrow())
                                 .isEqualTo("clear$round")
                         }
                         socket.send("""{"type":"realtime.future","raw":{"more":[1,2,3]}}""")
@@ -1139,7 +1148,12 @@ class RealtimeConnectionTest {
                     peer.socket
                         .get(8, TimeUnit.SECONDS)
                         .send("""{"type":"input_audio_buffer.cleared","event_id":"after-cancel"}""")
-                    assertThat(next.get(8, TimeUnit.SECONDS).asInputAudioBufferCleared().eventId())
+                    assertThat(
+                            next
+                                .get(8, TimeUnit.SECONDS)
+                                .asInputAudioBufferCleared()
+                                .eventIdOrThrow()
+                        )
                         .isEqualTo("after-cancel")
                 }
             }
@@ -1246,7 +1260,9 @@ class RealtimeConnectionTest {
                         socket.send("""{"type":"input_audio_buffer.cleared","event_id":"one"}""")
                         socket.send("""{"type":"input_audio_buffer.cleared","event_id":"two"}""")
                         assertThat(peer.terminated.await(8, TimeUnit.SECONDS)).isTrue()
-                        assertThat(connection.receive().asInputAudioBufferCleared().eventId())
+                        assertThat(
+                                connection.receive().asInputAudioBufferCleared().eventIdOrThrow()
+                            )
                             .isEqualTo("one")
                         assertThatThrownBy { connection.receive() }
                             .hasRootCauseMessage("Realtime event buffer is full")
@@ -1359,7 +1375,7 @@ class RealtimeConnectionTest {
                     peer.socket
                         .get(8, TimeUnit.SECONDS)
                         .send("""{"type":"input_audio_buffer.cleared","event_id":"not-poisoned"}""")
-                    assertThat(connection.receive().asInputAudioBufferCleared().eventId())
+                    assertThat(connection.receive().asInputAudioBufferCleared().eventIdOrThrow())
                         .isEqualTo("not-poisoned")
                 }
             }

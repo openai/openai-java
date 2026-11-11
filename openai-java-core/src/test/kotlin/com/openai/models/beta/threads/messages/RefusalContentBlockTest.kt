@@ -13,7 +13,7 @@ internal class RefusalContentBlockTest {
     fun createAndRoundtrip() {
         val refusalContentBlock = RefusalContentBlock.builder().refusal("refusal").build()
 
-        assertThat(refusalContentBlock.refusal()).isEqualTo("refusal")
+        assertThat(refusalContentBlock.refusal()).contains("refusal")
 
         val jsonMapper = jsonMapper()
 

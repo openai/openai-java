@@ -25,9 +25,9 @@ internal class BetaResponseFunctionToolCallItemTest {
                 .createdBy("created_by")
                 .build()
 
-        assertThat(betaResponseFunctionToolCallItem.arguments()).isEqualTo("arguments")
-        assertThat(betaResponseFunctionToolCallItem.callId()).isEqualTo("call_id")
-        assertThat(betaResponseFunctionToolCallItem.name()).isEqualTo("name")
+        assertThat(betaResponseFunctionToolCallItem.arguments()).contains("arguments")
+        assertThat(betaResponseFunctionToolCallItem.callId()).contains("call_id")
+        assertThat(betaResponseFunctionToolCallItem.name()).contains("name")
         assertThat(betaResponseFunctionToolCallItem.id()).contains("id")
         assertThat(betaResponseFunctionToolCallItem.agent())
             .contains(BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build())

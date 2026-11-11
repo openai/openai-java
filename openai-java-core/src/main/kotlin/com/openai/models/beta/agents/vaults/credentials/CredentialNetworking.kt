@@ -311,25 +311,43 @@ private constructor(
 
         /**
          * The 1 to 16 distinct allowed hostnames or IPv4 addresses, normalized to lowercase.
-         * Entries contain no scheme, path, port, or wildcard. IPv6 addresses are not supported.
+         * Entries contain no scheme, path, port, or wildcard. IPv6 addresses are not supported. The
+         * schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun allowedHosts(): List<String> = allowedHosts.getRequired("allowed_hosts")
+        fun allowedHosts(): java.util.Optional<List<String>> =
+            allowedHosts.getOptional("allowed_hosts")
 
         /**
-         * The type of the object. Always `limited`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("limited")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun allowedHostsOrThrow(): List<String> = allowedHosts.getRequired("allowed_hosts")
+
+        /**
+         * The type of the object. Always `limited`. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("limited")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [allowedHosts].
@@ -496,12 +514,8 @@ private constructor(
                 return@apply
             }
 
-            allowedHosts()
-            _type().let {
-                if (it != JsonValue.from("limited")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            allowedHostsOrThrow()
+            typeOrThrow()
             validated = true
         }
 

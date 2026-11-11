@@ -15,7 +15,7 @@ internal class DecisionChoiceOptionTest {
             DecisionChoiceOption.builder().value("string").description("description").build()
 
         assertThat(decisionChoiceOption.value())
-            .isEqualTo(DecisionChoiceOption.Value.ofString("string"))
+            .contains(DecisionChoiceOption.Value.ofString("string"))
         assertThat(decisionChoiceOption.description()).contains("description")
 
         val jsonMapper = jsonMapper()

@@ -96,7 +96,7 @@ class ResponsesWebSocketLifecycleTest {
                             collecting.countDown()
                             (if (stream == null) connection.finalResponse()
                                 else stream.finalResponse())
-                                .id()
+                                .idOrThrow()
                         }
                     assertThat(collecting.await(3, TimeUnit.SECONDS)).isTrue()
                     val finalDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(3)
@@ -553,7 +553,7 @@ class ResponsesWebSocketLifecycleTest {
                     }
                     val result = received.get(5, TimeUnit.SECONDS)
                     if (terminal) {
-                        assertThat((result as com.openai.models.responses.Response).id())
+                        assertThat((result as com.openai.models.responses.Response).idOrThrow())
                             .isEqualTo("resp_claimed")
                     } else {
                         assertThat(result)

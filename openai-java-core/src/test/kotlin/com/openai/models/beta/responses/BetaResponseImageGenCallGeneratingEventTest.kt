@@ -23,9 +23,9 @@ internal class BetaResponseImageGenCallGeneratingEventTest {
                 )
                 .build()
 
-        assertThat(betaResponseImageGenCallGeneratingEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseImageGenCallGeneratingEvent.outputIndex()).isEqualTo(0L)
-        assertThat(betaResponseImageGenCallGeneratingEvent.sequenceNumber()).isEqualTo(0L)
+        assertThat(betaResponseImageGenCallGeneratingEvent.itemId()).contains("item_id")
+        assertThat(betaResponseImageGenCallGeneratingEvent.outputIndex()).contains(0L)
+        assertThat(betaResponseImageGenCallGeneratingEvent.sequenceNumber()).contains(0L)
         assertThat(betaResponseImageGenCallGeneratingEvent.agent())
             .contains(
                 BetaResponseImageGenCallGeneratingEvent.Agent.builder()

@@ -14,8 +14,8 @@ internal class ConversationItemDeletedEventTest {
         val conversationItemDeletedEvent =
             ConversationItemDeletedEvent.builder().eventId("event_id").itemId("item_id").build()
 
-        assertThat(conversationItemDeletedEvent.eventId()).isEqualTo("event_id")
-        assertThat(conversationItemDeletedEvent.itemId()).isEqualTo("item_id")
+        assertThat(conversationItemDeletedEvent.eventId()).contains("event_id")
+        assertThat(conversationItemDeletedEvent.itemId()).contains("item_id")
 
         val jsonMapper = jsonMapper()
 

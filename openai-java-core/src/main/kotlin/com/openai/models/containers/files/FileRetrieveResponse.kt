@@ -43,65 +43,105 @@ private constructor(
     ) : this(id, bytes, containerId, createdAt, object_, path, source, mutableMapOf())
 
     /**
-     * Unique identifier for the file.
+     * Unique identifier for the file. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * Size of the file in bytes.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun bytes(): Long = bytes.getRequired("bytes")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * The container this file belongs to.
+     * Size of the file in bytes. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun containerId(): String = containerId.getRequired("container_id")
+    fun bytes(): java.util.Optional<Long> = bytes.getOptional("bytes")
 
     /**
-     * Unix timestamp (in seconds) when the file was created.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun bytesOrThrow(): Long = bytes.getRequired("bytes")
 
     /**
-     * The type of this object (`container.file`).
+     * The container this file belongs to. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("container.file")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun containerId(): java.util.Optional<String> = containerId.getOptional("container_id")
 
     /**
-     * Path of the file in the container.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun path(): String = path.getRequired("path")
+    fun containerIdOrThrow(): String = containerId.getRequired("container_id")
 
     /**
-     * Source of the file (e.g., `user`, `assistant`).
+     * Unix timestamp (in seconds) when the file was created. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun source(): String = source.getRequired("source")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * The type of this object (`container.file`). The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("container.file")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+    /**
+     * Path of the file in the container. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun path(): java.util.Optional<String> = path.getOptional("path")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun pathOrThrow(): String = path.getRequired("path")
+
+    /**
+     * Source of the file (e.g., `user`, `assistant`). The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun source(): java.util.Optional<String> = source.getOptional("source")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun sourceOrThrow(): String = source.getRequired("source")
 
     /**
      * Returns the raw JSON value of [id].
@@ -369,17 +409,13 @@ private constructor(
             return@apply
         }
 
-        id()
-        bytes()
-        containerId()
-        createdAt()
-        _object_().let {
-            if (it != JsonValue.from("container.file")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        path()
-        source()
+        idOrThrow()
+        bytesOrThrow()
+        containerIdOrThrow()
+        createdAtOrThrow()
+        object_OrThrow()
+        pathOrThrow()
+        sourceOrThrow()
         validated = true
     }
 

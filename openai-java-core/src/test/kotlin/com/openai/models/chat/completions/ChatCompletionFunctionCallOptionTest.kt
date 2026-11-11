@@ -14,7 +14,7 @@ internal class ChatCompletionFunctionCallOptionTest {
         val chatCompletionFunctionCallOption =
             ChatCompletionFunctionCallOption.builder().name("name").build()
 
-        assertThat(chatCompletionFunctionCallOption.name()).isEqualTo("name")
+        assertThat(chatCompletionFunctionCallOption.name()).contains("name")
 
         val jsonMapper = jsonMapper()
 

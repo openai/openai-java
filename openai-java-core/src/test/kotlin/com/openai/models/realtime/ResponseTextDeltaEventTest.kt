@@ -21,12 +21,12 @@ internal class ResponseTextDeltaEventTest {
                 .responseId("response_id")
                 .build()
 
-        assertThat(responseTextDeltaEvent.contentIndex()).isEqualTo(0L)
-        assertThat(responseTextDeltaEvent.delta()).isEqualTo("delta")
-        assertThat(responseTextDeltaEvent.eventId()).isEqualTo("event_id")
-        assertThat(responseTextDeltaEvent.itemId()).isEqualTo("item_id")
-        assertThat(responseTextDeltaEvent.outputIndex()).isEqualTo(0L)
-        assertThat(responseTextDeltaEvent.responseId()).isEqualTo("response_id")
+        assertThat(responseTextDeltaEvent.contentIndex()).contains(0L)
+        assertThat(responseTextDeltaEvent.delta()).contains("delta")
+        assertThat(responseTextDeltaEvent.eventId()).contains("event_id")
+        assertThat(responseTextDeltaEvent.itemId()).contains("item_id")
+        assertThat(responseTextDeltaEvent.outputIndex()).contains(0L)
+        assertThat(responseTextDeltaEvent.responseId()).contains("response_id")
 
         val jsonMapper = jsonMapper()
 

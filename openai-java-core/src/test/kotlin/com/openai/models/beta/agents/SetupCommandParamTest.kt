@@ -13,7 +13,7 @@ internal class SetupCommandParamTest {
     fun createAndRoundtrip() {
         val setupCommandParam = SetupCommandParam.builder().command("command").cwd("cwd").build()
 
-        assertThat(setupCommandParam.command()).isEqualTo("command")
+        assertThat(setupCommandParam.command()).contains("command")
         assertThat(setupCommandParam.cwd()).contains("cwd")
 
         val jsonMapper = jsonMapper()

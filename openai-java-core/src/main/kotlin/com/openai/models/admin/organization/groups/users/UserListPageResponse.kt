@@ -42,41 +42,66 @@ private constructor(
     ) : this(data, hasMore, next, object_, mutableMapOf())
 
     /**
-     * Users in the current page.
+     * Users in the current page. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun data(): List<OrganizationGroupUser> = data.getRequired("data")
+    fun data(): java.util.Optional<List<OrganizationGroupUser>> = data.getOptional("data")
 
     /**
-     * Whether more users are available when paginating.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun hasMore(): Boolean = hasMore.getRequired("has_more")
+    fun dataOrThrow(): List<OrganizationGroupUser> = data.getRequired("data")
 
     /**
-     * Cursor to fetch the next page of results, or `null` when no further users are available.
+     * Whether more users are available when paginating. The schema requires this property. Returns
+     * empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun next(): Optional<String> = next.getOptional("next")
+    fun hasMore(): java.util.Optional<Boolean> = hasMore.getOptional("has_more")
 
     /**
-     * Always `list`.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("list")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun hasMoreOrThrow(): Boolean = hasMore.getRequired("has_more")
+
+    /**
+     * Cursor to fetch the next page of results, or `null` when no further users are available. The
+     * schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun next(): java.util.Optional<String> = next.getOptional("next")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nextOrThrow(): String = next.getRequired("next")
+
+    /**
+     * Always `list`. The schema requires this property. Returns empty if the JSON property is
+     * missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("list")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * Returns the raw JSON value of [data].
@@ -289,14 +314,10 @@ private constructor(
             return@apply
         }
 
-        data().forEach { it.validate() }
-        hasMore()
+        dataOrThrow().forEach { it.validate() }
+        hasMoreOrThrow()
         next()
-        _object_().let {
-            if (it != JsonValue.from("list")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
+        object_OrThrow()
         validated = true
     }
 

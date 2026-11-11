@@ -25,7 +25,7 @@ internal class ComputerScreenshotContentTest {
                 .build()
 
         assertThat(computerScreenshotContent.detail())
-            .isEqualTo(ComputerScreenshotContent.Detail.LOW)
+            .contains(ComputerScreenshotContent.Detail.LOW)
         assertThat(computerScreenshotContent.fileId()).contains("file_id")
         assertThat(computerScreenshotContent.imageUrl()).contains("https://example.com")
         assertThat(computerScreenshotContent.promptCacheBreakpoint())

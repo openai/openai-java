@@ -20,11 +20,11 @@ internal class TranscriptionTextSegmentEventTest {
                 .text("text")
                 .build()
 
-        assertThat(transcriptionTextSegmentEvent.id()).isEqualTo("id")
-        assertThat(transcriptionTextSegmentEvent.end()).isEqualTo(0.0)
-        assertThat(transcriptionTextSegmentEvent.speaker()).isEqualTo("speaker")
-        assertThat(transcriptionTextSegmentEvent.start()).isEqualTo(0.0)
-        assertThat(transcriptionTextSegmentEvent.text()).isEqualTo("text")
+        assertThat(transcriptionTextSegmentEvent.id()).contains("id")
+        assertThat(transcriptionTextSegmentEvent.end()).contains(0.0)
+        assertThat(transcriptionTextSegmentEvent.speaker()).contains("speaker")
+        assertThat(transcriptionTextSegmentEvent.start()).contains(0.0)
+        assertThat(transcriptionTextSegmentEvent.text()).contains("text")
 
         val jsonMapper = jsonMapper()
 

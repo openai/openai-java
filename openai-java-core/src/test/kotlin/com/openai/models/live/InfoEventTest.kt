@@ -21,10 +21,10 @@ internal class InfoEventTest {
                 .clientEventId("client_event_id")
                 .build()
 
-        assertThat(infoEvent.code()).isEqualTo("data_channel_permissions")
-        assertThat(infoEvent.eventId()).isEqualTo("evt_info_001")
+        assertThat(infoEvent.code()).contains("data_channel_permissions")
+        assertThat(infoEvent.eventId()).contains("evt_info_001")
         assertThat(infoEvent.message())
-            .isEqualTo("The frontend data channel is configured with restricted event permissions.")
+            .contains("The frontend data channel is configured with restricted event permissions.")
         assertThat(infoEvent.clientEventId()).contains("client_event_id")
 
         val jsonMapper = jsonMapper()

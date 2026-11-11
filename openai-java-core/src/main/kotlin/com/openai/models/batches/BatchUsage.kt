@@ -59,46 +59,73 @@ private constructor(
     )
 
     /**
-     * The number of input tokens.
+     * The number of input tokens. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun inputTokens(): Long = inputTokens.getRequired("input_tokens")
+    fun inputTokens(): java.util.Optional<Long> = inputTokens.getOptional("input_tokens")
 
     /**
-     * A detailed breakdown of the input tokens.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun inputTokensDetails(): InputTokensDetails =
+    fun inputTokensOrThrow(): Long = inputTokens.getRequired("input_tokens")
+
+    /**
+     * A detailed breakdown of the input tokens. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun inputTokensDetails(): java.util.Optional<InputTokensDetails> =
+        inputTokensDetails.getOptional("input_tokens_details")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun inputTokensDetailsOrThrow(): InputTokensDetails =
         inputTokensDetails.getRequired("input_tokens_details")
 
     /**
-     * The number of output tokens.
+     * The number of output tokens. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun outputTokens(): Long = outputTokens.getRequired("output_tokens")
+    fun outputTokens(): java.util.Optional<Long> = outputTokens.getOptional("output_tokens")
 
     /**
-     * A detailed breakdown of the output tokens.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun outputTokensDetails(): OutputTokensDetails =
+    fun outputTokensOrThrow(): Long = outputTokens.getRequired("output_tokens")
+
+    /**
+     * A detailed breakdown of the output tokens. The schema requires this property. Returns empty
+     * if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun outputTokensDetails(): java.util.Optional<OutputTokensDetails> =
+        outputTokensDetails.getOptional("output_tokens_details")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun outputTokensDetailsOrThrow(): OutputTokensDetails =
         outputTokensDetails.getRequired("output_tokens_details")
 
     /**
-     * The total number of tokens used.
+     * The total number of tokens used. The schema requires this property. Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun totalTokens(): Long = totalTokens.getRequired("total_tokens")
+    fun totalTokens(): java.util.Optional<Long> = totalTokens.getOptional("total_tokens")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun totalTokensOrThrow(): Long = totalTokens.getRequired("total_tokens")
 
     /**
      * Returns the raw JSON value of [inputTokens].
@@ -340,11 +367,11 @@ private constructor(
             return@apply
         }
 
-        inputTokens()
-        inputTokensDetails().validate()
-        outputTokens()
-        outputTokensDetails().validate()
-        totalTokens()
+        inputTokensOrThrow()
+        inputTokensDetailsOrThrow().validate()
+        outputTokensOrThrow()
+        outputTokensDetailsOrThrow().validate()
+        totalTokensOrThrow()
         validated = true
     }
 
@@ -387,11 +414,17 @@ private constructor(
         /**
          * The number of tokens that were retrieved from the cache.
          * [More on prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun cachedTokens(): Long = cachedTokens.getRequired("cached_tokens")
+        fun cachedTokens(): java.util.Optional<Long> = cachedTokens.getOptional("cached_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun cachedTokensOrThrow(): Long = cachedTokens.getRequired("cached_tokens")
 
         /**
          * Returns the raw JSON value of [cachedTokens].
@@ -525,7 +558,7 @@ private constructor(
                 return@apply
             }
 
-            cachedTokens()
+            cachedTokensOrThrow()
             validated = true
         }
 
@@ -580,12 +613,19 @@ private constructor(
         ) : this(reasoningTokens, mutableMapOf())
 
         /**
-         * The number of reasoning tokens.
+         * The number of reasoning tokens. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun reasoningTokens(): Long = reasoningTokens.getRequired("reasoning_tokens")
+        fun reasoningTokens(): java.util.Optional<Long> =
+            reasoningTokens.getOptional("reasoning_tokens")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun reasoningTokensOrThrow(): Long = reasoningTokens.getRequired("reasoning_tokens")
 
         /**
          * Returns the raw JSON value of [reasoningTokens].
@@ -717,7 +757,7 @@ private constructor(
                 return@apply
             }
 
-            reasoningTokens()
+            reasoningTokensOrThrow()
             validated = true
         }
 

@@ -38,7 +38,7 @@ internal class GraderValidateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.grader())
+        assertThat(body.graderOrThrow())
             .isEqualTo(
                 GraderValidateParams.Grader.ofStringCheck(
                     StringCheckGrader.builder()

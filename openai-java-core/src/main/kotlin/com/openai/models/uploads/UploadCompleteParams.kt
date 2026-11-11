@@ -47,22 +47,17 @@ private constructor(
 
     fun uploadId(): Optional<String> = Optional.ofNullable(uploadId)
 
-    /**
-     * The ordered list of Part IDs.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun partIds(): List<String> = body.partIds()
+    /** @see Body.partIds */
+    fun partIds(): java.util.Optional<List<String>> = body.partIds()
 
-    /**
-     * The optional md5 checksum for the file contents to verify if the bytes uploaded matches what
-     * you expect.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun md5(): Optional<String> = body.md5()
+    /** @see Body.partIdsOrThrow */
+    fun partIdsOrThrow(): List<String> = body.partIdsOrThrow()
+
+    /** @see Body.md5 */
+    fun md5(): java.util.Optional<String> = body.md5()
+
+    /** @see Body.md5OrThrow */
+    fun md5OrThrow(): String = body.md5OrThrow()
 
     /**
      * Returns the raw JSON value of [partIds].
@@ -332,21 +327,32 @@ private constructor(
         ) : this(partIds, md5, mutableMapOf())
 
         /**
-         * The ordered list of Part IDs.
+         * The ordered list of Part IDs. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun partIds(): List<String> = partIds.getRequired("part_ids")
+        fun partIds(): java.util.Optional<List<String>> = partIds.getOptional("part_ids")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun partIdsOrThrow(): List<String> = partIds.getRequired("part_ids")
 
         /**
          * The optional md5 checksum for the file contents to verify if the bytes uploaded matches
-         * what you expect.
+         * what you expect. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun md5(): Optional<String> = md5.getOptional("md5")
+        fun md5(): java.util.Optional<String> = md5.getOptional("md5")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun md5OrThrow(): String = md5.getRequired("md5")
 
         /**
          * Returns the raw JSON value of [partIds].
@@ -515,7 +521,7 @@ private constructor(
                 return@apply
             }
 
-            partIds()
+            partIdsOrThrow()
             md5()
             validated = true
         }

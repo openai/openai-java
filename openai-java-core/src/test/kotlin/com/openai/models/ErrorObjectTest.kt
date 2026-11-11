@@ -30,9 +30,9 @@ internal class ErrorObjectTest {
                 .build()
 
         assertThat(errorObject.code()).contains("code")
-        assertThat(errorObject.message()).isEqualTo("message")
+        assertThat(errorObject.message()).contains("message")
         assertThat(errorObject.param()).contains("param")
-        assertThat(errorObject.type()).isEqualTo("type")
+        assertThat(errorObject.type()).contains("type")
         assertThat(errorObject.misalignment())
             .contains(
                 ErrorObject.Misalignment.builder()

@@ -25,7 +25,7 @@ public final class ResponsesStreamingExample {
                 client.responses().createStreaming(createParams)) {
             streamResponse.stream()
                     .flatMap(event -> event.outputTextDelta().stream())
-                    .forEach(textEvent -> System.out.print(textEvent.delta()));
+                    .forEach(textEvent -> System.out.print(textEvent.deltaOrThrow()));
         }
     }
 }

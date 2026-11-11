@@ -15,7 +15,7 @@ internal class ChatCompletionPredictionContentTest {
             ChatCompletionPredictionContent.builder().content("string").build()
 
         assertThat(chatCompletionPredictionContent.content())
-            .isEqualTo(ChatCompletionPredictionContent.Content.ofText("string"))
+            .contains(ChatCompletionPredictionContent.Content.ofText("string"))
 
         val jsonMapper = jsonMapper()
 

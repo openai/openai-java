@@ -28,7 +28,7 @@ public final class AudioTranscriptionsAsyncExample {
                 .transcriptions()
                 .create(createParams)
                 .thenAccept(response ->
-                        System.out.println(response.asTranscription().text()))
+                        System.out.println(response.asTranscription().textOrThrow()))
                 .join();
     }
 }

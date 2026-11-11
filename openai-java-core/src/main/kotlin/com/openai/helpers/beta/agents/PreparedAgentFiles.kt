@@ -10,5 +10,5 @@ class PreparedAgentFiles internal constructor(files: List<HostedEnvironmentFileP
     fun files(): List<HostedEnvironmentFileParam> = files
 
     fun uploadedFileIds(): List<String> =
-        Collections.unmodifiableList(files.map { it.asFileId().fileId() })
+        Collections.unmodifiableList(files.map { it.asFileId().fileIdOrThrow() })
 }

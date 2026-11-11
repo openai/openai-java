@@ -50,11 +50,11 @@ internal class RunStepTest {
                 )
                 .build()
 
-        assertThat(runStep.id()).isEqualTo("id")
-        assertThat(runStep.assistantId()).isEqualTo("assistant_id")
+        assertThat(runStep.id()).contains("id")
+        assertThat(runStep.assistantId()).contains("assistant_id")
         assertThat(runStep.cancelledAt()).contains(0L)
         assertThat(runStep.completedAt()).contains(0L)
-        assertThat(runStep.createdAt()).isEqualTo(0L)
+        assertThat(runStep.createdAt()).contains(0L)
         assertThat(runStep.expiredAt()).contains(0L)
         assertThat(runStep.failedAt()).contains(0L)
         assertThat(runStep.lastError())
@@ -70,10 +70,10 @@ internal class RunStepTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(runStep.runId()).isEqualTo("run_id")
-        assertThat(runStep.status()).isEqualTo(RunStep.Status.IN_PROGRESS)
+        assertThat(runStep.runId()).contains("run_id")
+        assertThat(runStep.status()).contains(RunStep.Status.IN_PROGRESS)
         assertThat(runStep.stepDetails())
-            .isEqualTo(
+            .contains(
                 RunStep.StepDetails.ofMessageCreation(
                     MessageCreationStepDetails.builder()
                         .messageCreation(
@@ -84,8 +84,8 @@ internal class RunStepTest {
                         .build()
                 )
             )
-        assertThat(runStep.threadId()).isEqualTo("thread_id")
-        assertThat(runStep.type()).isEqualTo(RunStep.Type.MESSAGE_CREATION)
+        assertThat(runStep.threadId()).contains("thread_id")
+        assertThat(runStep.type()).contains(RunStep.Type.MESSAGE_CREATION)
         assertThat(runStep.usage())
             .contains(
                 RunStep.Usage.builder()

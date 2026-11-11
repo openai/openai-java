@@ -20,11 +20,11 @@ internal class ProjectGroupTest {
                 .projectId("project_id")
                 .build()
 
-        assertThat(projectGroup.createdAt()).isEqualTo(0L)
-        assertThat(projectGroup.groupId()).isEqualTo("group_id")
-        assertThat(projectGroup.groupName()).isEqualTo("group_name")
-        assertThat(projectGroup.groupType()).isEqualTo(ProjectGroup.GroupType.GROUP)
-        assertThat(projectGroup.projectId()).isEqualTo("project_id")
+        assertThat(projectGroup.createdAt()).contains(0L)
+        assertThat(projectGroup.groupId()).contains("group_id")
+        assertThat(projectGroup.groupName()).contains("group_name")
+        assertThat(projectGroup.groupType()).contains(ProjectGroup.GroupType.GROUP)
+        assertThat(projectGroup.projectId()).contains("project_id")
 
         val jsonMapper = jsonMapper()
 

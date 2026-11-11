@@ -4,6 +4,7 @@ package com.openai.models.admin.organization.workloadidentityproviders
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -30,23 +31,23 @@ internal class WorkloadIdentityProviderTest {
                 .discoveryVerification("discovery_url")
                 .build()
 
-        assertThat(workloadIdentityProvider.id()).isEqualTo("id")
-        assertThat(workloadIdentityProvider.attributeTransformations())
+        assertThat(workloadIdentityProvider.id()).contains("id")
+        assertThat(workloadIdentityProvider.attributeTransformations().getOrNull())
             .containsExactly(
                 WorkloadIdentityProvider.AttributeTransformation.builder()
                     .attribute("attribute")
                     .expression("expression")
                     .build()
             )
-        assertThat(workloadIdentityProvider.audience()).isEqualTo("audience")
-        assertThat(workloadIdentityProvider.createdAt()).isEqualTo(0L)
+        assertThat(workloadIdentityProvider.audience()).contains("audience")
+        assertThat(workloadIdentityProvider.createdAt()).contains(0L)
         assertThat(workloadIdentityProvider.description()).contains("description")
-        assertThat(workloadIdentityProvider.enabled()).isEqualTo(true)
-        assertThat(workloadIdentityProvider.issuer()).isEqualTo("issuer")
-        assertThat(workloadIdentityProvider.name()).isEqualTo("name")
-        assertThat(workloadIdentityProvider.updatedAt()).isEqualTo(0L)
+        assertThat(workloadIdentityProvider.enabled()).contains(true)
+        assertThat(workloadIdentityProvider.issuer()).contains("issuer")
+        assertThat(workloadIdentityProvider.name()).contains("name")
+        assertThat(workloadIdentityProvider.updatedAt()).contains(0L)
         assertThat(workloadIdentityProvider.verification())
-            .isEqualTo(
+            .contains(
                 WorkloadIdentityProvider.Verification.ofDiscovery(
                     WorkloadIdentityProvider.Verification.Discovery.builder()
                         .discoveryUrl("discovery_url")

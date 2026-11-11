@@ -33,10 +33,10 @@ internal class ResponseFileSearchToolCallTest {
                 )
                 .build()
 
-        assertThat(responseFileSearchToolCall.id()).isEqualTo("id")
-        assertThat(responseFileSearchToolCall.queries()).containsExactly("string")
+        assertThat(responseFileSearchToolCall.id()).contains("id")
+        assertThat(responseFileSearchToolCall.queries().getOrNull()).containsExactly("string")
         assertThat(responseFileSearchToolCall.status())
-            .isEqualTo(ResponseFileSearchToolCall.Status.IN_PROGRESS)
+            .contains(ResponseFileSearchToolCall.Status.IN_PROGRESS)
         assertThat(responseFileSearchToolCall.results().getOrNull())
             .containsExactly(
                 ResponseFileSearchToolCall.Result.builder()

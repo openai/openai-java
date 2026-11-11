@@ -18,8 +18,8 @@ internal class DecisionItemDeletedEventTest {
                 .clientEventId("remove_browser_1")
                 .build()
 
-        assertThat(decisionItemDeletedEvent.eventId()).isEqualTo("evt_item_deleted_1")
-        assertThat(decisionItemDeletedEvent.itemId()).isEqualTo("msg_browser_1")
+        assertThat(decisionItemDeletedEvent.eventId()).contains("evt_item_deleted_1")
+        assertThat(decisionItemDeletedEvent.itemId()).contains("msg_browser_1")
         assertThat(decisionItemDeletedEvent.clientEventId()).contains("remove_browser_1")
 
         val jsonMapper = jsonMapper()

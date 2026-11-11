@@ -7,8 +7,6 @@ import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.finetuning.jobs.CheckpointService
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** @see CheckpointService.list */
 class CheckpointListPage
@@ -18,22 +16,23 @@ private constructor(
     private val response: CheckpointListPageResponse,
 ) : Page<FineTuningJobCheckpoint> {
 
-    /**
-     * Delegates to [CheckpointListPageResponse], but gracefully handles missing data.
-     *
-     * @see CheckpointListPageResponse.data
-     */
-    fun data(): List<FineTuningJobCheckpoint> =
-        response._data().getOptional("data").getOrNull() ?: emptyList()
+    /** @see CheckpointListPageResponse.data */
+    fun data() = response.data()
 
-    /**
-     * Delegates to [CheckpointListPageResponse], but gracefully handles missing data.
-     *
-     * @see CheckpointListPageResponse.hasMore
-     */
-    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
+    fun dataOrThrow(): List<FineTuningJobCheckpoint> =
+        data().orElseGet { response._data().getRequired("data") }
 
-    override fun items(): List<FineTuningJobCheckpoint> = data()
+    fun _data() = response._data()
+
+    /** @see CheckpointListPageResponse.hasMore */
+    fun hasMore() = response.hasMore()
+
+    fun hasMoreOrThrow(): Boolean =
+        hasMore().orElseGet { response._hasMore().getRequired("has_more") }
+
+    fun _hasMore() = response._hasMore()
+
+    override fun items(): List<FineTuningJobCheckpoint> = data().orElseGet { emptyList() }
 
     override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 

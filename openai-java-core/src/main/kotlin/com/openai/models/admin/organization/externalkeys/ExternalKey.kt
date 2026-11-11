@@ -130,151 +130,301 @@ private constructor(
     )
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): String = id.getRequired("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun apiProjectIds(): List<String> = apiProjectIds.getRequired("api_project_ids")
+    fun idOrThrow(): String = id.getRequired("id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    fun apiProjectIds(): java.util.Optional<List<String>> =
+        apiProjectIds.getOptional("api_project_ids")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): String = name.getRequired("name")
+    fun apiProjectIdsOrThrow(): List<String> = apiProjectIds.getRequired("api_project_ids")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun object_(): String = object_.getRequired("object")
+    fun createdAt(): java.util.Optional<Long> = createdAt.getOptional("created_at")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun type(): String = type.getRequired("type")
+    fun createdAtOrThrow(): Long = createdAt.getRequired("created_at")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun workspaceId(): String = workspaceId.getRequired("workspace_id")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun audience(): Optional<String> = audience.getOptional("audience")
+    fun nameOrThrow(): String = name.getRequired("name")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun externalId(): Optional<String> = externalId.getOptional("external_id")
+    fun object_(): java.util.Optional<String> = object_.getOptional("object")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun keyName(): Optional<String> = keyName.getOptional("key_name")
+    fun object_OrThrow(): String = object_.getRequired("object")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun keyVersion(): Optional<String> = keyVersion.getOptional("key_version")
+    fun type(): java.util.Optional<String> = type.getOptional("type")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun kmsArn(): Optional<String> = kmsArn.getOptional("kms_arn")
+    fun typeOrThrow(): String = type.getRequired("type")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun kmsKeyLocation(): Optional<String> = kmsKeyLocation.getOptional("kms_key_location")
+    fun workspaceId(): java.util.Optional<String> = workspaceId.getOptional("workspace_id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun kmsKeyName(): Optional<String> = kmsKeyName.getOptional("kms_key_name")
+    fun workspaceIdOrThrow(): String = workspaceId.getRequired("workspace_id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun kmsKeyRingName(): Optional<String> = kmsKeyRingName.getOptional("kms_key_ring_name")
+    fun audience(): java.util.Optional<String> = audience.getOptional("audience")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun kmsKeyVersion(): Optional<String> = kmsKeyVersion.getOptional("kms_key_version")
+    fun audienceOrThrow(): String = audience.getRequired("audience")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun kmsProjectId(): Optional<String> = kmsProjectId.getOptional("kms_project_id")
+    fun externalId(): java.util.Optional<String> = externalId.getOptional("external_id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun purpose(): Optional<Purpose> = purpose.getOptional("purpose")
+    fun externalIdOrThrow(): String = externalId.getRequired("external_id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun roleArn(): Optional<String> = roleArn.getOptional("role_arn")
+    fun keyName(): java.util.Optional<String> = keyName.getOptional("key_name")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun tenantId(): Optional<String> = tenantId.getOptional("tenant_id")
+    fun keyNameOrThrow(): String = keyName.getRequired("key_name")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun vaultUri(): Optional<String> = vaultUri.getOptional("vault_uri")
+    fun keyVersion(): java.util.Optional<String> = keyVersion.getOptional("key_version")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun workloadIdentityPoolId(): Optional<String> =
+    fun keyVersionOrThrow(): String = keyVersion.getRequired("key_version")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun kmsArn(): java.util.Optional<String> = kmsArn.getOptional("kms_arn")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun kmsArnOrThrow(): String = kmsArn.getRequired("kms_arn")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun kmsKeyLocation(): java.util.Optional<String> =
+        kmsKeyLocation.getOptional("kms_key_location")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun kmsKeyLocationOrThrow(): String = kmsKeyLocation.getRequired("kms_key_location")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun kmsKeyName(): java.util.Optional<String> = kmsKeyName.getOptional("kms_key_name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun kmsKeyNameOrThrow(): String = kmsKeyName.getRequired("kms_key_name")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun kmsKeyRingName(): java.util.Optional<String> =
+        kmsKeyRingName.getOptional("kms_key_ring_name")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun kmsKeyRingNameOrThrow(): String = kmsKeyRingName.getRequired("kms_key_ring_name")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun kmsKeyVersion(): java.util.Optional<String> = kmsKeyVersion.getOptional("kms_key_version")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun kmsKeyVersionOrThrow(): String = kmsKeyVersion.getRequired("kms_key_version")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun kmsProjectId(): java.util.Optional<String> = kmsProjectId.getOptional("kms_project_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun kmsProjectIdOrThrow(): String = kmsProjectId.getRequired("kms_project_id")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun purpose(): java.util.Optional<Purpose> = purpose.getOptional("purpose")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun purposeOrThrow(): Purpose = purpose.getRequired("purpose")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun roleArn(): java.util.Optional<String> = roleArn.getOptional("role_arn")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun roleArnOrThrow(): String = roleArn.getRequired("role_arn")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun tenantId(): java.util.Optional<String> = tenantId.getOptional("tenant_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun tenantIdOrThrow(): String = tenantId.getRequired("tenant_id")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun vaultUri(): java.util.Optional<String> = vaultUri.getOptional("vault_uri")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun vaultUriOrThrow(): String = vaultUri.getRequired("vault_uri")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun workloadIdentityPoolId(): java.util.Optional<String> =
         workloadIdentityPoolId.getOptional("workload_identity_pool_id")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun workloadIdentityProjectNumber(): Optional<String> =
+    fun workloadIdentityPoolIdOrThrow(): String =
+        workloadIdentityPoolId.getRequired("workload_identity_pool_id")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun workloadIdentityProjectNumber(): java.util.Optional<String> =
         workloadIdentityProjectNumber.getOptional("workload_identity_project_number")
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun workloadIdentityProviderId(): Optional<String> =
+    fun workloadIdentityProjectNumberOrThrow(): String =
+        workloadIdentityProjectNumber.getRequired("workload_identity_project_number")
+
+    /**
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun workloadIdentityProviderId(): java.util.Optional<String> =
         workloadIdentityProviderId.getOptional("workload_identity_provider_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun workloadIdentityProviderIdOrThrow(): String =
+        workloadIdentityProviderId.getRequired("workload_identity_provider_id")
 
     /**
      * Returns the raw JSON value of [id].
@@ -960,13 +1110,13 @@ private constructor(
             return@apply
         }
 
-        id()
-        apiProjectIds()
-        createdAt()
-        name()
-        object_()
-        type()
-        workspaceId()
+        idOrThrow()
+        apiProjectIdsOrThrow()
+        createdAtOrThrow()
+        nameOrThrow()
+        object_OrThrow()
+        typeOrThrow()
+        workspaceIdOrThrow()
         audience()
         externalId()
         keyName()

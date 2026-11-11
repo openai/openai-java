@@ -54,7 +54,8 @@ internal class ExternalStorageTest {
         val result = create(provider, async)
 
         result.validate()
-        assertThat(result.provider().asAws().externalId()).isEqualTo("synthetic-external-id")
+        assertThat(result.providerOrThrow().asAws().externalIdOrThrow())
+            .isEqualTo("synthetic-external-id")
         val json = jsonMapper().readTree(jsonMapper().writeValueAsString(result))
         assertThat(json.path("future_field").asBoolean()).isTrue()
         assertThat(json.path("provider").path("future_provider_field").asBoolean()).isTrue()
@@ -84,7 +85,7 @@ internal class ExternalStorageTest {
         val result = create(provider, async)
 
         result.validate()
-        assertThat(result.provider().asAzure().region()).isEqualTo("eastus")
+        assertThat(result.providerOrThrow().asAzure().regionOrThrow()).isEqualTo("eastus")
         verifyCreate(AZURE_REQUEST)
     }
 
@@ -111,18 +112,23 @@ internal class ExternalStorageTest {
 
         if (async) {
             val service = client.async().admin().organization().externalStorage()
-            assertThat(service.retrieve(id).get(TIMEOUT_SECONDS, TimeUnit.SECONDS).id())
+            assertThat(service.retrieve(id).get(TIMEOUT_SECONDS, TimeUnit.SECONDS).idOrThrow())
                 .isEqualTo("store_test")
-            assertThat(service.delete(id).get(TIMEOUT_SECONDS, TimeUnit.SECONDS).deleted()).isTrue()
+            assertThat(service.delete(id).get(TIMEOUT_SECONDS, TimeUnit.SECONDS).deletedOrThrow())
+                .isTrue()
             assertThat(
-                    service.validate(id).get(TIMEOUT_SECONDS, TimeUnit.SECONDS).status().asString()
+                    service
+                        .validate(id)
+                        .get(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                        .statusOrThrow()
+                        .asString()
                 )
                 .isEqualTo("validated")
         } else {
             val service = client.admin().organization().externalStorage()
-            assertThat(service.retrieve(id).id()).isEqualTo("store_test")
-            assertThat(service.delete(id).deleted()).isTrue()
-            assertThat(service.validate(id).status().asString()).isEqualTo("validated")
+            assertThat(service.retrieve(id).idOrThrow()).isEqualTo("store_test")
+            assertThat(service.delete(id).deletedOrThrow()).isTrue()
+            assertThat(service.validate(id).statusOrThrow().asString()).isEqualTo("validated")
         }
 
         server.verify(
@@ -179,13 +185,13 @@ internal class ExternalStorageTest {
                 .list(params)
                 .get(TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 .autoPager()
-                .subscribe { item -> ids.add(item.id()) }
+                .subscribe { item -> ids.add(item.idOrThrow()) }
                 .onCompleteFuture()
                 .get(TIMEOUT_SECONDS, TimeUnit.SECONDS)
         } else {
             client.admin().organization().externalStorage().list(params).autoPager().forEach { item
                 ->
-                ids.add(item.id())
+                ids.add(item.idOrThrow())
             }
         }
 
@@ -224,7 +230,7 @@ internal class ExternalStorageTest {
                 client.admin().organization().externalStorage().retrieve("store_future")
             }
 
-        assertThat(result.status().asString()).isEqualTo("future_status")
+        assertThat(result.statusOrThrow().asString()).isEqualTo("future_status")
         val json = jsonMapper().readTree(jsonMapper().writeValueAsString(result))
         assertThat(json.path("provider")).isEqualTo(jsonMapper().readTree(provider))
         assertThat(json.path("future_field").asBoolean()).isTrue()

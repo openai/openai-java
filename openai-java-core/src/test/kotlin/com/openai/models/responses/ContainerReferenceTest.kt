@@ -13,7 +13,7 @@ internal class ContainerReferenceTest {
     fun createAndRoundtrip() {
         val containerReference = ContainerReference.builder().containerId("cntr_123").build()
 
-        assertThat(containerReference.containerId()).isEqualTo("cntr_123")
+        assertThat(containerReference.containerId()).contains("cntr_123")
 
         val jsonMapper = jsonMapper()
 

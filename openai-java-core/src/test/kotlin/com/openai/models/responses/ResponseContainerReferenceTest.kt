@@ -14,7 +14,7 @@ internal class ResponseContainerReferenceTest {
         val responseContainerReference =
             ResponseContainerReference.builder().containerId("container_id").build()
 
-        assertThat(responseContainerReference.containerId()).isEqualTo("container_id")
+        assertThat(responseContainerReference.containerId()).contains("container_id")
 
         val jsonMapper = jsonMapper()
 

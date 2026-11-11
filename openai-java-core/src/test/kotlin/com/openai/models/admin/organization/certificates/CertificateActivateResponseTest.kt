@@ -25,16 +25,16 @@ internal class CertificateActivateResponseTest {
                 .name("name")
                 .build()
 
-        assertThat(certificateActivateResponse.id()).isEqualTo("id")
-        assertThat(certificateActivateResponse.active()).isEqualTo(true)
+        assertThat(certificateActivateResponse.id()).contains("id")
+        assertThat(certificateActivateResponse.active()).contains(true)
         assertThat(certificateActivateResponse.certificateDetails())
-            .isEqualTo(
+            .contains(
                 CertificateActivateResponse.CertificateDetails.builder()
                     .expiresAt(0L)
                     .validAt(0L)
                     .build()
             )
-        assertThat(certificateActivateResponse.createdAt()).isEqualTo(0L)
+        assertThat(certificateActivateResponse.createdAt()).contains(0L)
         assertThat(certificateActivateResponse.name()).contains("name")
 
         val jsonMapper = jsonMapper()

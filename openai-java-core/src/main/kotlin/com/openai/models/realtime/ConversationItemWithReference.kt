@@ -71,92 +71,153 @@ private constructor(
      * generate one if not provided.
      *
      * For an item of type `item_reference`, this field is required and is a reference to any item
-     * that has previously existed in the conversation.
+     * that has previously existed in the conversation. Returns empty if the JSON property is
+     * missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun id(): Optional<String> = id.getOptional("id")
+    fun id(): java.util.Optional<String> = id.getOptional("id")
 
     /**
-     * The arguments of the function call (for `function_call` items).
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun arguments(): Optional<String> = arguments.getOptional("arguments")
+    fun idOrThrow(): String = id.getRequired("id")
+
+    /**
+     * The arguments of the function call (for `function_call` items). Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun arguments(): java.util.Optional<String> = arguments.getOptional("arguments")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun argumentsOrThrow(): String = arguments.getRequired("arguments")
 
     /**
      * The ID of the function call (for `function_call` and `function_call_output` items). If passed
      * on a `function_call_output` item, the server will check that a `function_call` item with the
-     * same ID exists in the conversation history.
+     * same ID exists in the conversation history. Returns empty if the JSON property is missing or
+     * null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun callId(): Optional<String> = callId.getOptional("call_id")
+    fun callId(): java.util.Optional<String> = callId.getOptional("call_id")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun callIdOrThrow(): String = callId.getRequired("call_id")
 
     /**
      * The content of the message, applicable for `message` items.
      * - Message items of role `system` support only `input_text` content
      * - Message items of role `user` support `input_text` and `input_audio` content
-     * - Message items of role `assistant` support `text` content.
+     * - Message items of role `assistant` support `text` content. Returns empty if the JSON
+     *   property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun content(): Optional<List<Content>> = content.getOptional("content")
+    fun content(): java.util.Optional<List<Content>> = content.getOptional("content")
 
     /**
-     * The name of the function being called (for `function_call` items).
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun name(): Optional<String> = name.getOptional("name")
+    fun contentOrThrow(): List<Content> = content.getRequired("content")
 
     /**
-     * Identifier for the API object being returned - always `realtime.item`.
+     * The name of the function being called (for `function_call` items). Returns empty if the JSON
+     * property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun object_(): Optional<Object> = object_.getOptional("object")
+    fun name(): java.util.Optional<String> = name.getOptional("name")
 
     /**
-     * The output of the function call (for `function_call_output` items).
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun output(): Optional<String> = output.getOptional("output")
+    fun nameOrThrow(): String = name.getRequired("name")
+
+    /**
+     * Identifier for the API object being returned - always `realtime.item`. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = JsonValue.from(object_)
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("realtime.item")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue =
+        object_().orElseGet { JsonValue.from(object_).getRequired("object") }
+
+    @JsonProperty("object")
+    @ExcludeMissing
+    fun _object_(): JsonField<JsonValue> = JsonValue.from(object_)
+
+    /**
+     * The output of the function call (for `function_call_output` items). Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun output(): java.util.Optional<String> = output.getOptional("output")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun outputOrThrow(): String = output.getRequired("output")
 
     /**
      * The role of the message sender (`user`, `assistant`, `system`), only applicable for `message`
-     * items.
+     * items. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun role(): Optional<Role> = role.getOptional("role")
+    fun role(): java.util.Optional<Role> = role.getOptional("role")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun roleOrThrow(): Role = role.getRequired("role")
 
     /**
      * The status of the item (`completed`, `incomplete`, `in_progress`). These have no effect on
      * the conversation, but are accepted for consistency with the `conversation.item.created`
-     * event.
+     * event. Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun status(): Optional<Status> = status.getOptional("status")
+    fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun statusOrThrow(): Status = status.getRequired("status")
 
     /**
      * The type of the item (`message`, `function_call`, `function_call_output`, `item_reference`).
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun type(): Optional<Type> = type.getOptional("type")
+    fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun typeOrThrow(): Type = type.getRequired("type")
 
     /**
      * Returns the raw JSON value of [id].
@@ -192,13 +253,6 @@ private constructor(
      * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
-
-    /**
-     * Returns the raw JSON value of [object_].
-     *
-     * Unlike [object_], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * Returns the raw JSON value of [output].
@@ -516,7 +570,7 @@ private constructor(
         callId()
         content().ifPresent { it.forEach { it.validate() } }
         name()
-        object_().ifPresent { it.validate() }
+        object_()
         output()
         role().ifPresent { it.validate() }
         status().ifPresent { it.validate() }
@@ -575,43 +629,73 @@ private constructor(
         /**
          * ID of a previous conversation item to reference (for `item_reference` content types in
          * `response.create` events). These can reference both client and server created items.
+         * Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun id(): Optional<String> = id.getOptional("id")
+        fun id(): java.util.Optional<String> = id.getOptional("id")
 
         /**
-         * Base64-encoded audio bytes, used for `input_audio` content type.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun audio(): Optional<String> = audio.getOptional("audio")
+        fun idOrThrow(): String = id.getRequired("id")
 
         /**
-         * The text content, used for `input_text` and `text` content types.
+         * Base64-encoded audio bytes, used for `input_audio` content type. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun text(): Optional<String> = text.getOptional("text")
+        fun audio(): java.util.Optional<String> = audio.getOptional("audio")
 
         /**
-         * The transcript of the audio, used for `input_audio` content type.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun transcript(): Optional<String> = transcript.getOptional("transcript")
+        fun audioOrThrow(): String = audio.getRequired("audio")
 
         /**
-         * The content type (`input_text`, `input_audio`, `item_reference`, `text`).
+         * The text content, used for `input_text` and `text` content types. Returns empty if the
+         * JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun type(): Optional<Type> = type.getOptional("type")
+        fun text(): java.util.Optional<String> = text.getOptional("text")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun textOrThrow(): String = text.getRequired("text")
+
+        /**
+         * The transcript of the audio, used for `input_audio` content type. Returns empty if the
+         * JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun transcript(): java.util.Optional<String> = transcript.getOptional("transcript")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun transcriptOrThrow(): String = transcript.getRequired("transcript")
+
+        /**
+         * The content type (`input_text`, `input_audio`, `item_reference`, `text`). Returns empty
+         * if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<Type> = type.getOptional("type")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): Type = type.getRequired("type")
 
         /**
          * Returns the raw JSON value of [id].

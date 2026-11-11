@@ -196,7 +196,7 @@ internal class RunCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.assistantId()).isEqualTo("assistant_id")
+        assertThat(body.assistantIdOrThrow()).isEqualTo("assistant_id")
         assertThat(body.additionalInstructions()).contains("additional_instructions")
         assertThat(body.additionalMessages().getOrNull())
             .containsExactly(
@@ -251,6 +251,6 @@ internal class RunCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.assistantId()).isEqualTo("assistant_id")
+        assertThat(body.assistantIdOrThrow()).isEqualTo("assistant_id")
     }
 }

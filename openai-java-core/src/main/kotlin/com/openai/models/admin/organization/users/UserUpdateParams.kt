@@ -31,37 +31,29 @@ private constructor(
 
     fun userId(): Optional<String> = Optional.ofNullable(userId)
 
-    /**
-     * Developer persona metadata.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun developerPersona(): Optional<String> = body.developerPersona()
+    /** @see Body.developerPersona */
+    fun developerPersona(): java.util.Optional<String> = body.developerPersona()
 
-    /**
-     * `owner` or `reader`
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun role(): Optional<String> = body.role()
+    /** @see Body.developerPersonaOrThrow */
+    fun developerPersonaOrThrow(): String = body.developerPersonaOrThrow()
 
-    /**
-     * Role ID to assign to the user.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun roleId(): Optional<String> = body.roleId()
+    /** @see Body.role */
+    fun role(): java.util.Optional<String> = body.role()
 
-    /**
-     * Technical level metadata.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun technicalLevel(): Optional<String> = body.technicalLevel()
+    /** @see Body.roleOrThrow */
+    fun roleOrThrow(): String = body.roleOrThrow()
+
+    /** @see Body.roleId */
+    fun roleId(): java.util.Optional<String> = body.roleId()
+
+    /** @see Body.roleIdOrThrow */
+    fun roleIdOrThrow(): String = body.roleIdOrThrow()
+
+    /** @see Body.technicalLevel */
+    fun technicalLevel(): java.util.Optional<String> = body.technicalLevel()
+
+    /** @see Body.technicalLevelOrThrow */
+    fun technicalLevelOrThrow(): String = body.technicalLevelOrThrow()
 
     /**
      * Returns the raw JSON value of [developerPersona].
@@ -375,36 +367,58 @@ private constructor(
         ) : this(developerPersona, role, roleId, technicalLevel, mutableMapOf())
 
         /**
-         * Developer persona metadata.
+         * Developer persona metadata. Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun developerPersona(): Optional<String> = developerPersona.getOptional("developer_persona")
+        fun developerPersona(): java.util.Optional<String> =
+            developerPersona.getOptional("developer_persona")
 
         /**
-         * `owner` or `reader`
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun role(): Optional<String> = role.getOptional("role")
+        fun developerPersonaOrThrow(): String = developerPersona.getRequired("developer_persona")
 
         /**
-         * Role ID to assign to the user.
+         * `owner` or `reader` Returns empty if the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun roleId(): Optional<String> = roleId.getOptional("role_id")
+        fun role(): java.util.Optional<String> = role.getOptional("role")
 
         /**
-         * Technical level metadata.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun technicalLevel(): Optional<String> = technicalLevel.getOptional("technical_level")
+        fun roleOrThrow(): String = role.getRequired("role")
+
+        /**
+         * Role ID to assign to the user. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun roleId(): java.util.Optional<String> = roleId.getOptional("role_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun roleIdOrThrow(): String = roleId.getRequired("role_id")
+
+        /**
+         * Technical level metadata. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun technicalLevel(): java.util.Optional<String> =
+            technicalLevel.getOptional("technical_level")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun technicalLevelOrThrow(): String = technicalLevel.getRequired("technical_level")
 
         /**
          * Returns the raw JSON value of [developerPersona].

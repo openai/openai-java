@@ -23,14 +23,14 @@ internal class ConversationItemInputAudioTranscriptionSegmentTest {
                 .text("text")
                 .build()
 
-        assertThat(conversationItemInputAudioTranscriptionSegment.id()).isEqualTo("id")
-        assertThat(conversationItemInputAudioTranscriptionSegment.contentIndex()).isEqualTo(0L)
-        assertThat(conversationItemInputAudioTranscriptionSegment.end()).isEqualTo(0.0)
-        assertThat(conversationItemInputAudioTranscriptionSegment.eventId()).isEqualTo("event_id")
-        assertThat(conversationItemInputAudioTranscriptionSegment.itemId()).isEqualTo("item_id")
-        assertThat(conversationItemInputAudioTranscriptionSegment.speaker()).isEqualTo("speaker")
-        assertThat(conversationItemInputAudioTranscriptionSegment.start()).isEqualTo(0.0)
-        assertThat(conversationItemInputAudioTranscriptionSegment.text()).isEqualTo("text")
+        assertThat(conversationItemInputAudioTranscriptionSegment.id()).contains("id")
+        assertThat(conversationItemInputAudioTranscriptionSegment.contentIndex()).contains(0L)
+        assertThat(conversationItemInputAudioTranscriptionSegment.end()).contains(0.0)
+        assertThat(conversationItemInputAudioTranscriptionSegment.eventId()).contains("event_id")
+        assertThat(conversationItemInputAudioTranscriptionSegment.itemId()).contains("item_id")
+        assertThat(conversationItemInputAudioTranscriptionSegment.speaker()).contains("speaker")
+        assertThat(conversationItemInputAudioTranscriptionSegment.start()).contains(0.0)
+        assertThat(conversationItemInputAudioTranscriptionSegment.text()).contains("text")
 
         val jsonMapper = jsonMapper()
 

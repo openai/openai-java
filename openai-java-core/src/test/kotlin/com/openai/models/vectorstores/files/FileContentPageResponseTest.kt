@@ -4,6 +4,7 @@ package com.openai.models.vectorstores.files
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -18,9 +19,9 @@ internal class FileContentPageResponseTest {
                 .nextPage("next_page")
                 .build()
 
-        assertThat(fileContentPageResponse.data())
+        assertThat(fileContentPageResponse.data().getOrNull())
             .containsExactly(FileContentResponse.builder().text("text").type("type").build())
-        assertThat(fileContentPageResponse.hasMore()).isEqualTo(true)
+        assertThat(fileContentPageResponse.hasMore()).contains(true)
         assertThat(fileContentPageResponse.nextPage()).contains("next_page")
 
         val jsonMapper = jsonMapper()

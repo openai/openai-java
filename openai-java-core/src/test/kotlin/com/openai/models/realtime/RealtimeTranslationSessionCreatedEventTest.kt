@@ -49,9 +49,9 @@ internal class RealtimeTranslationSessionCreatedEventTest {
                 )
                 .build()
 
-        assertThat(realtimeTranslationSessionCreatedEvent.eventId()).isEqualTo("event_id")
+        assertThat(realtimeTranslationSessionCreatedEvent.eventId()).contains("event_id")
         assertThat(realtimeTranslationSessionCreatedEvent.session())
-            .isEqualTo(
+            .contains(
                 RealtimeTranslationSession.builder()
                     .id("id")
                     .audio(

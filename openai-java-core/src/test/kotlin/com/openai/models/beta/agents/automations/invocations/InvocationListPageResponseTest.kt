@@ -4,6 +4,7 @@ package com.openai.models.beta.agents.automations.invocations
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -36,7 +37,7 @@ internal class InvocationListPageResponseTest {
                 .lastId("last_id")
                 .build()
 
-        assertThat(invocationListPageResponse.data())
+        assertThat(invocationListPageResponse.data().getOrNull())
             .containsExactly(
                 AutomationInvocation.builder()
                     .id("id")
@@ -53,7 +54,7 @@ internal class InvocationListPageResponseTest {
                     .build()
             )
         assertThat(invocationListPageResponse.firstId()).contains("first_id")
-        assertThat(invocationListPageResponse.hasMore()).isEqualTo(true)
+        assertThat(invocationListPageResponse.hasMore()).contains(true)
         assertThat(invocationListPageResponse.lastId()).contains("last_id")
 
         val jsonMapper = jsonMapper()

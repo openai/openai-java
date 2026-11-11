@@ -5,6 +5,7 @@ package com.openai.models.realtime
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -26,8 +27,8 @@ internal class RealtimeMcpListToolsTest {
                 .id("id")
                 .build()
 
-        assertThat(realtimeMcpListTools.serverLabel()).isEqualTo("server_label")
-        assertThat(realtimeMcpListTools.tools())
+        assertThat(realtimeMcpListTools.serverLabel()).contains("server_label")
+        assertThat(realtimeMcpListTools.tools().getOrNull())
             .containsExactly(
                 RealtimeMcpListTools.Tool.builder()
                     .inputSchema(JsonValue.from(mapOf<String, Any>()))

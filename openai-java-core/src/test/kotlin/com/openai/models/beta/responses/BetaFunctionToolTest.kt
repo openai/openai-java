@@ -33,7 +33,7 @@ internal class BetaFunctionToolTest {
                 )
                 .build()
 
-        assertThat(betaFunctionTool.name()).isEqualTo("name")
+        assertThat(betaFunctionTool.name()).contains("name")
         assertThat(betaFunctionTool.parameters())
             .contains(
                 BetaFunctionTool.Parameters.builder()

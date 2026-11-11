@@ -3079,33 +3079,56 @@ private constructor(
         ) : this(eventId, item, type, mutableMapOf())
 
         /**
-         * The unique ID of the server event.
+         * The unique ID of the server event. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun eventId(): String = eventId.getRequired("event_id")
+        fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
         /**
-         * A single item within a Realtime conversation.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun item(): ConversationItem = item.getRequired("item")
+        fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
         /**
-         * The event type, must be `conversation.item.retrieved`.
+         * A single item within a Realtime conversation. The schema requires this property. Returns
+         * empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("conversation.item.retrieved")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun item(): java.util.Optional<ConversationItem> = item.getOptional("item")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun itemOrThrow(): ConversationItem = item.getRequired("item")
+
+        /**
+         * The event type, must be `conversation.item.retrieved`. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("conversation.item.retrieved")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [eventId].
@@ -3381,13 +3404,9 @@ private constructor(
                 return@apply
             }
 
-            eventId()
-            item().validate()
-            _type().let {
-                if (it != JsonValue.from("conversation.item.retrieved")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            eventIdOrThrow()
+            itemOrThrow().validate()
+            typeOrThrow()
             validated = true
         }
 
@@ -3458,33 +3477,56 @@ private constructor(
         ) : this(eventId, responseId, type, mutableMapOf())
 
         /**
-         * The unique ID of the server event.
+         * The unique ID of the server event. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun eventId(): String = eventId.getRequired("event_id")
+        fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
         /**
-         * The unique ID of the response that produced the audio.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun responseId(): String = responseId.getRequired("response_id")
+        fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
         /**
-         * The event type, must be `output_audio_buffer.started`.
+         * The unique ID of the response that produced the audio. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("output_audio_buffer.started")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun responseId(): java.util.Optional<String> = responseId.getOptional("response_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun responseIdOrThrow(): String = responseId.getRequired("response_id")
+
+        /**
+         * The event type, must be `output_audio_buffer.started`. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("output_audio_buffer.started")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [eventId].
@@ -3658,13 +3700,9 @@ private constructor(
                 return@apply
             }
 
-            eventId()
-            responseId()
-            _type().let {
-                if (it != JsonValue.from("output_audio_buffer.started")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            eventIdOrThrow()
+            responseIdOrThrow()
+            typeOrThrow()
             validated = true
         }
 
@@ -3735,33 +3773,56 @@ private constructor(
         ) : this(eventId, responseId, type, mutableMapOf())
 
         /**
-         * The unique ID of the server event.
+         * The unique ID of the server event. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun eventId(): String = eventId.getRequired("event_id")
+        fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
         /**
-         * The unique ID of the response that produced the audio.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun responseId(): String = responseId.getRequired("response_id")
+        fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
         /**
-         * The event type, must be `output_audio_buffer.stopped`.
+         * The unique ID of the response that produced the audio. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("output_audio_buffer.stopped")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun responseId(): java.util.Optional<String> = responseId.getOptional("response_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun responseIdOrThrow(): String = responseId.getRequired("response_id")
+
+        /**
+         * The event type, must be `output_audio_buffer.stopped`. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("output_audio_buffer.stopped")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [eventId].
@@ -3935,13 +3996,9 @@ private constructor(
                 return@apply
             }
 
-            eventId()
-            responseId()
-            _type().let {
-                if (it != JsonValue.from("output_audio_buffer.stopped")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            eventIdOrThrow()
+            responseIdOrThrow()
+            typeOrThrow()
             validated = true
         }
 
@@ -4013,33 +4070,56 @@ private constructor(
         ) : this(eventId, responseId, type, mutableMapOf())
 
         /**
-         * The unique ID of the server event.
+         * The unique ID of the server event. The schema requires this property. Returns empty if
+         * the JSON property is missing or null.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun eventId(): String = eventId.getRequired("event_id")
+        fun eventId(): java.util.Optional<String> = eventId.getOptional("event_id")
 
         /**
-         * The unique ID of the response that produced the audio.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun responseId(): String = responseId.getRequired("response_id")
+        fun eventIdOrThrow(): String = eventId.getRequired("event_id")
 
         /**
-         * The event type, must be `output_audio_buffer.cleared`.
+         * The unique ID of the response that produced the audio. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("output_audio_buffer.cleared")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun responseId(): java.util.Optional<String> = responseId.getOptional("response_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun responseIdOrThrow(): String = responseId.getRequired("response_id")
+
+        /**
+         * The event type, must be `output_audio_buffer.cleared`. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("output_audio_buffer.cleared")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
          * Returns the raw JSON value of [eventId].
@@ -4213,13 +4293,9 @@ private constructor(
                 return@apply
             }
 
-            eventId()
-            responseId()
-            _type().let {
-                if (it != JsonValue.from("output_audio_buffer.cleared")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            eventIdOrThrow()
+            responseIdOrThrow()
+            typeOrThrow()
             validated = true
         }
 

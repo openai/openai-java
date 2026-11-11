@@ -27,7 +27,7 @@ private constructor(
     /** Add this definition to the agent's tools when creating or updating its configuration. */
     fun definition(): AgentToolParam = definition
 
-    fun name(): String = definition.asFunction().name()
+    fun name(): String = definition.asFunction().nameOrThrow()
 
     /** Register with `toolHandler`, or `asyncToolHandler` for a binding created by [ofAsync]. */
     fun handler(): Function<Map<String, Any?>, R> = handler

@@ -68,7 +68,7 @@ internal class ExternalKeyCursorTransportTest {
                     .isEqualTo(if (populated) "ek_first_synthetic" else null)
                 assertThat(response.lastId().orElse(null))
                     .isEqualTo(if (populated) "ek_last_synthetic" else null)
-                assertThat(response.hasMore()).isFalse()
+                assertThat(response.hasMoreOrThrow()).isFalse()
                 verify(
                     1,
                     getRequestedFor(urlPathEqualTo("/organization/external_keys"))

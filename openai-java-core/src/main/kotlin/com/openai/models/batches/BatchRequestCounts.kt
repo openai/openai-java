@@ -34,28 +34,43 @@ private constructor(
     ) : this(completed, failed, total, mutableMapOf())
 
     /**
-     * Number of requests that have been completed successfully.
+     * Number of requests that have been completed successfully. The schema requires this property.
+     * Returns empty if the JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun completed(): Long = completed.getRequired("completed")
+    fun completed(): java.util.Optional<Long> = completed.getOptional("completed")
 
     /**
-     * Number of requests that have failed.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun failed(): Long = failed.getRequired("failed")
+    fun completedOrThrow(): Long = completed.getRequired("completed")
 
     /**
-     * Total number of requests in the batch.
+     * Number of requests that have failed. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun total(): Long = total.getRequired("total")
+    fun failed(): java.util.Optional<Long> = failed.getOptional("failed")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun failedOrThrow(): Long = failed.getRequired("failed")
+
+    /**
+     * Total number of requests in the batch. The schema requires this property. Returns empty if
+     * the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun total(): java.util.Optional<Long> = total.getOptional("total")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun totalOrThrow(): Long = total.getRequired("total")
 
     /**
      * Returns the raw JSON value of [completed].
@@ -230,9 +245,9 @@ private constructor(
             return@apply
         }
 
-        completed()
-        failed()
-        total()
+        completedOrThrow()
+        failedOrThrow()
+        totalOrThrow()
         validated = true
     }
 

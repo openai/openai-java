@@ -51,33 +51,62 @@ private constructor(
     ) : this(data, hasMore, nextPage, object_, mutableMapOf())
 
     /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun data(): List<Data> = data.getRequired("data")
-
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun hasMore(): Boolean = hasMore.getRequired("has_more")
-
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun nextPage(): Optional<String> = nextPage.getOptional("next_page")
-
-    /**
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("page")
-     * ```
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+    fun data(): java.util.Optional<List<Data>> = data.getOptional("data")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun dataOrThrow(): List<Data> = data.getRequired("data")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun hasMore(): java.util.Optional<Boolean> = hasMore.getOptional("has_more")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun hasMoreOrThrow(): Boolean = hasMore.getRequired("has_more")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun nextPage(): java.util.Optional<String> = nextPage.getOptional("next_page")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun nextPageOrThrow(): String = nextPage.getRequired("next_page")
+
+    /**
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun object_(): java.util.Optional<JsonValue> {
+        val raw = object_
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("page")) ->
+                throw OpenAIInvalidDataException("`object` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
      * Returns the raw JSON value of [data].
@@ -285,14 +314,10 @@ private constructor(
             return@apply
         }
 
-        data().forEach { it.validate() }
-        hasMore()
+        dataOrThrow().forEach { it.validate() }
+        hasMoreOrThrow()
         nextPage()
-        _object_().let {
-            if (it != JsonValue.from("page")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
+        object_OrThrow()
         validated = true
     }
 
@@ -339,33 +364,66 @@ private constructor(
         ) : this(endTime, object_, results, startTime, mutableMapOf())
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun endTime(): Long = endTime.getRequired("end_time")
-
-        /**
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("bucket")
-         * ```
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
          *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+        fun endTime(): java.util.Optional<Long> = endTime.getOptional("end_time")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
          */
-        fun results(): List<Result> = results.getRequired("results")
+        fun endTimeOrThrow(): Long = endTime.getRequired("end_time")
 
         /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun startTime(): Long = startTime.getRequired("start_time")
+        fun object_(): java.util.Optional<JsonValue> {
+            val raw = object_
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("bucket")) ->
+                    throw OpenAIInvalidDataException("`object` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun object_OrThrow(): JsonValue = object_().orElseGet { object_.getRequired("object") }
+
+        @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun results(): java.util.Optional<List<Result>> = results.getOptional("results")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun resultsOrThrow(): List<Result> = results.getRequired("results")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun startTime(): java.util.Optional<Long> = startTime.getOptional("start_time")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun startTimeOrThrow(): Long = startTime.getRequired("start_time")
 
         /**
          * Returns the raw JSON value of [endTime].
@@ -711,14 +769,10 @@ private constructor(
                 return@apply
             }
 
-            endTime()
-            _object_().let {
-                if (it != JsonValue.from("bucket")) {
-                    throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                }
-            }
-            results().forEach { it.validate() }
-            startTime()
+            endTimeOrThrow()
+            object_OrThrow()
+            resultsOrThrow().forEach { it.validate() }
+            startTimeOrThrow()
             validated = true
         }
 
@@ -1644,240 +1698,408 @@ private constructor(
                 /**
                  * The aggregated number of input tokens used, including cached and cache-write
                  * tokens. This includes text, audio, and image tokens. For customers subscribed to
-                 * Scale Tier, this includes Scale Tier tokens.
+                 * Scale Tier, this includes Scale Tier tokens. The schema requires this property.
+                 * Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun inputTokens(): Long = inputTokens.getRequired("input_tokens")
+                fun inputTokens(): java.util.Optional<Long> =
+                    inputTokens.getOptional("input_tokens")
 
                 /**
-                 * The count of requests made to the model.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun numModelRequests(): Long = numModelRequests.getRequired("num_model_requests")
+                fun inputTokensOrThrow(): Long = inputTokens.getRequired("input_tokens")
 
                 /**
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("organization.usage.completions.result")
-                 * ```
+                 * The count of requests made to the model. The schema requires this property.
+                 * Returns empty if the JSON property is missing or null.
                  *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+                fun numModelRequests(): java.util.Optional<Long> =
+                    numModelRequests.getOptional("num_model_requests")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun numModelRequestsOrThrow(): Long =
+                    numModelRequests.getRequired("num_model_requests")
+
+                /**
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun object_(): java.util.Optional<JsonValue> {
+                    val raw = object_
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("organization.usage.completions.result")) ->
+                            throw OpenAIInvalidDataException("`object` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun object_OrThrow(): JsonValue =
+                    object_().orElseGet { object_.getRequired("object") }
+
+                @JsonProperty("object")
+                @ExcludeMissing
+                fun _object_(): JsonField<JsonValue> = object_
 
                 /**
                  * The aggregated number of output tokens used across text, audio, and image
                  * outputs. For customers subscribed to Scale Tier, this includes Scale Tier tokens.
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun outputTokens(): Long = outputTokens.getRequired("output_tokens")
+                fun outputTokens(): java.util.Optional<Long> =
+                    outputTokens.getOptional("output_tokens")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun outputTokensOrThrow(): Long = outputTokens.getRequired("output_tokens")
 
                 /**
                  * When `group_by=api_key_id`, this field provides the API key ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+                fun apiKeyId(): java.util.Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun apiKeyIdOrThrow(): String = apiKeyId.getRequired("api_key_id")
 
                 /**
                  * When grouped by `api_source`, `agents_api` identifies attributed Agents API
                  * activity and `unlabeled` includes all records without published source
                  * attribution, including historical and unknown origins. Unlabeled does not imply
-                 * direct API usage. Without source grouping, this field is null.
+                 * direct API usage. Without source grouping, this field is null. Returns empty if
+                 * the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun apiSource(): Optional<ApiSource> = apiSource.getOptional("api_source")
+                fun apiSource(): java.util.Optional<ApiSource> = apiSource.getOptional("api_source")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun apiSourceOrThrow(): ApiSource = apiSource.getRequired("api_source")
 
                 /**
                  * When `group_by=batch`, this field tells whether the grouped usage result is batch
-                 * or not.
+                 * or not. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun batch(): Optional<Boolean> = batch.getOptional("batch")
+                fun batch(): java.util.Optional<Boolean> = batch.getOptional("batch")
 
                 /**
-                 * The aggregated number of uncached audio input tokens used.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun inputAudioTokens(): Optional<Long> =
+                fun batchOrThrow(): Boolean = batch.getRequired("batch")
+
+                /**
+                 * The aggregated number of uncached audio input tokens used. Returns empty if the
+                 * JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun inputAudioTokens(): java.util.Optional<Long> =
                     inputAudioTokens.getOptional("input_audio_tokens")
 
                 /**
-                 * The aggregated number of input tokens written to the cache with a 12-hour
-                 * retention period.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun inputCacheWrite12hTokens(): Optional<Long> =
+                fun inputAudioTokensOrThrow(): Long =
+                    inputAudioTokens.getRequired("input_audio_tokens")
+
+                /**
+                 * The aggregated number of input tokens written to the cache with a 12-hour
+                 * retention period. Returns empty if the JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun inputCacheWrite12hTokens(): java.util.Optional<Long> =
                     inputCacheWrite12hTokens.getOptional("input_cache_write_12h_tokens")
 
                 /**
-                 * The aggregated number of input tokens written to the cache with a 30-minute
-                 * retention period. May be absent or null for older responses.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun inputCacheWrite30mTokens(): Optional<Long> =
+                fun inputCacheWrite12hTokensOrThrow(): Long =
+                    inputCacheWrite12hTokens.getRequired("input_cache_write_12h_tokens")
+
+                /**
+                 * The aggregated number of input tokens written to the cache with a 30-minute
+                 * retention period. May be absent or null for older responses. Returns empty if the
+                 * JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun inputCacheWrite30mTokens(): java.util.Optional<Long> =
                     inputCacheWrite30mTokens.getOptional("input_cache_write_30m_tokens")
 
                 /**
-                 * The aggregated number of input tokens written to the cache across 30-minute and
-                 * 12-hour retention periods.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun inputCacheWriteTokens(): Optional<Long> =
+                fun inputCacheWrite30mTokensOrThrow(): Long =
+                    inputCacheWrite30mTokens.getRequired("input_cache_write_30m_tokens")
+
+                /**
+                 * The aggregated number of input tokens written to the cache across 30-minute and
+                 * 12-hour retention periods. Returns empty if the JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun inputCacheWriteTokens(): java.util.Optional<Long> =
                     inputCacheWriteTokens.getOptional("input_cache_write_tokens")
 
                 /**
-                 * The aggregated number of cached audio input tokens used.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun inputCachedAudioTokens(): Optional<Long> =
+                fun inputCacheWriteTokensOrThrow(): Long =
+                    inputCacheWriteTokens.getRequired("input_cache_write_tokens")
+
+                /**
+                 * The aggregated number of cached audio input tokens used. Returns empty if the
+                 * JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun inputCachedAudioTokens(): java.util.Optional<Long> =
                     inputCachedAudioTokens.getOptional("input_cached_audio_tokens")
 
                 /**
-                 * The aggregated number of cached image input tokens used.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun inputCachedImageTokens(): Optional<Long> =
+                fun inputCachedAudioTokensOrThrow(): Long =
+                    inputCachedAudioTokens.getRequired("input_cached_audio_tokens")
+
+                /**
+                 * The aggregated number of cached image input tokens used. Returns empty if the
+                 * JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun inputCachedImageTokens(): java.util.Optional<Long> =
                     inputCachedImageTokens.getOptional("input_cached_image_tokens")
 
                 /**
-                 * The aggregated number of cached text input tokens used.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun inputCachedTextTokens(): Optional<Long> =
+                fun inputCachedImageTokensOrThrow(): Long =
+                    inputCachedImageTokens.getRequired("input_cached_image_tokens")
+
+                /**
+                 * The aggregated number of cached text input tokens used. Returns empty if the JSON
+                 * property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun inputCachedTextTokens(): java.util.Optional<Long> =
                     inputCachedTextTokens.getOptional("input_cached_text_tokens")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun inputCachedTextTokensOrThrow(): Long =
+                    inputCachedTextTokens.getRequired("input_cached_text_tokens")
 
                 /**
                  * The aggregated number of cached input tokens used across text, audio, and image
                  * inputs. For customers subscribed to Scale Tier, this includes Scale Tier tokens.
+                 * Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun inputCachedTokens(): Optional<Long> =
+                fun inputCachedTokens(): java.util.Optional<Long> =
                     inputCachedTokens.getOptional("input_cached_tokens")
 
                 /**
-                 * The aggregated number of uncached image input tokens used.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun inputImageTokens(): Optional<Long> =
+                fun inputCachedTokensOrThrow(): Long =
+                    inputCachedTokens.getRequired("input_cached_tokens")
+
+                /**
+                 * The aggregated number of uncached image input tokens used. Returns empty if the
+                 * JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun inputImageTokens(): java.util.Optional<Long> =
                     inputImageTokens.getOptional("input_image_tokens")
 
                 /**
-                 * The aggregated number of uncached text input tokens used, excluding cache-write
-                 * tokens.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun inputTextTokens(): Optional<Long> =
+                fun inputImageTokensOrThrow(): Long =
+                    inputImageTokens.getRequired("input_image_tokens")
+
+                /**
+                 * The aggregated number of uncached text input tokens used, excluding cache-write
+                 * tokens. Returns empty if the JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun inputTextTokens(): java.util.Optional<Long> =
                     inputTextTokens.getOptional("input_text_tokens")
 
                 /**
-                 * The aggregated number of uncached input tokens used across text, audio, and image
-                 * inputs, excluding cache-write tokens.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun inputUncachedTokens(): Optional<Long> =
+                fun inputTextTokensOrThrow(): Long =
+                    inputTextTokens.getRequired("input_text_tokens")
+
+                /**
+                 * The aggregated number of uncached input tokens used across text, audio, and image
+                 * inputs, excluding cache-write tokens. Returns empty if the JSON property is
+                 * missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun inputUncachedTokens(): java.util.Optional<Long> =
                     inputUncachedTokens.getOptional("input_uncached_tokens")
 
                 /**
-                 * When `group_by=model`, this field provides the model name of the grouped usage
-                 * result.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun model(): Optional<String> = model.getOptional("model")
+                fun inputUncachedTokensOrThrow(): Long =
+                    inputUncachedTokens.getRequired("input_uncached_tokens")
 
                 /**
-                 * The aggregated number of audio output tokens used.
+                 * When `group_by=model`, this field provides the model name of the grouped usage
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun outputAudioTokens(): Optional<Long> =
+                fun model(): java.util.Optional<String> = model.getOptional("model")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun modelOrThrow(): String = model.getRequired("model")
+
+                /**
+                 * The aggregated number of audio output tokens used. Returns empty if the JSON
+                 * property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun outputAudioTokens(): java.util.Optional<Long> =
                     outputAudioTokens.getOptional("output_audio_tokens")
 
                 /**
-                 * The aggregated number of image output tokens used.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun outputImageTokens(): Optional<Long> =
+                fun outputAudioTokensOrThrow(): Long =
+                    outputAudioTokens.getRequired("output_audio_tokens")
+
+                /**
+                 * The aggregated number of image output tokens used. Returns empty if the JSON
+                 * property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun outputImageTokens(): java.util.Optional<Long> =
                     outputImageTokens.getOptional("output_image_tokens")
 
                 /**
-                 * The aggregated number of text output tokens used.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun outputTextTokens(): Optional<Long> =
+                fun outputImageTokensOrThrow(): Long =
+                    outputImageTokens.getRequired("output_image_tokens")
+
+                /**
+                 * The aggregated number of text output tokens used. Returns empty if the JSON
+                 * property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun outputTextTokens(): java.util.Optional<Long> =
                     outputTextTokens.getOptional("output_text_tokens")
 
                 /**
-                 * When `group_by=project_id`, this field provides the project ID of the grouped
-                 * usage result.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+                fun outputTextTokensOrThrow(): Long =
+                    outputTextTokens.getRequired("output_text_tokens")
+
+                /**
+                 * When `group_by=project_id`, this field provides the project ID of the grouped
+                 * usage result. Returns empty if the JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun projectId(): java.util.Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun projectIdOrThrow(): String = projectId.getRequired("project_id")
 
                 /**
                  * When `group_by=service_tier`, this field provides the service tier of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun serviceTier(): Optional<String> = serviceTier.getOptional("service_tier")
+                fun serviceTier(): java.util.Optional<String> =
+                    serviceTier.getOptional("service_tier")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun serviceTierOrThrow(): String = serviceTier.getRequired("service_tier")
 
                 /**
                  * When `group_by=user_id`, this field provides the user ID of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun userId(): Optional<String> = userId.getOptional("user_id")
+                fun userId(): java.util.Optional<String> = userId.getOptional("user_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun userIdOrThrow(): String = userId.getRequired("user_id")
 
                 /**
                  * Returns the raw JSON value of [inputTokens].
@@ -2791,14 +3013,10 @@ private constructor(
                         return@apply
                     }
 
-                    inputTokens()
-                    numModelRequests()
-                    _object_().let {
-                        if (it != JsonValue.from("organization.usage.completions.result")) {
-                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                        }
-                    }
-                    outputTokens()
+                    inputTokensOrThrow()
+                    numModelRequestsOrThrow()
+                    object_OrThrow()
+                    outputTokensOrThrow()
                     apiKeyId()
                     apiSource().ifPresent { it.validate() }
                     batch()
@@ -3141,69 +3359,118 @@ private constructor(
                 )
 
                 /**
-                 * The aggregated number of input tokens used.
+                 * The aggregated number of input tokens used. The schema requires this property.
+                 * Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun inputTokens(): Long = inputTokens.getRequired("input_tokens")
+                fun inputTokens(): java.util.Optional<Long> =
+                    inputTokens.getOptional("input_tokens")
 
                 /**
-                 * The count of requests made to the model.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun numModelRequests(): Long = numModelRequests.getRequired("num_model_requests")
+                fun inputTokensOrThrow(): Long = inputTokens.getRequired("input_tokens")
 
                 /**
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("organization.usage.embeddings.result")
-                 * ```
+                 * The count of requests made to the model. The schema requires this property.
+                 * Returns empty if the JSON property is missing or null.
                  *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+                fun numModelRequests(): java.util.Optional<Long> =
+                    numModelRequests.getOptional("num_model_requests")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun numModelRequestsOrThrow(): Long =
+                    numModelRequests.getRequired("num_model_requests")
+
+                /**
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun object_(): java.util.Optional<JsonValue> {
+                    val raw = object_
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("organization.usage.embeddings.result")) ->
+                            throw OpenAIInvalidDataException("`object` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun object_OrThrow(): JsonValue =
+                    object_().orElseGet { object_.getRequired("object") }
+
+                @JsonProperty("object")
+                @ExcludeMissing
+                fun _object_(): JsonField<JsonValue> = object_
 
                 /**
                  * When `group_by=api_key_id`, this field provides the API key ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+                fun apiKeyId(): java.util.Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun apiKeyIdOrThrow(): String = apiKeyId.getRequired("api_key_id")
 
                 /**
                  * When `group_by=model`, this field provides the model name of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun model(): Optional<String> = model.getOptional("model")
+                fun model(): java.util.Optional<String> = model.getOptional("model")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun modelOrThrow(): String = model.getRequired("model")
 
                 /**
                  * When `group_by=project_id`, this field provides the project ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+                fun projectId(): java.util.Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun projectIdOrThrow(): String = projectId.getRequired("project_id")
 
                 /**
                  * When `group_by=user_id`, this field provides the user ID of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun userId(): Optional<String> = userId.getOptional("user_id")
+                fun userId(): java.util.Optional<String> = userId.getOptional("user_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun userIdOrThrow(): String = userId.getRequired("user_id")
 
                 /**
                  * Returns the raw JSON value of [inputTokens].
@@ -3521,13 +3788,9 @@ private constructor(
                         return@apply
                     }
 
-                    inputTokens()
-                    numModelRequests()
-                    _object_().let {
-                        if (it != JsonValue.from("organization.usage.embeddings.result")) {
-                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                        }
-                    }
+                    inputTokensOrThrow()
+                    numModelRequestsOrThrow()
+                    object_OrThrow()
                     apiKeyId()
                     model()
                     projectId()
@@ -3644,69 +3907,118 @@ private constructor(
                 )
 
                 /**
-                 * The aggregated number of input tokens used.
+                 * The aggregated number of input tokens used. The schema requires this property.
+                 * Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun inputTokens(): Long = inputTokens.getRequired("input_tokens")
+                fun inputTokens(): java.util.Optional<Long> =
+                    inputTokens.getOptional("input_tokens")
 
                 /**
-                 * The count of requests made to the model.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun numModelRequests(): Long = numModelRequests.getRequired("num_model_requests")
+                fun inputTokensOrThrow(): Long = inputTokens.getRequired("input_tokens")
 
                 /**
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("organization.usage.moderations.result")
-                 * ```
+                 * The count of requests made to the model. The schema requires this property.
+                 * Returns empty if the JSON property is missing or null.
                  *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+                fun numModelRequests(): java.util.Optional<Long> =
+                    numModelRequests.getOptional("num_model_requests")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun numModelRequestsOrThrow(): Long =
+                    numModelRequests.getRequired("num_model_requests")
+
+                /**
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun object_(): java.util.Optional<JsonValue> {
+                    val raw = object_
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("organization.usage.moderations.result")) ->
+                            throw OpenAIInvalidDataException("`object` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun object_OrThrow(): JsonValue =
+                    object_().orElseGet { object_.getRequired("object") }
+
+                @JsonProperty("object")
+                @ExcludeMissing
+                fun _object_(): JsonField<JsonValue> = object_
 
                 /**
                  * When `group_by=api_key_id`, this field provides the API key ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+                fun apiKeyId(): java.util.Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun apiKeyIdOrThrow(): String = apiKeyId.getRequired("api_key_id")
 
                 /**
                  * When `group_by=model`, this field provides the model name of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun model(): Optional<String> = model.getOptional("model")
+                fun model(): java.util.Optional<String> = model.getOptional("model")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun modelOrThrow(): String = model.getRequired("model")
 
                 /**
                  * When `group_by=project_id`, this field provides the project ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+                fun projectId(): java.util.Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun projectIdOrThrow(): String = projectId.getRequired("project_id")
 
                 /**
                  * When `group_by=user_id`, this field provides the user ID of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun userId(): Optional<String> = userId.getOptional("user_id")
+                fun userId(): java.util.Optional<String> = userId.getOptional("user_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun userIdOrThrow(): String = userId.getRequired("user_id")
 
                 /**
                  * Returns the raw JSON value of [inputTokens].
@@ -4024,13 +4336,9 @@ private constructor(
                         return@apply
                     }
 
-                    inputTokens()
-                    numModelRequests()
-                    _object_().let {
-                        if (it != JsonValue.from("organization.usage.moderations.result")) {
-                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                        }
-                    }
+                    inputTokensOrThrow()
+                    numModelRequestsOrThrow()
+                    object_OrThrow()
                     apiKeyId()
                     model()
                     projectId()
@@ -4157,87 +4465,146 @@ private constructor(
                 )
 
                 /**
-                 * The number of images processed.
+                 * The number of images processed. The schema requires this property. Returns empty
+                 * if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun images(): Long = images.getRequired("images")
+                fun images(): java.util.Optional<Long> = images.getOptional("images")
 
                 /**
-                 * The count of requests made to the model.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun numModelRequests(): Long = numModelRequests.getRequired("num_model_requests")
+                fun imagesOrThrow(): Long = images.getRequired("images")
 
                 /**
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("organization.usage.images.result")
-                 * ```
+                 * The count of requests made to the model. The schema requires this property.
+                 * Returns empty if the JSON property is missing or null.
                  *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+                fun numModelRequests(): java.util.Optional<Long> =
+                    numModelRequests.getOptional("num_model_requests")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun numModelRequestsOrThrow(): Long =
+                    numModelRequests.getRequired("num_model_requests")
+
+                /**
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun object_(): java.util.Optional<JsonValue> {
+                    val raw = object_
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("organization.usage.images.result")) ->
+                            throw OpenAIInvalidDataException("`object` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun object_OrThrow(): JsonValue =
+                    object_().orElseGet { object_.getRequired("object") }
+
+                @JsonProperty("object")
+                @ExcludeMissing
+                fun _object_(): JsonField<JsonValue> = object_
 
                 /**
                  * When `group_by=api_key_id`, this field provides the API key ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+                fun apiKeyId(): java.util.Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun apiKeyIdOrThrow(): String = apiKeyId.getRequired("api_key_id")
 
                 /**
                  * When `group_by=model`, this field provides the model name of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun model(): Optional<String> = model.getOptional("model")
+                fun model(): java.util.Optional<String> = model.getOptional("model")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun modelOrThrow(): String = model.getRequired("model")
 
                 /**
                  * When `group_by=project_id`, this field provides the project ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+                fun projectId(): java.util.Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun projectIdOrThrow(): String = projectId.getRequired("project_id")
 
                 /**
                  * When `group_by=size`, this field provides the image size of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun size(): Optional<String> = size.getOptional("size")
+                fun size(): java.util.Optional<String> = size.getOptional("size")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun sizeOrThrow(): String = size.getRequired("size")
 
                 /**
                  * When `group_by=source`, this field provides the source of the grouped usage
                  * result, possible values are `image.generation`, `image.edit`, `image.variation`.
+                 * Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun source(): Optional<String> = source.getOptional("source")
+                fun source(): java.util.Optional<String> = source.getOptional("source")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun sourceOrThrow(): String = source.getRequired("source")
 
                 /**
                  * When `group_by=user_id`, this field provides the user ID of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun userId(): Optional<String> = userId.getOptional("user_id")
+                fun userId(): java.util.Optional<String> = userId.getOptional("user_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun userIdOrThrow(): String = userId.getRequired("user_id")
 
                 /**
                  * Returns the raw JSON value of [images].
@@ -4612,13 +4979,9 @@ private constructor(
                         return@apply
                     }
 
-                    images()
-                    numModelRequests()
-                    _object_().let {
-                        if (it != JsonValue.from("organization.usage.images.result")) {
-                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                        }
-                    }
+                    imagesOrThrow()
+                    numModelRequestsOrThrow()
+                    object_OrThrow()
                     apiKeyId()
                     model()
                     projectId()
@@ -4742,69 +5105,117 @@ private constructor(
                 )
 
                 /**
-                 * The number of characters processed.
+                 * The number of characters processed. The schema requires this property. Returns
+                 * empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun characters(): Long = characters.getRequired("characters")
+                fun characters(): java.util.Optional<Long> = characters.getOptional("characters")
 
                 /**
-                 * The count of requests made to the model.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun numModelRequests(): Long = numModelRequests.getRequired("num_model_requests")
+                fun charactersOrThrow(): Long = characters.getRequired("characters")
 
                 /**
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("organization.usage.audio_speeches.result")
-                 * ```
+                 * The count of requests made to the model. The schema requires this property.
+                 * Returns empty if the JSON property is missing or null.
                  *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+                fun numModelRequests(): java.util.Optional<Long> =
+                    numModelRequests.getOptional("num_model_requests")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun numModelRequestsOrThrow(): Long =
+                    numModelRequests.getRequired("num_model_requests")
+
+                /**
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun object_(): java.util.Optional<JsonValue> {
+                    val raw = object_
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("organization.usage.audio_speeches.result")) ->
+                            throw OpenAIInvalidDataException("`object` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun object_OrThrow(): JsonValue =
+                    object_().orElseGet { object_.getRequired("object") }
+
+                @JsonProperty("object")
+                @ExcludeMissing
+                fun _object_(): JsonField<JsonValue> = object_
 
                 /**
                  * When `group_by=api_key_id`, this field provides the API key ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+                fun apiKeyId(): java.util.Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun apiKeyIdOrThrow(): String = apiKeyId.getRequired("api_key_id")
 
                 /**
                  * When `group_by=model`, this field provides the model name of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun model(): Optional<String> = model.getOptional("model")
+                fun model(): java.util.Optional<String> = model.getOptional("model")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun modelOrThrow(): String = model.getRequired("model")
 
                 /**
                  * When `group_by=project_id`, this field provides the project ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+                fun projectId(): java.util.Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun projectIdOrThrow(): String = projectId.getRequired("project_id")
 
                 /**
                  * When `group_by=user_id`, this field provides the user ID of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun userId(): Optional<String> = userId.getOptional("user_id")
+                fun userId(): java.util.Optional<String> = userId.getOptional("user_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun userIdOrThrow(): String = userId.getRequired("user_id")
 
                 /**
                  * Returns the raw JSON value of [characters].
@@ -5122,13 +5533,9 @@ private constructor(
                         return@apply
                     }
 
-                    characters()
-                    numModelRequests()
-                    _object_().let {
-                        if (it != JsonValue.from("organization.usage.audio_speeches.result")) {
-                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                        }
-                    }
+                    charactersOrThrow()
+                    numModelRequestsOrThrow()
+                    object_OrThrow()
                     apiKeyId()
                     model()
                     projectId()
@@ -5245,69 +5652,118 @@ private constructor(
                 )
 
                 /**
-                 * The count of requests made to the model.
+                 * The count of requests made to the model. The schema requires this property.
+                 * Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun numModelRequests(): Long = numModelRequests.getRequired("num_model_requests")
+                fun numModelRequests(): java.util.Optional<Long> =
+                    numModelRequests.getOptional("num_model_requests")
 
                 /**
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("organization.usage.audio_transcriptions.result")
-                 * ```
-                 *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+                fun numModelRequestsOrThrow(): Long =
+                    numModelRequests.getRequired("num_model_requests")
 
                 /**
-                 * The number of seconds processed.
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun seconds(): Long = seconds.getRequired("seconds")
+                fun object_(): java.util.Optional<JsonValue> {
+                    val raw = object_
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw ==
+                            JsonValue.from("organization.usage.audio_transcriptions.result")) ->
+                            throw OpenAIInvalidDataException("`object` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun object_OrThrow(): JsonValue =
+                    object_().orElseGet { object_.getRequired("object") }
+
+                @JsonProperty("object")
+                @ExcludeMissing
+                fun _object_(): JsonField<JsonValue> = object_
+
+                /**
+                 * The number of seconds processed. The schema requires this property. Returns empty
+                 * if the JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun seconds(): java.util.Optional<Long> = seconds.getOptional("seconds")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun secondsOrThrow(): Long = seconds.getRequired("seconds")
 
                 /**
                  * When `group_by=api_key_id`, this field provides the API key ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+                fun apiKeyId(): java.util.Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun apiKeyIdOrThrow(): String = apiKeyId.getRequired("api_key_id")
 
                 /**
                  * When `group_by=model`, this field provides the model name of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun model(): Optional<String> = model.getOptional("model")
+                fun model(): java.util.Optional<String> = model.getOptional("model")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun modelOrThrow(): String = model.getRequired("model")
 
                 /**
                  * When `group_by=project_id`, this field provides the project ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+                fun projectId(): java.util.Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun projectIdOrThrow(): String = projectId.getRequired("project_id")
 
                 /**
                  * When `group_by=user_id`, this field provides the user ID of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun userId(): Optional<String> = userId.getOptional("user_id")
+                fun userId(): java.util.Optional<String> = userId.getOptional("user_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun userIdOrThrow(): String = userId.getRequired("user_id")
 
                 /**
                  * Returns the raw JSON value of [numModelRequests].
@@ -5625,15 +6081,9 @@ private constructor(
                         return@apply
                     }
 
-                    numModelRequests()
-                    _object_().let {
-                        if (
-                            it != JsonValue.from("organization.usage.audio_transcriptions.result")
-                        ) {
-                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                        }
-                    }
-                    seconds()
+                    numModelRequestsOrThrow()
+                    object_OrThrow()
+                    secondsOrThrow()
                     apiKeyId()
                     model()
                     projectId()
@@ -5729,33 +6179,59 @@ private constructor(
                 ) : this(object_, usageBytes, projectId, mutableMapOf())
 
                 /**
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("organization.usage.vector_stores.result")
-                 * ```
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
                  *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+                fun object_(): java.util.Optional<JsonValue> {
+                    val raw = object_
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("organization.usage.vector_stores.result")) ->
+                            throw OpenAIInvalidDataException("`object` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
 
                 /**
-                 * The vector stores usage in bytes.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun usageBytes(): Long = usageBytes.getRequired("usage_bytes")
+                fun object_OrThrow(): JsonValue =
+                    object_().orElseGet { object_.getRequired("object") }
+
+                @JsonProperty("object")
+                @ExcludeMissing
+                fun _object_(): JsonField<JsonValue> = object_
+
+                /**
+                 * The vector stores usage in bytes. The schema requires this property. Returns
+                 * empty if the JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun usageBytes(): java.util.Optional<Long> = usageBytes.getOptional("usage_bytes")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun usageBytesOrThrow(): Long = usageBytes.getRequired("usage_bytes")
 
                 /**
                  * When `group_by=project_id`, this field provides the project ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+                fun projectId(): java.util.Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun projectIdOrThrow(): String = projectId.getRequired("project_id")
 
                 /**
                  * Returns the raw JSON value of [usageBytes].
@@ -5950,12 +6426,8 @@ private constructor(
                         return@apply
                     }
 
-                    _object_().let {
-                        if (it != JsonValue.from("organization.usage.vector_stores.result")) {
-                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                        }
-                    }
-                    usageBytes()
+                    object_OrThrow()
+                    usageBytesOrThrow()
                     projectId()
                     validated = true
                 }
@@ -6029,33 +6501,62 @@ private constructor(
                 ) : this(numSessions, object_, projectId, mutableMapOf())
 
                 /**
-                 * The number of code interpreter sessions.
+                 * The number of code interpreter sessions. The schema requires this property.
+                 * Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun numSessions(): Long = numSessions.getRequired("num_sessions")
+                fun numSessions(): java.util.Optional<Long> =
+                    numSessions.getOptional("num_sessions")
 
                 /**
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("organization.usage.code_interpreter_sessions.result")
-                 * ```
-                 *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+                fun numSessionsOrThrow(): Long = numSessions.getRequired("num_sessions")
+
+                /**
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun object_(): java.util.Optional<JsonValue> {
+                    val raw = object_
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw ==
+                            JsonValue.from(
+                                "organization.usage.code_interpreter_sessions.result"
+                            )) -> throw OpenAIInvalidDataException("`object` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun object_OrThrow(): JsonValue =
+                    object_().orElseGet { object_.getRequired("object") }
+
+                @JsonProperty("object")
+                @ExcludeMissing
+                fun _object_(): JsonField<JsonValue> = object_
 
                 /**
                  * When `group_by=project_id`, this field provides the project ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+                fun projectId(): java.util.Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun projectIdOrThrow(): String = projectId.getRequired("project_id")
 
                 /**
                  * Returns the raw JSON value of [numSessions].
@@ -6253,17 +6754,8 @@ private constructor(
                         return@apply
                     }
 
-                    numSessions()
-                    _object_().let {
-                        if (
-                            it !=
-                                JsonValue.from(
-                                    "organization.usage.code_interpreter_sessions.result"
-                                )
-                        ) {
-                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                        }
-                    }
+                    numSessionsOrThrow()
+                    object_OrThrow()
                     projectId()
                     validated = true
                 }
@@ -6361,60 +6853,103 @@ private constructor(
                 )
 
                 /**
-                 * The count of file search calls.
+                 * The count of file search calls. The schema requires this property. Returns empty
+                 * if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun numRequests(): Long = numRequests.getRequired("num_requests")
+                fun numRequests(): java.util.Optional<Long> =
+                    numRequests.getOptional("num_requests")
 
                 /**
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("organization.usage.file_searches.result")
-                 * ```
-                 *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+                fun numRequestsOrThrow(): Long = numRequests.getRequired("num_requests")
+
+                /**
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun object_(): java.util.Optional<JsonValue> {
+                    val raw = object_
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("organization.usage.file_searches.result")) ->
+                            throw OpenAIInvalidDataException("`object` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun object_OrThrow(): JsonValue =
+                    object_().orElseGet { object_.getRequired("object") }
+
+                @JsonProperty("object")
+                @ExcludeMissing
+                fun _object_(): JsonField<JsonValue> = object_
 
                 /**
                  * When `group_by=api_key_id`, this field provides the API key ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+                fun apiKeyId(): java.util.Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun apiKeyIdOrThrow(): String = apiKeyId.getRequired("api_key_id")
 
                 /**
                  * When `group_by=project_id`, this field provides the project ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+                fun projectId(): java.util.Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun projectIdOrThrow(): String = projectId.getRequired("project_id")
 
                 /**
                  * When `group_by=user_id`, this field provides the user ID of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun userId(): Optional<String> = userId.getOptional("user_id")
+                fun userId(): java.util.Optional<String> = userId.getOptional("user_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun userIdOrThrow(): String = userId.getRequired("user_id")
 
                 /**
                  * When `group_by=vector_store_id`, this field provides the vector store ID of the
-                 * grouped usage result.
+                 * grouped usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun vectorStoreId(): Optional<String> = vectorStoreId.getOptional("vector_store_id")
+                fun vectorStoreId(): java.util.Optional<String> =
+                    vectorStoreId.getOptional("vector_store_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun vectorStoreIdOrThrow(): String = vectorStoreId.getRequired("vector_store_id")
 
                 /**
                  * Returns the raw JSON value of [numRequests].
@@ -6709,12 +7244,8 @@ private constructor(
                         return@apply
                     }
 
-                    numRequests()
-                    _object_().let {
-                        if (it != JsonValue.from("organization.usage.file_searches.result")) {
-                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                        }
-                    }
+                    numRequestsOrThrow()
+                    object_OrThrow()
                     apiKeyId()
                     projectId()
                     userId()
@@ -6838,89 +7369,150 @@ private constructor(
                 )
 
                 /**
-                 * The count of model requests.
+                 * The count of model requests. The schema requires this property. Returns empty if
+                 * the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun numModelRequests(): Long = numModelRequests.getRequired("num_model_requests")
+                fun numModelRequests(): java.util.Optional<Long> =
+                    numModelRequests.getOptional("num_model_requests")
 
                 /**
-                 * The count of web search calls.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-                 *   value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun numRequests(): Long = numRequests.getRequired("num_requests")
+                fun numModelRequestsOrThrow(): Long =
+                    numModelRequests.getRequired("num_model_requests")
 
                 /**
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("organization.usage.web_searches.result")
-                 * ```
+                 * The count of web search calls. The schema requires this property. Returns empty
+                 * if the JSON property is missing or null.
                  *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+                fun numRequests(): java.util.Optional<Long> =
+                    numRequests.getOptional("num_requests")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun numRequestsOrThrow(): Long = numRequests.getRequired("num_requests")
+
+                /**
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun object_(): java.util.Optional<JsonValue> {
+                    val raw = object_
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("organization.usage.web_searches.result")) ->
+                            throw OpenAIInvalidDataException("`object` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun object_OrThrow(): JsonValue =
+                    object_().orElseGet { object_.getRequired("object") }
+
+                @JsonProperty("object")
+                @ExcludeMissing
+                fun _object_(): JsonField<JsonValue> = object_
 
                 /**
                  * When `group_by=api_key_id`, this field provides the API key ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+                fun apiKeyId(): java.util.Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun apiKeyIdOrThrow(): String = apiKeyId.getRequired("api_key_id")
 
                 /**
                  * When grouped by `api_source`, `agents_api` identifies attributed Agents API
                  * activity and `unlabeled` includes all records without published source
                  * attribution, including historical and unknown origins. Unlabeled does not imply
-                 * direct API usage. Without source grouping, this field is null.
+                 * direct API usage. Without source grouping, this field is null. Returns empty if
+                 * the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun apiSource(): Optional<ApiSource> = apiSource.getOptional("api_source")
+                fun apiSource(): java.util.Optional<ApiSource> = apiSource.getOptional("api_source")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun apiSourceOrThrow(): ApiSource = apiSource.getRequired("api_source")
 
                 /**
                  * When `group_by=context_level`, this field provides the search context size of the
-                 * grouped usage result.
+                 * grouped usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun contextLevel(): Optional<String> = contextLevel.getOptional("context_level")
+                fun contextLevel(): java.util.Optional<String> =
+                    contextLevel.getOptional("context_level")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun contextLevelOrThrow(): String = contextLevel.getRequired("context_level")
 
                 /**
                  * When `group_by=model`, this field provides the model name of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun model(): Optional<String> = model.getOptional("model")
+                fun model(): java.util.Optional<String> = model.getOptional("model")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun modelOrThrow(): String = model.getRequired("model")
 
                 /**
                  * When `group_by=project_id`, this field provides the project ID of the grouped
-                 * usage result.
+                 * usage result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+                fun projectId(): java.util.Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun projectIdOrThrow(): String = projectId.getRequired("project_id")
 
                 /**
                  * When `group_by=user_id`, this field provides the user ID of the grouped usage
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun userId(): Optional<String> = userId.getOptional("user_id")
+                fun userId(): java.util.Optional<String> = userId.getOptional("user_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun userIdOrThrow(): String = userId.getRequired("user_id")
 
                 /**
                  * Returns the raw JSON value of [numModelRequests].
@@ -7313,13 +7905,9 @@ private constructor(
                         return@apply
                     }
 
-                    numModelRequests()
-                    numRequests()
-                    _object_().let {
-                        if (it != JsonValue.from("organization.usage.web_searches.result")) {
-                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                        }
-                    }
+                    numModelRequestsOrThrow()
+                    numRequestsOrThrow()
+                    object_OrThrow()
                     apiKeyId()
                     apiSource().ifPresent { it.validate() }
                     contextLevel()
@@ -7609,89 +8197,149 @@ private constructor(
                 )
 
                 /**
-                 * Expected to always return the following:
-                 * ```java
-                 * JsonValue.from("organization.costs.result")
-                 * ```
+                 * The schema requires this property. Returns empty if the JSON property is missing
+                 * or null.
                  *
-                 * However, this method can be useful for debugging and logging (e.g. if the server
-                 * responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
+                fun object_(): java.util.Optional<JsonValue> {
+                    val raw = object_
+                    return when {
+                        raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                        !(raw == JsonValue.from("organization.costs.result")) ->
+                            throw OpenAIInvalidDataException("`object` is invalid")
+                        else -> java.util.Optional.of(raw)
+                    }
+                }
 
                 /**
-                 * The monetary value in its associated currency.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun amount(): Optional<Amount> = amount.getOptional("amount")
+                fun object_OrThrow(): JsonValue =
+                    object_().orElseGet { object_.getRequired("object") }
+
+                @JsonProperty("object")
+                @ExcludeMissing
+                fun _object_(): JsonField<JsonValue> = object_
+
+                /**
+                 * The monetary value in its associated currency. Returns empty if the JSON property
+                 * is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun amount(): java.util.Optional<Amount> = amount.getOptional("amount")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun amountOrThrow(): Amount = amount.getRequired("amount")
 
                 /**
                  * When `group_by=api_key_id`, this field provides the API Key ID of the grouped
-                 * costs result.
+                 * costs result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+                fun apiKeyId(): java.util.Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun apiKeyIdOrThrow(): String = apiKeyId.getRequired("api_key_id")
 
                 /**
                  * When grouped by `api_source`, `agents_api` identifies attributed Agents API
                  * activity and `unlabeled` includes all records without published source
                  * attribution, including historical and unknown origins. Unlabeled does not imply
-                 * direct API usage. Without source grouping, this field is null.
+                 * direct API usage. Without source grouping, this field is null. Returns empty if
+                 * the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun apiSource(): Optional<ApiSource> = apiSource.getOptional("api_source")
+                fun apiSource(): java.util.Optional<ApiSource> = apiSource.getOptional("api_source")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun apiSourceOrThrow(): ApiSource = apiSource.getRequired("api_source")
 
                 /**
                  * When `group_by=line_item`, this field provides the line item of the grouped costs
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun lineItem(): Optional<String> = lineItem.getOptional("line_item")
+                fun lineItem(): java.util.Optional<String> = lineItem.getOptional("line_item")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun lineItemOrThrow(): String = lineItem.getRequired("line_item")
 
                 /**
                  * When `group_by=project_id`, this field provides the project ID of the grouped
-                 * costs result.
+                 * costs result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun projectId(): Optional<String> = projectId.getOptional("project_id")
+                fun projectId(): java.util.Optional<String> = projectId.getOptional("project_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun projectIdOrThrow(): String = projectId.getRequired("project_id")
 
                 /**
                  * When `group_by=line_item`, this field provides the quantity of the grouped costs
-                 * result.
+                 * result. Returns empty if the JSON property is missing or null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun quantity(): Optional<Double> = quantity.getOptional("quantity")
+                fun quantity(): java.util.Optional<Double> = quantity.getOptional("quantity")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun quantityOrThrow(): Double = quantity.getRequired("quantity")
 
                 /**
                  * The unit of the `quantity` value. If no single supported unit applies to the
-                 * result, this field is `null`.
+                 * result, this field is `null`. Returns empty if the JSON property is missing or
+                 * null.
                  *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
                  */
-                fun quantityUnit(): Optional<CostQuantityUnit> =
+                fun quantityUnit(): java.util.Optional<CostQuantityUnit> =
                     quantityUnit.getOptional("quantity_unit")
 
                 /**
-                 * When `group_by=user_id`, this field provides the user ID of the grouped costs
-                 * result.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
                  */
-                fun userId(): Optional<String> = userId.getOptional("user_id")
+                fun quantityUnitOrThrow(): CostQuantityUnit =
+                    quantityUnit.getRequired("quantity_unit")
+
+                /**
+                 * When `group_by=user_id`, this field provides the user ID of the grouped costs
+                 * result. Returns empty if the JSON property is missing or null.
+                 *
+                 * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                 */
+                fun userId(): java.util.Optional<String> = userId.getOptional("user_id")
+
+                /**
+                 * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null,
+                 * or invalid.
+                 */
+                fun userIdOrThrow(): String = userId.getRequired("user_id")
 
                 /**
                  * Returns the raw JSON value of [amount].
@@ -8084,11 +8732,7 @@ private constructor(
                         return@apply
                     }
 
-                    _object_().let {
-                        if (it != JsonValue.from("organization.costs.result")) {
-                            throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-                        }
-                    }
+                    object_OrThrow()
                     amount().ifPresent { it.validate() }
                     apiKeyId()
                     apiSource().ifPresent { it.validate() }
@@ -8148,20 +8792,32 @@ private constructor(
                     ) : this(currency, value, mutableMapOf())
 
                     /**
-                     * Lowercase ISO-4217 currency e.g. "usd"
+                     * Lowercase ISO-4217 currency e.g. "usd" Returns empty if the JSON property is
+                     * missing or null.
                      *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   (e.g. if the server responded with an unexpected value).
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
                      */
-                    fun currency(): Optional<String> = currency.getOptional("currency")
+                    fun currency(): java.util.Optional<String> = currency.getOptional("currency")
 
                     /**
-                     * The numeric value of the cost.
-                     *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   (e.g. if the server responded with an unexpected value).
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
                      */
-                    fun value(): Optional<Double> = value.getOptional("value")
+                    fun currencyOrThrow(): String = currency.getRequired("currency")
+
+                    /**
+                     * The numeric value of the cost. Returns empty if the JSON property is missing
+                     * or null.
+                     *
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                     */
+                    fun value(): java.util.Optional<Double> = value.getOptional("value")
+
+                    /**
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
+                     */
+                    fun valueOrThrow(): Double = value.getRequired("value")
 
                     /**
                      * Returns the raw JSON value of [currency].
