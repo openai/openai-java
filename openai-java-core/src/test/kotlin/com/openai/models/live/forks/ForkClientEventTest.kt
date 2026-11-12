@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.decisions.DecisionChoiceOption
 import com.openai.models.live.AudioFormat
 import com.openai.models.live.ClientConfig
 import com.openai.models.live.CommentaryAppendEvent
@@ -13,7 +14,9 @@ import com.openai.models.live.DataChannelConfig
 import com.openai.models.live.DecisionCreateEvent
 import com.openai.models.live.DecisionItemCreateEvent
 import com.openai.models.live.DecisionItemDeleteEvent
+import com.openai.models.live.DecisionQuestion
 import com.openai.models.live.DecisionTrigger
+import com.openai.models.live.DecisionUserMessage
 import com.openai.models.live.ForkSessionConfig
 import com.openai.models.live.ForkSessionStartEvent
 import com.openai.models.live.FunctionTool
@@ -309,7 +312,13 @@ internal class ForkClientEventTest {
                                 .decisions(
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                            DecisionQuestion.Choice.builder()
+                                                .addChoice(
+                                                    DecisionChoiceOption.builder()
+                                                        .value("string")
+                                                        .description("description")
+                                                        .build()
+                                                )
                                                 .instructions("string")
                                                 .name("name")
                                                 .build()
@@ -417,8 +426,13 @@ internal class ForkClientEventTest {
                                     .decisions(
                                         DecisionTrigger.Decisions.builder()
                                             .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
+                                                DecisionQuestion.Choice.builder()
+                                                    .addChoice(
+                                                        DecisionChoiceOption.builder()
+                                                            .value("string")
+                                                            .description("description")
+                                                            .build()
+                                                    )
                                                     .instructions("string")
                                                     .name("name")
                                                     .build()
@@ -813,10 +827,10 @@ internal class ForkClientEventTest {
         val decisionItemCreate =
             DecisionItemCreateEvent.builder()
                 .item(
-                    DecisionItemCreateEvent.Item.builder()
+                    DecisionUserMessage.builder()
                         .content("string")
                         .id("id")
-                        .type(DecisionItemCreateEvent.Item.Type.MESSAGE)
+                        .type(DecisionUserMessage.Type.MESSAGE)
                         .build()
                 )
                 .eventId("browser_1")
@@ -848,10 +862,10 @@ internal class ForkClientEventTest {
             ForkClientEvent.ofDecisionItemCreate(
                 DecisionItemCreateEvent.builder()
                     .item(
-                        DecisionItemCreateEvent.Item.builder()
+                        DecisionUserMessage.builder()
                             .content("string")
                             .id("id")
-                            .type(DecisionItemCreateEvent.Item.Type.MESSAGE)
+                            .type(DecisionUserMessage.Type.MESSAGE)
                             .build()
                     )
                     .eventId("browser_1")

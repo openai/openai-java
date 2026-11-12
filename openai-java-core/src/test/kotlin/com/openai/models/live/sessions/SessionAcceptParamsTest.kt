@@ -2,8 +2,10 @@
 
 package com.openai.models.live.sessions
 
+import com.openai.models.decisions.DecisionChoiceOption
 import com.openai.models.live.BuiltInVoice
 import com.openai.models.live.ClientDelegation
+import com.openai.models.live.DecisionQuestion
 import com.openai.models.live.DecisionTrigger
 import com.openai.models.live.InitialItem
 import org.assertj.core.api.Assertions.assertThat
@@ -48,7 +50,13 @@ internal class SessionAcceptParamsTest {
                             .decisions(
                                 DecisionTrigger.Decisions.builder()
                                     .addQuestion(
-                                        DecisionTrigger.Decisions.Question.Predicate.builder()
+                                        DecisionQuestion.Choice.builder()
+                                            .addChoice(
+                                                DecisionChoiceOption.builder()
+                                                    .value("string")
+                                                    .description("description")
+                                                    .build()
+                                            )
                                             .instructions("string")
                                             .name("name")
                                             .build()
@@ -118,7 +126,13 @@ internal class SessionAcceptParamsTest {
                                 .decisions(
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                            DecisionQuestion.Choice.builder()
+                                                .addChoice(
+                                                    DecisionChoiceOption.builder()
+                                                        .value("string")
+                                                        .description("description")
+                                                        .build()
+                                                )
                                                 .instructions("string")
                                                 .name("name")
                                                 .build()
@@ -168,7 +182,13 @@ internal class SessionAcceptParamsTest {
                             .decisions(
                                 DecisionTrigger.Decisions.builder()
                                     .addQuestion(
-                                        DecisionTrigger.Decisions.Question.Predicate.builder()
+                                        DecisionQuestion.Choice.builder()
+                                            .addChoice(
+                                                DecisionChoiceOption.builder()
+                                                    .value("string")
+                                                    .description("description")
+                                                    .build()
+                                            )
                                             .instructions("string")
                                             .name("name")
                                             .build()

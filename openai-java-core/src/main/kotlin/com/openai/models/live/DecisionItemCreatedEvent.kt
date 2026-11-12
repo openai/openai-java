@@ -221,6 +221,48 @@ private constructor(
         fun item(item: JsonField<Item>) = apply { this.item = item }
 
         /**
+         * Alias for calling [item] with
+         * `Item.ofDecisionStoredUserMessage(decisionStoredUserMessage)`.
+         */
+        fun item(decisionStoredUserMessage: DecisionStoredUserMessage) =
+            item(Item.ofDecisionStoredUserMessage(decisionStoredUserMessage))
+
+        /**
+         * Alias for calling [item] with
+         * `Item.ofDecisionStoredDeveloperMessage(decisionStoredDeveloperMessage)`.
+         */
+        fun item(decisionStoredDeveloperMessage: DecisionStoredDeveloperMessage) =
+            item(Item.ofDecisionStoredDeveloperMessage(decisionStoredDeveloperMessage))
+
+        /**
+         * Alias for calling [item] with
+         * `Item.ofDecisionStoredSystemMessage(decisionStoredSystemMessage)`.
+         */
+        fun item(decisionStoredSystemMessage: DecisionStoredSystemMessage) =
+            item(Item.ofDecisionStoredSystemMessage(decisionStoredSystemMessage))
+
+        /**
+         * Alias for calling [item] with
+         * `Item.ofDecisionStoredAssistantMessage(decisionStoredAssistantMessage)`.
+         */
+        fun item(decisionStoredAssistantMessage: DecisionStoredAssistantMessage) =
+            item(Item.ofDecisionStoredAssistantMessage(decisionStoredAssistantMessage))
+
+        /** Alias for calling [item] with `Item.ofFunctionCall(functionCall)`. */
+        fun item(functionCall: Item.FunctionCall) = item(Item.ofFunctionCall(functionCall))
+
+        /** Alias for calling [item] with `Item.ofFunctionCallOutput(functionCallOutput)`. */
+        fun item(functionCallOutput: Item.FunctionCallOutput) =
+            item(Item.ofFunctionCallOutput(functionCallOutput))
+
+        /** Alias for calling [item] with `Item.ofCustomToolCall(customToolCall)`. */
+        fun item(customToolCall: Item.CustomToolCall) = item(Item.ofCustomToolCall(customToolCall))
+
+        /** Alias for calling [item] with `Item.ofCustomToolCallOutput(customToolCallOutput)`. */
+        fun item(customToolCallOutput: Item.CustomToolCallOutput) =
+            item(Item.ofCustomToolCallOutput(customToolCallOutput))
+
+        /**
          * Sets the field to an arbitrary JSON value.
          *
          * It is usually unnecessary to call this method because the field defaults to the
@@ -332,309 +374,129 @@ private constructor(
             type.let { if (it == JsonValue.from("decision.item.created")) 1 else 0 } +
             (if (clientEventId.asKnown().isPresent) 1 else 0)
 
+    @JsonDeserialize(using = Item.Deserializer::class)
+    @JsonSerialize(using = Item.Serializer::class)
     class Item
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val id: JsonField<String>,
-        private val content: JsonField<Content>,
-        private val role: JsonValue,
-        private val type: JsonField<Type>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
+        private val decisionStoredUserMessage: DecisionStoredUserMessage? = null,
+        private val decisionStoredDeveloperMessage: DecisionStoredDeveloperMessage? = null,
+        private val decisionStoredSystemMessage: DecisionStoredSystemMessage? = null,
+        private val decisionStoredAssistantMessage: DecisionStoredAssistantMessage? = null,
+        private val functionCall: FunctionCall? = null,
+        private val functionCallOutput: FunctionCallOutput? = null,
+        private val customToolCall: CustomToolCall? = null,
+        private val customToolCallOutput: CustomToolCallOutput? = null,
+        private val _json: JsonValue? = null,
     ) {
 
-        @JsonCreator
-        private constructor(
-            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("content") @ExcludeMissing content: JsonField<Content> = JsonMissing.of(),
-            @JsonProperty("role") @ExcludeMissing role: JsonValue = JsonMissing.of(),
-            @com.fasterxml.jackson.databind.annotation.JsonDeserialize(
-                using = JsonValue.Deserializer::class
-            )
-            @JsonProperty("type")
-            @ExcludeMissing
-            type: JsonField<Type> = JsonMissing.of(),
-        ) : this(
-            id,
-            content,
-            role,
-            type.asString().getOrNull()?.let { JsonField.of(Type.of(it)) } ?: type,
-            mutableMapOf(),
-        )
+        fun decisionStoredUserMessage(): Optional<DecisionStoredUserMessage> =
+            Optional.ofNullable(decisionStoredUserMessage)
+
+        fun decisionStoredDeveloperMessage(): Optional<DecisionStoredDeveloperMessage> =
+            Optional.ofNullable(decisionStoredDeveloperMessage)
+
+        fun decisionStoredSystemMessage(): Optional<DecisionStoredSystemMessage> =
+            Optional.ofNullable(decisionStoredSystemMessage)
+
+        fun decisionStoredAssistantMessage(): Optional<DecisionStoredAssistantMessage> =
+            Optional.ofNullable(decisionStoredAssistantMessage)
+
+        fun functionCall(): Optional<FunctionCall> = Optional.ofNullable(functionCall)
+
+        fun functionCallOutput(): Optional<FunctionCallOutput> =
+            Optional.ofNullable(functionCallOutput)
+
+        fun customToolCall(): Optional<CustomToolCall> = Optional.ofNullable(customToolCall)
+
+        fun customToolCallOutput(): Optional<CustomToolCallOutput> =
+            Optional.ofNullable(customToolCallOutput)
+
+        fun isDecisionStoredUserMessage(): Boolean = decisionStoredUserMessage != null
+
+        fun isDecisionStoredDeveloperMessage(): Boolean = decisionStoredDeveloperMessage != null
+
+        fun isDecisionStoredSystemMessage(): Boolean = decisionStoredSystemMessage != null
+
+        fun isDecisionStoredAssistantMessage(): Boolean = decisionStoredAssistantMessage != null
+
+        fun isFunctionCall(): Boolean = functionCall != null
+
+        fun isFunctionCallOutput(): Boolean = functionCallOutput != null
+
+        fun isCustomToolCall(): Boolean = customToolCall != null
+
+        fun isCustomToolCallOutput(): Boolean = customToolCallOutput != null
+
+        fun asDecisionStoredUserMessage(): DecisionStoredUserMessage =
+            decisionStoredUserMessage.getOrThrow("decisionStoredUserMessage")
+
+        fun asDecisionStoredDeveloperMessage(): DecisionStoredDeveloperMessage =
+            decisionStoredDeveloperMessage.getOrThrow("decisionStoredDeveloperMessage")
+
+        fun asDecisionStoredSystemMessage(): DecisionStoredSystemMessage =
+            decisionStoredSystemMessage.getOrThrow("decisionStoredSystemMessage")
+
+        fun asDecisionStoredAssistantMessage(): DecisionStoredAssistantMessage =
+            decisionStoredAssistantMessage.getOrThrow("decisionStoredAssistantMessage")
+
+        fun asFunctionCall(): FunctionCall = functionCall.getOrThrow("functionCall")
+
+        fun asFunctionCallOutput(): FunctionCallOutput =
+            functionCallOutput.getOrThrow("functionCallOutput")
+
+        fun asCustomToolCall(): CustomToolCall = customToolCall.getOrThrow("customToolCall")
+
+        fun asCustomToolCallOutput(): CustomToolCallOutput =
+            customToolCallOutput.getOrThrow("customToolCallOutput")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         /**
-         * The ID of the stored Decision input item. The schema requires this property. Returns
-         * empty if the JSON property is missing or null.
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
          *
-         * @throws OpenAIInvalidDataException if the value has an unexpected type.
-         */
-        fun id(): java.util.Optional<String> = id.getOptional("id")
-
-        /**
-         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
-         * invalid.
-         */
-        fun idOrThrow(): String = id.getRequired("id")
-
-        /**
-         * The required content of a message item. Tool call and output items omit content. The
-         * schema requires this property. Returns empty if the JSON property is missing or null.
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
          *
-         * @throws OpenAIInvalidDataException if the value has an unexpected type.
-         */
-        fun content(): java.util.Optional<Content> = content.getOptional("content")
-
-        /**
-         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
-         * invalid.
-         */
-        fun contentOrThrow(): Content = content.getRequired("content")
-
-        /**
-         * The role on a message item. Tool call and output items omit role. The schema requires
-         * this property. Returns empty if the JSON property is missing or null.
+         * Optional<String> result = item.accept(new Item.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitDecisionStoredUserMessage(DecisionStoredUserMessage decisionStoredUserMessage) {
+         *         return Optional.of(decisionStoredUserMessage.toString());
+         *     }
          *
-         * @throws OpenAIInvalidDataException if the value has an unexpected type.
-         */
-        fun role(): java.util.Optional<JsonValue> {
-            val raw = role
-            return when {
-                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
-                !(raw == JsonValue.from("assistant") ||
-                    raw == JsonValue.from("developer") ||
-                    raw == JsonValue.from("system") ||
-                    raw == JsonValue.from("user")) ->
-                    throw OpenAIInvalidDataException("`role` is invalid")
-                else -> java.util.Optional.of(raw)
-            }
-        }
-
-        /**
-         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
-         * invalid.
-         */
-        fun roleOrThrow(): JsonValue = role().orElseGet { role.getRequired("role") }
-
-        @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<JsonValue> = role
-
-        /**
-         * The item type. An omitted type denotes a message. Tool call and output items have their
-         * corresponding tool type. Returns empty if the JSON property is missing or null.
+         *     // ...
          *
-         * @throws OpenAIInvalidDataException if the value has an unexpected type.
-         */
-        fun type(): java.util.Optional<JsonValue> {
-            val raw = JsonValue.from(type)
-            return when {
-                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
-                !(raw == JsonValue.from("custom_tool_call") ||
-                    raw == JsonValue.from("custom_tool_call_output") ||
-                    raw == JsonValue.from("function_call") ||
-                    raw == JsonValue.from("function_call_output") ||
-                    raw == JsonValue.from("message")) ->
-                    throw OpenAIInvalidDataException("`type` is invalid")
-                else -> java.util.Optional.of(raw)
-            }
-        }
-
-        /**
-         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
-         * invalid.
-         */
-        fun typeOrThrow(): JsonValue = type().orElseGet { JsonValue.from(type).getRequired("type") }
-
-        @JsonProperty("type")
-        @ExcludeMissing
-        fun _type(): JsonField<JsonValue> = JsonValue.from(type)
-
-        /**
-         * Returns the raw JSON value of [id].
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
          *
-         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
          */
-        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
-
-        /**
-         * Returns the raw JSON value of [content].
-         *
-         * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<Content> = content
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(
-                additionalProperties,
-                "id" to this.id,
-                "content" to this.content,
-                "role" to this.role,
-                "type" to this.type,
-            )
-
-        @JvmSynthetic
-        internal fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Item].
-             *
-             * The following fields are required:
-             * ```java
-             * .id()
-             * .content()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Item]. */
-        class Builder internal constructor() {
-
-            private var id: JsonField<String>? = null
-            private var content: JsonField<Content>? = null
-            private var role: JsonValue = JsonValue.from("user")
-            private var type: JsonField<Type> = JsonField.of(Type.MESSAGE)
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(item: Item) = apply {
-                id = item.id
-                content = item.content
-                role = item.role
-                type = item.type
-                additionalProperties = item.additionalProperties.toMutableMap()
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                decisionStoredUserMessage != null ->
+                    visitor.visitDecisionStoredUserMessage(decisionStoredUserMessage)
+                decisionStoredDeveloperMessage != null ->
+                    visitor.visitDecisionStoredDeveloperMessage(decisionStoredDeveloperMessage)
+                decisionStoredSystemMessage != null ->
+                    visitor.visitDecisionStoredSystemMessage(decisionStoredSystemMessage)
+                decisionStoredAssistantMessage != null ->
+                    visitor.visitDecisionStoredAssistantMessage(decisionStoredAssistantMessage)
+                functionCall != null -> visitor.visitFunctionCall(functionCall)
+                functionCallOutput != null -> visitor.visitFunctionCallOutput(functionCallOutput)
+                customToolCall != null -> visitor.visitCustomToolCall(customToolCall)
+                customToolCallOutput != null ->
+                    visitor.visitCustomToolCallOutput(customToolCallOutput)
+                else -> visitor.unknown(_json)
             }
-
-            /** The ID of the stored Decision input item. */
-            fun id(id: String) = id(JsonField.of(id))
-
-            /**
-             * Sets [Builder.id] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.id] with a well-typed [String] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun id(id: JsonField<String>) = apply { this.id = id }
-
-            /** The required content of a message item. Tool call and output items omit content. */
-            fun content(content: Content) = content(JsonField.of(content))
-
-            /**
-             * Sets [Builder.content] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.content] with a well-typed [Content] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun content(content: JsonField<Content>) = apply { this.content = content }
-
-            /** Alias for calling [content] with `Content.ofString(string)`. */
-            fun content(string: String) = content(Content.ofString(string))
-
-            /**
-             * Alias for calling [content] with
-             * `Content.ofDecisionItemCreatedEventItemContentItems(decisionItemCreatedEventItemContentItems)`.
-             */
-            fun contentOfDecisionItemCreatedEventItemContentItems(
-                decisionItemCreatedEventItemContentItems:
-                    List<Content.DecisionItemCreatedEventItemContentItem>
-            ) =
-                content(
-                    Content.ofDecisionItemCreatedEventItemContentItems(
-                        decisionItemCreatedEventItemContentItems
-                    )
-                )
-
-            /**
-             * Sets the field to an arbitrary JSON value.
-             *
-             * It is usually unnecessary to call this method because the field defaults to the
-             * following:
-             * ```java
-             * JsonValue.from("user")
-             * ```
-             *
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun role(role: JsonValue) = apply { this.role = role }
-
-            /**
-             * The item type. An omitted type denotes a message. Tool call and output items have
-             * their corresponding tool type.
-             */
-            fun type(type: Type) = type(JsonField.of(type))
-
-            /**
-             * Sets [Builder.type] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.type] with a well-typed [Type] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun type(type: JsonField<Type>) = apply { this.type = type }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Item].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .id()
-             * .content()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Item =
-                Item(
-                    checkRequired("id", id),
-                    checkRequired("content", content),
-                    role,
-                    type,
-                    additionalProperties.toMutableMap(),
-                )
-        }
 
         private var validated: Boolean = false
 
@@ -652,25 +514,81 @@ private constructor(
                 return@apply
             }
 
-            if (_type().isNull()) {
-                // The released Item validated null like an omitted type. Preserve its
-                // field checks without changing the wire value or newer item variants.
-                idOrThrow()
-                contentOrThrow().validate()
-                _role().let {
-                    if (it != JsonValue.from("user")) {
-                        throw OpenAIInvalidDataException("'role' is invalid, received $it")
-                    }
-                }
-                type()
-            } else {
-                val properties = _allProperties()
-                com.openai.models.live.DecisionInputItemValidation.validate(properties)
-                // Stored items require an ID in the same wire properties we validated.
-                if (properties["id"]?.isNull() != false) {
-                    throw OpenAIInvalidDataException("Missing required 'id'")
+            if (decisionStoredUserMessage != null && decisionStoredUserMessage._type().isNull()) {
+                // The released null-tag contract supports only text and image content.
+                val parts =
+                    decisionStoredUserMessage._allProperties()["content"]?.asArray()?.getOrNull()
+                if (
+                    parts != null &&
+                        parts.any {
+                            val kind = it.asObject().getOrNull()?.get("type")
+                            kind != JsonValue.from("input_text") &&
+                                kind != JsonValue.from("input_image")
+                        }
+                ) {
+                    throw OpenAIInvalidDataException("Invalid content for a null-type user message")
                 }
             }
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitDecisionStoredUserMessage(
+                        decisionStoredUserMessage: DecisionStoredUserMessage
+                    ) {
+                        decisionStoredUserMessage.validate()
+                    }
+
+                    override fun visitDecisionStoredDeveloperMessage(
+                        decisionStoredDeveloperMessage: DecisionStoredDeveloperMessage
+                    ) {
+                        if (decisionStoredDeveloperMessage._type().isNull()) {
+                            throw OpenAIInvalidDataException(
+                                "Only a user message may have a null type"
+                            )
+                        }
+                        decisionStoredDeveloperMessage.validate()
+                    }
+
+                    override fun visitDecisionStoredSystemMessage(
+                        decisionStoredSystemMessage: DecisionStoredSystemMessage
+                    ) {
+                        if (decisionStoredSystemMessage._type().isNull()) {
+                            throw OpenAIInvalidDataException(
+                                "Only a user message may have a null type"
+                            )
+                        }
+                        decisionStoredSystemMessage.validate()
+                    }
+
+                    override fun visitDecisionStoredAssistantMessage(
+                        decisionStoredAssistantMessage: DecisionStoredAssistantMessage
+                    ) {
+                        if (decisionStoredAssistantMessage._type().isNull()) {
+                            throw OpenAIInvalidDataException(
+                                "Only a user message may have a null type"
+                            )
+                        }
+                        decisionStoredAssistantMessage.validate()
+                    }
+
+                    override fun visitFunctionCall(functionCall: FunctionCall) {
+                        functionCall.validate()
+                    }
+
+                    override fun visitFunctionCallOutput(functionCallOutput: FunctionCallOutput) {
+                        functionCallOutput.validate()
+                    }
+
+                    override fun visitCustomToolCall(customToolCall: CustomToolCall) {
+                        customToolCall.validate()
+                    }
+
+                    override fun visitCustomToolCallOutput(
+                        customToolCallOutput: CustomToolCallOutput
+                    ) {
+                        customToolCallOutput.validate()
+                    }
+                }
+            )
             validated = true
         }
 
@@ -690,12 +608,570 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (id.asKnown().isPresent) 1 else 0) +
-                (content.asKnown().getOrNull()?.validity() ?: 0) +
-                role.let { if (it == JsonValue.from("user")) 1 else 0 } +
-                (type.asKnown().getOrNull()?.validity() ?: 0)
+            accept(
+                object : Visitor<Int> {
+                    override fun visitDecisionStoredUserMessage(
+                        decisionStoredUserMessage: DecisionStoredUserMessage
+                    ) = decisionStoredUserMessage.validity()
 
-        /** The required content of a message item. Tool call and output items omit content. */
+                    override fun visitDecisionStoredDeveloperMessage(
+                        decisionStoredDeveloperMessage: DecisionStoredDeveloperMessage
+                    ) = decisionStoredDeveloperMessage.validity()
+
+                    override fun visitDecisionStoredSystemMessage(
+                        decisionStoredSystemMessage: DecisionStoredSystemMessage
+                    ) = decisionStoredSystemMessage.validity()
+
+                    override fun visitDecisionStoredAssistantMessage(
+                        decisionStoredAssistantMessage: DecisionStoredAssistantMessage
+                    ) = decisionStoredAssistantMessage.validity()
+
+                    override fun visitFunctionCall(functionCall: FunctionCall) =
+                        functionCall.validity()
+
+                    override fun visitFunctionCallOutput(functionCallOutput: FunctionCallOutput) =
+                        functionCallOutput.validity()
+
+                    override fun visitCustomToolCall(customToolCall: CustomToolCall) =
+                        customToolCall.validity()
+
+                    override fun visitCustomToolCallOutput(
+                        customToolCallOutput: CustomToolCallOutput
+                    ) = customToolCallOutput.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Item &&
+                decisionStoredUserMessage == other.decisionStoredUserMessage &&
+                decisionStoredDeveloperMessage == other.decisionStoredDeveloperMessage &&
+                decisionStoredSystemMessage == other.decisionStoredSystemMessage &&
+                decisionStoredAssistantMessage == other.decisionStoredAssistantMessage &&
+                functionCall == other.functionCall &&
+                functionCallOutput == other.functionCallOutput &&
+                customToolCall == other.customToolCall &&
+                customToolCallOutput == other.customToolCallOutput &&
+                (decisionStoredUserMessage != null ||
+                    decisionStoredDeveloperMessage != null ||
+                    decisionStoredSystemMessage != null ||
+                    decisionStoredAssistantMessage != null ||
+                    functionCall != null ||
+                    functionCallOutput != null ||
+                    customToolCall != null ||
+                    customToolCallOutput != null ||
+                    _json == other._json)
+        }
+
+        override fun hashCode(): Int =
+            if (
+                decisionStoredUserMessage == null &&
+                    decisionStoredDeveloperMessage == null &&
+                    decisionStoredSystemMessage == null &&
+                    decisionStoredAssistantMessage == null &&
+                    functionCall == null &&
+                    functionCallOutput == null &&
+                    customToolCall == null &&
+                    customToolCallOutput == null
+            )
+                Objects.hash(_json)
+            else
+                Objects.hash(
+                    decisionStoredUserMessage,
+                    decisionStoredDeveloperMessage,
+                    decisionStoredSystemMessage,
+                    decisionStoredAssistantMessage,
+                    functionCall,
+                    functionCallOutput,
+                    customToolCall,
+                    customToolCallOutput,
+                )
+
+        override fun toString(): String =
+            when {
+                decisionStoredUserMessage != null ->
+                    "Item{decisionStoredUserMessage=$decisionStoredUserMessage}"
+                decisionStoredDeveloperMessage != null ->
+                    "Item{decisionStoredDeveloperMessage=$decisionStoredDeveloperMessage}"
+                decisionStoredSystemMessage != null ->
+                    "Item{decisionStoredSystemMessage=$decisionStoredSystemMessage}"
+                decisionStoredAssistantMessage != null ->
+                    "Item{decisionStoredAssistantMessage=$decisionStoredAssistantMessage}"
+                functionCall != null -> "Item{functionCall=$functionCall}"
+                functionCallOutput != null -> "Item{functionCallOutput=$functionCallOutput}"
+                customToolCall != null -> "Item{customToolCall=$customToolCall}"
+                customToolCallOutput != null -> "Item{customToolCallOutput=$customToolCallOutput}"
+                _json != null -> "Item{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Item")
+            }
+
+        // Project the final wire fields through the released message accessors.
+        private fun legacyMessage(): DecisionStoredUserMessage =
+            if (isDecisionStoredUserMessage()) asDecisionStoredUserMessage()
+            else checkNotNull(JsonValue.from(this).convert(DecisionStoredUserMessage::class.java))
+
+        fun content(): Optional<Content> = _content().getOptional("content")
+
+        fun contentOrThrow() = _content().getRequired("content")
+
+        fun _content(): JsonField<Content> =
+            legacyMessage()._content().map {
+                checkNotNull(JsonValue.from(it).convert(Content::class.java))
+            }
+
+        fun id() = legacyMessage().id()
+
+        fun idOrThrow(): String = legacyMessage().idOrThrow()
+
+        fun _id(): JsonField<String> = legacyMessage()._id()
+
+        private fun wireField(name: String): JsonValue =
+            (_json ?: JsonValue.from(this)).asObject().getOrNull()?.get(name) ?: JsonMissing.of()
+
+        fun role(): Optional<JsonValue> {
+            val raw = wireField("role")
+            if (raw.isMissing() || raw.isNull()) return Optional.empty()
+            return when (raw.asString().getOrNull()) {
+                "user",
+                "developer",
+                "system",
+                "assistant" -> Optional.of(raw)
+                else -> throw OpenAIInvalidDataException("`role` is invalid")
+            }
+        }
+
+        fun roleOrThrow(): JsonValue = role().orElseGet { _role().getRequired("role") }
+
+        fun _role(): JsonField<JsonValue> = wireField("role")
+
+        fun type(): Optional<Type> =
+            _type().getOptional("type").map { value ->
+                when (value.asString()) {
+                    "message",
+                    "function_call",
+                    "function_call_output",
+                    "custom_tool_call",
+                    "custom_tool_call_output" -> value
+                    else -> throw OpenAIInvalidDataException("`type` is invalid")
+                }
+            }
+
+        fun typeOrThrow(): Type = type().orElseGet { _type().getRequired("type") }
+
+        fun _type(): JsonField<Type> {
+            val raw = wireField("type")
+            val tag = raw.asString().getOrNull() ?: return raw
+            return JsonField.of(Type.of(tag))
+        }
+
+        fun _allProperties(): Map<String, JsonValue> = legacyMessage()._allProperties()
+
+        fun toBuilder(): Builder = Builder().from(this)
+
+        /** Builds an item from the final wire fields using the released message defaults. */
+        class Builder internal constructor() {
+            private val message = DecisionStoredUserMessage.builder()
+
+            internal fun from(value: Item) = apply { message.from(value.legacyMessage()) }
+
+            fun content(value: String) = apply { message.content(value) }
+
+            fun content(value: DecisionStoredUserMessage.Content) = apply { message.content(value) }
+
+            fun content(value: Content) = content(JsonField.of(value))
+
+            fun content(value: JsonField<Content>) = apply {
+                message.content(
+                    value.map {
+                        checkNotNull(
+                            JsonValue.from(it)
+                                .convert(DecisionStoredUserMessage.Content::class.java)
+                        )
+                    }
+                )
+            }
+
+            fun contentOfDecisionItemCreatedEventItemContentItems(
+                values: List<Content.DecisionItemCreatedEventItemContentItem>
+            ) = content(Content.ofDecisionItemCreatedEventItemContentItems(values))
+
+            fun id(value: String) = apply { message.id(value) }
+
+            fun id(value: JsonField<String>) = apply { message.id(value) }
+
+            fun role(value: JsonValue) = apply { message.role(value) }
+
+            fun type(value: DecisionStoredUserMessage.Type) = apply { message.type(value) }
+
+            fun type(value: Type) = type(JsonField.of(value))
+
+            fun type(value: JsonField<Type>) = apply {
+                message.type(
+                    value.map {
+                        checkNotNull(
+                            JsonValue.from(it).convert(DecisionStoredUserMessage.Type::class.java)
+                        )
+                    }
+                )
+            }
+
+            fun additionalProperties(properties: Map<String, JsonValue>) = apply {
+                message.additionalProperties(properties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                message.putAdditionalProperty(key, value)
+            }
+
+            fun putAllAdditionalProperties(properties: Map<String, JsonValue>) = apply {
+                message.putAllAdditionalProperties(properties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply {
+                message.removeAdditionalProperty(key)
+            }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                message.removeAllAdditionalProperties(keys)
+            }
+
+            fun build(): Item =
+                checkNotNull(JsonValue.from(message.build()).convert(Item::class.java))
+        }
+
+        companion object {
+
+            /** Creates a builder for the original user-message variant. */
+            @JvmStatic fun builder() = Builder()
+
+            @JvmStatic
+            fun ofDecisionStoredUserMessage(decisionStoredUserMessage: DecisionStoredUserMessage) =
+                Item(decisionStoredUserMessage = decisionStoredUserMessage)
+
+            @JvmStatic
+            fun ofDecisionStoredDeveloperMessage(
+                decisionStoredDeveloperMessage: DecisionStoredDeveloperMessage
+            ) = Item(decisionStoredDeveloperMessage = decisionStoredDeveloperMessage)
+
+            @JvmStatic
+            fun ofDecisionStoredSystemMessage(
+                decisionStoredSystemMessage: DecisionStoredSystemMessage
+            ) = Item(decisionStoredSystemMessage = decisionStoredSystemMessage)
+
+            @JvmStatic
+            fun ofDecisionStoredAssistantMessage(
+                decisionStoredAssistantMessage: DecisionStoredAssistantMessage
+            ) = Item(decisionStoredAssistantMessage = decisionStoredAssistantMessage)
+
+            @JvmStatic
+            fun ofFunctionCall(functionCall: FunctionCall) = Item(functionCall = functionCall)
+
+            @JvmStatic
+            fun ofFunctionCallOutput(functionCallOutput: FunctionCallOutput) =
+                Item(functionCallOutput = functionCallOutput)
+
+            @JvmStatic
+            fun ofCustomToolCall(customToolCall: CustomToolCall) =
+                Item(customToolCall = customToolCall)
+
+            @JvmStatic
+            fun ofCustomToolCallOutput(customToolCallOutput: CustomToolCallOutput) =
+                Item(customToolCallOutput = customToolCallOutput)
+        }
+
+        /** An interface that defines how to map each variant of [Item] to a value of type [T]. */
+        interface Visitor<out T> {
+
+            fun visitDecisionStoredUserMessage(
+                decisionStoredUserMessage: DecisionStoredUserMessage
+            ): T = unknown(JsonValue.from(decisionStoredUserMessage))
+
+            fun visitDecisionStoredDeveloperMessage(
+                decisionStoredDeveloperMessage: DecisionStoredDeveloperMessage
+            ): T = unknown(JsonValue.from(decisionStoredDeveloperMessage))
+
+            fun visitDecisionStoredSystemMessage(
+                decisionStoredSystemMessage: DecisionStoredSystemMessage
+            ): T = unknown(JsonValue.from(decisionStoredSystemMessage))
+
+            fun visitDecisionStoredAssistantMessage(
+                decisionStoredAssistantMessage: DecisionStoredAssistantMessage
+            ): T = unknown(JsonValue.from(decisionStoredAssistantMessage))
+
+            fun visitFunctionCall(functionCall: FunctionCall): T =
+                unknown(JsonValue.from(functionCall))
+
+            fun visitFunctionCallOutput(functionCallOutput: FunctionCallOutput): T =
+                unknown(JsonValue.from(functionCallOutput))
+
+            fun visitCustomToolCall(customToolCall: CustomToolCall): T =
+                unknown(JsonValue.from(customToolCall))
+
+            fun visitCustomToolCallOutput(customToolCallOutput: CustomToolCallOutput): T =
+                unknown(JsonValue.from(customToolCallOutput))
+
+            /**
+             * Maps an unknown variant of [Item] to a value of type [T].
+             *
+             * An instance of [Item] can contain an unknown variant if it was deserialized from data
+             * that doesn't match any known variant. For example, if the SDK is on an older version
+             * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * Unhandled known JSON variants reach this method as JSON values.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown Item")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Item>(Item::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Item {
+                val json = JsonValue.fromJsonNode(node)
+                val type =
+                    json
+                        .asObject()
+                        .getOrNull()
+                        ?.getOrDefault("type", JsonValue.from("message"))
+                        ?.asString()
+                        ?.getOrNull()
+
+                // Decode the original node so the released null type survives serialization.
+                if (node.path("type").isNull && node.path("role").textValue() == "user") {
+                    return tryDeserialize(node, jacksonTypeRef<DecisionStoredUserMessage>())
+                        ?.let { Item(decisionStoredUserMessage = it, _json = json) }
+                        ?.takeIf { it.isValid() } ?: Item(_json = json)
+                }
+                when (type) {
+                    "message" -> {
+                        // Select the authored nested tag without validating future payload fields.
+                        return when (
+                            json.asObject().getOrNull()?.get("role")?.asString()?.getOrNull()
+                        ) {
+                            "user" ->
+                                tryDeserialize(node, jacksonTypeRef<DecisionStoredUserMessage>())
+                                    ?.let { Item(decisionStoredUserMessage = it, _json = json) }
+                                    ?: Item(_json = json)
+                            "developer" ->
+                                tryDeserialize(
+                                        node,
+                                        jacksonTypeRef<DecisionStoredDeveloperMessage>(),
+                                    )
+                                    ?.let {
+                                        Item(decisionStoredDeveloperMessage = it, _json = json)
+                                    } ?: Item(_json = json)
+                            "system" ->
+                                tryDeserialize(node, jacksonTypeRef<DecisionStoredSystemMessage>())
+                                    ?.let { Item(decisionStoredSystemMessage = it, _json = json) }
+                                    ?: Item(_json = json)
+                            "assistant" ->
+                                tryDeserialize(
+                                        node,
+                                        jacksonTypeRef<DecisionStoredAssistantMessage>(),
+                                    )
+                                    ?.let {
+                                        Item(decisionStoredAssistantMessage = it, _json = json)
+                                    } ?: Item(_json = json)
+                            else -> Item(_json = json)
+                        }
+                    }
+                    "function_call" -> {
+                        return tryDeserialize(node, jacksonTypeRef<FunctionCall>())?.let {
+                            Item(functionCall = it, _json = json)
+                        } ?: Item(_json = json)
+                    }
+                    "function_call_output" -> {
+                        return tryDeserialize(node, jacksonTypeRef<FunctionCallOutput>())?.let {
+                            Item(functionCallOutput = it, _json = json)
+                        } ?: Item(_json = json)
+                    }
+                    "custom_tool_call" -> {
+                        return tryDeserialize(node, jacksonTypeRef<CustomToolCall>())?.let {
+                            Item(customToolCall = it, _json = json)
+                        } ?: Item(_json = json)
+                    }
+                    "custom_tool_call_output" -> {
+                        return tryDeserialize(node, jacksonTypeRef<CustomToolCallOutput>())?.let {
+                            Item(customToolCallOutput = it, _json = json)
+                        } ?: Item(_json = json)
+                    }
+                }
+
+                return Item(_json = json)
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Item>(Item::class) {
+
+            override fun serialize(
+                value: Item,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.decisionStoredUserMessage != null ->
+                        generator.writeObject(value.decisionStoredUserMessage)
+                    value.decisionStoredDeveloperMessage != null ->
+                        generator.writeObject(value.decisionStoredDeveloperMessage)
+                    value.decisionStoredSystemMessage != null ->
+                        generator.writeObject(value.decisionStoredSystemMessage)
+                    value.decisionStoredAssistantMessage != null ->
+                        generator.writeObject(value.decisionStoredAssistantMessage)
+                    value.functionCall != null -> generator.writeObject(value.functionCall)
+                    value.functionCallOutput != null ->
+                        generator.writeObject(value.functionCallOutput)
+                    value.customToolCall != null -> generator.writeObject(value.customToolCall)
+                    value.customToolCallOutput != null ->
+                        generator.writeObject(value.customToolCallOutput)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Item")
+                }
+            }
+        }
+
+        class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val MESSAGE = of("message")
+
+                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
+            }
+
+            /** An enum containing [Type]'s known values. */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
+            enum class Known {
+                MESSAGE
+            }
+
+            /**
+             * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Type] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
+            enum class Value {
+                MESSAGE,
+                /** An enum member indicating that [Type] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
+            fun value(): Value =
+                when (this) {
+                    MESSAGE -> Value.MESSAGE
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            @Deprecated("Use asString() for string values or _value() for raw JSON.")
+            fun known(): Known =
+                when (this) {
+                    MESSAGE -> Known.MESSAGE
+                    else -> throw OpenAIInvalidDataException("Unknown Type: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Type = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Type && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /** The text input to the model. */
         @JsonDeserialize(using = Content.Deserializer::class)
         @JsonSerialize(using = Content.Serializer::class)
         class Content
@@ -968,6 +1444,7 @@ private constructor(
             private constructor(
                 private val inputText: InputText? = null,
                 private val inputImage: InputImage? = null,
+                private val inputJson: InputJson? = null,
                 private val _json: JsonValue? = null,
             ) {
 
@@ -975,13 +1452,19 @@ private constructor(
 
                 fun inputImage(): Optional<InputImage> = Optional.ofNullable(inputImage)
 
+                fun inputJson(): Optional<InputJson> = Optional.ofNullable(inputJson)
+
                 fun isInputText(): Boolean = inputText != null
 
                 fun isInputImage(): Boolean = inputImage != null
 
+                fun isInputJson(): Boolean = inputJson != null
+
                 fun asInputText(): InputText = inputText.getOrThrow("inputText")
 
                 fun asInputImage(): InputImage = inputImage.getOrThrow("inputImage")
+
+                fun asInputJson(): InputJson = inputJson.getOrThrow("inputJson")
 
                 fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -996,7 +1479,7 @@ private constructor(
                  * import com.openai.core.JsonValue;
                  * import java.util.Optional;
                  *
-                 * Optional<String> result = decisionItemCreatedEventItemContentItem.accept(new DecisionItemCreatedEventItemContentItem.Visitor<Optional<String>>() {
+                 * Optional<String> result = decisionStoredUserMessageContentItem.accept(new DecisionItemCreatedEventItemContentItem.Visitor<Optional<String>>() {
                  *     @Override
                  *     public Optional<String> visitInputText(InputText inputText) {
                  *         return Optional.of(inputText.toString());
@@ -1019,6 +1502,7 @@ private constructor(
                     when {
                         inputText != null -> visitor.visitInputText(inputText)
                         inputImage != null -> visitor.visitInputImage(inputImage)
+                        inputJson != null -> visitor.visitInputJson(inputJson)
                         else -> visitor.unknown(_json)
                     }
 
@@ -1048,6 +1532,10 @@ private constructor(
                             override fun visitInputImage(inputImage: InputImage) {
                                 inputImage.validate()
                             }
+
+                            override fun visitInputJson(inputJson: InputJson) {
+                                inputJson.validate()
+                            }
                         }
                     )
                     validated = true
@@ -1076,6 +1564,8 @@ private constructor(
                             override fun visitInputImage(inputImage: InputImage) =
                                 inputImage.validity()
 
+                            override fun visitInputJson(inputJson: InputJson) = inputJson.validity()
+
                             override fun unknown(json: JsonValue?) = 0
                         }
                     )
@@ -1088,12 +1578,17 @@ private constructor(
                     return other is DecisionItemCreatedEventItemContentItem &&
                         inputText == other.inputText &&
                         inputImage == other.inputImage &&
-                        (inputText != null || inputImage != null || _json == other._json)
+                        inputJson == other.inputJson &&
+                        (inputText != null ||
+                            inputImage != null ||
+                            inputJson != null ||
+                            _json == other._json)
                 }
 
                 override fun hashCode(): Int =
-                    if (inputText == null && inputImage == null) Objects.hash(_json)
-                    else Objects.hash(inputText, inputImage)
+                    if (inputText == null && inputImage == null && inputJson == null)
+                        Objects.hash(_json)
+                    else Objects.hash(inputText, inputImage, inputJson)
 
                 override fun toString(): String =
                     when {
@@ -1101,6 +1596,8 @@ private constructor(
                             "DecisionItemCreatedEventItemContentItem{inputText=$inputText}"
                         inputImage != null ->
                             "DecisionItemCreatedEventItemContentItem{inputImage=$inputImage}"
+                        inputJson != null ->
+                            "DecisionItemCreatedEventItemContentItem{inputJson=$inputJson}"
                         _json != null -> "DecisionItemCreatedEventItemContentItem{_unknown=$_json}"
                         else ->
                             throw IllegalStateException(
@@ -1117,6 +1614,10 @@ private constructor(
                     @JvmStatic
                     fun ofInputImage(inputImage: InputImage) =
                         DecisionItemCreatedEventItemContentItem(inputImage = inputImage)
+
+                    @JvmStatic
+                    fun ofInputJson(inputJson: InputJson) =
+                        DecisionItemCreatedEventItemContentItem(inputJson = inputJson)
                 }
 
                 /**
@@ -1129,6 +1630,8 @@ private constructor(
 
                     fun visitInputImage(inputImage: InputImage): T =
                         unknown(JsonValue.from(inputImage))
+
+                    fun visitInputJson(inputJson: InputJson): T = unknown(JsonValue.from(inputJson))
 
                     /**
                      * Maps an unknown variant of [DecisionItemCreatedEventItemContentItem] to a
@@ -1178,6 +1681,14 @@ private constructor(
                                     )
                                 } ?: DecisionItemCreatedEventItemContentItem(_json = json)
                             }
+                            "input_json" -> {
+                                return tryDeserialize(node, jacksonTypeRef<InputJson>())?.let {
+                                    DecisionItemCreatedEventItemContentItem(
+                                        inputJson = it,
+                                        _json = json,
+                                    )
+                                } ?: DecisionItemCreatedEventItemContentItem(_json = json)
+                            }
                         }
 
                         return DecisionItemCreatedEventItemContentItem(_json = json)
@@ -1197,6 +1708,7 @@ private constructor(
                         when {
                             value.inputText != null -> generator.writeObject(value.inputText)
                             value.inputImage != null -> generator.writeObject(value.inputImage)
+                            value.inputJson != null -> generator.writeObject(value.inputJson)
                             value._json != null -> generator.writeObject(value._json)
                             else ->
                                 throw IllegalStateException(
@@ -1935,97 +2447,934 @@ private constructor(
                     override fun toString() =
                         "InputImage{imageUrl=$imageUrl, type=$type, detail=$detail, additionalProperties=$additionalProperties}"
                 }
+
+                class InputJson
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                private constructor(
+                    private val data: JsonField<Data>,
+                    private val type: JsonValue,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("data")
+                        @ExcludeMissing
+                        data: JsonField<Data> = JsonMissing.of(),
+                        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                    ) : this(data, type, mutableMapOf())
+
+                    /**
+                     * The schema requires this property. Returns empty if the JSON property is
+                     * missing or null.
+                     *
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                     */
+                    fun data(): java.util.Optional<Data> = data.getOptional("data")
+
+                    /**
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
+                     */
+                    fun dataOrThrow(): Data = data.getRequired("data")
+
+                    /**
+                     * The schema requires this property. Returns empty if the JSON property is
+                     * missing or null.
+                     *
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+                     */
+                    fun type(): java.util.Optional<JsonValue> {
+                        val raw = type
+                        return when {
+                            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                            !(raw == JsonValue.from("input_json")) ->
+                                throw OpenAIInvalidDataException("`type` is invalid")
+                            else -> java.util.Optional.of(raw)
+                        }
+                    }
+
+                    /**
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
+                     */
+                    fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+                    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+                    /**
+                     * Returns the raw JSON value of [data].
+                     *
+                     * Unlike [data], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Data> = data
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(
+                            additionalProperties,
+                            "data" to this.data,
+                            "type" to this.type,
+                        )
+
+                    @JvmSynthetic
+                    internal fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    private fun additionalProperties(): Map<String, JsonValue> =
+                        additionalProperties
+
+                    fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /**
+                         * Returns a mutable builder for constructing an instance of [InputJson].
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .data()
+                         * ```
+                         */
+                        @JvmStatic fun builder() = Builder()
+                    }
+
+                    /** A builder for [InputJson]. */
+                    class Builder internal constructor() {
+
+                        private var data: JsonField<Data>? = null
+                        private var type: JsonValue = JsonValue.from("input_json")
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        @JvmSynthetic
+                        internal fun from(inputJson: InputJson) = apply {
+                            data = inputJson.data
+                            type = inputJson.type
+                            additionalProperties = inputJson.additionalProperties.toMutableMap()
+                        }
+
+                        fun data(data: Data) = data(JsonField.of(data))
+
+                        /**
+                         * Sets [Builder.data] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.data] with a well-typed [Data] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun data(data: JsonField<Data>) = apply { this.data = data }
+
+                        /**
+                         * Alias for calling [data] with
+                         * `Data.ofDecisionJsonObject(decisionJsonObject)`.
+                         */
+                        fun data(decisionJsonObject: DecisionJsonObject) =
+                            data(Data.ofDecisionJsonObject(decisionJsonObject))
+
+                        /**
+                         * Alias for calling [data] with
+                         * `Data.ofDecisionJsonObjects(decisionJsonObjects)`.
+                         */
+                        fun dataOfDecisionJsonObjects(
+                            decisionJsonObjects: List<DecisionJsonObject>
+                        ) = data(Data.ofDecisionJsonObjects(decisionJsonObjects))
+
+                        /**
+                         * Sets the field to an arbitrary JSON value.
+                         *
+                         * It is usually unnecessary to call this method because the field defaults
+                         * to the following:
+                         * ```java
+                         * JsonValue.from("input_json")
+                         * ```
+                         *
+                         * This method is primarily for setting the field to an undocumented or not
+                         * yet supported value.
+                         */
+                        fun type(type: JsonValue) = apply { this.type = type }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [InputJson].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .data()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
+                        fun build(): InputJson =
+                            InputJson(
+                                checkRequired("data", data),
+                                type,
+                                additionalProperties.toMutableMap(),
+                            )
+                    }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): InputJson = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        dataOrThrow().validate()
+                        typeOrThrow()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        (data.asKnown().getOrNull()?.validity() ?: 0) +
+                            type.let { if (it == JsonValue.from("input_json")) 1 else 0 }
+
+                    @JsonDeserialize(using = Data.Deserializer::class)
+                    @JsonSerialize(using = Data.Serializer::class)
+                    class Data
+                    private constructor(
+                        private val decisionJsonObject: DecisionJsonObject? = null,
+                        private val decisionJsonObjects: List<DecisionJsonObject>? = null,
+                        private val _json: JsonValue? = null,
+                    ) {
+
+                        fun decisionJsonObject(): Optional<DecisionJsonObject> =
+                            Optional.ofNullable(decisionJsonObject)
+
+                        fun decisionJsonObjects(): Optional<List<DecisionJsonObject>> =
+                            Optional.ofNullable(decisionJsonObjects)
+
+                        fun isDecisionJsonObject(): Boolean = decisionJsonObject != null
+
+                        fun isDecisionJsonObjects(): Boolean = decisionJsonObjects != null
+
+                        fun asDecisionJsonObject(): DecisionJsonObject =
+                            decisionJsonObject.getOrThrow("decisionJsonObject")
+
+                        fun asDecisionJsonObjects(): List<DecisionJsonObject> =
+                            decisionJsonObjects.getOrThrow("decisionJsonObjects")
+
+                        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                        /**
+                         * Maps this instance's current variant to a value of type [T] using the
+                         * given [visitor].
+                         *
+                         * Note that this method is _not_ forwards compatible with new variants from
+                         * the API, unless [visitor] overrides [Visitor.unknown]. To handle variants
+                         * not known to this version of the SDK gracefully, consider overriding
+                         * [Visitor.unknown]:
+                         * ```java
+                         * import com.openai.core.JsonValue;
+                         * import java.util.Optional;
+                         *
+                         * Optional<String> result = data.accept(new Data.Visitor<Optional<String>>() {
+                         *     @Override
+                         *     public Optional<String> visitDecisionJsonObject(DecisionJsonObject decisionJsonObject) {
+                         *         return Optional.of(decisionJsonObject.toString());
+                         *     }
+                         *
+                         *     // ...
+                         *
+                         *     @Override
+                         *     public Optional<String> unknown(JsonValue json) {
+                         *         // Or inspect the `json`.
+                         *         return Optional.empty();
+                         *     }
+                         * });
+                         * ```
+                         *
+                         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden
+                         *   in [visitor] and the current variant is unknown.
+                         */
+                        fun <T> accept(visitor: Visitor<T>): T =
+                            when {
+                                decisionJsonObject != null ->
+                                    visitor.visitDecisionJsonObject(decisionJsonObject)
+                                decisionJsonObjects != null ->
+                                    visitor.visitDecisionJsonObjects(decisionJsonObjects)
+                                else -> visitor.unknown(_json)
+                            }
+
+                        private var validated: Boolean = false
+
+                        /**
+                         * Validates that the types of all values in this object match their
+                         * expected types recursively.
+                         *
+                         * This method is _not_ forwards compatible with new types from the API for
+                         * existing fields.
+                         *
+                         * @throws OpenAIInvalidDataException if any value type in this object
+                         *   doesn't match its expected type.
+                         */
+                        fun validate(): Data = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            accept(
+                                object : Visitor<Unit> {
+                                    override fun visitDecisionJsonObject(
+                                        decisionJsonObject: DecisionJsonObject
+                                    ) {
+                                        decisionJsonObject.validate()
+                                    }
+
+                                    override fun visitDecisionJsonObjects(
+                                        decisionJsonObjects: List<DecisionJsonObject>
+                                    ) {
+                                        decisionJsonObjects.forEach { it.validate() }
+                                    }
+                                }
+                            )
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int =
+                            accept(
+                                object : Visitor<Int> {
+                                    override fun visitDecisionJsonObject(
+                                        decisionJsonObject: DecisionJsonObject
+                                    ) = decisionJsonObject.validity()
+
+                                    override fun visitDecisionJsonObjects(
+                                        decisionJsonObjects: List<DecisionJsonObject>
+                                    ) = decisionJsonObjects.sumOf { it.validity().toInt() }
+
+                                    override fun unknown(json: JsonValue?) = 0
+                                }
+                            )
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is Data &&
+                                decisionJsonObject == other.decisionJsonObject &&
+                                decisionJsonObjects == other.decisionJsonObjects &&
+                                (decisionJsonObject != null ||
+                                    decisionJsonObjects != null ||
+                                    _json == other._json)
+                        }
+
+                        override fun hashCode(): Int =
+                            if (decisionJsonObject == null && decisionJsonObjects == null)
+                                Objects.hash(_json)
+                            else Objects.hash(decisionJsonObject, decisionJsonObjects)
+
+                        override fun toString(): String =
+                            when {
+                                decisionJsonObject != null ->
+                                    "Data{decisionJsonObject=$decisionJsonObject}"
+                                decisionJsonObjects != null ->
+                                    "Data{decisionJsonObjects=$decisionJsonObjects}"
+                                _json != null -> "Data{_unknown=$_json}"
+                                else -> throw IllegalStateException("Invalid Data")
+                            }
+
+                        companion object {
+
+                            @JvmStatic
+                            fun ofDecisionJsonObject(decisionJsonObject: DecisionJsonObject) =
+                                Data(decisionJsonObject = decisionJsonObject)
+
+                            @JvmStatic
+                            fun ofDecisionJsonObjects(
+                                decisionJsonObjects: List<DecisionJsonObject>
+                            ) = Data(decisionJsonObjects = decisionJsonObjects.toImmutable())
+                        }
+
+                        /**
+                         * An interface that defines how to map each variant of [Data] to a value of
+                         * type [T].
+                         */
+                        interface Visitor<out T> {
+
+                            fun visitDecisionJsonObject(decisionJsonObject: DecisionJsonObject): T =
+                                unknown(JsonValue.from(decisionJsonObject))
+
+                            fun visitDecisionJsonObjects(
+                                decisionJsonObjects: List<DecisionJsonObject>
+                            ): T = unknown(JsonValue.from(decisionJsonObjects))
+
+                            /**
+                             * Maps an unknown variant of [Data] to a value of type [T].
+                             *
+                             * An instance of [Data] can contain an unknown variant if it was
+                             * deserialized from data that doesn't match any known variant. For
+                             * example, if the SDK is on an older version than the API, then the API
+                             * may respond with new variants that the SDK is unaware of.
+                             *
+                             * Unhandled known JSON variants reach this method as JSON values.
+                             *
+                             * @throws OpenAIInvalidDataException in the default implementation.
+                             */
+                            fun unknown(json: JsonValue?): T {
+                                throw OpenAIInvalidDataException("Unknown Data")
+                            }
+                        }
+
+                        internal class Deserializer : BaseDeserializer<Data>(Data::class) {
+
+                            override fun ObjectCodec.deserialize(node: JsonNode): Data {
+                                val json = JsonValue.fromJsonNode(node)
+
+                                val bestMatches =
+                                    sequenceOf(
+                                            tryDeserialize(
+                                                    node,
+                                                    jacksonTypeRef<DecisionJsonObject>(),
+                                                )
+                                                ?.let {
+                                                    Data(decisionJsonObject = it, _json = json)
+                                                },
+                                            tryDeserialize(
+                                                    node,
+                                                    jacksonTypeRef<List<DecisionJsonObject>>(),
+                                                )
+                                                ?.let {
+                                                    Data(decisionJsonObjects = it, _json = json)
+                                                },
+                                        )
+                                        .filterNotNull()
+                                        .allMaxBy { it.validity() }
+                                        .toList()
+                                return when (bestMatches.size) {
+                                    // This can happen if what we're deserializing is completely
+                                    // incompatible with all the possible variants (e.g.
+                                    // deserializing from boolean).
+                                    0 -> Data(_json = json)
+                                    1 -> bestMatches.single()
+                                    // If there's more than one match with the highest validity,
+                                    // then use the first completely valid match, or simply the
+                                    // first match if none are completely valid.
+                                    else ->
+                                        bestMatches.firstOrNull { it.isValid() }
+                                            ?: bestMatches.first()
+                                }
+                            }
+                        }
+
+                        internal class Serializer : BaseSerializer<Data>(Data::class) {
+
+                            override fun serialize(
+                                value: Data,
+                                generator: JsonGenerator,
+                                provider: SerializerProvider,
+                            ) {
+                                when {
+                                    value.decisionJsonObject != null ->
+                                        generator.writeObject(value.decisionJsonObject)
+                                    value.decisionJsonObjects != null ->
+                                        generator.writeObject(value.decisionJsonObjects)
+                                    value._json != null -> generator.writeObject(value._json)
+                                    else -> throw IllegalStateException("Invalid Data")
+                                }
+                            }
+                        }
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is InputJson &&
+                            data == other.data &&
+                            type == other.type &&
+                            additionalProperties == other.additionalProperties
+                    }
+
+                    private val hashCode: Int by lazy {
+                        Objects.hash(data, type, additionalProperties)
+                    }
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() =
+                        "InputJson{data=$data, type=$type, additionalProperties=$additionalProperties}"
+                }
             }
         }
 
-        /**
-         * The item type. An omitted type denotes a message. Tool call and output items have their
-         * corresponding tool type.
-         */
-        class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+        class FunctionCall
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val id: JsonField<String>,
+            private val arguments: JsonField<String>,
+            private val callId: JsonField<String>,
+            private val name: JsonField<String>,
+            private val type: JsonValue,
+            private val namespace: JsonField<String>,
+            private val status: JsonField<Status>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("arguments")
+                @ExcludeMissing
+                arguments: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("call_id")
+                @ExcludeMissing
+                callId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("namespace")
+                @ExcludeMissing
+                namespace: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+            ) : this(id, arguments, callId, name, type, namespace, status, mutableMapOf())
 
             /**
-             * Returns this class instance's raw value.
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
              *
-             * This is usually only useful if this instance was deserialized from data that doesn't
-             * match any known member, and you want to know that value. For example, if the SDK is
-             * on an older version than the API, then the API may respond with new members that the
-             * SDK is unaware of.
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+            fun id(): java.util.Optional<String> = id.getOptional("id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun idOrThrow(): String = id.getRequired("id")
+
+            /**
+             * The function arguments as a JSON string. The schema requires this property. Returns
+             * empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun arguments(): java.util.Optional<String> = arguments.getOptional("arguments")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun argumentsOrThrow(): String = arguments.getRequired("arguments")
+
+            /**
+             * The unique ID of the function tool call generated by the model. The schema requires
+             * this property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun callId(): java.util.Optional<String> = callId.getOptional("call_id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun callIdOrThrow(): String = callId.getRequired("call_id")
+
+            /**
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun name(): java.util.Optional<String> = name.getOptional("name")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun nameOrThrow(): String = name.getRequired("name")
+
+            /**
+             * The item type. Always `function_call`. The schema requires this property. Returns
+             * empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("function_call")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+            /**
+             * The namespace of the function to call. Returns empty if the JSON property is missing
+             * or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun namespace(): java.util.Optional<String> = namespace.getOptional("namespace")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun namespaceOrThrow(): String = namespace.getRequired("namespace")
+
+            /**
+             * Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun statusOrThrow(): Status = status.getRequired("status")
+
+            /**
+             * Returns the raw JSON value of [id].
+             *
+             * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+            /**
+             * Returns the raw JSON value of [arguments].
+             *
+             * Unlike [arguments], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("arguments")
+            @ExcludeMissing
+            fun _arguments(): JsonField<String> = arguments
+
+            /**
+             * Returns the raw JSON value of [callId].
+             *
+             * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
+
+            /**
+             * Returns the raw JSON value of [name].
+             *
+             * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+            /**
+             * Returns the raw JSON value of [namespace].
+             *
+             * Unlike [namespace], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("namespace")
+            @ExcludeMissing
+            fun _namespace(): JsonField<String> = namespace
+
+            /**
+             * Returns the raw JSON value of [status].
+             *
+             * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "id" to this.id,
+                    "arguments" to this.arguments,
+                    "call_id" to this.callId,
+                    "name" to this.name,
+                    "type" to this.type,
+                    "namespace" to this.namespace,
+                    "status" to this.status,
+                )
+
+            @JvmSynthetic
+            internal fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            fun toBuilder() = Builder().from(this)
 
             companion object {
 
-                @JvmField val MESSAGE = of("message")
-
-                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
+                /**
+                 * Returns a mutable builder for constructing an instance of [FunctionCall].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * .arguments()
+                 * .callId()
+                 * .name()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
             }
 
-            /** An enum containing [Type]'s known values. */
-            @Deprecated("Use asString() for string values or _value() for raw JSON.")
-            enum class Known {
-                MESSAGE
+            /** A builder for [FunctionCall]. */
+            class Builder internal constructor() {
+
+                private var id: JsonField<String>? = null
+                private var arguments: JsonField<String>? = null
+                private var callId: JsonField<String>? = null
+                private var name: JsonField<String>? = null
+                private var type: JsonValue = JsonValue.from("function_call")
+                private var namespace: JsonField<String> = JsonMissing.of()
+                private var status: JsonField<Status> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(functionCall: FunctionCall) = apply {
+                    id = functionCall.id
+                    arguments = functionCall.arguments
+                    callId = functionCall.callId
+                    name = functionCall.name
+                    type = functionCall.type
+                    namespace = functionCall.namespace
+                    status = functionCall.status
+                    additionalProperties = functionCall.additionalProperties.toMutableMap()
+                }
+
+                fun id(id: String) = id(JsonField.of(id))
+
+                /**
+                 * Sets [Builder.id] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.id] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun id(id: JsonField<String>) = apply { this.id = id }
+
+                /** The function arguments as a JSON string. */
+                fun arguments(arguments: String) = arguments(JsonField.of(arguments))
+
+                /**
+                 * Sets [Builder.arguments] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.arguments] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun arguments(arguments: JsonField<String>) = apply { this.arguments = arguments }
+
+                /** The unique ID of the function tool call generated by the model. */
+                fun callId(callId: String) = callId(JsonField.of(callId))
+
+                /**
+                 * Sets [Builder.callId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.callId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun callId(callId: JsonField<String>) = apply { this.callId = callId }
+
+                fun name(name: String) = name(JsonField.of(name))
+
+                /**
+                 * Sets [Builder.name] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.name] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun name(name: JsonField<String>) = apply { this.name = name }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("function_call")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                /** The namespace of the function to call. */
+                fun namespace(namespace: String?) = namespace(JsonField.ofNullable(namespace))
+
+                /** Alias for calling [Builder.namespace] with `namespace.orElse(null)`. */
+                fun namespace(namespace: Optional<String>) = namespace(namespace.getOrNull())
+
+                /**
+                 * Sets [Builder.namespace] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.namespace] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun namespace(namespace: JsonField<String>) = apply { this.namespace = namespace }
+
+                fun status(status: Status?) = status(JsonField.ofNullable(status))
+
+                /** Alias for calling [Builder.status] with `status.orElse(null)`. */
+                fun status(status: Optional<Status>) = status(status.getOrNull())
+
+                /**
+                 * Sets [Builder.status] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.status] with a well-typed [Status] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun status(status: JsonField<Status>) = apply { this.status = status }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [FunctionCall].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * .arguments()
+                 * .callId()
+                 * .name()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): FunctionCall =
+                    FunctionCall(
+                        checkRequired("id", id),
+                        checkRequired("arguments", arguments),
+                        checkRequired("callId", callId),
+                        checkRequired("name", name),
+                        type,
+                        namespace,
+                        status,
+                        additionalProperties.toMutableMap(),
+                    )
             }
-
-            /**
-             * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
-             *
-             * An instance of [Type] can contain an unknown value in a couple of cases:
-             * - It was deserialized from data that doesn't match any known member. For example, if
-             *   the SDK is on an older version than the API, then the API may respond with new
-             *   members that the SDK is unaware of.
-             * - It was constructed with an arbitrary value using the [of] method.
-             */
-            @Deprecated("Use asString() for string values or _value() for raw JSON.")
-            enum class Value {
-                MESSAGE,
-                /** An enum member indicating that [Type] was instantiated with an unknown value. */
-                _UNKNOWN,
-            }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value, or
-             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-             *
-             * Use the [known] method instead if you're certain the value is always known or if you
-             * want to throw for the unknown case.
-             */
-            @Deprecated("Use asString() for string values or _value() for raw JSON.")
-            fun value(): Value =
-                when (this) {
-                    MESSAGE -> Value.MESSAGE
-                    else -> Value._UNKNOWN
-                }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value.
-             *
-             * Use the [value] method instead if you're uncertain the value is always known and
-             * don't want to throw for the unknown case.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-             *   member.
-             */
-            @Deprecated("Use asString() for string values or _value() for raw JSON.")
-            fun known(): Known =
-                when (this) {
-                    MESSAGE -> Known.MESSAGE
-                    else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-                }
-
-            /**
-             * Returns this class instance's primitive wire representation.
-             *
-             * This differs from the [toString] method because that method is primarily for
-             * debugging and generally doesn't throw.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value does not have the
-             *   expected primitive type.
-             */
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    OpenAIInvalidDataException("Value is not a String")
-                }
 
             private var validated: Boolean = false
 
@@ -2039,12 +3388,18 @@ private constructor(
              * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
              *   expected type.
              */
-            fun validate(): Type = apply {
+            fun validate(): FunctionCall = apply {
                 if (validated) {
                     return@apply
                 }
 
-                known()
+                idOrThrow()
+                argumentsOrThrow()
+                callIdOrThrow()
+                nameOrThrow()
+                typeOrThrow()
+                namespace()
+                status().ifPresent { it.validate() }
                 validated = true
             }
 
@@ -2062,42 +3417,1680 @@ private constructor(
              *
              * Used for best match union deserialization.
              */
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (id.asKnown().isPresent) 1 else 0) +
+                    (if (arguments.asKnown().isPresent) 1 else 0) +
+                    (if (callId.asKnown().isPresent) 1 else 0) +
+                    (if (name.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("function_call")) 1 else 0 } +
+                    (if (namespace.asKnown().isPresent) 1 else 0) +
+                    (status.asKnown().getOrNull()?.validity() ?: 0)
+
+            class Status @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val IN_PROGRESS = of("in_progress")
+
+                    @JvmField val COMPLETED = of("completed")
+
+                    @JvmField val INCOMPLETE = of("incomplete")
+
+                    @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+                }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Status = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    asString()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    when (this) {
+                        IN_PROGRESS -> 1
+                        COMPLETED -> 1
+                        INCOMPLETE -> 1
+                        else -> 0
+                    }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Status && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return other is Type && value == other.value
+                return other is FunctionCall &&
+                    id == other.id &&
+                    arguments == other.arguments &&
+                    callId == other.callId &&
+                    name == other.name &&
+                    type == other.type &&
+                    namespace == other.namespace &&
+                    status == other.status &&
+                    additionalProperties == other.additionalProperties
             }
 
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    id,
+                    arguments,
+                    callId,
+                    name,
+                    type,
+                    namespace,
+                    status,
+                    additionalProperties,
+                )
             }
 
-            return other is Item &&
-                id == other.id &&
-                content == other.content &&
-                role == other.role &&
-                type == other.type &&
-                additionalProperties == other.additionalProperties
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "FunctionCall{id=$id, arguments=$arguments, callId=$callId, name=$name, type=$type, namespace=$namespace, status=$status, additionalProperties=$additionalProperties}"
         }
 
-        private val hashCode: Int by lazy {
-            Objects.hash(id, content, role, type, additionalProperties)
+        class FunctionCallOutput
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val id: JsonField<String>,
+            private val callId: JsonField<String>,
+            private val output: JsonField<DecisionToolOutput>,
+            private val type: JsonValue,
+            private val status: JsonField<Status>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("call_id")
+                @ExcludeMissing
+                callId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("output")
+                @ExcludeMissing
+                output: JsonField<DecisionToolOutput> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+            ) : this(id, callId, output, type, status, mutableMapOf())
+
+            /**
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun id(): java.util.Optional<String> = id.getOptional("id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun idOrThrow(): String = id.getRequired("id")
+
+            /**
+             * The unique ID of the function tool call generated by the model. The schema requires
+             * this property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun callId(): java.util.Optional<String> = callId.getOptional("call_id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun callIdOrThrow(): String = callId.getRequired("call_id")
+
+            /**
+             * The text input to the model. The schema requires this property. Returns empty if the
+             * JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun output(): java.util.Optional<DecisionToolOutput> = output.getOptional("output")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun outputOrThrow(): DecisionToolOutput = output.getRequired("output")
+
+            /**
+             * The type of the function tool call output. Always `function_call_output`. The schema
+             * requires this property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("function_call_output")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+            /**
+             * Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun statusOrThrow(): Status = status.getRequired("status")
+
+            /**
+             * Returns the raw JSON value of [id].
+             *
+             * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+            /**
+             * Returns the raw JSON value of [callId].
+             *
+             * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
+
+            /**
+             * Returns the raw JSON value of [output].
+             *
+             * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("output")
+            @ExcludeMissing
+            fun _output(): JsonField<DecisionToolOutput> = output
+
+            /**
+             * Returns the raw JSON value of [status].
+             *
+             * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "id" to this.id,
+                    "call_id" to this.callId,
+                    "output" to this.output,
+                    "type" to this.type,
+                    "status" to this.status,
+                )
+
+            @JvmSynthetic
+            internal fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [FunctionCallOutput].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * .callId()
+                 * .output()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [FunctionCallOutput]. */
+            class Builder internal constructor() {
+
+                private var id: JsonField<String>? = null
+                private var callId: JsonField<String>? = null
+                private var output: JsonField<DecisionToolOutput>? = null
+                private var type: JsonValue = JsonValue.from("function_call_output")
+                private var status: JsonField<Status> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(functionCallOutput: FunctionCallOutput) = apply {
+                    id = functionCallOutput.id
+                    callId = functionCallOutput.callId
+                    output = functionCallOutput.output
+                    type = functionCallOutput.type
+                    status = functionCallOutput.status
+                    additionalProperties = functionCallOutput.additionalProperties.toMutableMap()
+                }
+
+                fun id(id: String) = id(JsonField.of(id))
+
+                /**
+                 * Sets [Builder.id] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.id] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun id(id: JsonField<String>) = apply { this.id = id }
+
+                /** The unique ID of the function tool call generated by the model. */
+                fun callId(callId: String) = callId(JsonField.of(callId))
+
+                /**
+                 * Sets [Builder.callId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.callId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun callId(callId: JsonField<String>) = apply { this.callId = callId }
+
+                /** The text input to the model. */
+                fun output(output: DecisionToolOutput) = output(JsonField.of(output))
+
+                /**
+                 * Sets [Builder.output] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.output] with a well-typed [DecisionToolOutput]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun output(output: JsonField<DecisionToolOutput>) = apply { this.output = output }
+
+                /** Alias for calling [output] with `DecisionToolOutput.ofString(string)`. */
+                fun output(string: String) = output(DecisionToolOutput.ofString(string))
+
+                /** Alias for calling [output] with `DecisionToolOutput.ofParts(parts)`. */
+                fun outputOfParts(parts: List<DecisionToolOutputContentPart>) =
+                    output(DecisionToolOutput.ofParts(parts))
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("function_call_output")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                fun status(status: Status?) = status(JsonField.ofNullable(status))
+
+                /** Alias for calling [Builder.status] with `status.orElse(null)`. */
+                fun status(status: Optional<Status>) = status(status.getOrNull())
+
+                /**
+                 * Sets [Builder.status] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.status] with a well-typed [Status] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun status(status: JsonField<Status>) = apply { this.status = status }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [FunctionCallOutput].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * .callId()
+                 * .output()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): FunctionCallOutput =
+                    FunctionCallOutput(
+                        checkRequired("id", id),
+                        checkRequired("callId", callId),
+                        checkRequired("output", output),
+                        type,
+                        status,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): FunctionCallOutput = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                idOrThrow()
+                callIdOrThrow()
+                outputOrThrow().validate()
+                typeOrThrow()
+                status().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (id.asKnown().isPresent) 1 else 0) +
+                    (if (callId.asKnown().isPresent) 1 else 0) +
+                    (output.asKnown().getOrNull()?.validity() ?: 0) +
+                    type.let { if (it == JsonValue.from("function_call_output")) 1 else 0 } +
+                    (status.asKnown().getOrNull()?.validity() ?: 0)
+
+            class Status @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val IN_PROGRESS = of("in_progress")
+
+                    @JvmField val COMPLETED = of("completed")
+
+                    @JvmField val INCOMPLETE = of("incomplete")
+
+                    @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+                }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Status = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    asString()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    when (this) {
+                        IN_PROGRESS -> 1
+                        COMPLETED -> 1
+                        INCOMPLETE -> 1
+                        else -> 0
+                    }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Status && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is FunctionCallOutput &&
+                    id == other.id &&
+                    callId == other.callId &&
+                    output == other.output &&
+                    type == other.type &&
+                    status == other.status &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(id, callId, output, type, status, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "FunctionCallOutput{id=$id, callId=$callId, output=$output, type=$type, status=$status, additionalProperties=$additionalProperties}"
         }
 
-        override fun hashCode(): Int = hashCode
+        class CustomToolCall
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val id: JsonField<String>,
+            private val callId: JsonField<String>,
+            private val input: JsonField<String>,
+            private val name: JsonField<String>,
+            private val type: JsonValue,
+            private val namespace: JsonField<String>,
+            private val status: JsonField<Status>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
 
-        override fun toString() =
-            "Item{id=$id, content=$content, role=$role, type=$type, additionalProperties=$additionalProperties}"
+            @JsonCreator
+            private constructor(
+                @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("call_id")
+                @ExcludeMissing
+                callId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("input") @ExcludeMissing input: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("namespace")
+                @ExcludeMissing
+                namespace: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+            ) : this(id, callId, input, name, type, namespace, status, mutableMapOf())
+
+            /**
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun id(): java.util.Optional<String> = id.getOptional("id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun idOrThrow(): String = id.getRequired("id")
+
+            /**
+             * The unique ID of the function tool call generated by the model. The schema requires
+             * this property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun callId(): java.util.Optional<String> = callId.getOptional("call_id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun callIdOrThrow(): String = callId.getRequired("call_id")
+
+            /**
+             * The input to the custom tool call. The schema requires this property. Returns empty
+             * if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun input(): java.util.Optional<String> = input.getOptional("input")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun inputOrThrow(): String = input.getRequired("input")
+
+            /**
+             * The name of the custom tool to call. The schema requires this property. Returns empty
+             * if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun name(): java.util.Optional<String> = name.getOptional("name")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun nameOrThrow(): String = name.getRequired("name")
+
+            /**
+             * The item type. Always `custom_tool_call`. The schema requires this property. Returns
+             * empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("custom_tool_call")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+            /**
+             * The namespace of the function to call. Returns empty if the JSON property is missing
+             * or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun namespace(): java.util.Optional<String> = namespace.getOptional("namespace")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun namespaceOrThrow(): String = namespace.getRequired("namespace")
+
+            /**
+             * Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun statusOrThrow(): Status = status.getRequired("status")
+
+            /**
+             * Returns the raw JSON value of [id].
+             *
+             * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+            /**
+             * Returns the raw JSON value of [callId].
+             *
+             * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
+
+            /**
+             * Returns the raw JSON value of [input].
+             *
+             * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<String> = input
+
+            /**
+             * Returns the raw JSON value of [name].
+             *
+             * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+            /**
+             * Returns the raw JSON value of [namespace].
+             *
+             * Unlike [namespace], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("namespace")
+            @ExcludeMissing
+            fun _namespace(): JsonField<String> = namespace
+
+            /**
+             * Returns the raw JSON value of [status].
+             *
+             * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "id" to this.id,
+                    "call_id" to this.callId,
+                    "input" to this.input,
+                    "name" to this.name,
+                    "type" to this.type,
+                    "namespace" to this.namespace,
+                    "status" to this.status,
+                )
+
+            @JvmSynthetic
+            internal fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [CustomToolCall].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * .callId()
+                 * .input()
+                 * .name()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [CustomToolCall]. */
+            class Builder internal constructor() {
+
+                private var id: JsonField<String>? = null
+                private var callId: JsonField<String>? = null
+                private var input: JsonField<String>? = null
+                private var name: JsonField<String>? = null
+                private var type: JsonValue = JsonValue.from("custom_tool_call")
+                private var namespace: JsonField<String> = JsonMissing.of()
+                private var status: JsonField<Status> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(customToolCall: CustomToolCall) = apply {
+                    id = customToolCall.id
+                    callId = customToolCall.callId
+                    input = customToolCall.input
+                    name = customToolCall.name
+                    type = customToolCall.type
+                    namespace = customToolCall.namespace
+                    status = customToolCall.status
+                    additionalProperties = customToolCall.additionalProperties.toMutableMap()
+                }
+
+                fun id(id: String) = id(JsonField.of(id))
+
+                /**
+                 * Sets [Builder.id] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.id] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun id(id: JsonField<String>) = apply { this.id = id }
+
+                /** The unique ID of the function tool call generated by the model. */
+                fun callId(callId: String) = callId(JsonField.of(callId))
+
+                /**
+                 * Sets [Builder.callId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.callId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun callId(callId: JsonField<String>) = apply { this.callId = callId }
+
+                /** The input to the custom tool call. */
+                fun input(input: String) = input(JsonField.of(input))
+
+                /**
+                 * Sets [Builder.input] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.input] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun input(input: JsonField<String>) = apply { this.input = input }
+
+                /** The name of the custom tool to call. */
+                fun name(name: String) = name(JsonField.of(name))
+
+                /**
+                 * Sets [Builder.name] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.name] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun name(name: JsonField<String>) = apply { this.name = name }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("custom_tool_call")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                /** The namespace of the function to call. */
+                fun namespace(namespace: String?) = namespace(JsonField.ofNullable(namespace))
+
+                /** Alias for calling [Builder.namespace] with `namespace.orElse(null)`. */
+                fun namespace(namespace: Optional<String>) = namespace(namespace.getOrNull())
+
+                /**
+                 * Sets [Builder.namespace] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.namespace] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun namespace(namespace: JsonField<String>) = apply { this.namespace = namespace }
+
+                fun status(status: Status?) = status(JsonField.ofNullable(status))
+
+                /** Alias for calling [Builder.status] with `status.orElse(null)`. */
+                fun status(status: Optional<Status>) = status(status.getOrNull())
+
+                /**
+                 * Sets [Builder.status] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.status] with a well-typed [Status] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun status(status: JsonField<Status>) = apply { this.status = status }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [CustomToolCall].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * .callId()
+                 * .input()
+                 * .name()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): CustomToolCall =
+                    CustomToolCall(
+                        checkRequired("id", id),
+                        checkRequired("callId", callId),
+                        checkRequired("input", input),
+                        checkRequired("name", name),
+                        type,
+                        namespace,
+                        status,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): CustomToolCall = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                idOrThrow()
+                callIdOrThrow()
+                inputOrThrow()
+                nameOrThrow()
+                typeOrThrow()
+                namespace()
+                status().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (id.asKnown().isPresent) 1 else 0) +
+                    (if (callId.asKnown().isPresent) 1 else 0) +
+                    (if (input.asKnown().isPresent) 1 else 0) +
+                    (if (name.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("custom_tool_call")) 1 else 0 } +
+                    (if (namespace.asKnown().isPresent) 1 else 0) +
+                    (status.asKnown().getOrNull()?.validity() ?: 0)
+
+            class Status @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val IN_PROGRESS = of("in_progress")
+
+                    @JvmField val COMPLETED = of("completed")
+
+                    @JvmField val INCOMPLETE = of("incomplete")
+
+                    @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+                }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Status = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    asString()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    when (this) {
+                        IN_PROGRESS -> 1
+                        COMPLETED -> 1
+                        INCOMPLETE -> 1
+                        else -> 0
+                    }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Status && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is CustomToolCall &&
+                    id == other.id &&
+                    callId == other.callId &&
+                    input == other.input &&
+                    name == other.name &&
+                    type == other.type &&
+                    namespace == other.namespace &&
+                    status == other.status &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(id, callId, input, name, type, namespace, status, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "CustomToolCall{id=$id, callId=$callId, input=$input, name=$name, type=$type, namespace=$namespace, status=$status, additionalProperties=$additionalProperties}"
+        }
+
+        class CustomToolCallOutput
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val id: JsonField<String>,
+            private val callId: JsonField<String>,
+            private val output: JsonField<DecisionToolOutput>,
+            private val type: JsonValue,
+            private val status: JsonField<Status>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("call_id")
+                @ExcludeMissing
+                callId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("output")
+                @ExcludeMissing
+                output: JsonField<DecisionToolOutput> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+            ) : this(id, callId, output, type, status, mutableMapOf())
+
+            /**
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun id(): java.util.Optional<String> = id.getOptional("id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun idOrThrow(): String = id.getRequired("id")
+
+            /**
+             * The unique ID of the function tool call generated by the model. The schema requires
+             * this property. Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun callId(): java.util.Optional<String> = callId.getOptional("call_id")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun callIdOrThrow(): String = callId.getRequired("call_id")
+
+            /**
+             * The text input to the model. The schema requires this property. Returns empty if the
+             * JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun output(): java.util.Optional<DecisionToolOutput> = output.getOptional("output")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun outputOrThrow(): DecisionToolOutput = output.getRequired("output")
+
+            /**
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun type(): java.util.Optional<JsonValue> {
+                val raw = type
+                return when {
+                    raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                    !(raw == JsonValue.from("custom_tool_call_output")) ->
+                        throw OpenAIInvalidDataException("`type` is invalid")
+                    else -> java.util.Optional.of(raw)
+                }
+            }
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+            /**
+             * Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun status(): java.util.Optional<Status> = status.getOptional("status")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun statusOrThrow(): Status = status.getRequired("status")
+
+            /**
+             * Returns the raw JSON value of [id].
+             *
+             * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+            /**
+             * Returns the raw JSON value of [callId].
+             *
+             * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
+
+            /**
+             * Returns the raw JSON value of [output].
+             *
+             * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("output")
+            @ExcludeMissing
+            fun _output(): JsonField<DecisionToolOutput> = output
+
+            /**
+             * Returns the raw JSON value of [status].
+             *
+             * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "id" to this.id,
+                    "call_id" to this.callId,
+                    "output" to this.output,
+                    "type" to this.type,
+                    "status" to this.status,
+                )
+
+            @JvmSynthetic
+            internal fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [CustomToolCallOutput].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * .callId()
+                 * .output()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [CustomToolCallOutput]. */
+            class Builder internal constructor() {
+
+                private var id: JsonField<String>? = null
+                private var callId: JsonField<String>? = null
+                private var output: JsonField<DecisionToolOutput>? = null
+                private var type: JsonValue = JsonValue.from("custom_tool_call_output")
+                private var status: JsonField<Status> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(customToolCallOutput: CustomToolCallOutput) = apply {
+                    id = customToolCallOutput.id
+                    callId = customToolCallOutput.callId
+                    output = customToolCallOutput.output
+                    type = customToolCallOutput.type
+                    status = customToolCallOutput.status
+                    additionalProperties = customToolCallOutput.additionalProperties.toMutableMap()
+                }
+
+                fun id(id: String) = id(JsonField.of(id))
+
+                /**
+                 * Sets [Builder.id] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.id] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun id(id: JsonField<String>) = apply { this.id = id }
+
+                /** The unique ID of the function tool call generated by the model. */
+                fun callId(callId: String) = callId(JsonField.of(callId))
+
+                /**
+                 * Sets [Builder.callId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.callId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun callId(callId: JsonField<String>) = apply { this.callId = callId }
+
+                /** The text input to the model. */
+                fun output(output: DecisionToolOutput) = output(JsonField.of(output))
+
+                /**
+                 * Sets [Builder.output] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.output] with a well-typed [DecisionToolOutput]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun output(output: JsonField<DecisionToolOutput>) = apply { this.output = output }
+
+                /** Alias for calling [output] with `DecisionToolOutput.ofString(string)`. */
+                fun output(string: String) = output(DecisionToolOutput.ofString(string))
+
+                /** Alias for calling [output] with `DecisionToolOutput.ofParts(parts)`. */
+                fun outputOfParts(parts: List<DecisionToolOutputContentPart>) =
+                    output(DecisionToolOutput.ofParts(parts))
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("custom_tool_call_output")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                fun status(status: Status?) = status(JsonField.ofNullable(status))
+
+                /** Alias for calling [Builder.status] with `status.orElse(null)`. */
+                fun status(status: Optional<Status>) = status(status.getOrNull())
+
+                /**
+                 * Sets [Builder.status] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.status] with a well-typed [Status] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun status(status: JsonField<Status>) = apply { this.status = status }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [CustomToolCallOutput].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * .callId()
+                 * .output()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): CustomToolCallOutput =
+                    CustomToolCallOutput(
+                        checkRequired("id", id),
+                        checkRequired("callId", callId),
+                        checkRequired("output", output),
+                        type,
+                        status,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): CustomToolCallOutput = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                idOrThrow()
+                callIdOrThrow()
+                outputOrThrow().validate()
+                typeOrThrow()
+                status().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (id.asKnown().isPresent) 1 else 0) +
+                    (if (callId.asKnown().isPresent) 1 else 0) +
+                    (output.asKnown().getOrNull()?.validity() ?: 0) +
+                    type.let { if (it == JsonValue.from("custom_tool_call_output")) 1 else 0 } +
+                    (status.asKnown().getOrNull()?.validity() ?: 0)
+
+            class Status @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val IN_PROGRESS = of("in_progress")
+
+                    @JvmField val COMPLETED = of("completed")
+
+                    @JvmField val INCOMPLETE = of("incomplete")
+
+                    @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+                }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Status = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    asString()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    when (this) {
+                        IN_PROGRESS -> 1
+                        COMPLETED -> 1
+                        INCOMPLETE -> 1
+                        else -> 0
+                    }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Status && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is CustomToolCallOutput &&
+                    id == other.id &&
+                    callId == other.callId &&
+                    output == other.output &&
+                    type == other.type &&
+                    status == other.status &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(id, callId, output, type, status, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "CustomToolCallOutput{id=$id, callId=$callId, output=$output, type=$type, status=$status, additionalProperties=$additionalProperties}"
+        }
     }
 
     override fun equals(other: Any?): Boolean {

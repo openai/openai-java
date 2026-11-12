@@ -7,6 +7,7 @@ import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.decisions.Decision
+import com.openai.models.decisions.DecisionChoiceOption
 import com.openai.models.live.AudioFormat
 import com.openai.models.live.BuiltInVoice
 import com.openai.models.live.ClientConfig
@@ -16,6 +17,8 @@ import com.openai.models.live.DataChannelConfig
 import com.openai.models.live.DecisionEvent
 import com.openai.models.live.DecisionItemCreatedEvent
 import com.openai.models.live.DecisionItemDeletedEvent
+import com.openai.models.live.DecisionQuestion
+import com.openai.models.live.DecisionStoredUserMessage
 import com.openai.models.live.DecisionTrigger
 import com.openai.models.live.DelegationCreatedEvent
 import com.openai.models.live.Error
@@ -87,7 +90,13 @@ internal class SidebandServerEventTest {
                                 .decisions(
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                            DecisionQuestion.Choice.builder()
+                                                .addChoice(
+                                                    DecisionChoiceOption.builder()
+                                                        .value("string")
+                                                        .description("description")
+                                                        .build()
+                                                )
                                                 .instructions("string")
                                                 .name("name")
                                                 .build()
@@ -179,8 +188,13 @@ internal class SidebandServerEventTest {
                                     .decisions(
                                         DecisionTrigger.Decisions.builder()
                                             .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
+                                                DecisionQuestion.Choice.builder()
+                                                    .addChoice(
+                                                        DecisionChoiceOption.builder()
+                                                            .value("string")
+                                                            .description("description")
+                                                            .build()
+                                                    )
                                                     .instructions("string")
                                                     .name("name")
                                                     .build()
@@ -286,7 +300,13 @@ internal class SidebandServerEventTest {
                                 .decisions(
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                            DecisionQuestion.Choice.builder()
+                                                .addChoice(
+                                                    DecisionChoiceOption.builder()
+                                                        .value("string")
+                                                        .description("description")
+                                                        .build()
+                                                )
                                                 .instructions("string")
                                                 .name("name")
                                                 .build()
@@ -416,8 +436,13 @@ internal class SidebandServerEventTest {
                                     .decisions(
                                         DecisionTrigger.Decisions.builder()
                                             .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
+                                                DecisionQuestion.Choice.builder()
+                                                    .addChoice(
+                                                        DecisionChoiceOption.builder()
+                                                            .value("string")
+                                                            .description("description")
+                                                            .build()
+                                                    )
                                                     .instructions("string")
                                                     .name("name")
                                                     .build()
@@ -1240,10 +1265,10 @@ internal class SidebandServerEventTest {
             DecisionItemCreatedEvent.builder()
                 .eventId("evt_item_1")
                 .item(
-                    DecisionItemCreatedEvent.Item.builder()
+                    DecisionStoredUserMessage.builder()
                         .id("msg_browser_1")
                         .content("string")
-                        .type(DecisionItemCreatedEvent.Item.Type.MESSAGE)
+                        .type(DecisionStoredUserMessage.Type.MESSAGE)
                         .build()
                 )
                 .clientEventId("browser_1")
@@ -1289,10 +1314,10 @@ internal class SidebandServerEventTest {
                 DecisionItemCreatedEvent.builder()
                     .eventId("evt_item_1")
                     .item(
-                        DecisionItemCreatedEvent.Item.builder()
+                        DecisionStoredUserMessage.builder()
                             .id("msg_browser_1")
                             .content("string")
-                            .type(DecisionItemCreatedEvent.Item.Type.MESSAGE)
+                            .type(DecisionStoredUserMessage.Type.MESSAGE)
                             .build()
                     )
                     .clientEventId("browser_1")
@@ -1573,7 +1598,13 @@ internal class SidebandServerEventTest {
                                 .decisions(
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                            DecisionQuestion.Choice.builder()
+                                                .addChoice(
+                                                    DecisionChoiceOption.builder()
+                                                        .value("string")
+                                                        .description("description")
+                                                        .build()
+                                                )
                                                 .instructions("string")
                                                 .name("name")
                                                 .build()
@@ -1667,8 +1698,13 @@ internal class SidebandServerEventTest {
                                     .decisions(
                                         DecisionTrigger.Decisions.builder()
                                             .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
+                                                DecisionQuestion.Choice.builder()
+                                                    .addChoice(
+                                                        DecisionChoiceOption.builder()
+                                                            .value("string")
+                                                            .description("description")
+                                                            .build()
+                                                    )
                                                     .instructions("string")
                                                     .name("name")
                                                     .build()

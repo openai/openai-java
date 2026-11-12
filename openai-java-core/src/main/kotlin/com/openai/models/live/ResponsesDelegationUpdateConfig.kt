@@ -2965,8 +2965,8 @@ private constructor(
             ) : this(name, type, mutableMapOf())
 
             /**
-             * The schema requires this property. Returns empty if the JSON property is missing or
-             * null.
+             * The name of the function tool to call. The schema requires this property. Returns
+             * empty if the JSON property is missing or null.
              *
              * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
@@ -2979,8 +2979,8 @@ private constructor(
             fun nameOrThrow(): String = name.getRequired("name")
 
             /**
-             * The schema requires this property. Returns empty if the JSON property is missing or
-             * null.
+             * The tool to call. Always `function`. The schema requires this property. Returns empty
+             * if the JSON property is missing or null.
              *
              * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
@@ -3065,6 +3065,7 @@ private constructor(
                             liveFunctionToolChoiceParam.additionalProperties.toMutableMap()
                     }
 
+                /** The name of the function tool to call. */
                 fun name(name: String) = name(JsonField.of(name))
 
                 /**
@@ -3195,38 +3196,24 @@ private constructor(
         class LiveMcpToolChoiceParam
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
-            private val name: JsonField<String>,
             private val serverLabel: JsonField<String>,
             private val type: JsonValue,
+            private val name: JsonField<String>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
             @JsonCreator
             private constructor(
-                @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("server_label")
                 @ExcludeMissing
                 serverLabel: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-            ) : this(name, serverLabel, type, mutableMapOf())
+                @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            ) : this(serverLabel, type, name, mutableMapOf())
 
             /**
-             * The schema requires this property. Returns empty if the JSON property is missing or
-             * null.
-             *
-             * @throws OpenAIInvalidDataException if the value has an unexpected type.
-             */
-            fun name(): java.util.Optional<String> = name.getOptional("name")
-
-            /**
-             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
-             * invalid.
-             */
-            fun nameOrThrow(): String = name.getRequired("name")
-
-            /**
-             * The schema requires this property. Returns empty if the JSON property is missing or
-             * null.
+             * The label of the MCP server to call. The schema requires this property. Returns empty
+             * if the JSON property is missing or null.
              *
              * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
@@ -3239,8 +3226,8 @@ private constructor(
             fun serverLabelOrThrow(): String = serverLabel.getRequired("server_label")
 
             /**
-             * The schema requires this property. Returns empty if the JSON property is missing or
-             * null.
+             * The tool to call. Always `mcp`. The schema requires this property. Returns empty if
+             * the JSON property is missing or null.
              *
              * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
@@ -3263,11 +3250,18 @@ private constructor(
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
             /**
-             * Returns the raw JSON value of [name].
+             * The name of the MCP tool to call. If omitted, the server may choose a default.
+             * Returns empty if the JSON property is missing or null.
              *
-             * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
              */
-            @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+            fun name(): java.util.Optional<String> = name.getOptional("name")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun nameOrThrow(): String = name.getRequired("name")
 
             /**
              * Returns the raw JSON value of [serverLabel].
@@ -3278,6 +3272,13 @@ private constructor(
             @JsonProperty("server_label")
             @ExcludeMissing
             fun _serverLabel(): JsonField<String> = serverLabel
+
+            /**
+             * Returns the raw JSON value of [name].
+             *
+             * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -3295,9 +3296,9 @@ private constructor(
             fun _allProperties(): Map<String, JsonValue> =
                 collectAllProperties(
                     additionalProperties,
-                    "name" to this.name,
                     "server_label" to this.serverLabel,
                     "type" to this.type,
+                    "name" to this.name,
                 )
 
             @JvmSynthetic
@@ -3318,7 +3319,6 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .name()
                  * .serverLabel()
                  * ```
                  */
@@ -3328,31 +3328,21 @@ private constructor(
             /** A builder for [LiveMcpToolChoiceParam]. */
             class Builder internal constructor() {
 
-                private var name: JsonField<String>? = null
                 private var serverLabel: JsonField<String>? = null
                 private var type: JsonValue = JsonValue.from("mcp")
+                private var name: JsonField<String> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(liveMcpToolChoiceParam: LiveMcpToolChoiceParam) = apply {
-                    name = liveMcpToolChoiceParam.name
                     serverLabel = liveMcpToolChoiceParam.serverLabel
                     type = liveMcpToolChoiceParam.type
+                    name = liveMcpToolChoiceParam.name
                     additionalProperties =
                         liveMcpToolChoiceParam.additionalProperties.toMutableMap()
                 }
 
-                fun name(name: String) = name(JsonField.of(name))
-
-                /**
-                 * Sets [Builder.name] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.name] with a well-typed [String] value instead.
-                 * This method is primarily for setting the field to an undocumented or not yet
-                 * supported value.
-                 */
-                fun name(name: JsonField<String>) = apply { this.name = name }
-
+                /** The label of the MCP server to call. */
                 fun serverLabel(serverLabel: String) = serverLabel(JsonField.of(serverLabel))
 
                 /**
@@ -3379,6 +3369,23 @@ private constructor(
                  * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
+
+                /**
+                 * The name of the MCP tool to call. If omitted, the server may choose a default.
+                 */
+                fun name(name: String?) = name(JsonField.ofNullable(name))
+
+                /** Alias for calling [Builder.name] with `name.orElse(null)`. */
+                fun name(name: Optional<String>) = name(name.getOrNull())
+
+                /**
+                 * Sets [Builder.name] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.name] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun name(name: JsonField<String>) = apply { this.name = name }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -3409,7 +3416,6 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .name()
                  * .serverLabel()
                  * ```
                  *
@@ -3417,9 +3423,9 @@ private constructor(
                  */
                 fun build(): LiveMcpToolChoiceParam =
                     LiveMcpToolChoiceParam(
-                        checkRequired("name", name),
                         checkRequired("serverLabel", serverLabel),
                         type,
+                        name,
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -3441,9 +3447,9 @@ private constructor(
                     return@apply
                 }
 
-                nameOrThrow()
                 serverLabelOrThrow()
                 typeOrThrow()
+                name()
                 validated = true
             }
 
@@ -3463,9 +3469,9 @@ private constructor(
              */
             @JvmSynthetic
             internal fun validity(): Int =
-                (if (name.asKnown().isPresent) 1 else 0) +
-                    (if (serverLabel.asKnown().isPresent) 1 else 0) +
-                    type.let { if (it == JsonValue.from("mcp")) 1 else 0 }
+                (if (serverLabel.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("mcp")) 1 else 0 } +
+                    (if (name.asKnown().isPresent) 1 else 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -3473,20 +3479,20 @@ private constructor(
                 }
 
                 return other is LiveMcpToolChoiceParam &&
-                    name == other.name &&
                     serverLabel == other.serverLabel &&
                     type == other.type &&
+                    name == other.name &&
                     additionalProperties == other.additionalProperties
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(name, serverLabel, type, additionalProperties)
+                Objects.hash(serverLabel, type, name, additionalProperties)
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "LiveMcpToolChoiceParam{name=$name, serverLabel=$serverLabel, type=$type, additionalProperties=$additionalProperties}"
+                "LiveMcpToolChoiceParam{serverLabel=$serverLabel, type=$type, name=$name, additionalProperties=$additionalProperties}"
         }
 
         class LiveSpecificCustomToolParam
@@ -3921,6 +3927,17 @@ private constructor(
 
                 /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
                 fun addTool(mcp: Tool.Mcp) = addTool(Tool.ofMcp(mcp))
+
+                /**
+                 * Alias for calling [addTool] with the following:
+                 * ```java
+                 * Tool.Mcp.builder()
+                 *     .serverLabel(serverLabel)
+                 *     .build()
+                 * ```
+                 */
+                fun addMcpTool(serverLabel: String) =
+                    addTool(Tool.Mcp.builder().serverLabel(serverLabel).build())
 
                 /** Alias for calling [addTool] with `Tool.ofFileSearch()`. */
                 fun addToolFileSearch() = addTool(Tool.ofFileSearch())
@@ -4758,8 +4775,8 @@ private constructor(
                     ) : this(name, type, mutableMapOf())
 
                     /**
-                     * The schema requires this property. Returns empty if the JSON property is
-                     * missing or null.
+                     * The name of the function tool to call. The schema requires this property.
+                     * Returns empty if the JSON property is missing or null.
                      *
                      * @throws OpenAIInvalidDataException if the value has an unexpected type.
                      */
@@ -4772,8 +4789,8 @@ private constructor(
                     fun nameOrThrow(): String = name.getRequired("name")
 
                     /**
-                     * The schema requires this property. Returns empty if the JSON property is
-                     * missing or null.
+                     * The tool to call. Always `function`. The schema requires this property.
+                     * Returns empty if the JSON property is missing or null.
                      *
                      * @throws OpenAIInvalidDataException if the value has an unexpected type.
                      */
@@ -4862,6 +4879,7 @@ private constructor(
                             additionalProperties = function.additionalProperties.toMutableMap()
                         }
 
+                        /** The name of the function tool to call. */
                         fun name(name: String) = name(JsonField.of(name))
 
                         /**
@@ -4994,40 +5012,26 @@ private constructor(
                 class Mcp
                 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
-                    private val name: JsonField<String>,
                     private val serverLabel: JsonField<String>,
                     private val type: JsonValue,
+                    private val name: JsonField<String>,
                     private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
 
                     @JsonCreator
                     private constructor(
-                        @JsonProperty("name")
-                        @ExcludeMissing
-                        name: JsonField<String> = JsonMissing.of(),
                         @JsonProperty("server_label")
                         @ExcludeMissing
                         serverLabel: JsonField<String> = JsonMissing.of(),
                         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-                    ) : this(name, serverLabel, type, mutableMapOf())
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<String> = JsonMissing.of(),
+                    ) : this(serverLabel, type, name, mutableMapOf())
 
                     /**
-                     * The schema requires this property. Returns empty if the JSON property is
-                     * missing or null.
-                     *
-                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
-                     */
-                    fun name(): java.util.Optional<String> = name.getOptional("name")
-
-                    /**
-                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
-                     * null, or invalid.
-                     */
-                    fun nameOrThrow(): String = name.getRequired("name")
-
-                    /**
-                     * The schema requires this property. Returns empty if the JSON property is
-                     * missing or null.
+                     * The label of the MCP server to call. The schema requires this property.
+                     * Returns empty if the JSON property is missing or null.
                      *
                      * @throws OpenAIInvalidDataException if the value has an unexpected type.
                      */
@@ -5041,8 +5045,8 @@ private constructor(
                     fun serverLabelOrThrow(): String = serverLabel.getRequired("server_label")
 
                     /**
-                     * The schema requires this property. Returns empty if the JSON property is
-                     * missing or null.
+                     * The tool to call. Always `mcp`. The schema requires this property. Returns
+                     * empty if the JSON property is missing or null.
                      *
                      * @throws OpenAIInvalidDataException if the value has an unexpected type.
                      */
@@ -5065,12 +5069,18 @@ private constructor(
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
                     /**
-                     * Returns the raw JSON value of [name].
+                     * The name of the MCP tool to call. If omitted, the server may choose a
+                     * default. Returns empty if the JSON property is missing or null.
                      *
-                     * Unlike [name], this method doesn't throw if the JSON field has an unexpected
-                     * type.
+                     * @throws OpenAIInvalidDataException if the value has an unexpected type.
                      */
-                    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+                    fun name(): java.util.Optional<String> = name.getOptional("name")
+
+                    /**
+                     * Returns the value or throws [OpenAIInvalidDataException] if it is missing,
+                     * null, or invalid.
+                     */
+                    fun nameOrThrow(): String = name.getRequired("name")
 
                     /**
                      * Returns the raw JSON value of [serverLabel].
@@ -5081,6 +5091,14 @@ private constructor(
                     @JsonProperty("server_label")
                     @ExcludeMissing
                     fun _serverLabel(): JsonField<String> = serverLabel
+
+                    /**
+                     * Returns the raw JSON value of [name].
+                     *
+                     * Unlike [name], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
                     @JsonAnySetter
                     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -5098,9 +5116,9 @@ private constructor(
                     fun _allProperties(): Map<String, JsonValue> =
                         collectAllProperties(
                             additionalProperties,
-                            "name" to this.name,
                             "server_label" to this.serverLabel,
                             "type" to this.type,
+                            "name" to this.name,
                         )
 
                     @JvmSynthetic
@@ -5121,7 +5139,6 @@ private constructor(
                          *
                          * The following fields are required:
                          * ```java
-                         * .name()
                          * .serverLabel()
                          * ```
                          */
@@ -5131,31 +5148,21 @@ private constructor(
                     /** A builder for [Mcp]. */
                     class Builder internal constructor() {
 
-                        private var name: JsonField<String>? = null
                         private var serverLabel: JsonField<String>? = null
                         private var type: JsonValue = JsonValue.from("mcp")
+                        private var name: JsonField<String> = JsonMissing.of()
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
                         @JvmSynthetic
                         internal fun from(mcp: Mcp) = apply {
-                            name = mcp.name
                             serverLabel = mcp.serverLabel
                             type = mcp.type
+                            name = mcp.name
                             additionalProperties = mcp.additionalProperties.toMutableMap()
                         }
 
-                        fun name(name: String) = name(JsonField.of(name))
-
-                        /**
-                         * Sets [Builder.name] to an arbitrary JSON value.
-                         *
-                         * You should usually call [Builder.name] with a well-typed [String] value
-                         * instead. This method is primarily for setting the field to an
-                         * undocumented or not yet supported value.
-                         */
-                        fun name(name: JsonField<String>) = apply { this.name = name }
-
+                        /** The label of the MCP server to call. */
                         fun serverLabel(serverLabel: String) =
                             serverLabel(JsonField.of(serverLabel))
 
@@ -5183,6 +5190,24 @@ private constructor(
                          * yet supported value.
                          */
                         fun type(type: JsonValue) = apply { this.type = type }
+
+                        /**
+                         * The name of the MCP tool to call. If omitted, the server may choose a
+                         * default.
+                         */
+                        fun name(name: String?) = name(JsonField.ofNullable(name))
+
+                        /** Alias for calling [Builder.name] with `name.orElse(null)`. */
+                        fun name(name: Optional<String>) = name(name.getOrNull())
+
+                        /**
+                         * Sets [Builder.name] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.name] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun name(name: JsonField<String>) = apply { this.name = name }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                             apply {
@@ -5213,7 +5238,6 @@ private constructor(
                          *
                          * The following fields are required:
                          * ```java
-                         * .name()
                          * .serverLabel()
                          * ```
                          *
@@ -5221,9 +5245,9 @@ private constructor(
                          */
                         fun build(): Mcp =
                             Mcp(
-                                checkRequired("name", name),
                                 checkRequired("serverLabel", serverLabel),
                                 type,
+                                name,
                                 additionalProperties.toMutableMap(),
                             )
                     }
@@ -5245,9 +5269,9 @@ private constructor(
                             return@apply
                         }
 
-                        nameOrThrow()
                         serverLabelOrThrow()
                         typeOrThrow()
+                        name()
                         validated = true
                     }
 
@@ -5267,9 +5291,9 @@ private constructor(
                      */
                     @JvmSynthetic
                     internal fun validity(): Int =
-                        (if (name.asKnown().isPresent) 1 else 0) +
-                            (if (serverLabel.asKnown().isPresent) 1 else 0) +
-                            type.let { if (it == JsonValue.from("mcp")) 1 else 0 }
+                        (if (serverLabel.asKnown().isPresent) 1 else 0) +
+                            type.let { if (it == JsonValue.from("mcp")) 1 else 0 } +
+                            (if (name.asKnown().isPresent) 1 else 0)
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -5277,20 +5301,20 @@ private constructor(
                         }
 
                         return other is Mcp &&
-                            name == other.name &&
                             serverLabel == other.serverLabel &&
                             type == other.type &&
+                            name == other.name &&
                             additionalProperties == other.additionalProperties
                     }
 
                     private val hashCode: Int by lazy {
-                        Objects.hash(name, serverLabel, type, additionalProperties)
+                        Objects.hash(serverLabel, type, name, additionalProperties)
                     }
 
                     override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "Mcp{name=$name, serverLabel=$serverLabel, type=$type, additionalProperties=$additionalProperties}"
+                        "Mcp{serverLabel=$serverLabel, type=$type, name=$name, additionalProperties=$additionalProperties}"
                 }
 
                 class Custom

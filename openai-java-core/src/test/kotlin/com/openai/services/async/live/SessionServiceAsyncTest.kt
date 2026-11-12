@@ -11,10 +11,12 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
+import com.openai.models.decisions.DecisionChoiceOption
 import com.openai.models.live.BuiltInVoice
 import com.openai.models.live.ClientConfig
 import com.openai.models.live.ClientDelegation
 import com.openai.models.live.DataChannelConfig
+import com.openai.models.live.DecisionQuestion
 import com.openai.models.live.DecisionTrigger
 import com.openai.models.live.FunctionTool
 import com.openai.models.live.InitialItem
@@ -83,8 +85,13 @@ internal class SessionServiceAsyncTest {
                                     .decisions(
                                         DecisionTrigger.Decisions.builder()
                                             .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
+                                                DecisionQuestion.Choice.builder()
+                                                    .addChoice(
+                                                        DecisionChoiceOption.builder()
+                                                            .value("string")
+                                                            .description("description")
+                                                            .build()
+                                                    )
                                                     .instructions("string")
                                                     .name("name")
                                                     .build()

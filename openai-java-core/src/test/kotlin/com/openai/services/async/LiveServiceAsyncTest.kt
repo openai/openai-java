@@ -4,10 +4,12 @@ package com.openai.services.async
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
+import com.openai.models.decisions.DecisionChoiceOption
 import com.openai.models.live.BuiltInVoice
 import com.openai.models.live.ClientConfig
 import com.openai.models.live.ClientDelegation
 import com.openai.models.live.DataChannelConfig
+import com.openai.models.live.DecisionQuestion
 import com.openai.models.live.DecisionTrigger
 import com.openai.models.live.InitialItem
 import com.openai.models.live.LiveCreateParams
@@ -76,8 +78,13 @@ internal class LiveServiceAsyncTest {
                                     .decisions(
                                         DecisionTrigger.Decisions.builder()
                                             .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
+                                                DecisionQuestion.Choice.builder()
+                                                    .addChoice(
+                                                        DecisionChoiceOption.builder()
+                                                            .value("string")
+                                                            .description("description")
+                                                            .build()
+                                                    )
                                                     .instructions("string")
                                                     .name("name")
                                                     .build()

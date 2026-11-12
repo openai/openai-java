@@ -16,12 +16,14 @@ import com.openai.models.live.DecisionCreateEvent
 import com.openai.models.live.DecisionEvent
 import com.openai.models.live.DecisionItemCreateEvent
 import com.openai.models.live.DecisionItemDeleteEvent
+import com.openai.models.live.DecisionUserMessage
 import com.openai.models.live.InputAudioMuteEvent
 import com.openai.models.live.InputAudioUnmuteEvent
 import com.openai.models.live.OutputAudioFixturePlayEvent
 import com.openai.models.live.SessionCloseEvent
 import java.io.IOException
 import java.net.URI
+import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
@@ -86,23 +88,42 @@ class LiveSidebandConnectionTest {
             val peer = Peer()
             server.enqueue(MockResponse().withWebSocketUpgrade(peer))
             OkHttpClient.builder().build().use { http ->
-                LiveSidebandConnection.connect(options(server, http), "signaling").use { sideband ->
+                lateinit var writable: WebSocketClient.WritableConnection
+                val observedHttp =
+                    object : HttpClient by http, WebSocketClient {
+                        override fun connectWebSocket(
+                            request: HttpRequest,
+                            options: RequestOptions,
+                            maxMessageBytes: Int,
+                            listener: WebSocketClient.Listener,
+                        ): CompletableFuture<WebSocketClient.Connection> =
+                            http
+                                .connectWebSocket(request, options, maxMessageBytes, listener)
+                                .thenApply { connection ->
+                                    writable = connection as WebSocketClient.WritableConnection
+                                    connection
+                                }
+                    }
+                fun assertNextFrame(expected: String) {
+                    assertThat(mapper.readTree(peer.messages.poll(8, TimeUnit.SECONDS)))
+                        .isEqualTo(mapper.readTree(expected))
+                }
+                LiveSidebandConnection.connect(options(server, observedHttp), "signaling").use {
+                    sideband ->
                     sideband.send(DecisionCreateEvent.builder().eventId("request").build())
+                    assertNextFrame("""{"type":"decision.create","event_id":"request"}""")
+                    writable.awaitWritable(Duration.ofSeconds(8))
                     sideband.send(
                         DecisionItemCreateEvent.builder()
-                            .item(DecisionItemCreateEvent.Item.builder().content("fixture").build())
+                            .item(DecisionUserMessage.builder().content("fixture").build())
                             .build()
                     )
+                    assertNextFrame(
+                        """{"type":"decision.item.create","item":{"type":"message","role":"user","content":"fixture"}}"""
+                    )
+                    writable.awaitWritable(Duration.ofSeconds(8))
                     sideband.send(DecisionItemDeleteEvent.builder().itemId("item-1").build())
-                    for (expected in
-                        listOf(
-                            """{"type":"decision.create","event_id":"request"}""",
-                            """{"type":"decision.item.create","item":{"type":"message","role":"user","content":"fixture"}}""",
-                            """{"type":"decision.item.delete","item_id":"item-1"}""",
-                        )) {
-                        assertThat(mapper.readTree(peer.messages.poll(8, TimeUnit.SECONDS)))
-                            .isEqualTo(mapper.readTree(expected))
-                    }
+                    assertNextFrame("""{"type":"decision.item.delete","item_id":"item-1"}""")
                     peer.socket
                         .get(8, TimeUnit.SECONDS)
                         .send(

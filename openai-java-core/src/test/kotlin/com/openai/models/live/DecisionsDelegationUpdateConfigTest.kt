@@ -4,6 +4,7 @@ package com.openai.models.live
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.decisions.DecisionChoiceOption
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -16,7 +17,13 @@ internal class DecisionsDelegationUpdateConfigTest {
             DecisionsDelegationUpdateConfig.builder()
                 .model("x")
                 .addQuestion(
-                    DecisionsDelegationUpdateConfig.Question.Predicate.builder()
+                    DecisionQuestion.Choice.builder()
+                        .addChoice(
+                            DecisionChoiceOption.builder()
+                                .value("string")
+                                .description("description")
+                                .build()
+                        )
                         .instructions("string")
                         .name("name")
                         .build()
@@ -26,8 +33,14 @@ internal class DecisionsDelegationUpdateConfigTest {
         assertThat(decisionsDelegationUpdateConfig.model()).contains("x")
         assertThat(decisionsDelegationUpdateConfig.questions().getOrNull())
             .containsExactly(
-                DecisionsDelegationUpdateConfig.Question.ofPredicate(
-                    DecisionsDelegationUpdateConfig.Question.Predicate.builder()
+                DecisionQuestion.ofChoice(
+                    DecisionQuestion.Choice.builder()
+                        .addChoice(
+                            DecisionChoiceOption.builder()
+                                .value("string")
+                                .description("description")
+                                .build()
+                        )
                         .instructions("string")
                         .name("name")
                         .build()

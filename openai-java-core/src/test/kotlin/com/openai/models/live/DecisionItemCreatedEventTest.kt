@@ -15,10 +15,10 @@ internal class DecisionItemCreatedEventTest {
             DecisionItemCreatedEvent.builder()
                 .eventId("evt_item_1")
                 .item(
-                    DecisionItemCreatedEvent.Item.builder()
+                    DecisionStoredUserMessage.builder()
                         .id("msg_browser_1")
                         .content("string")
-                        .type(DecisionItemCreatedEvent.Item.Type.MESSAGE)
+                        .type(DecisionStoredUserMessage.Type.MESSAGE)
                         .build()
                 )
                 .clientEventId("browser_1")
@@ -27,11 +27,13 @@ internal class DecisionItemCreatedEventTest {
         assertThat(decisionItemCreatedEvent.eventId()).contains("evt_item_1")
         assertThat(decisionItemCreatedEvent.item())
             .contains(
-                DecisionItemCreatedEvent.Item.builder()
-                    .id("msg_browser_1")
-                    .content("string")
-                    .type(DecisionItemCreatedEvent.Item.Type.MESSAGE)
-                    .build()
+                DecisionItemCreatedEvent.Item.ofDecisionStoredUserMessage(
+                    DecisionStoredUserMessage.builder()
+                        .id("msg_browser_1")
+                        .content("string")
+                        .type(DecisionStoredUserMessage.Type.MESSAGE)
+                        .build()
+                )
             )
         assertThat(decisionItemCreatedEvent.clientEventId()).contains("browser_1")
 

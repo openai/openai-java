@@ -6,11 +6,14 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.decisions.DecisionChoiceOption
 import com.openai.models.live.CommentaryAppendEvent
 import com.openai.models.live.DecisionCreateEvent
 import com.openai.models.live.DecisionItemCreateEvent
 import com.openai.models.live.DecisionItemDeleteEvent
+import com.openai.models.live.DecisionQuestion
 import com.openai.models.live.DecisionTrigger
+import com.openai.models.live.DecisionUserMessage
 import com.openai.models.live.FunctionTool
 import com.openai.models.live.InputAudioMuteEvent
 import com.openai.models.live.InputAudioUnmuteEvent
@@ -102,7 +105,13 @@ internal class SidebandClientEventTest {
                                 .decisions(
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                            DecisionQuestion.Choice.builder()
+                                                .addChoice(
+                                                    DecisionChoiceOption.builder()
+                                                        .value("string")
+                                                        .description("description")
+                                                        .build()
+                                                )
                                                 .instructions("string")
                                                 .name("name")
                                                 .build()
@@ -209,8 +218,13 @@ internal class SidebandClientEventTest {
                                     .decisions(
                                         DecisionTrigger.Decisions.builder()
                                             .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
+                                                DecisionQuestion.Choice.builder()
+                                                    .addChoice(
+                                                        DecisionChoiceOption.builder()
+                                                            .value("string")
+                                                            .description("description")
+                                                            .build()
+                                                    )
                                                     .instructions("string")
                                                     .name("name")
                                                     .build()
@@ -598,10 +612,10 @@ internal class SidebandClientEventTest {
         val decisionItemCreate =
             DecisionItemCreateEvent.builder()
                 .item(
-                    DecisionItemCreateEvent.Item.builder()
+                    DecisionUserMessage.builder()
                         .content("string")
                         .id("id")
-                        .type(DecisionItemCreateEvent.Item.Type.MESSAGE)
+                        .type(DecisionUserMessage.Type.MESSAGE)
                         .build()
                 )
                 .eventId("browser_1")
@@ -632,10 +646,10 @@ internal class SidebandClientEventTest {
             SidebandClientEvent.ofDecisionItemCreate(
                 DecisionItemCreateEvent.builder()
                     .item(
-                        DecisionItemCreateEvent.Item.builder()
+                        DecisionUserMessage.builder()
                             .content("string")
                             .id("id")
-                            .type(DecisionItemCreateEvent.Item.Type.MESSAGE)
+                            .type(DecisionUserMessage.Type.MESSAGE)
                             .build()
                     )
                     .eventId("browser_1")
