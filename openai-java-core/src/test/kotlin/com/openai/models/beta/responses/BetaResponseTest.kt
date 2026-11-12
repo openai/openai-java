@@ -5,6 +5,7 @@ package com.openai.models.beta.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -124,6 +125,12 @@ internal class BetaResponseTest {
                 .image(
                     BetaResponse.Image.builder()
                         .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
+                        .build()
+                )
+                .addInputTransformation(
+                    BetaResponse.InputTransformation.builder()
+                        .id("id")
+                        .reason(BetaResponse.InputTransformation.Reason.ORGANIZATION_MISMATCH)
                         .build()
                 )
                 .maxOutputTokens(0L)
@@ -421,6 +428,13 @@ internal class BetaResponseTest {
             .contains(
                 BetaResponse.Image.builder()
                     .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
+                    .build()
+            )
+        assertThat(betaResponse.inputTransformations().getOrNull())
+            .containsExactly(
+                BetaResponse.InputTransformation.builder()
+                    .id("id")
+                    .reason(BetaResponse.InputTransformation.Reason.ORGANIZATION_MISMATCH)
                     .build()
             )
         assertThat(betaResponse.maxOutputTokens()).contains(0L)
