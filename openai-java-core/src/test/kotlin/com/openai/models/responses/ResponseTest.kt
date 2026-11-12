@@ -127,6 +127,12 @@ internal class ResponseTest {
                         .contextCompression(Response.Image.ContextCompression.ENABLED)
                         .build()
                 )
+                .addInputTransformation(
+                    Response.InputTransformation.builder()
+                        .id("id")
+                        .reason(Response.InputTransformation.Reason.ORGANIZATION_MISMATCH)
+                        .build()
+                )
                 .maxOutputTokens(0L)
                 .maxToolCalls(0L)
                 .moderation(
@@ -410,6 +416,13 @@ internal class ResponseTest {
             .contains(
                 Response.Image.builder()
                     .contextCompression(Response.Image.ContextCompression.ENABLED)
+                    .build()
+            )
+        assertThat(response.inputTransformations().getOrNull())
+            .containsExactly(
+                Response.InputTransformation.builder()
+                    .id("id")
+                    .reason(Response.InputTransformation.Reason.ORGANIZATION_MISMATCH)
                     .build()
             )
         assertThat(response.maxOutputTokens()).contains(0L)

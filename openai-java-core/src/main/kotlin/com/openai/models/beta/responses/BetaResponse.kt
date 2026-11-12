@@ -55,6 +55,7 @@ private constructor(
     private val completedAt: JsonField<Double>,
     private val conversation: JsonField<Conversation>,
     private val image: JsonField<Image>,
+    private val inputTransformations: JsonField<List<InputTransformation>>,
     private val maxOutputTokens: JsonField<Long>,
     private val maxToolCalls: JsonField<Long>,
     private val moderation: JsonField<Moderation>,
@@ -120,6 +121,9 @@ private constructor(
         @ExcludeMissing
         conversation: JsonField<Conversation> = JsonMissing.of(),
         @JsonProperty("image") @ExcludeMissing image: JsonField<Image> = JsonMissing.of(),
+        @JsonProperty("input_transformations")
+        @ExcludeMissing
+        inputTransformations: JsonField<List<InputTransformation>> = JsonMissing.of(),
         @JsonProperty("max_output_tokens")
         @ExcludeMissing
         maxOutputTokens: JsonField<Long> = JsonMissing.of(),
@@ -195,6 +199,7 @@ private constructor(
         completedAt,
         conversation,
         image,
+        inputTransformations,
         maxOutputTokens,
         maxToolCalls,
         moderation,
@@ -514,6 +519,21 @@ private constructor(
      * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
     fun imageOrThrow(): Image = image.getRequired("image")
+
+    /**
+     * Reasoning inputs withheld from the model, in input order. Returns empty if the JSON property
+     * is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun inputTransformations(): java.util.Optional<List<InputTransformation>> =
+        inputTransformations.getOptional("input_transformations")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun inputTransformationsOrThrow(): List<InputTransformation> =
+        inputTransformations.getRequired("input_transformations")
 
     /**
      * An upper bound for the number of tokens that can be generated for a response, including
@@ -988,6 +1008,16 @@ private constructor(
     @JsonProperty("image") @ExcludeMissing fun _image(): JsonField<Image> = image
 
     /**
+     * Returns the raw JSON value of [inputTransformations].
+     *
+     * Unlike [inputTransformations], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("input_transformations")
+    @ExcludeMissing
+    fun _inputTransformations(): JsonField<List<InputTransformation>> = inputTransformations
+
+    /**
      * Returns the raw JSON value of [maxOutputTokens].
      *
      * Unlike [maxOutputTokens], this method doesn't throw if the JSON field has an unexpected type.
@@ -1186,6 +1216,7 @@ private constructor(
             "completed_at" to this.completedAt,
             "conversation" to this.conversation,
             "image" to this.image,
+            "input_transformations" to this.inputTransformations,
             "max_output_tokens" to this.maxOutputTokens,
             "max_tool_calls" to this.maxToolCalls,
             "moderation" to this.moderation,
@@ -1258,6 +1289,7 @@ private constructor(
         private var completedAt: JsonField<Double> = JsonMissing.of()
         private var conversation: JsonField<Conversation> = JsonMissing.of()
         private var image: JsonField<Image> = JsonMissing.of()
+        private var inputTransformations: JsonField<MutableList<InputTransformation>>? = null
         private var maxOutputTokens: JsonField<Long> = JsonMissing.of()
         private var maxToolCalls: JsonField<Long> = JsonMissing.of()
         private var moderation: JsonField<Moderation> = JsonMissing.of()
@@ -1300,6 +1332,7 @@ private constructor(
             completedAt = betaResponse.completedAt
             conversation = betaResponse.conversation
             image = betaResponse.image
+            inputTransformations = betaResponse.inputTransformations.map { it.toMutableList() }
             maxOutputTokens = betaResponse.maxOutputTokens
             maxToolCalls = betaResponse.maxToolCalls
             moderation = betaResponse.moderation
@@ -2100,6 +2133,34 @@ private constructor(
          */
         fun image(image: JsonField<Image>) = apply { this.image = image }
 
+        /** Reasoning inputs withheld from the model, in input order. */
+        fun inputTransformations(inputTransformations: List<InputTransformation>) =
+            inputTransformations(JsonField.of(inputTransformations))
+
+        /**
+         * Sets [Builder.inputTransformations] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.inputTransformations] with a well-typed
+         * `List<InputTransformation>` value instead. This method is primarily for setting the field
+         * to an undocumented or not yet supported value.
+         */
+        fun inputTransformations(inputTransformations: JsonField<List<InputTransformation>>) =
+            apply {
+                this.inputTransformations = inputTransformations.map { it.toMutableList() }
+            }
+
+        /**
+         * Adds a single [InputTransformation] to [inputTransformations].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addInputTransformation(inputTransformation: InputTransformation) = apply {
+            inputTransformations =
+                (inputTransformations?.takeUnless { it.isMissing() }
+                        ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("inputTransformations", it).add(inputTransformation) }
+        }
+
         /**
          * An upper bound for the number of tokens that can be generated for a response, including
          * visible output tokens and
@@ -2614,6 +2675,7 @@ private constructor(
                 completedAt,
                 conversation,
                 image,
+                (inputTransformations ?: JsonMissing.of()).map { it.toImmutable() },
                 maxOutputTokens,
                 maxToolCalls,
                 moderation,
@@ -2671,6 +2733,7 @@ private constructor(
         completedAt()
         conversation().ifPresent { it.validate() }
         image().ifPresent { it.validate() }
+        inputTransformations().ifPresent { it.forEach { it.validate() } }
         maxOutputTokens()
         maxToolCalls()
         moderation().ifPresent { it.validate() }
@@ -2727,6 +2790,7 @@ private constructor(
             (if (completedAt.asKnown().isPresent) 1 else 0) +
             (conversation.asKnown().getOrNull()?.validity() ?: 0) +
             (image.asKnown().getOrNull()?.validity() ?: 0) +
+            (inputTransformations.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (maxOutputTokens.asKnown().isPresent) 1 else 0) +
             (if (maxToolCalls.asKnown().isPresent) 1 else 0) +
             (moderation.asKnown().getOrNull()?.validity() ?: 0) +
@@ -6585,6 +6649,435 @@ private constructor(
 
         override fun toString() =
             "Image{contextCompression=$contextCompression, additionalProperties=$additionalProperties}"
+    }
+
+    class InputTransformation
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val id: JsonField<String>,
+        private val action: JsonValue,
+        private val reason: JsonField<Reason>,
+        private val type: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("action") @ExcludeMissing action: JsonValue = JsonMissing.of(),
+            @JsonProperty("reason") @ExcludeMissing reason: JsonField<Reason> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        ) : this(id, action, reason, type, mutableMapOf())
+
+        /**
+         * The original reasoning item ID. The schema requires this property. Returns empty if the
+         * JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun id(): java.util.Optional<String> = id.getOptional("id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun idOrThrow(): String = id.getRequired("id")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun action(): java.util.Optional<JsonValue> {
+            val raw = action
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("removed")) ->
+                    throw OpenAIInvalidDataException("`action` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun actionOrThrow(): JsonValue = action().orElseGet { action.getRequired("action") }
+
+        @JsonProperty("action") @ExcludeMissing fun _action(): JsonField<JsonValue> = action
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun reason(): java.util.Optional<Reason> = reason.getOptional("reason")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun reasonOrThrow(): Reason = reason.getRequired("reason")
+
+        /**
+         * The schema requires this property. Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("reasoning")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [reason].
+         *
+         * Unlike [reason], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("reason") @ExcludeMissing fun _reason(): JsonField<Reason> = reason
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "id" to this.id,
+                "action" to this.action,
+                "reason" to this.reason,
+                "type" to this.type,
+            )
+
+        @JvmSynthetic
+        internal fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [InputTransformation].
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * .reason()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [InputTransformation]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String>? = null
+            private var action: JsonValue = JsonValue.from("removed")
+            private var reason: JsonField<Reason>? = null
+            private var type: JsonValue = JsonValue.from("reasoning")
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(inputTransformation: InputTransformation) = apply {
+                id = inputTransformation.id
+                action = inputTransformation.action
+                reason = inputTransformation.reason
+                type = inputTransformation.type
+                additionalProperties = inputTransformation.additionalProperties.toMutableMap()
+            }
+
+            /** The original reasoning item ID. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("removed")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun action(action: JsonValue) = apply { this.action = action }
+
+            fun reason(reason: Reason) = reason(JsonField.of(reason))
+
+            /**
+             * Sets [Builder.reason] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.reason] with a well-typed [Reason] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun reason(reason: JsonField<Reason>) = apply { this.reason = reason }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("reasoning")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [InputTransformation].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * .reason()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): InputTransformation =
+                InputTransformation(
+                    checkRequired("id", id),
+                    action,
+                    checkRequired("reason", reason),
+                    type,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): InputTransformation = apply {
+            if (validated) {
+                return@apply
+            }
+
+            idOrThrow()
+            actionOrThrow()
+            reasonOrThrow().validate()
+            typeOrThrow()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                action.let { if (it == JsonValue.from("removed")) 1 else 0 } +
+                (reason.asKnown().getOrNull()?.validity() ?: 0) +
+                type.let { if (it == JsonValue.from("reasoning")) 1 else 0 }
+
+        class Reason @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val ORGANIZATION_MISMATCH = of("organization_mismatch")
+
+                @JvmField val END_USER_MISMATCH = of("end_user_mismatch")
+
+                @JvmField val MODEL_MISMATCH = of("model_mismatch")
+
+                @JvmField val PREFIX_MISMATCH = of("prefix_mismatch")
+
+                @JvmField val TURN_BOUNDARY = of("turn_boundary")
+
+                @JvmStatic fun of(value: String) = Reason(JsonField.of(value))
+            }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Reason = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                asString()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                when (this) {
+                    ORGANIZATION_MISMATCH -> 1
+                    END_USER_MISMATCH -> 1
+                    MODEL_MISMATCH -> 1
+                    PREFIX_MISMATCH -> 1
+                    TURN_BOUNDARY -> 1
+                    else -> 0
+                }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Reason && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is InputTransformation &&
+                id == other.id &&
+                action == other.action &&
+                reason == other.reason &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(id, action, reason, type, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "InputTransformation{id=$id, action=$action, reason=$reason, type=$type, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -14722,6 +15215,7 @@ private constructor(
             completedAt == other.completedAt &&
             conversation == other.conversation &&
             image == other.image &&
+            inputTransformations == other.inputTransformations &&
             maxOutputTokens == other.maxOutputTokens &&
             maxToolCalls == other.maxToolCalls &&
             moderation == other.moderation &&
@@ -14765,6 +15259,7 @@ private constructor(
             completedAt,
             conversation,
             image,
+            inputTransformations,
             maxOutputTokens,
             maxToolCalls,
             moderation,
@@ -14791,5 +15286,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "BetaResponse{id=$id, accessPrograms=$accessPrograms, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, completedAt=$completedAt, conversation=$conversation, image=$image, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, moderation=$moderation, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheDiagnostics=$promptCacheDiagnostics, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, status=$status, text=$text, toolUsage=$toolUsage, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
+        "BetaResponse{id=$id, accessPrograms=$accessPrograms, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, completedAt=$completedAt, conversation=$conversation, image=$image, inputTransformations=$inputTransformations, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, moderation=$moderation, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheDiagnostics=$promptCacheDiagnostics, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, status=$status, text=$text, toolUsage=$toolUsage, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
 }

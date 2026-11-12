@@ -127,6 +127,12 @@ internal class BetaResponseTest {
                         .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
                         .build()
                 )
+                .addInputTransformation(
+                    BetaResponse.InputTransformation.builder()
+                        .id("id")
+                        .reason(BetaResponse.InputTransformation.Reason.ORGANIZATION_MISMATCH)
+                        .build()
+                )
                 .maxOutputTokens(0L)
                 .maxToolCalls(0L)
                 .moderation(
@@ -422,6 +428,13 @@ internal class BetaResponseTest {
             .contains(
                 BetaResponse.Image.builder()
                     .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
+                    .build()
+            )
+        assertThat(betaResponse.inputTransformations().getOrNull())
+            .containsExactly(
+                BetaResponse.InputTransformation.builder()
+                    .id("id")
+                    .reason(BetaResponse.InputTransformation.Reason.ORGANIZATION_MISMATCH)
                     .build()
             )
         assertThat(betaResponse.maxOutputTokens()).contains(0L)
