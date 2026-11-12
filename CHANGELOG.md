@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.104.0](https://github.com/openai/openai-java/compare/v4.103.0...v4.104.0) (2026-11-12)
+
+
+### Features
+
+* **api:** expose reasoning input transformations on responses ([#1379](https://github.com/openai/openai-java/issues/1379)) ([dc3692e](https://github.com/openai/openai-java/commit/dc3692e1aff2a81524fb8715031eeaeee8ab4c46))
+
+
+### Documentation
+
+* simplify review handoff instructions ([#1369](https://github.com/openai/openai-java/issues/1369)) ([cc21d46](https://github.com/openai/openai-java/commit/cc21d4645232b5ee7c604c157a9ffd0e03a849be))
+
+
+### Build System
+
+* bump gradle-wrapper in / ([#1347](https://github.com/openai/openai-java/issues/1347)) ([deee9ea](https://github.com/openai/openai-java/commit/deee9ea0d13313cefd773cf0bbfbffb339d9ef49))
+* bump gradle/actions/setup-gradle from 6.4.0 to 6.4.1 ([#1348](https://github.com/openai/openai-java/issues/1348)) ([b0bc6ae](https://github.com/openai/openai-java/commit/b0bc6ae8f160f089226991f9d3f00ea0582664c2))
+
 ## [4.103.0](https://github.com/openai/openai-java/compare/v4.102.0...v4.103.0) (2026-11-10)
 
 
