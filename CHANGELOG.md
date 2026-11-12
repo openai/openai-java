@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.103.0](https://github.com/openai/openai-java/compare/v4.102.0...v4.103.0) (2026-11-10)
+
+
+### Features
+
+* **api:** typed async fields for Managed Agents function tools ([#1354](https://github.com/openai/openai-java/issues/1354)) ([142ee3d](https://github.com/openai/openai-java/commit/142ee3da0d63002ebf053aa62b71bc71bf892c58))
+
 ## [4.102.0](https://github.com/openai/openai-java/compare/v4.101.0...v4.102.0) (2026-11-09)
 
 
