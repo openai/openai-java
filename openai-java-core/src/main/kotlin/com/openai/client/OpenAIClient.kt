@@ -28,7 +28,6 @@ import com.openai.services.blocking.SafetyService
 import com.openai.services.blocking.SkillService
 import com.openai.services.blocking.UploadService
 import com.openai.services.blocking.VectorStoreService
-import com.openai.services.blocking.VideoService
 import com.openai.services.blocking.WebhookService
 import java.util.function.Consumer
 
@@ -141,8 +140,6 @@ interface OpenAIClient {
 
     fun skills(): SkillService
 
-    fun videos(): VideoService
-
     /**
      * Closes this client, relinquishing any underlying resources.
      *
@@ -237,7 +234,5 @@ interface OpenAIClient {
         fun containers(): ContainerService.WithRawResponse
 
         fun skills(): SkillService.WithRawResponse
-
-        fun videos(): VideoService.WithRawResponse
     }
 }

@@ -18,7 +18,6 @@
 -keep class com.openai.models.responses.ResponseInputImageContent$PromptCacheBreakpoint { *; }
 -keep class com.openai.models.responses.ResponseInputText$PromptCacheBreakpoint { *; }
 -keep class com.openai.models.responses.ResponseInputTextContent$PromptCacheBreakpoint { *; }
--keep class com.openai.models.videos.VideoCreateError { *; }
 -keep,allowoptimization class com.openai.models.beta.responses.BetaResponseInputFile
 -keep,allowoptimization class com.openai.models.beta.responses.BetaResponseInputFileContent
 -keep,allowoptimization class com.openai.models.beta.responses.BetaResponseInputImage

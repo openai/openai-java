@@ -4,11 +4,9 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.services.async.beta.AgentServiceAsync
-import com.openai.services.async.beta.AssistantServiceAsync
 import com.openai.services.async.beta.ChatKitServiceAsync
 import com.openai.services.async.beta.RealtimeServiceAsync
 import com.openai.services.async.beta.ResponseServiceAsync
-import com.openai.services.async.beta.ThreadServiceAsync
 import java.util.function.Consumer
 
 interface BetaServiceAsync {
@@ -40,15 +38,6 @@ interface BetaServiceAsync {
     fun chatkit(): ChatKitServiceAsync =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    /** Build Assistants that can call models and use tools. */
-    fun assistants(): AssistantServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
-
-    /** Build Assistants that can call models and use tools. */
-    @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-    fun threads(): ThreadServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
-
     /** A view of [BetaServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
@@ -76,19 +65,6 @@ interface BetaServiceAsync {
             )
 
         fun chatkit(): ChatKitServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
-
-        /** Build Assistants that can call models and use tools. */
-        fun assistants(): AssistantServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
-
-        /** Build Assistants that can call models and use tools. */
-        @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-        fun threads(): ThreadServiceAsync.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
             )

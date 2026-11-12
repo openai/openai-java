@@ -17,7 +17,6 @@ import com.openai.models.images.ImageCreateVariationParams
 import com.openai.models.images.ImageEditParams
 import com.openai.models.skills.SkillCreateParams
 import com.openai.models.skills.versions.VersionCreateParams
-import com.openai.models.videos.VideoCreateParams
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.FilterInputStream
@@ -41,19 +40,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 internal class UnionUploadStreamingTest {
-
-    @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun videoReferenceUnionDefersStreamConsumptionAndCleanup(async: Boolean) {
-        val stream = DeferredInputStream()
-        val params = VideoCreateParams.builder().prompt("test").inputReference(stream).build()
-
-        client { verifyStreaming(it, stream) }
-            .useClient {
-                if (async) it.async().videos().create(params).get(10, TimeUnit.SECONDS)
-                else it.videos().withRawResponse().create(params).close()
-            }
-    }
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
@@ -322,8 +308,6 @@ internal class UnionUploadStreamingTest {
     @CsvSource(
         "false,image,workload",
         "true,image,workload",
-        "false,video,workload",
-        "true,video,workload",
         "false,voice,workload",
         "true,voice,workload",
         "false,streaming,workload",
@@ -395,14 +379,6 @@ internal class UnionUploadStreamingTest {
                                         .withRawResponse()
                                         .createVariation(params)
                                 else client.async().images().createVariation(params)
-                            } else if (kind == "video") {
-                                val params =
-                                    VideoCreateParams.builder()
-                                        .prompt("test")
-                                        .inputReference(stream)
-                                        .build()
-                                if (raw) client.async().videos().withRawResponse().create(params)
-                                else client.async().videos().create(params)
                             } else {
                                 val params =
                                     ImageEditParams.builder().prompt("test").image(stream).build()

@@ -407,12 +407,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         val GPT_4_1106_PREVIEW = of("gpt-4-1106-preview")
 
         @Deprecated(
-            "Announced shutdown date: 2024-12-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
-        )
-        @JvmField
-        val GPT_4_VISION_PREVIEW = of("gpt-4-vision-preview")
-
-        @Deprecated(
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
         )
         @JvmField
@@ -467,12 +461,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         val GPT_3_5_TURBO_0301 = of("gpt-3.5-turbo-0301")
 
         @Deprecated(
-            "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
-        )
-        @JvmField
-        val GPT_3_5_TURBO_0613 = of("gpt-3.5-turbo-0613")
-
-        @Deprecated(
             "Announced shutdown date: 2026-09-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
         )
         @JvmField
@@ -483,12 +471,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         )
         @JvmField
         val GPT_3_5_TURBO_0125 = of("gpt-3.5-turbo-0125")
-
-        @Deprecated(
-            "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
-        )
-        @JvmField
-        val GPT_3_5_TURBO_16K_0613 = of("gpt-3.5-turbo-16k-0613")
 
         @JvmStatic fun of(value: String) = ChatModel(JsonField.of(value))
     }
@@ -747,10 +729,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         )
         GPT_4_1106_PREVIEW,
         @Deprecated(
-            "Announced shutdown date: 2024-12-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
-        )
-        GPT_4_VISION_PREVIEW,
-        @Deprecated(
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
         )
         GPT_4,
@@ -787,10 +765,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         )
         GPT_3_5_TURBO_0301,
         @Deprecated(
-            "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
-        )
-        GPT_3_5_TURBO_0613,
-        @Deprecated(
             "Announced shutdown date: 2026-09-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
         )
         GPT_3_5_TURBO_1106,
@@ -798,10 +772,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
         )
         GPT_3_5_TURBO_0125,
-        @Deprecated(
-            "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
-        )
-        GPT_3_5_TURBO_16K_0613,
     }
 
     /**
@@ -1066,10 +1036,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         )
         GPT_4_1106_PREVIEW,
         @Deprecated(
-            "Announced shutdown date: 2024-12-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
-        )
-        GPT_4_VISION_PREVIEW,
-        @Deprecated(
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
         )
         GPT_4,
@@ -1106,10 +1072,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         )
         GPT_3_5_TURBO_0301,
         @Deprecated(
-            "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
-        )
-        GPT_3_5_TURBO_0613,
-        @Deprecated(
             "Announced shutdown date: 2026-09-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
         )
         GPT_3_5_TURBO_1106,
@@ -1117,10 +1079,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
         )
         GPT_3_5_TURBO_0125,
-        @Deprecated(
-            "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
-        )
-        GPT_3_5_TURBO_16K_0613,
         /** An enum member indicating that [ChatModel] was instantiated with an unknown value. */
         _UNKNOWN,
     }
@@ -1211,7 +1169,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_4_0125_PREVIEW -> Value.GPT_4_0125_PREVIEW
             GPT_4_TURBO_PREVIEW -> Value.GPT_4_TURBO_PREVIEW
             GPT_4_1106_PREVIEW -> Value.GPT_4_1106_PREVIEW
-            GPT_4_VISION_PREVIEW -> Value.GPT_4_VISION_PREVIEW
             GPT_4 -> Value.GPT_4
             GPT_4_0314 -> Value.GPT_4_0314
             GPT_4_0613 -> Value.GPT_4_0613
@@ -1221,10 +1178,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_3_5_TURBO -> Value.GPT_3_5_TURBO
             GPT_3_5_TURBO_16K -> Value.GPT_3_5_TURBO_16K
             GPT_3_5_TURBO_0301 -> Value.GPT_3_5_TURBO_0301
-            GPT_3_5_TURBO_0613 -> Value.GPT_3_5_TURBO_0613
             GPT_3_5_TURBO_1106 -> Value.GPT_3_5_TURBO_1106
             GPT_3_5_TURBO_0125 -> Value.GPT_3_5_TURBO_0125
-            GPT_3_5_TURBO_16K_0613 -> Value.GPT_3_5_TURBO_16K_0613
             else -> Value._UNKNOWN
         }
 
@@ -1315,7 +1270,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_4_0125_PREVIEW -> Known.GPT_4_0125_PREVIEW
             GPT_4_TURBO_PREVIEW -> Known.GPT_4_TURBO_PREVIEW
             GPT_4_1106_PREVIEW -> Known.GPT_4_1106_PREVIEW
-            GPT_4_VISION_PREVIEW -> Known.GPT_4_VISION_PREVIEW
             GPT_4 -> Known.GPT_4
             GPT_4_0314 -> Known.GPT_4_0314
             GPT_4_0613 -> Known.GPT_4_0613
@@ -1325,10 +1279,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_3_5_TURBO -> Known.GPT_3_5_TURBO
             GPT_3_5_TURBO_16K -> Known.GPT_3_5_TURBO_16K
             GPT_3_5_TURBO_0301 -> Known.GPT_3_5_TURBO_0301
-            GPT_3_5_TURBO_0613 -> Known.GPT_3_5_TURBO_0613
             GPT_3_5_TURBO_1106 -> Known.GPT_3_5_TURBO_1106
             GPT_3_5_TURBO_0125 -> Known.GPT_3_5_TURBO_0125
-            GPT_3_5_TURBO_16K_0613 -> Known.GPT_3_5_TURBO_16K_0613
             else -> throw OpenAIInvalidDataException("Unknown ChatModel: $value")
         }
 

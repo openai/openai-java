@@ -5,23 +5,23 @@ When the SDK adds a union variant, an existing visitor can handle it through
 A typed override still takes precedence. The default fallback throws
 `OpenAIInvalidDataException`.
 
-For example, this Java 8 visitor handles a video reference supplied as either
-JSON or a binary upload. It also handles new JSON variants without recompilation.
+This Java 8 visitor handles image edits supplied as a single upload or a list
+of uploads. It also provides a fallback for unrecognized JSON variants.
 
 ```java
 import com.openai.core.JsonValue;
-import com.openai.models.videos.VideoCreateParams;
+import com.openai.models.images.ImageEditParams;
 
-VideoCreateParams.InputReference.Visitor<String> label =
-        new VideoCreateParams.InputReference.Visitor<String>() {
+ImageEditParams.Image.Visitor<String> label =
+        new ImageEditParams.Image.Visitor<String>() {
             @Override
             public String unknown(JsonValue json) {
-                return "JSON reference";
+                return "JSON image";
             }
 
             @Override
             public String unknown(Object upload) {
-                return "binary reference";
+                return "binary upload";
             }
         };
 ```
@@ -29,9 +29,12 @@ VideoCreateParams.InputReference.Visitor<String> label =
 Kotlin uses the same overloads.
 
 ```kotlin
-val label = object : VideoCreateParams.InputReference.Visitor<String> {
-    override fun unknown(json: JsonValue?) = "JSON reference"
-    override fun unknown(value: Any?) = "binary reference"
+import com.openai.core.JsonValue
+import com.openai.models.images.ImageEditParams
+
+val label = object : ImageEditParams.Image.Visitor<String> {
+    override fun unknown(json: JsonValue?) = "JSON image"
+    override fun unknown(value: Any?) = "binary upload"
 }
 ```
 

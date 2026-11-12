@@ -5,16 +5,12 @@ package com.openai.services.async
 import com.openai.core.ClientOptions
 import com.openai.services.async.beta.AgentServiceAsync
 import com.openai.services.async.beta.AgentServiceAsyncImpl
-import com.openai.services.async.beta.AssistantServiceAsync
-import com.openai.services.async.beta.AssistantServiceAsyncImpl
 import com.openai.services.async.beta.ChatKitServiceAsync
 import com.openai.services.async.beta.ChatKitServiceAsyncImpl
 import com.openai.services.async.beta.RealtimeServiceAsync
 import com.openai.services.async.beta.RealtimeServiceAsyncImpl
 import com.openai.services.async.beta.ResponseServiceAsync
 import com.openai.services.async.beta.ResponseServiceAsyncImpl
-import com.openai.services.async.beta.ThreadServiceAsync
-import com.openai.services.async.beta.ThreadServiceAsyncImpl
 import java.util.function.Consumer
 
 class BetaServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -32,12 +28,6 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
     private val chatkit: ChatKitServiceAsync by lazy { ChatKitServiceAsyncImpl(clientOptions) }
 
-    private val assistants: AssistantServiceAsync by lazy {
-        AssistantServiceAsyncImpl(clientOptions)
-    }
-
-    private val threads: ThreadServiceAsync by lazy { ThreadServiceAsyncImpl(clientOptions) }
-
     override fun withRawResponse(): BetaServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaServiceAsync =
@@ -54,13 +44,6 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
     override fun responses(): ResponseServiceAsync = responses
 
     override fun chatkit(): ChatKitServiceAsync = chatkit
-
-    /** Build Assistants that can call models and use tools. */
-    override fun assistants(): AssistantServiceAsync = assistants
-
-    /** Build Assistants that can call models and use tools. */
-    @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-    override fun threads(): ThreadServiceAsync = threads
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         BetaServiceAsync.WithRawResponse {
@@ -81,14 +64,6 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
             ChatKitServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val assistants: AssistantServiceAsync.WithRawResponse by lazy {
-            AssistantServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val threads: ThreadServiceAsync.WithRawResponse by lazy {
-            ThreadServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): BetaServiceAsync.WithRawResponse =
@@ -107,12 +82,5 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
         override fun responses(): ResponseServiceAsync.WithRawResponse = responses
 
         override fun chatkit(): ChatKitServiceAsync.WithRawResponse = chatkit
-
-        /** Build Assistants that can call models and use tools. */
-        override fun assistants(): AssistantServiceAsync.WithRawResponse = assistants
-
-        /** Build Assistants that can call models and use tools. */
-        @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-        override fun threads(): ThreadServiceAsync.WithRawResponse = threads
     }
 }
