@@ -2,8 +2,8 @@ package com.openai.client.okhttp
 
 import com.openai.client.OpenAIClient
 import com.openai.errors.InvalidResourceIdException
-import com.openai.models.beta.threads.messages.MessageDeleteParams
-import com.openai.models.beta.threads.runs.RunCreateParams
+import com.openai.models.vectorstores.files.FileCreateParams
+import com.openai.models.vectorstores.files.FileDeleteParams
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import okhttp3.mockwebserver.MockResponse
@@ -18,15 +18,14 @@ internal class ResourcePathValidationTest {
     fun rejectsInvalidParentAndFinalIds() =
         listOf(false, true).flatMap { async ->
             listOf("", ".", "..").flatMap { id ->
-                listOf(id to "message-ok", "thread-ok" to id).map { (thread, message) ->
-                    dynamicTest("async=$async thread=$thread message=$message") {
+                listOf(id to "file-ok", "store-ok" to id).map { (store, file) ->
+                    dynamicTest("async=$async store=$store file=$file") {
                         withClient { client, server ->
-                            val params = params(thread, message)
+                            val params = params(store, file)
                             if (async) {
                                 // The call itself must return normally, before observing its
                                 // failure.
-                                val future =
-                                    client.async().beta().threads().messages().delete(params)
+                                val future = client.async().vectorStores().files().delete(params)
                                 assertThat(
                                         assertThrows<ExecutionException> {
                                                 future.get(5, TimeUnit.SECONDS)
@@ -36,7 +35,7 @@ internal class ResourcePathValidationTest {
                                     .isInstanceOf(InvalidResourceIdException::class.java)
                             } else {
                                 assertThrows<InvalidResourceIdException> {
-                                    client.beta().threads().messages().delete(params)
+                                    client.vectorStores().files().delete(params)
                                 }
                             }
                             assertThat(server.requestCount).isZero()
@@ -49,12 +48,13 @@ internal class ResourcePathValidationTest {
     @TestFactory
     fun emptyIdsCannotSelectDifferentEndpoints() =
         listOf(false, true).map { async ->
-            dynamicTest("file content and thread run aliases async=$async") {
+            dynamicTest("file content and vector store file paths async=$async") {
                 withClient { client, server ->
-                    val run = RunCreateParams.builder().threadId("").assistantId("test").build()
+                    val params =
+                        FileCreateParams.builder().vectorStoreId("").fileId("file-test").build()
                     if (async) {
                         val content = client.async().files().content("")
-                        val creation = client.async().beta().threads().runs().create(run)
+                        val creation = client.async().vectorStores().files().create(params)
                         for (future in listOf(content, creation)) {
                             assertThat(
                                     assertThrows<ExecutionException> {
@@ -69,7 +69,7 @@ internal class ResourcePathValidationTest {
                             client.files().content("").use {}
                         }
                         assertThrows<InvalidResourceIdException> {
-                            client.beta().threads().runs().create(run)
+                            client.vectorStores().files().create(params)
                         }
                     }
                     assertThat(server.requestCount).isZero()
@@ -80,7 +80,7 @@ internal class ResourcePathValidationTest {
     @TestFactory
     fun acceptedIdsKeepTheirLiteralIdentityOnWire() =
         listOf(
-                "message-ok" to "message-ok",
+                "file-ok" to "file-ok",
                 "file.txt" to "file.txt",
                 "..." to "...",
                 "%2e" to "%252e",
@@ -116,16 +116,13 @@ internal class ResourcePathValidationTest {
                 dynamicTest("literal ID ${id.toCharArray().map { it.code }}") {
                     withClient { client, server ->
                         val params = params(id, id)
-                        assertThat(
-                                client.beta().threads().messages().delete(params).deletedOrThrow()
-                            )
+                        assertThat(client.vectorStores().files().delete(params).deletedOrThrow())
                             .isTrue()
                         assertThat(
                                 client
                                     .async()
-                                    .beta()
-                                    .threads()
-                                    .messages()
+                                    .vectorStores()
+                                    .files()
                                     .delete(params)
                                     .get(5, TimeUnit.SECONDS)
                                     .deletedOrThrow()
@@ -135,9 +132,9 @@ internal class ResourcePathValidationTest {
                             val request = server.takeRequest(5, TimeUnit.SECONDS)!!
                             assertThat(request.method).isEqualTo("DELETE")
                             assertThat(request.path)
-                                .isEqualTo("/v1/threads/$encoded/messages/$encoded")
+                                .isEqualTo("/v1/vector_stores/$encoded/files/$encoded")
                             assertThat(request.requestUrl!!.pathSegments)
-                                .containsExactly("v1", "threads", id, "messages", id)
+                                .containsExactly("v1", "vector_stores", id, "files", id)
                             assertThat(request.requestUrl!!.query).isNull()
                         }
                         assertThat(server.requestCount).isEqualTo(2)
@@ -145,8 +142,8 @@ internal class ResourcePathValidationTest {
                 }
             }
 
-    private fun params(thread: String, message: String) =
-        MessageDeleteParams.builder().threadId(thread).messageId(message).build()
+    private fun params(store: String, file: String) =
+        FileDeleteParams.builder().vectorStoreId(store).fileId(file).build()
 
     private fun withClient(block: (OpenAIClient, MockWebServer) -> Unit) {
         MockWebServer().use { server ->
@@ -154,7 +151,9 @@ internal class ResourcePathValidationTest {
                 server.enqueue(
                     MockResponse()
                         .setHeader("Content-Type", "application/json")
-                        .setBody("""{"id":"ok","deleted":true,"object":"thread.message.deleted"}""")
+                        .setBody(
+                            """{"id":"ok","deleted":true,"object":"vector_store.file.deleted"}"""
+                        )
                 )
             }
             val client =

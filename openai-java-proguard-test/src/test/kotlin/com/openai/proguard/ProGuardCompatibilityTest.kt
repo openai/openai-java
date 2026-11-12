@@ -99,7 +99,6 @@ internal class ProGuardCompatibilityTest {
         assertThat(client.evals()).isNotNull()
         assertThat(client.containers()).isNotNull()
         assertThat(client.skills()).isNotNull()
-        assertThat(client.videos()).isNotNull()
     }
 
     @Test

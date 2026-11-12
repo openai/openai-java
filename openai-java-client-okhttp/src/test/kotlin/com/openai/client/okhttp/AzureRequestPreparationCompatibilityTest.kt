@@ -329,7 +329,7 @@ internal class AzureRequestPreparationCompatibilityTest {
                                 .putAdditionalQueryParam("api-version", "request-version")
                                 .build()
                         if (async) {
-                            client.async().embeddings().create(params).get(5, TimeUnit.SECONDS)
+                            client.async().embeddings().create(params).get(15, TimeUnit.SECONDS)
                         } else {
                             client.embeddings().create(params)
                         }

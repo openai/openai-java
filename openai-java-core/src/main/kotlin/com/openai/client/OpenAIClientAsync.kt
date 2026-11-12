@@ -28,7 +28,6 @@ import com.openai.services.async.SafetyServiceAsync
 import com.openai.services.async.SkillServiceAsync
 import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.VectorStoreServiceAsync
-import com.openai.services.async.VideoServiceAsync
 import com.openai.services.async.WebhookServiceAsync
 import java.util.function.Consumer
 
@@ -141,8 +140,6 @@ interface OpenAIClientAsync {
 
     fun skills(): SkillServiceAsync
 
-    fun videos(): VideoServiceAsync
-
     /**
      * Closes this client, relinquishing any underlying resources.
      *
@@ -239,7 +236,5 @@ interface OpenAIClientAsync {
         fun containers(): ContainerServiceAsync.WithRawResponse
 
         fun skills(): SkillServiceAsync.WithRawResponse
-
-        fun videos(): VideoServiceAsync.WithRawResponse
     }
 }

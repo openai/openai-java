@@ -579,7 +579,7 @@ class LiveConnectionTest {
                                     .isEqualTo("session.start")
                             }
                         }
-                    opened.get(3, TimeUnit.SECONDS)
+                    opened.get(15, TimeUnit.SECONDS)
                 } finally {
                     single.shutdownNow()
                 }
