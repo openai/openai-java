@@ -1140,6 +1140,12 @@ internal class ResponsesServerEventTest {
                                 .contextCompression(Response.Image.ContextCompression.ENABLED)
                                 .build()
                         )
+                        .addInputTransformation(
+                            Response.InputTransformation.builder()
+                                .id("id")
+                                .reason(Response.InputTransformation.Reason.ORGANIZATION_MISMATCH)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -1500,6 +1506,14 @@ internal class ResponsesServerEventTest {
                             .image(
                                 Response.Image.builder()
                                     .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                    .build()
+                            )
+                            .addInputTransformation(
+                                Response.InputTransformation.builder()
+                                    .id("id")
+                                    .reason(
+                                        Response.InputTransformation.Reason.ORGANIZATION_MISMATCH
+                                    )
                                     .build()
                             )
                             .maxOutputTokens(0L)
@@ -2121,6 +2135,12 @@ internal class ResponsesServerEventTest {
                                 .contextCompression(Response.Image.ContextCompression.ENABLED)
                                 .build()
                         )
+                        .addInputTransformation(
+                            Response.InputTransformation.builder()
+                                .id("id")
+                                .reason(Response.InputTransformation.Reason.ORGANIZATION_MISMATCH)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -2481,6 +2501,14 @@ internal class ResponsesServerEventTest {
                             .image(
                                 Response.Image.builder()
                                     .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                    .build()
+                            )
+                            .addInputTransformation(
+                                Response.InputTransformation.builder()
+                                    .id("id")
+                                    .reason(
+                                        Response.InputTransformation.Reason.ORGANIZATION_MISMATCH
+                                    )
                                     .build()
                             )
                             .maxOutputTokens(0L)
@@ -3833,6 +3861,12 @@ internal class ResponsesServerEventTest {
                                 .contextCompression(Response.Image.ContextCompression.ENABLED)
                                 .build()
                         )
+                        .addInputTransformation(
+                            Response.InputTransformation.builder()
+                                .id("id")
+                                .reason(Response.InputTransformation.Reason.ORGANIZATION_MISMATCH)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -4195,6 +4229,14 @@ internal class ResponsesServerEventTest {
                                     .contextCompression(Response.Image.ContextCompression.ENABLED)
                                     .build()
                             )
+                            .addInputTransformation(
+                                Response.InputTransformation.builder()
+                                    .id("id")
+                                    .reason(
+                                        Response.InputTransformation.Reason.ORGANIZATION_MISMATCH
+                                    )
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -4509,6 +4551,12 @@ internal class ResponsesServerEventTest {
                         .image(
                             Response.Image.builder()
                                 .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
+                        .addInputTransformation(
+                            Response.InputTransformation.builder()
+                                .id("id")
+                                .reason(Response.InputTransformation.Reason.ORGANIZATION_MISMATCH)
                                 .build()
                         )
                         .maxOutputTokens(0L)
@@ -4873,6 +4921,14 @@ internal class ResponsesServerEventTest {
                                     .contextCompression(Response.Image.ContextCompression.ENABLED)
                                     .build()
                             )
+                            .addInputTransformation(
+                                Response.InputTransformation.builder()
+                                    .id("id")
+                                    .reason(
+                                        Response.InputTransformation.Reason.ORGANIZATION_MISMATCH
+                                    )
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -5187,6 +5243,12 @@ internal class ResponsesServerEventTest {
                         .image(
                             Response.Image.builder()
                                 .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
+                        .addInputTransformation(
+                            Response.InputTransformation.builder()
+                                .id("id")
+                                .reason(Response.InputTransformation.Reason.ORGANIZATION_MISMATCH)
                                 .build()
                         )
                         .maxOutputTokens(0L)
@@ -5549,6 +5611,14 @@ internal class ResponsesServerEventTest {
                             .image(
                                 Response.Image.builder()
                                     .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                    .build()
+                            )
+                            .addInputTransformation(
+                                Response.InputTransformation.builder()
+                                    .id("id")
+                                    .reason(
+                                        Response.InputTransformation.Reason.ORGANIZATION_MISMATCH
+                                    )
                                     .build()
                             )
                             .maxOutputTokens(0L)
@@ -8874,6 +8944,12 @@ internal class ResponsesServerEventTest {
                                 .contextCompression(Response.Image.ContextCompression.ENABLED)
                                 .build()
                         )
+                        .addInputTransformation(
+                            Response.InputTransformation.builder()
+                                .id("id")
+                                .reason(Response.InputTransformation.Reason.ORGANIZATION_MISMATCH)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -9234,6 +9310,14 @@ internal class ResponsesServerEventTest {
                             .image(
                                 Response.Image.builder()
                                     .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                    .build()
+                            )
+                            .addInputTransformation(
+                                Response.InputTransformation.builder()
+                                    .id("id")
+                                    .reason(
+                                        Response.InputTransformation.Reason.ORGANIZATION_MISMATCH
+                                    )
                                     .build()
                             )
                             .maxOutputTokens(0L)
