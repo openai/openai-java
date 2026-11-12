@@ -570,6 +570,7 @@ internal class AgentSessionEventTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .async(true)
                                         .build()
                                 )
                                 .compaction(
@@ -738,6 +739,7 @@ internal class AgentSessionEventTest {
                                                     )
                                                     .build()
                                             )
+                                            .async(true)
                                             .build()
                                     )
                                     .compaction(
@@ -1731,6 +1733,7 @@ internal class AgentSessionEventTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .async(true)
                                         .build()
                                 )
                                 .compaction(
@@ -1899,6 +1902,7 @@ internal class AgentSessionEventTest {
                                                     )
                                                     .build()
                                             )
+                                            .async(true)
                                             .build()
                                     )
                                     .compaction(
@@ -2040,6 +2044,7 @@ internal class AgentSessionEventTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .async(true)
                                         .build()
                                 )
                                 .compaction(
@@ -2208,6 +2213,7 @@ internal class AgentSessionEventTest {
                                                     )
                                                     .build()
                                             )
+                                            .async(true)
                                             .build()
                                     )
                                     .compaction(
@@ -2349,6 +2355,7 @@ internal class AgentSessionEventTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .async(true)
                                         .build()
                                 )
                                 .compaction(
@@ -2517,6 +2524,7 @@ internal class AgentSessionEventTest {
                                                     )
                                                     .build()
                                             )
+                                            .async(true)
                                             .build()
                                     )
                                     .compaction(
@@ -2658,6 +2666,7 @@ internal class AgentSessionEventTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .async(true)
                                         .build()
                                 )
                                 .compaction(
@@ -2826,6 +2835,7 @@ internal class AgentSessionEventTest {
                                                     )
                                                     .build()
                                             )
+                                            .async(true)
                                             .build()
                                     )
                                     .compaction(

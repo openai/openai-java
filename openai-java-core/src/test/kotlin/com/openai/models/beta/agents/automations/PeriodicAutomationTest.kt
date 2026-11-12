@@ -64,6 +64,7 @@ internal class PeriodicAutomationTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .async(true)
                                         .build()
                                 )
                                 .compaction(
@@ -143,6 +144,7 @@ internal class PeriodicAutomationTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .async(true)
                                         .build()
                                 )
                                 .compaction(

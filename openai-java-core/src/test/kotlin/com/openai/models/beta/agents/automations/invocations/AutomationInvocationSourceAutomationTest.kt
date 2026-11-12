@@ -73,6 +73,7 @@ internal class AutomationInvocationSourceAutomationTest {
                                                         )
                                                         .build()
                                                 )
+                                                .async(true)
                                                 .build()
                                         )
                                         .compaction(
@@ -160,6 +161,7 @@ internal class AutomationInvocationSourceAutomationTest {
                                                         )
                                                         .build()
                                                 )
+                                                .async(true)
                                                 .build()
                                         )
                                         .compaction(

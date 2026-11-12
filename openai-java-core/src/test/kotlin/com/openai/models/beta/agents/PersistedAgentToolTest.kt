@@ -26,6 +26,7 @@ internal class PersistedAgentToolTest {
                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                         .build()
                 )
+                .async(true)
                 .build()
 
         val persistedAgentTool = PersistedAgentTool.ofFunction(function)
@@ -53,6 +54,7 @@ internal class PersistedAgentToolTest {
                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
+                    .async(true)
                     .build()
             )
 

@@ -59,6 +59,7 @@ internal class SessionListPageResponseTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .async(true)
                                         .build()
                                 )
                                 .compaction(
@@ -184,6 +185,7 @@ internal class SessionListPageResponseTest {
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )
+                                    .async(true)
                                     .build()
                             )
                             .compaction(AgentSession.Agent.Compaction.builder().async(true).build())

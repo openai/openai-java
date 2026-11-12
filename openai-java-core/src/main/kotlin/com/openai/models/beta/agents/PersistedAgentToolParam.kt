@@ -471,6 +471,7 @@ private constructor(
         private val name: JsonField<String>,
         private val parameters: JsonField<Parameters>,
         private val type: JsonValue,
+        private val async: JsonField<Boolean>,
         private val deferLoading: JsonField<Boolean>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -485,10 +486,11 @@ private constructor(
             @ExcludeMissing
             parameters: JsonField<Parameters> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("async") @ExcludeMissing async: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("defer_loading")
             @ExcludeMissing
             deferLoading: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(description, name, parameters, type, deferLoading, mutableMapOf())
+        ) : this(description, name, parameters, type, async, deferLoading, mutableMapOf())
 
         /**
          * A description of what the function does. The schema requires this property. Returns empty
@@ -557,6 +559,20 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
         /**
+         * Whether the agent continues without waiting for the function result. Defaults to `false`.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun async(): java.util.Optional<Boolean> = async.getOptional("async")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun asyncOrThrow(): Boolean = async.getRequired("async")
+
+        /**
          * Whether this function is deferred and discovered through tool search. Defaults to
          * `false`. Returns empty if the JSON property is missing or null.
          *
@@ -596,6 +612,13 @@ private constructor(
         fun _parameters(): JsonField<Parameters> = parameters
 
         /**
+         * Returns the raw JSON value of [async].
+         *
+         * Unlike [async], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("async") @ExcludeMissing fun _async(): JsonField<Boolean> = async
+
+        /**
          * Returns the raw JSON value of [deferLoading].
          *
          * Unlike [deferLoading], this method doesn't throw if the JSON field has an unexpected
@@ -625,6 +648,7 @@ private constructor(
                 "name" to this.name,
                 "parameters" to this.parameters,
                 "type" to this.type,
+                "async" to this.async,
                 "defer_loading" to this.deferLoading,
             )
 
@@ -660,6 +684,7 @@ private constructor(
             private var name: JsonField<String>? = null
             private var parameters: JsonField<Parameters>? = null
             private var type: JsonValue = JsonValue.from("function")
+            private var async: JsonField<Boolean> = JsonMissing.of()
             private var deferLoading: JsonField<Boolean> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -669,6 +694,7 @@ private constructor(
                 name = function.name
                 parameters = function.parameters
                 type = function.type
+                async = function.async
                 deferLoading = function.deferLoading
                 additionalProperties = function.additionalProperties.toMutableMap()
             }
@@ -728,6 +754,21 @@ private constructor(
             fun type(type: JsonValue) = apply { this.type = type }
 
             /**
+             * Whether the agent continues without waiting for the function result. Defaults to
+             * `false`.
+             */
+            fun async(async: Boolean) = async(JsonField.of(async))
+
+            /**
+             * Sets [Builder.async] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.async] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun async(async: JsonField<Boolean>) = apply { this.async = async }
+
+            /**
              * Whether this function is deferred and discovered through tool search. Defaults to
              * `false`.
              */
@@ -783,6 +824,7 @@ private constructor(
                     checkRequired("name", name),
                     checkRequired("parameters", parameters),
                     type,
+                    async,
                     deferLoading,
                     additionalProperties.toMutableMap(),
                 )
@@ -808,6 +850,7 @@ private constructor(
             nameOrThrow()
             parametersOrThrow().validate()
             typeOrThrow()
+            async()
             deferLoading()
             validated = true
         }
@@ -832,6 +875,7 @@ private constructor(
                 (if (name.asKnown().isPresent) 1 else 0) +
                 (parameters.asKnown().getOrNull()?.validity() ?: 0) +
                 type.let { if (it == JsonValue.from("function")) 1 else 0 } +
+                (if (async.asKnown().isPresent) 1 else 0) +
                 (if (deferLoading.asKnown().isPresent) 1 else 0)
 
         /** A JSON Schema object describing the function's arguments. */
@@ -971,18 +1015,27 @@ private constructor(
                 name == other.name &&
                 parameters == other.parameters &&
                 type == other.type &&
+                async == other.async &&
                 deferLoading == other.deferLoading &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(description, name, parameters, type, deferLoading, additionalProperties)
+            Objects.hash(
+                description,
+                name,
+                parameters,
+                type,
+                async,
+                deferLoading,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Function{description=$description, name=$name, parameters=$parameters, type=$type, deferLoading=$deferLoading, additionalProperties=$additionalProperties}"
+            "Function{description=$description, name=$name, parameters=$parameters, type=$type, async=$async, deferLoading=$deferLoading, additionalProperties=$additionalProperties}"
     }
 
     /** Enables calling tools from model-generated code. */

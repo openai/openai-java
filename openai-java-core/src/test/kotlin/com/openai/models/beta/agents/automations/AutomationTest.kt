@@ -68,6 +68,7 @@ internal class AutomationTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .async(true)
                                         .build()
                                 )
                                 .compaction(
@@ -159,6 +160,7 @@ internal class AutomationTest {
                                                     )
                                                     .build()
                                             )
+                                            .async(true)
                                             .build()
                                     )
                                     .compaction(
@@ -251,6 +253,7 @@ internal class AutomationTest {
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
+                                        .async(true)
                                         .build()
                                 )
                                 .compaction(
@@ -341,6 +344,7 @@ internal class AutomationTest {
                                                     )
                                                     .build()
                                             )
+                                            .async(true)
                                             .build()
                                     )
                                     .compaction(
