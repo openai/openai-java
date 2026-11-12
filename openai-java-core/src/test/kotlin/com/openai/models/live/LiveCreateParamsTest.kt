@@ -2,6 +2,7 @@
 
 package com.openai.models.live
 
+import com.openai.models.decisions.DecisionChoiceOption
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -53,7 +54,13 @@ internal class LiveCreateParamsTest {
                             .decisions(
                                 DecisionTrigger.Decisions.builder()
                                     .addQuestion(
-                                        DecisionTrigger.Decisions.Question.Predicate.builder()
+                                        DecisionQuestion.Choice.builder()
+                                            .addChoice(
+                                                DecisionChoiceOption.builder()
+                                                    .value("string")
+                                                    .description("description")
+                                                    .build()
+                                            )
                                             .instructions("string")
                                             .name("name")
                                             .build()
@@ -116,7 +123,13 @@ internal class LiveCreateParamsTest {
                                 .decisions(
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                            DecisionQuestion.Choice.builder()
+                                                .addChoice(
+                                                    DecisionChoiceOption.builder()
+                                                        .value("string")
+                                                        .description("description")
+                                                        .build()
+                                                )
                                                 .instructions("string")
                                                 .name("name")
                                                 .build()
@@ -177,7 +190,13 @@ internal class LiveCreateParamsTest {
                             .decisions(
                                 DecisionTrigger.Decisions.builder()
                                     .addQuestion(
-                                        DecisionTrigger.Decisions.Question.Predicate.builder()
+                                        DecisionQuestion.Choice.builder()
+                                            .addChoice(
+                                                DecisionChoiceOption.builder()
+                                                    .value("string")
+                                                    .description("description")
+                                                    .build()
+                                            )
                                             .instructions("string")
                                             .name("name")
                                             .build()

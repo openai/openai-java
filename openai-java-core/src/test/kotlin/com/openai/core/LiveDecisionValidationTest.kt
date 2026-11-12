@@ -154,7 +154,7 @@ internal class LiveDecisionValidationTest {
         assertThat(legacy.idOrThrow()).isEqualTo("fake-original")
         assertThat(legacy.contentOrThrow().asString()).isEqualTo("fixture")
         assertThat(legacy._role()).isEqualTo(JsonValue.from("user"))
-        assertThat(legacy.type()).contains(JsonValue.from("message"))
+        assertThat(legacy.type()).contains(DecisionItemCreatedEvent.Item.Type.MESSAGE)
 
         val rebuilt =
             legacy.toBuilder().id("fake-updated").role(JsonValue.from("developer")).build()

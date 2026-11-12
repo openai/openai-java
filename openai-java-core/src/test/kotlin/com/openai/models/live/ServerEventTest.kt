@@ -7,6 +7,7 @@ import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.decisions.Decision
+import com.openai.models.decisions.DecisionChoiceOption
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -56,7 +57,13 @@ internal class ServerEventTest {
                                 .decisions(
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                            DecisionQuestion.Choice.builder()
+                                                .addChoice(
+                                                    DecisionChoiceOption.builder()
+                                                        .value("string")
+                                                        .description("description")
+                                                        .build()
+                                                )
                                                 .instructions("string")
                                                 .name("name")
                                                 .build()
@@ -148,8 +155,13 @@ internal class ServerEventTest {
                                     .decisions(
                                         DecisionTrigger.Decisions.builder()
                                             .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
+                                                DecisionQuestion.Choice.builder()
+                                                    .addChoice(
+                                                        DecisionChoiceOption.builder()
+                                                            .value("string")
+                                                            .description("description")
+                                                            .build()
+                                                    )
                                                     .instructions("string")
                                                     .name("name")
                                                     .build()
@@ -255,7 +267,13 @@ internal class ServerEventTest {
                                 .decisions(
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                            DecisionQuestion.Choice.builder()
+                                                .addChoice(
+                                                    DecisionChoiceOption.builder()
+                                                        .value("string")
+                                                        .description("description")
+                                                        .build()
+                                                )
                                                 .instructions("string")
                                                 .name("name")
                                                 .build()
@@ -385,8 +403,13 @@ internal class ServerEventTest {
                                     .decisions(
                                         DecisionTrigger.Decisions.builder()
                                             .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
+                                                DecisionQuestion.Choice.builder()
+                                                    .addChoice(
+                                                        DecisionChoiceOption.builder()
+                                                            .value("string")
+                                                            .description("description")
+                                                            .build()
+                                                    )
                                                     .instructions("string")
                                                     .name("name")
                                                     .build()
@@ -1312,10 +1335,10 @@ internal class ServerEventTest {
             DecisionItemCreatedEvent.builder()
                 .eventId("evt_item_1")
                 .item(
-                    DecisionItemCreatedEvent.Item.builder()
+                    DecisionStoredUserMessage.builder()
                         .id("msg_browser_1")
                         .content("string")
-                        .type(DecisionItemCreatedEvent.Item.Type.MESSAGE)
+                        .type(DecisionStoredUserMessage.Type.MESSAGE)
                         .build()
                 )
                 .clientEventId("browser_1")
@@ -1361,10 +1384,10 @@ internal class ServerEventTest {
                 DecisionItemCreatedEvent.builder()
                     .eventId("evt_item_1")
                     .item(
-                        DecisionItemCreatedEvent.Item.builder()
+                        DecisionStoredUserMessage.builder()
                             .id("msg_browser_1")
                             .content("string")
-                            .type(DecisionItemCreatedEvent.Item.Type.MESSAGE)
+                            .type(DecisionStoredUserMessage.Type.MESSAGE)
                             .build()
                     )
                     .clientEventId("browser_1")
@@ -1645,7 +1668,13 @@ internal class ServerEventTest {
                                 .decisions(
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                            DecisionQuestion.Choice.builder()
+                                                .addChoice(
+                                                    DecisionChoiceOption.builder()
+                                                        .value("string")
+                                                        .description("description")
+                                                        .build()
+                                                )
                                                 .instructions("string")
                                                 .name("name")
                                                 .build()
@@ -1739,8 +1768,13 @@ internal class ServerEventTest {
                                     .decisions(
                                         DecisionTrigger.Decisions.builder()
                                             .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
+                                                DecisionQuestion.Choice.builder()
+                                                    .addChoice(
+                                                        DecisionChoiceOption.builder()
+                                                            .value("string")
+                                                            .description("description")
+                                                            .build()
+                                                    )
                                                     .instructions("string")
                                                     .name("name")
                                                     .build()

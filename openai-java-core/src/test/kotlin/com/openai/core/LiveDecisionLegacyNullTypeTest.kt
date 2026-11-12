@@ -1,8 +1,14 @@
 package com.openai.core
 
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.live.DecisionAssistantMessage
+import com.openai.models.live.DecisionDeveloperMessage
 import com.openai.models.live.DecisionItemCreateEvent
 import com.openai.models.live.DecisionItemCreatedEvent
+import com.openai.models.live.DecisionStoredAssistantMessage
+import com.openai.models.live.DecisionStoredDeveloperMessage
+import com.openai.models.live.DecisionStoredSystemMessage
+import com.openai.models.live.DecisionSystemMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -27,6 +33,7 @@ internal class LiveDecisionLegacyNullTypeTest {
         for (id in listOf("", ",\"id\":null", ",\"id\":\"i_demo\"")) {
             val inputJson = wire.dropLast(1) + id + "}"
             val input = mapper.readValue(inputJson, DecisionItemCreateEvent.Item::class.java)
+            assertThat(input._json()).contains(mapper.readValue(inputJson, JsonValue::class.java))
             assertThat(input._type().isNull()).isTrue()
             assertThat(input.isValid()).isTrue()
             assertThat(input.validate()).isSameAs(input)
@@ -35,6 +42,7 @@ internal class LiveDecisionLegacyNullTypeTest {
         }
         val storedJson = wire.dropLast(1) + ",\"id\":\"i_demo\"}"
         val stored = mapper.readValue(storedJson, DecisionItemCreatedEvent.Item::class.java)
+        assertThat(stored._json()).contains(mapper.readValue(storedJson, JsonValue::class.java))
         assertThat(stored._type().isNull()).isTrue()
         assertThat(stored.isValid()).isTrue()
         assertThat(stored.validate()).isSameAs(stored)
@@ -69,6 +77,62 @@ internal class LiveDecisionLegacyNullTypeTest {
         val stored = mapper.treeToValue(withStoredId, DecisionItemCreatedEvent.Item::class.java)
         assertThat(stored.isValid()).isFalse()
         assertThrows<OpenAIInvalidDataException> { stored.validate() }
+    }
+
+    @Test
+    fun typedNonUserMessagesMatchWireValidationForExplicitNullAndOmittedType() {
+        for (tag in listOf(JsonValue.from(null), JsonMissing.of())) {
+            val inputItems =
+                listOf(
+                    DecisionItemCreateEvent.Item.ofDecisionAssistantMessage(
+                        DecisionAssistantMessage.builder().content("fixture").type(tag).build()
+                    ),
+                    DecisionItemCreateEvent.Item.ofDecisionDeveloperMessage(
+                        DecisionDeveloperMessage.builder().content("fixture").type(tag).build()
+                    ),
+                    DecisionItemCreateEvent.Item.ofDecisionSystemMessage(
+                        DecisionSystemMessage.builder().content("fixture").type(tag).build()
+                    ),
+                )
+            for (item in inputItems) {
+                val wire = mapper.writeValueAsBytes(item)
+                val decoded = mapper.readValue(wire, DecisionItemCreateEvent.Item::class.java)
+                assertThat(mapper.readTree(wire).has("type")).isEqualTo(tag.isNull())
+                assertThat(item.isValid()).isEqualTo(tag.isMissing())
+                assertThat(decoded.isValid()).isEqualTo(tag.isMissing())
+            }
+            val storedItems =
+                listOf(
+                    DecisionItemCreatedEvent.Item.ofDecisionStoredAssistantMessage(
+                        DecisionStoredAssistantMessage.builder()
+                            .id("i_demo")
+                            .content("fixture")
+                            .type(tag)
+                            .build()
+                    ),
+                    DecisionItemCreatedEvent.Item.ofDecisionStoredDeveloperMessage(
+                        DecisionStoredDeveloperMessage.builder()
+                            .id("i_demo")
+                            .content("fixture")
+                            .type(tag)
+                            .build()
+                    ),
+                    DecisionItemCreatedEvent.Item.ofDecisionStoredSystemMessage(
+                        DecisionStoredSystemMessage.builder()
+                            .id("i_demo")
+                            .content("fixture")
+                            .type(tag)
+                            .build()
+                    ),
+                )
+            for (item in storedItems) {
+                val wire = mapper.writeValueAsBytes(item)
+                val decoded = mapper.readValue(wire, DecisionItemCreatedEvent.Item::class.java)
+                assertThat(mapper.readTree(wire).has("type")).isEqualTo(tag.isNull())
+                assertThat(item.isValid()).isEqualTo(tag.isMissing())
+                assertThat(decoded.isValid()).isEqualTo(tag.isMissing())
+            }
+        }
     }
 
     @Test

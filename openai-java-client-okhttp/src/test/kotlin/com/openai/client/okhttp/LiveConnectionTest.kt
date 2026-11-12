@@ -1,6 +1,8 @@
 package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.openai.client.okhttp.LiveWebSocketTestFixture.Peer
+import com.openai.client.okhttp.LiveWebSocketTestFixture.options
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpClient
@@ -26,9 +28,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import okhttp3.Response
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
@@ -51,35 +50,6 @@ class LiveConnectionTest {
         )
 
     private fun finish() = ClientEvent.ofSessionClose(SessionCloseEvent.builder().build())
-
-    private class Peer : WebSocketListener() {
-        val socket = CompletableFuture<WebSocket>()
-        val messages = LinkedBlockingQueue<String>()
-        val closed = CountDownLatch(1)
-
-        override fun onOpen(webSocket: WebSocket, response: Response) {
-            socket.complete(webSocket)
-        }
-
-        override fun onMessage(webSocket: WebSocket, text: String) {
-            messages.add(text)
-        }
-
-        override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-            closed.countDown()
-        }
-
-        override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-            closed.countDown()
-        }
-    }
-
-    private fun options(server: MockWebServer, http: HttpClient) =
-        ClientOptions.builder()
-            .httpClient(http)
-            .apiKey("fake-live-key")
-            .baseUrl(server.url("/proxy/v1?inherited=one%2Ftwo&x=a%2Bb").toString())
-            .build()
 
     @Test
     fun nullableDecisionFieldsSurviveSyncAndAsyncTransport() {
@@ -170,6 +140,7 @@ class LiveConnectionTest {
                                 receive()
                                     .asDecisionItemCreated()
                                     .itemOrThrow()
+                                    .asDecisionStoredUserMessage()
                                     .contentOrThrow()
                                     .asDecisionItemCreatedEventItemContentItems()
                                     .single()

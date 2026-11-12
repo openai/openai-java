@@ -14,10 +14,10 @@ internal class DecisionItemCreateEventTest {
         val decisionItemCreateEvent =
             DecisionItemCreateEvent.builder()
                 .item(
-                    DecisionItemCreateEvent.Item.builder()
+                    DecisionUserMessage.builder()
                         .content("string")
                         .id("id")
-                        .type(DecisionItemCreateEvent.Item.Type.MESSAGE)
+                        .type(DecisionUserMessage.Type.MESSAGE)
                         .build()
                 )
                 .eventId("browser_1")
@@ -25,11 +25,13 @@ internal class DecisionItemCreateEventTest {
 
         assertThat(decisionItemCreateEvent.item())
             .contains(
-                DecisionItemCreateEvent.Item.builder()
-                    .content("string")
-                    .id("id")
-                    .type(DecisionItemCreateEvent.Item.Type.MESSAGE)
-                    .build()
+                DecisionItemCreateEvent.Item.ofDecisionUserMessage(
+                    DecisionUserMessage.builder()
+                        .content("string")
+                        .id("id")
+                        .type(DecisionUserMessage.Type.MESSAGE)
+                        .build()
+                )
             )
         assertThat(decisionItemCreateEvent.eventId()).contains("browser_1")
 

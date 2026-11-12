@@ -39,10 +39,8 @@ internal class LiveDecisionsOmittedListTest {
     fun deserializedConfigCopyPreservesOmissionUntilFirstQuestion() {
         val config = jsonMapper().readValue("{}", DecisionsDelegationUpdateConfig::class.java)
         val question =
-            DecisionsDelegationUpdateConfig.Question.ofPredicate(
-                DecisionsDelegationUpdateConfig.Question.Predicate.builder()
-                    .instructions("Ready?")
-                    .build()
+            DecisionQuestion.ofPredicate(
+                DecisionQuestion.Predicate.builder().instructions("Ready?").build()
             )
 
         assertThat(config.toBuilder().build()._questions().isMissing()).isTrue()
