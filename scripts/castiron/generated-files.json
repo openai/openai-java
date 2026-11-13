@@ -5243,7 +5243,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/realtime/SessionUpdateEvent.kt": {
       "mode": "100644",
-      "sha256": "da53277de915995aeeb17f0c5e090893abcab4b991043f3d2a478c765dd1d3f0"
+      "sha256": "0fece3028cfff7a4b57777f5c1a4eb03ac167db7676415d23aeb131e03a28e59"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/realtime/SessionUpdatedEvent.kt": {
       "mode": "100644",
@@ -13035,7 +13035,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/realtime/SessionUpdateEventTest.kt": {
       "mode": "100644",
-      "sha256": "1278ec821f8d6b170ee0d5e8847b0da432a37697ce2720bea664152506a02120"
+      "sha256": "2fd59cccd4931d234005d3fcafc91941e0d31993c0259b1d0e71c6215d8ba528"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/realtime/SessionUpdatedEventTest.kt": {
       "mode": "100644",
