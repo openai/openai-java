@@ -15,12 +15,17 @@ internal class MultiGraderTest {
             MultiGrader.builder()
                 .calculateOutput("calculate_output")
                 .graders(
-                    StringCheckGrader.builder()
-                        .input("input")
-                        .name("name")
-                        .operation(StringCheckGrader.Operation.EQ)
-                        .reference("reference")
-                        .build()
+                    mapOf(
+                        "score" to
+                            MultiGrader.Graders.ofStringCheckGrader(
+                                StringCheckGrader.builder()
+                                    .input("input")
+                                    .name("name")
+                                    .operation(StringCheckGrader.Operation.EQ)
+                                    .reference("reference")
+                                    .build()
+                            )
+                    )
                 )
                 .name("name")
                 .build()
@@ -28,13 +33,16 @@ internal class MultiGraderTest {
         assertThat(multiGrader.calculateOutput()).contains("calculate_output")
         assertThat(multiGrader.graders())
             .contains(
-                MultiGrader.Graders.ofStringCheckGrader(
-                    StringCheckGrader.builder()
-                        .input("input")
-                        .name("name")
-                        .operation(StringCheckGrader.Operation.EQ)
-                        .reference("reference")
-                        .build()
+                mapOf(
+                    "score" to
+                        MultiGrader.Graders.ofStringCheckGrader(
+                            StringCheckGrader.builder()
+                                .input("input")
+                                .name("name")
+                                .operation(StringCheckGrader.Operation.EQ)
+                                .reference("reference")
+                                .build()
+                        )
                 )
             )
         assertThat(multiGrader.name()).contains("name")

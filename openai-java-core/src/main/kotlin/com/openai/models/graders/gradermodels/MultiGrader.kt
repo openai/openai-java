@@ -20,9 +20,11 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -34,7 +36,7 @@ class MultiGrader
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val calculateOutput: JsonField<String>,
-    private val graders: JsonField<Graders>,
+    private val graders: JsonField<Map<String, Graders>>,
     private val name: JsonField<String>,
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -45,10 +47,12 @@ private constructor(
         @JsonProperty("calculate_output")
         @ExcludeMissing
         calculateOutput: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("graders") @ExcludeMissing graders: JsonField<Graders> = JsonMissing.of(),
+        @JsonProperty("graders")
+        @ExcludeMissing
+        graders: JsonField<Map<String, Graders>> = JsonMissing.of(),
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(calculateOutput, graders, name, type, mutableMapOf())
+    ) : this(calculateOutput, graders.map { it.toImmutable() }, name, type, mutableMapOf())
 
     /**
      * A formula to calculate the output based on grader results. The schema requires this property.
@@ -65,18 +69,16 @@ private constructor(
     fun calculateOutputOrThrow(): String = calculateOutput.getRequired("calculate_output")
 
     /**
-     * A StringCheckGrader object that performs a string comparison between input and reference
-     * using a specified operation. The schema requires this property. Returns empty if the JSON
-     * property is missing or null.
+     * The schema requires this property. Returns empty if the JSON property is missing or null.
      *
      * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun graders(): java.util.Optional<Graders> = graders.getOptional("graders")
+    fun graders(): java.util.Optional<Map<String, Graders>> = graders.getOptional("graders")
 
     /**
      * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun gradersOrThrow(): Graders = graders.getRequired("graders")
+    fun gradersOrThrow(): Map<String, Graders> = graders.getRequired("graders")
 
     /**
      * The name of the grader. The schema requires this property. Returns empty if the JSON property
@@ -128,7 +130,9 @@ private constructor(
      *
      * Unlike [graders], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("graders") @ExcludeMissing fun _graders(): JsonField<Graders> = graders
+    @JsonProperty("graders")
+    @ExcludeMissing
+    fun _graders(): JsonField<Map<String, Graders>> = graders
 
     /**
      * Returns the raw JSON value of [name].
@@ -188,7 +192,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var calculateOutput: JsonField<String>? = null
-        private var graders: JsonField<Graders>? = null
+        private var graders: JsonField<MutableMap<String, Graders>>? = null
         private var name: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("multi")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -196,7 +200,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(multiGrader: MultiGrader) = apply {
             calculateOutput = multiGrader.calculateOutput
-            graders = multiGrader.graders
+            this.graders = multiGrader.graders.map { it.toMutableMap() }
             name = multiGrader.name
             type = multiGrader.type
             additionalProperties = multiGrader.additionalProperties.toMutableMap()
@@ -217,40 +221,18 @@ private constructor(
             this.calculateOutput = calculateOutput
         }
 
-        /**
-         * A StringCheckGrader object that performs a string comparison between input and reference
-         * using a specified operation.
-         */
-        fun graders(graders: Graders) = graders(JsonField.of(graders))
+        fun graders(graders: Map<String, Graders>) = graders(JsonField.of(graders))
 
-        /**
-         * Sets [Builder.graders] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.graders] with a well-typed [Graders] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun graders(graders: JsonField<Graders>) = apply { this.graders = graders }
+        fun graders(graders: JsonField<Map<String, Graders>>) = apply {
+            this.graders = graders.map { it.toMutableMap() }
+        }
 
-        /** Alias for calling [graders] with `Graders.ofStringCheckGrader(stringCheckGrader)`. */
-        fun graders(stringCheckGrader: StringCheckGrader) =
-            graders(Graders.ofStringCheckGrader(stringCheckGrader))
-
-        /**
-         * Alias for calling [graders] with `Graders.ofTextSimilarityGrader(textSimilarityGrader)`.
-         */
-        fun graders(textSimilarityGrader: TextSimilarityGrader) =
-            graders(Graders.ofTextSimilarityGrader(textSimilarityGrader))
-
-        /** Alias for calling [graders] with `Graders.ofPythonGrader(pythonGrader)`. */
-        fun graders(pythonGrader: PythonGrader) = graders(Graders.ofPythonGrader(pythonGrader))
-
-        /** Alias for calling [graders] with `Graders.ofScoreModelGrader(scoreModelGrader)`. */
-        fun graders(scoreModelGrader: ScoreModelGrader) =
-            graders(Graders.ofScoreModelGrader(scoreModelGrader))
-
-        /** Alias for calling [graders] with `Graders.ofLabelModelGrader(labelModelGrader)`. */
-        fun graders(labelModelGrader: LabelModelGrader) =
-            graders(Graders.ofLabelModelGrader(labelModelGrader))
+        fun putGrader(key: String, value: Graders) = apply {
+            this.graders =
+                (this.graders ?: JsonField.of(mutableMapOf())).also {
+                    checkKnown("graders", it)[key] = value
+                }
+        }
 
         /** The name of the grader. */
         fun name(name: String) = name(JsonField.of(name))
@@ -313,7 +295,7 @@ private constructor(
         fun build(): MultiGrader =
             MultiGrader(
                 checkRequired("calculateOutput", calculateOutput),
-                checkRequired("graders", graders),
+                checkRequired("graders", graders).map { it.toImmutable() },
                 checkRequired("name", name),
                 type,
                 additionalProperties.toMutableMap(),
@@ -336,7 +318,7 @@ private constructor(
         }
 
         calculateOutputOrThrow()
-        gradersOrThrow().validate()
+        graders.getRequired("graders").values.forEach { it.validate() }
         nameOrThrow()
         typeOrThrow()
         validated = true
@@ -358,14 +340,10 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (calculateOutput.asKnown().isPresent) 1 else 0) +
-            (graders.asKnown().getOrNull()?.validity() ?: 0) +
+            (graders.asKnown().getOrNull()?.values?.sumOf { it.validity() } ?: 0) +
             (if (name.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("multi")) 1 else 0 }
 
-    /**
-     * A StringCheckGrader object that performs a string comparison between input and reference
-     * using a specified operation.
-     */
     @JsonDeserialize(using = Graders.Deserializer::class)
     @JsonSerialize(using = Graders.Serializer::class)
     class Graders
