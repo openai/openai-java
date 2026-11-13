@@ -1,0 +1,52 @@
+diff --git a/openai-java-core/src/test/kotlin/com/openai/models/graders/gradermodels/MultiGraderTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/graders/gradermodels/MultiGraderTest.kt
+index 69678a4e8207401bc0070520a8abb3ac4b502667..0487b66bf309cdcde6ced61f5da204c7dca0236d 100644
+--- a/openai-java-core/src/test/kotlin/com/openai/models/graders/gradermodels/MultiGraderTest.kt
++++ b/openai-java-core/src/test/kotlin/com/openai/models/graders/gradermodels/MultiGraderTest.kt
+@@ -15,12 +15,17 @@ internal class MultiGraderTest {
+             MultiGrader.builder()
+                 .calculateOutput("calculate_output")
+                 .graders(
+-                    StringCheckGrader.builder()
+-                        .input("input")
+-                        .name("name")
+-                        .operation(StringCheckGrader.Operation.EQ)
+-                        .reference("reference")
+-                        .build()
++                    mapOf(
++                        "score" to
++                            MultiGrader.Graders.ofStringCheckGrader(
++                                StringCheckGrader.builder()
++                                    .input("input")
++                                    .name("name")
++                                    .operation(StringCheckGrader.Operation.EQ)
++                                    .reference("reference")
++                                    .build()
++                            )
++                    )
+                 )
+                 .name("name")
+                 .build()
+@@ -28,13 +33,16 @@ internal class MultiGraderTest {
+         assertThat(multiGrader.calculateOutput()).contains("calculate_output")
+         assertThat(multiGrader.graders())
+             .contains(
+-                MultiGrader.Graders.ofStringCheckGrader(
+-                    StringCheckGrader.builder()
+-                        .input("input")
+-                        .name("name")
+-                        .operation(StringCheckGrader.Operation.EQ)
+-                        .reference("reference")
+-                        .build()
++                mapOf(
++                    "score" to
++                        MultiGrader.Graders.ofStringCheckGrader(
++                            StringCheckGrader.builder()
++                                .input("input")
++                                .name("name")
++                                .operation(StringCheckGrader.Operation.EQ)
++                                .reference("reference")
++                                .build()
++                        )
+                 )
+             )
+         assertThat(multiGrader.name()).contains("name")

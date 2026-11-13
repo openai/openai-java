@@ -1,4 +1,4 @@
-"""Migrate the archived grader caller across the Java next token-usage transition."""
+"""Migrate archived grader callers across exact Java next transitions."""
 
 import json
 import os
@@ -33,25 +33,48 @@ def targets_next():
     return False
 
 
-def migrate(base):
-    if not targets_next() or not MODEL.is_file():
+def migrate_fixture(base, model, old_model, new_model, test, old_test, new_test, patch_path):
+    if not model.is_file():
         return
-    if git("hash-object", "--no-filters", MODEL).decode().strip() != NEW_MODEL:
+    if git("hash-object", "--no-filters", model).decode().strip() != new_model:
         return
-    if git("rev-parse", f"{base}:{MODEL}").decode().strip() != OLD_MODEL:
+    if git("rev-parse", f"{base}:{model}").decode().strip() != old_model:
         return
+    if model.resolve(strict=True) != Path.cwd() / model or model.stat().st_nlink != 1:
+        raise ValueError(f"Expected an unlinked grader model: {model}")
 
-    staged = ARCHIVE / TEST
+    staged = ARCHIVE / test
     if staged.resolve(strict=True) != Path.cwd() / staged or staged.stat().st_nlink != 1:
         raise ValueError(f"Expected an unlinked archived fixture: {staged}")
-    if git("rev-parse", f"{base}:{TEST}").decode().strip() != OLD_TEST or (
-        git("hash-object", "--no-filters", staged).decode().strip() != OLD_TEST
+    if git("rev-parse", f"{base}:{test}").decode().strip() != old_test or (
+        git("hash-object", "--no-filters", staged).decode().strip() != old_test
     ):
         raise ValueError(f"Unexpected archived grader fixture: {staged}")
-    patch = git("show", f"{base}:{PATCH}")
-    subprocess.run(["git", "apply", f"--directory={ARCHIVE}", "-"], input=patch, check=True)
-    if git("hash-object", "--no-filters", staged).decode().strip() != NEW_TEST:
+    patch = git("show", f"{base}:{patch_path}")
+    subprocess.run(
+        ["git", "apply", f"--include={staged}", f"--directory={ARCHIVE}", "-"],
+        input=patch,
+        check=True,
+    )
+    if git("hash-object", "--no-filters", staged).decode().strip() != new_test:
         raise ValueError(f"Unexpected migrated grader fixture: {staged}")
+
+
+def migrate(base):
+    if not targets_next():
+        return
+    migrate_fixture(base, MODEL, OLD_MODEL, NEW_MODEL, TEST, OLD_TEST, NEW_TEST, PATCH)
+    package = Path("com/openai/models/graders/gradermodels")
+    migrate_fixture(
+        base,
+        CORE / "src/main/kotlin" / package / "MultiGrader.kt",
+        "5a637206a1f9363d3643852ca92a0e5c91b7800d",
+        "b05d6b55c8f58d72afc5fbba85741fea6c07df42",
+        CORE / "src/test/kotlin" / package / "MultiGraderTest.kt",
+        "69678a4e8207401bc0070520a8abb3ac4b502667",
+        "0487b66bf309cdcde6ced61f5da204c7dca0236d",
+        "scripts/compatibility/next-multi-grader-map.patch",
+    )
 
 
 if __name__ == "__main__":
