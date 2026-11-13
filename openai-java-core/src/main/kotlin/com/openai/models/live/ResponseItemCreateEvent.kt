@@ -418,8 +418,11 @@ private constructor(
         fun item(customToolCall: ResponseCustomToolCall) =
             item(ResponseInputItem.ofCustomToolCall(customToolCall))
 
-        /** Alias for calling [item] with `ResponseInputItem.ofCompactionTrigger()`. */
-        fun itemCompactionTrigger() = item(ResponseInputItem.ofCompactionTrigger())
+        /**
+         * Alias for calling [item] with `ResponseInputItem.ofCompactionTrigger(compactionTrigger)`.
+         */
+        fun item(compactionTrigger: ResponseInputItem.CompactionTrigger) =
+            item(ResponseInputItem.ofCompactionTrigger(compactionTrigger))
 
         /** Alias for calling [item] with `ResponseInputItem.ofItemReference(itemReference)`. */
         fun item(itemReference: ResponseInputItem.ItemReference) =

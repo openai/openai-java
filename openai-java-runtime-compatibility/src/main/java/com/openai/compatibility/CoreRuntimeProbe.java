@@ -9,8 +9,13 @@ import com.openai.core.http.HttpResponse;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.StructuredChatCompletionCreateParams;
 import com.openai.models.live.ResponsesDelegationConfig.Tool;
+import com.openai.models.responses.CompactedResponse;
+import com.openai.models.responses.ResponseInputItem;
+import com.openai.models.responses.ResponseItem;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,6 +46,22 @@ public final class CoreRuntimeProbe {
         if (!"web_search".equals(Tool.ofWebSearch().match(handler))
                 || !"other".equals(Tool.ofFileSearch().match(handler))) {
             throw new IllegalStateException("Live delegation tool handler dispatch failed");
+        }
+
+        ResponseInputItem trigger = ResponseInputItem.ofCompactionTrigger(
+                ResponseInputItem.CompactionTrigger.builder().id("cmp_probe").build());
+        if (!"cmp_probe".equals(trigger.asCompactionTrigger().id().orElse(null))
+                || ResponseInputItem.ofCompactionTrigger()
+                        .asCompactionTrigger()
+                        .id()
+                        .isPresent()) {
+            throw new IllegalStateException("Compaction trigger ID did not round trip");
+        }
+        CompactedResponse history = JsonValue.from(Collections.singletonMap("output", Collections.emptyList()))
+                .convert(CompactedResponse.class);
+        List<ResponseItem> output = Objects.requireNonNull(history).outputOrThrow();
+        if (!output.isEmpty()) {
+            throw new IllegalStateException("Compacted history did not round trip");
         }
 
         verifyClientCleanup();

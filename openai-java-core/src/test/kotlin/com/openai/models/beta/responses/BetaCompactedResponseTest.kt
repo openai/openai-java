@@ -4,6 +4,7 @@ package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -14,49 +15,67 @@ internal class BetaCompactedResponseTest {
     fun createAndRoundtrip() {
         val betaCompactedResponse =
             BetaCompactedResponse.builder()
-                .id("id")
-                .createdAt(0L)
+                .id("resp_001")
+                .createdAt(1731459200L)
                 .addOutput(
-                    BetaResponseOutputMessage.builder()
-                        .id("id")
+                    BetaResponseInputMessageItem.builder()
+                        .id("msg_001")
                         .addContent(
-                            BetaResponseOutputText.builder()
-                                .addAnnotation(
-                                    BetaResponseOutputText.Annotation.FileCitation.builder()
-                                        .fileId("file_id")
-                                        .filename("filename")
-                                        .index(0L)
-                                        .build()
-                                )
-                                .text("text")
-                                .addLogprob(
-                                    BetaResponseOutputText.Logprob.builder()
-                                        .token("token")
-                                        .addByte(0L)
-                                        .logprob(0.0)
-                                        .addTopLogprob(
-                                            BetaResponseOutputText.Logprob.TopLogprob.builder()
-                                                .token("token")
-                                                .addByte(0L)
-                                                .logprob(0.0)
-                                                .build()
-                                        )
+                            BetaResponseInputText.builder()
+                                .text("Summarize our launch checklist from last week.")
+                                .promptCacheBreakpoint(
+                                    BetaResponseInputText.PromptCacheBreakpoint.builder()
+                                        .ttl(PromptCacheBreakpointTtl._30M)
                                         .build()
                                 )
                                 .build()
                         )
-                        .status(BetaResponseOutputMessage.Status.IN_PROGRESS)
+                        .role(BetaResponseInputMessageItem.Role.USER)
                         .agent(
-                            BetaResponseOutputMessage.Agent.builder()
+                            BetaResponseInputMessageItem.Agent.builder()
                                 .agentName("agent_name")
                                 .build()
                         )
-                        .phase(BetaResponseOutputMessage.Phase.COMMENTARY)
+                        .status(BetaResponseInputMessageItem.Status.COMPLETED)
+                        .build()
+                )
+                .addOutput(
+                    BetaResponseInputMessageItem.builder()
+                        .id("msg_002")
+                        .addContent(
+                            BetaResponseInputText.builder()
+                                .text("You are performing a CONTEXT CHECKPOINT COMPACTION...")
+                                .promptCacheBreakpoint(
+                                    BetaResponseInputText.PromptCacheBreakpoint.builder()
+                                        .ttl(PromptCacheBreakpointTtl._30M)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .role(BetaResponseInputMessageItem.Role.USER)
+                        .agent(
+                            BetaResponseInputMessageItem.Agent.builder()
+                                .agentName("agent_name")
+                                .build()
+                        )
+                        .status(BetaResponseInputMessageItem.Status.COMPLETED)
+                        .build()
+                )
+                .addOutput(
+                    BetaResponseCompactionItem.builder()
+                        .id("cmp_001")
+                        .encryptedContent("encrypted-summary")
+                        .agent(
+                            BetaResponseCompactionItem.Agent.builder()
+                                .agentName("agent_name")
+                                .build()
+                        )
+                        .createdBy("created_by")
                         .build()
                 )
                 .usage(
                     BetaResponseUsage.builder()
-                        .inputTokens(0L)
+                        .inputTokens(42897L)
                         .inputTokensDetails(
                             BetaResponseUsage.InputTokensDetails.builder()
                                 .cacheWriteTokens(0L)
@@ -70,69 +89,87 @@ internal class BetaCompactedResponseTest {
                                 )
                                 .build()
                         )
-                        .outputTokens(0L)
+                        .outputTokens(12000L)
                         .outputTokensDetails(
                             BetaResponseUsage.OutputTokensDetails.builder()
                                 .reasoningTokens(0L)
                                 .build()
                         )
-                        .totalTokens(0L)
+                        .totalTokens(54897L)
                         .build()
                 )
                 .image(
                     BetaCompactedResponse.Image.builder()
-                        .contextCompression(BetaCompactedResponse.Image.ContextCompression.ENABLED)
+                        .contextCompression(BetaCompactedResponse.Image.ContextCompression.DISABLED)
                         .build()
                 )
                 .build()
 
-        assertThat(betaCompactedResponse.id()).contains("id")
-        assertThat(betaCompactedResponse.createdAt()).contains(0L)
+        assertThat(betaCompactedResponse.id()).contains("resp_001")
+        assertThat(betaCompactedResponse.createdAt()).contains(1731459200L)
         assertThat(betaCompactedResponse.output().getOrNull())
             .containsExactly(
-                BetaResponseOutputItem.ofMessage(
-                    BetaResponseOutputMessage.builder()
-                        .id("id")
+                BetaResponseItem.ofBetaResponseInputMessageItem(
+                    BetaResponseInputMessageItem.builder()
+                        .id("msg_001")
                         .addContent(
-                            BetaResponseOutputText.builder()
-                                .addAnnotation(
-                                    BetaResponseOutputText.Annotation.FileCitation.builder()
-                                        .fileId("file_id")
-                                        .filename("filename")
-                                        .index(0L)
-                                        .build()
-                                )
-                                .text("text")
-                                .addLogprob(
-                                    BetaResponseOutputText.Logprob.builder()
-                                        .token("token")
-                                        .addByte(0L)
-                                        .logprob(0.0)
-                                        .addTopLogprob(
-                                            BetaResponseOutputText.Logprob.TopLogprob.builder()
-                                                .token("token")
-                                                .addByte(0L)
-                                                .logprob(0.0)
-                                                .build()
-                                        )
+                            BetaResponseInputText.builder()
+                                .text("Summarize our launch checklist from last week.")
+                                .promptCacheBreakpoint(
+                                    BetaResponseInputText.PromptCacheBreakpoint.builder()
+                                        .ttl(PromptCacheBreakpointTtl._30M)
                                         .build()
                                 )
                                 .build()
                         )
-                        .status(BetaResponseOutputMessage.Status.IN_PROGRESS)
+                        .role(BetaResponseInputMessageItem.Role.USER)
                         .agent(
-                            BetaResponseOutputMessage.Agent.builder()
+                            BetaResponseInputMessageItem.Agent.builder()
                                 .agentName("agent_name")
                                 .build()
                         )
-                        .phase(BetaResponseOutputMessage.Phase.COMMENTARY)
+                        .status(BetaResponseInputMessageItem.Status.COMPLETED)
                         .build()
-                )
+                ),
+                BetaResponseItem.ofBetaResponseInputMessageItem(
+                    BetaResponseInputMessageItem.builder()
+                        .id("msg_002")
+                        .addContent(
+                            BetaResponseInputText.builder()
+                                .text("You are performing a CONTEXT CHECKPOINT COMPACTION...")
+                                .promptCacheBreakpoint(
+                                    BetaResponseInputText.PromptCacheBreakpoint.builder()
+                                        .ttl(PromptCacheBreakpointTtl._30M)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .role(BetaResponseInputMessageItem.Role.USER)
+                        .agent(
+                            BetaResponseInputMessageItem.Agent.builder()
+                                .agentName("agent_name")
+                                .build()
+                        )
+                        .status(BetaResponseInputMessageItem.Status.COMPLETED)
+                        .build()
+                ),
+                BetaResponseItem.ofCompaction(
+                    BetaResponseCompactionItem.builder()
+                        .id("cmp_001")
+                        .encryptedContent("encrypted-summary")
+                        .agent(
+                            BetaResponseCompactionItem.Agent.builder()
+                                .agentName("agent_name")
+                                .build()
+                        )
+                        .createdBy("created_by")
+                        .build()
+                ),
             )
         assertThat(betaCompactedResponse.usage())
             .contains(
                 BetaResponseUsage.builder()
-                    .inputTokens(0L)
+                    .inputTokens(42897L)
                     .inputTokensDetails(
                         BetaResponseUsage.InputTokensDetails.builder()
                             .cacheWriteTokens(0L)
@@ -146,17 +183,17 @@ internal class BetaCompactedResponseTest {
                             )
                             .build()
                     )
-                    .outputTokens(0L)
+                    .outputTokens(12000L)
                     .outputTokensDetails(
                         BetaResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                     )
-                    .totalTokens(0L)
+                    .totalTokens(54897L)
                     .build()
             )
         assertThat(betaCompactedResponse.image())
             .contains(
                 BetaCompactedResponse.Image.builder()
-                    .contextCompression(BetaCompactedResponse.Image.ContextCompression.ENABLED)
+                    .contextCompression(BetaCompactedResponse.Image.ContextCompression.DISABLED)
                     .build()
             )
 

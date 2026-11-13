@@ -27,7 +27,7 @@ private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
     private val object_: JsonValue,
-    private val output: JsonField<List<ResponseOutputItem>>,
+    private val output: JsonField<List<ResponseItem>>,
     private val usage: JsonField<ResponseUsage>,
     private val image: JsonField<Image>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -40,7 +40,7 @@ private constructor(
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("output")
         @ExcludeMissing
-        output: JsonField<List<ResponseOutputItem>> = JsonMissing.of(),
+        output: JsonField<List<ResponseItem>> = JsonMissing.of(),
         @JsonProperty("usage") @ExcludeMissing usage: JsonField<ResponseUsage> = JsonMissing.of(),
         @JsonProperty("image") @ExcludeMissing image: JsonField<Image> = JsonMissing.of(),
     ) : this(id, createdAt, object_, output, usage, image, mutableMapOf())
@@ -95,18 +95,17 @@ private constructor(
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
-     * The compacted list of output items. This is a list of all user messages, followed by a single
-     * compaction item. The schema requires this property. Returns empty if the JSON property is
-     * missing or null.
+     * The compacted list of output items. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
      * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun output(): java.util.Optional<List<ResponseOutputItem>> = output.getOptional("output")
+    fun output(): java.util.Optional<List<ResponseItem>> = output.getOptional("output")
 
     /**
      * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun outputOrThrow(): List<ResponseOutputItem> = output.getRequired("output")
+    fun outputOrThrow(): List<ResponseItem> = output.getRequired("output")
 
     /**
      * Token accounting for the compaction pass, including cached, reasoning, and total tokens. The
@@ -152,9 +151,7 @@ private constructor(
      *
      * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("output")
-    @ExcludeMissing
-    fun _output(): JsonField<List<ResponseOutputItem>> = output
+    @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<List<ResponseItem>> = output
 
     /**
      * Returns the raw JSON value of [usage].
@@ -226,7 +223,7 @@ private constructor(
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
         private var object_: JsonValue = JsonValue.from("response.compaction")
-        private var output: JsonField<MutableList<ResponseOutputItem>>? = null
+        private var output: JsonField<MutableList<ResponseItem>>? = null
         private var usage: JsonField<ResponseUsage>? = null
         private var image: JsonField<Image> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -278,196 +275,198 @@ private constructor(
          */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
-        /**
-         * The compacted list of output items. This is a list of all user messages, followed by a
-         * single compaction item.
-         */
-        fun output(output: List<ResponseOutputItem>) = output(JsonField.of(output))
+        /** The compacted list of output items. */
+        fun output(output: List<ResponseItem>) = output(JsonField.of(output))
 
         /**
          * Sets [Builder.output] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.output] with a well-typed `List<ResponseOutputItem>`
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
+         * You should usually call [Builder.output] with a well-typed `List<ResponseItem>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun output(output: JsonField<List<ResponseOutputItem>>) = apply {
+        fun output(output: JsonField<List<ResponseItem>>) = apply {
             this.output = output.map { it.toMutableList() }
         }
 
         /**
-         * Adds a single [ResponseOutputItem] to [Builder.output].
+         * Adds a single [ResponseItem] to [Builder.output].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addOutput(output: ResponseOutputItem) = apply {
+        fun addOutput(output: ResponseItem) = apply {
             this.output =
                 (this.output ?: JsonField.of(mutableListOf())).also {
                     checkKnown("output", it).add(output)
                 }
         }
 
-        /** Alias for calling [addOutput] with `ResponseOutputItem.ofMessage(message)`. */
-        fun addOutput(message: ResponseOutputMessage) =
-            addOutput(ResponseOutputItem.ofMessage(message))
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseItem.ofResponseInputMessageItem(responseInputMessageItem)`.
+         */
+        fun addOutput(responseInputMessageItem: ResponseInputMessageItem) =
+            addOutput(ResponseItem.ofResponseInputMessageItem(responseInputMessageItem))
 
         /**
-         * Alias for calling [addOutput] with `ResponseOutputItem.ofFileSearchCall(fileSearchCall)`.
+         * Alias for calling [addOutput] with
+         * `ResponseItem.ofResponseOutputMessage(responseOutputMessage)`.
          */
+        fun addOutput(responseOutputMessage: ResponseOutputMessage) =
+            addOutput(ResponseItem.ofResponseOutputMessage(responseOutputMessage))
+
+        /** Alias for calling [addOutput] with `ResponseItem.ofFileSearchCall(fileSearchCall)`. */
         fun addOutput(fileSearchCall: ResponseFileSearchToolCall) =
-            addOutput(ResponseOutputItem.ofFileSearchCall(fileSearchCall))
+            addOutput(ResponseItem.ofFileSearchCall(fileSearchCall))
 
-        /** Alias for calling [addOutput] with `ResponseOutputItem.ofFunctionCall(functionCall)`. */
-        fun addOutput(functionCall: ResponseFunctionToolCall) =
-            addOutput(ResponseOutputItem.ofFunctionCall(functionCall))
-
-        /**
-         * Alias for calling [addOutput] with
-         * `ResponseOutputItem.ofFunctionCallOutput(functionCallOutput)`.
-         */
-        fun addOutput(functionCallOutput: ResponseFunctionToolCallOutputItem) =
-            addOutput(ResponseOutputItem.ofFunctionCallOutput(functionCallOutput))
-
-        /**
-         * Alias for calling [addOutput] with `ResponseOutputItem.ofWebSearchCall(webSearchCall)`.
-         */
-        fun addOutput(webSearchCall: ResponseFunctionWebSearch) =
-            addOutput(ResponseOutputItem.ofWebSearchCall(webSearchCall))
-
-        /** Alias for calling [addOutput] with `ResponseOutputItem.ofComputerCall(computerCall)`. */
+        /** Alias for calling [addOutput] with `ResponseItem.ofComputerCall(computerCall)`. */
         fun addOutput(computerCall: ResponseComputerToolCall) =
-            addOutput(ResponseOutputItem.ofComputerCall(computerCall))
+            addOutput(ResponseItem.ofComputerCall(computerCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `ResponseOutputItem.ofComputerCallOutput(computerCallOutput)`.
+         * `ResponseItem.ofComputerCallOutput(computerCallOutput)`.
          */
         fun addOutput(computerCallOutput: ResponseComputerToolCallOutputItem) =
-            addOutput(ResponseOutputItem.ofComputerCallOutput(computerCallOutput))
+            addOutput(ResponseItem.ofComputerCallOutput(computerCallOutput))
 
-        /** Alias for calling [addOutput] with `ResponseOutputItem.ofReasoning(reasoning)`. */
-        fun addOutput(reasoning: ResponseReasoningItem) =
-            addOutput(ResponseOutputItem.ofReasoning(reasoning))
+        /** Alias for calling [addOutput] with `ResponseItem.ofWebSearchCall(webSearchCall)`. */
+        fun addOutput(webSearchCall: ResponseFunctionWebSearch) =
+            addOutput(ResponseItem.ofWebSearchCall(webSearchCall))
 
-        /** Alias for calling [addOutput] with `ResponseOutputItem.ofProgram(program)`. */
-        fun addOutput(program: ResponseOutputItem.Program) =
-            addOutput(ResponseOutputItem.ofProgram(program))
-
-        /**
-         * Alias for calling [addOutput] with `ResponseOutputItem.ofProgramOutput(programOutput)`.
-         */
-        fun addOutput(programOutput: ResponseOutputItem.ProgramOutput) =
-            addOutput(ResponseOutputItem.ofProgramOutput(programOutput))
-
-        /**
-         * Alias for calling [addOutput] with `ResponseOutputItem.ofToolSearchCall(toolSearchCall)`.
-         */
-        fun addOutput(toolSearchCall: ResponseToolSearchCall) =
-            addOutput(ResponseOutputItem.ofToolSearchCall(toolSearchCall))
+        /** Alias for calling [addOutput] with `ResponseItem.ofFunctionCall(functionCall)`. */
+        fun addOutput(functionCall: ResponseFunctionToolCallItem) =
+            addOutput(ResponseItem.ofFunctionCall(functionCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `ResponseOutputItem.ofToolSearchOutput(toolSearchOutput)`.
+         * `ResponseItem.ofFunctionCallOutput(functionCallOutput)`.
+         */
+        fun addOutput(functionCallOutput: ResponseFunctionToolCallOutputItem) =
+            addOutput(ResponseItem.ofFunctionCallOutput(functionCallOutput))
+
+        /** Alias for calling [addOutput] with `ResponseItem.ofToolSearchCall(toolSearchCall)`. */
+        fun addOutput(toolSearchCall: ResponseToolSearchCall) =
+            addOutput(ResponseItem.ofToolSearchCall(toolSearchCall))
+
+        /**
+         * Alias for calling [addOutput] with `ResponseItem.ofToolSearchOutput(toolSearchOutput)`.
          */
         fun addOutput(toolSearchOutput: ResponseToolSearchOutputItem) =
-            addOutput(ResponseOutputItem.ofToolSearchOutput(toolSearchOutput))
+            addOutput(ResponseItem.ofToolSearchOutput(toolSearchOutput))
+
+        /** Alias for calling [addOutput] with `ResponseItem.ofAdditionalTools(additionalTools)`. */
+        fun addOutput(additionalTools: ResponseItem.AdditionalTools) =
+            addOutput(ResponseItem.ofAdditionalTools(additionalTools))
 
         /**
          * Alias for calling [addOutput] with
-         * `ResponseOutputItem.ofAdditionalTools(additionalTools)`.
+         * `ResponseItem.ofConfigurationUpdate(configurationUpdate)`.
          */
-        fun addOutput(additionalTools: ResponseOutputItem.AdditionalTools) =
-            addOutput(ResponseOutputItem.ofAdditionalTools(additionalTools))
+        fun addOutput(configurationUpdate: ResponseConfigurationUpdateItem) =
+            addOutput(ResponseItem.ofConfigurationUpdate(configurationUpdate))
 
-        /** Alias for calling [addOutput] with `ResponseOutputItem.ofCompaction(compaction)`. */
+        /**
+         * Alias for calling [addOutput] with the following:
+         * ```java
+         * ResponseConfigurationUpdateItem.builder()
+         *     .id(id)
+         *     .build()
+         * ```
+         */
+        fun addConfigurationUpdateOutput(id: String) =
+            addOutput(ResponseConfigurationUpdateItem.builder().id(id).build())
+
+        /** Alias for calling [addOutput] with `ResponseItem.ofReasoning(reasoning)`. */
+        fun addOutput(reasoning: ResponseReasoningItem) =
+            addOutput(ResponseItem.ofReasoning(reasoning))
+
+        /** Alias for calling [addOutput] with `ResponseItem.ofProgram(program)`. */
+        fun addOutput(program: ResponseItem.Program) = addOutput(ResponseItem.ofProgram(program))
+
+        /** Alias for calling [addOutput] with `ResponseItem.ofProgramOutput(programOutput)`. */
+        fun addOutput(programOutput: ResponseItem.ProgramOutput) =
+            addOutput(ResponseItem.ofProgramOutput(programOutput))
+
+        /** Alias for calling [addOutput] with `ResponseItem.ofCompaction(compaction)`. */
         fun addOutput(compaction: ResponseCompactionItem) =
-            addOutput(ResponseOutputItem.ofCompaction(compaction))
+            addOutput(ResponseItem.ofCompaction(compaction))
 
         /**
          * Alias for calling [addOutput] with
-         * `ResponseOutputItem.ofImageGenerationCall(imageGenerationCall)`.
+         * `ResponseItem.ofImageGenerationCall(imageGenerationCall)`.
          */
-        fun addOutput(imageGenerationCall: ResponseOutputItem.ImageGenerationCall) =
-            addOutput(ResponseOutputItem.ofImageGenerationCall(imageGenerationCall))
+        fun addOutput(imageGenerationCall: ResponseItem.ImageGenerationCall) =
+            addOutput(ResponseItem.ofImageGenerationCall(imageGenerationCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `ResponseOutputItem.ofCodeInterpreterCall(codeInterpreterCall)`.
+         * `ResponseItem.ofCodeInterpreterCall(codeInterpreterCall)`.
          */
         fun addOutput(codeInterpreterCall: ResponseCodeInterpreterToolCall) =
-            addOutput(ResponseOutputItem.ofCodeInterpreterCall(codeInterpreterCall))
+            addOutput(ResponseItem.ofCodeInterpreterCall(codeInterpreterCall))
 
-        /**
-         * Alias for calling [addOutput] with `ResponseOutputItem.ofLocalShellCall(localShellCall)`.
-         */
-        fun addOutput(localShellCall: ResponseOutputItem.LocalShellCall) =
-            addOutput(ResponseOutputItem.ofLocalShellCall(localShellCall))
+        /** Alias for calling [addOutput] with `ResponseItem.ofLocalShellCall(localShellCall)`. */
+        fun addOutput(localShellCall: ResponseItem.LocalShellCall) =
+            addOutput(ResponseItem.ofLocalShellCall(localShellCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `ResponseOutputItem.ofLocalShellCallOutput(localShellCallOutput)`.
+         * `ResponseItem.ofLocalShellCallOutput(localShellCallOutput)`.
          */
-        fun addOutput(localShellCallOutput: ResponseOutputItem.LocalShellCallOutput) =
-            addOutput(ResponseOutputItem.ofLocalShellCallOutput(localShellCallOutput))
+        fun addOutput(localShellCallOutput: ResponseItem.LocalShellCallOutput) =
+            addOutput(ResponseItem.ofLocalShellCallOutput(localShellCallOutput))
 
-        /** Alias for calling [addOutput] with `ResponseOutputItem.ofShellCall(shellCall)`. */
+        /** Alias for calling [addOutput] with `ResponseItem.ofShellCall(shellCall)`. */
         fun addOutput(shellCall: ResponseFunctionShellToolCall) =
-            addOutput(ResponseOutputItem.ofShellCall(shellCall))
+            addOutput(ResponseItem.ofShellCall(shellCall))
 
-        /**
-         * Alias for calling [addOutput] with
-         * `ResponseOutputItem.ofShellCallOutput(shellCallOutput)`.
-         */
+        /** Alias for calling [addOutput] with `ResponseItem.ofShellCallOutput(shellCallOutput)`. */
         fun addOutput(shellCallOutput: ResponseFunctionShellToolCallOutput) =
-            addOutput(ResponseOutputItem.ofShellCallOutput(shellCallOutput))
+            addOutput(ResponseItem.ofShellCallOutput(shellCallOutput))
 
-        /**
-         * Alias for calling [addOutput] with `ResponseOutputItem.ofApplyPatchCall(applyPatchCall)`.
-         */
+        /** Alias for calling [addOutput] with `ResponseItem.ofApplyPatchCall(applyPatchCall)`. */
         fun addOutput(applyPatchCall: ResponseApplyPatchToolCall) =
-            addOutput(ResponseOutputItem.ofApplyPatchCall(applyPatchCall))
+            addOutput(ResponseItem.ofApplyPatchCall(applyPatchCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `ResponseOutputItem.ofApplyPatchCallOutput(applyPatchCallOutput)`.
+         * `ResponseItem.ofApplyPatchCallOutput(applyPatchCallOutput)`.
          */
         fun addOutput(applyPatchCallOutput: ResponseApplyPatchToolCallOutput) =
-            addOutput(ResponseOutputItem.ofApplyPatchCallOutput(applyPatchCallOutput))
+            addOutput(ResponseItem.ofApplyPatchCallOutput(applyPatchCallOutput))
 
-        /** Alias for calling [addOutput] with `ResponseOutputItem.ofMcpCall(mcpCall)`. */
-        fun addOutput(mcpCall: ResponseOutputItem.McpCall) =
-            addOutput(ResponseOutputItem.ofMcpCall(mcpCall))
-
-        /** Alias for calling [addOutput] with `ResponseOutputItem.ofMcpListTools(mcpListTools)`. */
-        fun addOutput(mcpListTools: ResponseOutputItem.McpListTools) =
-            addOutput(ResponseOutputItem.ofMcpListTools(mcpListTools))
+        /** Alias for calling [addOutput] with `ResponseItem.ofMcpListTools(mcpListTools)`. */
+        fun addOutput(mcpListTools: ResponseItem.McpListTools) =
+            addOutput(ResponseItem.ofMcpListTools(mcpListTools))
 
         /**
          * Alias for calling [addOutput] with
-         * `ResponseOutputItem.ofMcpApprovalRequest(mcpApprovalRequest)`.
+         * `ResponseItem.ofMcpApprovalRequest(mcpApprovalRequest)`.
          */
-        fun addOutput(mcpApprovalRequest: ResponseOutputItem.McpApprovalRequest) =
-            addOutput(ResponseOutputItem.ofMcpApprovalRequest(mcpApprovalRequest))
+        fun addOutput(mcpApprovalRequest: ResponseItem.McpApprovalRequest) =
+            addOutput(ResponseItem.ofMcpApprovalRequest(mcpApprovalRequest))
 
         /**
          * Alias for calling [addOutput] with
-         * `ResponseOutputItem.ofMcpApprovalResponse(mcpApprovalResponse)`.
+         * `ResponseItem.ofMcpApprovalResponse(mcpApprovalResponse)`.
          */
-        fun addOutput(mcpApprovalResponse: ResponseOutputItem.McpApprovalResponse) =
-            addOutput(ResponseOutputItem.ofMcpApprovalResponse(mcpApprovalResponse))
+        fun addOutput(mcpApprovalResponse: ResponseItem.McpApprovalResponse) =
+            addOutput(ResponseItem.ofMcpApprovalResponse(mcpApprovalResponse))
 
-        /**
-         * Alias for calling [addOutput] with `ResponseOutputItem.ofCustomToolCall(customToolCall)`.
-         */
-        fun addOutput(customToolCall: ResponseCustomToolCall) =
-            addOutput(ResponseOutputItem.ofCustomToolCall(customToolCall))
+        /** Alias for calling [addOutput] with `ResponseItem.ofMcpCall(mcpCall)`. */
+        fun addOutput(mcpCall: ResponseItem.McpCall) = addOutput(ResponseItem.ofMcpCall(mcpCall))
+
+        /** Alias for calling [addOutput] with `ResponseItem.ofCustomToolCall(customToolCall)`. */
+        fun addOutput(customToolCall: ResponseCustomToolCallItem) =
+            addOutput(ResponseItem.ofCustomToolCall(customToolCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `ResponseOutputItem.ofCustomToolCallOutput(customToolCallOutput)`.
+         * `ResponseItem.ofCustomToolCallOutput(customToolCallOutput)`.
          */
         fun addOutput(customToolCallOutput: ResponseCustomToolCallOutputItem) =
-            addOutput(ResponseOutputItem.ofCustomToolCallOutput(customToolCallOutput))
+            addOutput(ResponseItem.ofCustomToolCallOutput(customToolCallOutput))
 
         /**
          * Token accounting for the compaction pass, including cached, reasoning, and total tokens.

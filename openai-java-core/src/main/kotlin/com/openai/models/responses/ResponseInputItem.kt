@@ -71,7 +71,7 @@ private constructor(
     private val mcpCall: McpCall? = null,
     private val customToolCallOutput: ResponseCustomToolCallOutput? = null,
     private val customToolCall: ResponseCustomToolCall? = null,
-    private val compactionTrigger: JsonValue? = null,
+    private val compactionTrigger: CompactionTrigger? = null,
     private val itemReference: ItemReference? = null,
     private val program: Program? = null,
     private val programOutput: ProgramOutput? = null,
@@ -208,7 +208,7 @@ private constructor(
     fun customToolCall(): Optional<ResponseCustomToolCall> = Optional.ofNullable(customToolCall)
 
     /** Compacts the current context. Must be the final input item. */
-    fun compactionTrigger(): Optional<JsonValue> = Optional.ofNullable(compactionTrigger)
+    fun compactionTrigger(): Optional<CompactionTrigger> = Optional.ofNullable(compactionTrigger)
 
     /** An internal identifier for an item to reference. */
     fun itemReference(): Optional<ItemReference> = Optional.ofNullable(itemReference)
@@ -416,7 +416,7 @@ private constructor(
     fun asCustomToolCall(): ResponseCustomToolCall = customToolCall.getOrThrow("customToolCall")
 
     /** Compacts the current context. Must be the final input item. */
-    fun asCompactionTrigger(): JsonValue = compactionTrigger.getOrThrow("compactionTrigger")
+    fun asCompactionTrigger(): CompactionTrigger = compactionTrigger.getOrThrow("compactionTrigger")
 
     /** An internal identifier for an item to reference. */
     fun asItemReference(): ItemReference = itemReference.getOrThrow("itemReference")
@@ -638,16 +638,8 @@ private constructor(
                     customToolCall.validate()
                 }
 
-                override fun visitCompactionTrigger(compactionTrigger: JsonValue) {
-                    compactionTrigger.let {
-                        val discriminator =
-                            it.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
-                        if (discriminator != "compaction_trigger") {
-                            throw OpenAIInvalidDataException(
-                                "'compactionTrigger' is invalid, received $it"
-                            )
-                        }
-                    }
+                override fun visitCompactionTrigger(compactionTrigger: CompactionTrigger) {
+                    compactionTrigger.validate()
                 }
 
                 override fun visitItemReference(itemReference: ItemReference) {
@@ -770,15 +762,8 @@ private constructor(
                 override fun visitCustomToolCall(customToolCall: ResponseCustomToolCall) =
                     customToolCall.validity()
 
-                override fun visitCompactionTrigger(compactionTrigger: JsonValue) =
-                    compactionTrigger.let {
-                        if (
-                            it.asObject().getOrNull()?.get("type")?.asString()?.getOrNull() ==
-                                "compaction_trigger"
-                        )
-                            1
-                        else 0
-                    }
+                override fun visitCompactionTrigger(compactionTrigger: CompactionTrigger) =
+                    compactionTrigger.validity()
 
                 override fun visitItemReference(itemReference: ItemReference) =
                     itemReference.validity()
@@ -1168,14 +1153,24 @@ private constructor(
 
         /** Compacts the current context. Must be the final input item. */
         @JvmStatic
-        fun ofCompactionTrigger() =
-            ResponseInputItem(
-                compactionTrigger = JsonValue.from(mapOf("type" to "compaction_trigger"))
-            )
+        fun ofCompactionTrigger(compactionTrigger: CompactionTrigger) =
+            ResponseInputItem(compactionTrigger = compactionTrigger)
 
         @JvmStatic
-        fun ofCompactionTrigger(compactionTrigger: JsonValue) =
-            ResponseInputItem(compactionTrigger = compactionTrigger)
+        fun ofCompactionTrigger() = ofCompactionTrigger(CompactionTrigger.builder().build())
+
+        @JvmStatic
+        fun ofCompactionTrigger(compactionTrigger: JsonValue): ResponseInputItem =
+            if (
+                compactionTrigger.asObject().getOrNull()?.get("type")?.asString()?.getOrNull() ==
+                    "compaction_trigger"
+            ) {
+                ofCompactionTrigger(
+                    requireNotNull(compactionTrigger.convert(CompactionTrigger::class.java))
+                )
+            } else {
+                ResponseInputItem(_json = compactionTrigger)
+            }
 
         /** An internal identifier for an item to reference. */
         @JvmStatic
@@ -1342,7 +1337,7 @@ private constructor(
             unknown(JsonValue.from(customToolCall))
 
         /** Compacts the current context. Must be the final input item. */
-        fun visitCompactionTrigger(compactionTrigger: JsonValue): T =
+        fun visitCompactionTrigger(compactionTrigger: CompactionTrigger): T =
             unknown(JsonValue.from(compactionTrigger))
 
         /** An internal identifier for an item to reference. */
@@ -1539,9 +1534,9 @@ private constructor(
                     } ?: ResponseInputItem(_json = json)
                 }
                 "compaction_trigger" -> {
-                    return tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                        ?.let { ResponseInputItem(compactionTrigger = it, _json = json) }
-                        ?.takeIf { it.isValid() } ?: ResponseInputItem(_json = json)
+                    return tryDeserialize(node, jacksonTypeRef<CompactionTrigger>())?.let {
+                        ResponseInputItem(compactionTrigger = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
                 }
                 "item_reference" -> {
                     return tryDeserialize(node, jacksonTypeRef<ItemReference>())?.let {
@@ -18981,6 +18976,228 @@ private constructor(
 
         override fun toString() =
             "McpCall{id=$id, arguments=$arguments, name=$name, serverLabel=$serverLabel, type=$type, approvalRequestId=$approvalRequestId, error=$error, output=$output, status=$status, additionalProperties=$additionalProperties}"
+    }
+
+    /** Compacts the current context. Must be the final input item. */
+    class CompactionTrigger
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val type: JsonValue,
+        private val id: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        ) : this(type, id, mutableMapOf())
+
+        /**
+         * The type of the item. Always `compaction_trigger`. The schema requires this property.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun type(): java.util.Optional<JsonValue> {
+            val raw = type
+            return when {
+                raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+                !(raw == JsonValue.from("compaction_trigger")) ->
+                    throw OpenAIInvalidDataException("`type` is invalid")
+                else -> java.util.Optional.of(raw)
+            }
+        }
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun typeOrThrow(): JsonValue = type().orElseGet { type.getRequired("type") }
+
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
+
+        /**
+         * The unique ID of this compaction trigger. Returns empty if the JSON property is missing
+         * or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun id(): java.util.Optional<String> = id.getOptional("id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun idOrThrow(): String = id.getRequired("id")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "type" to this.type, "id" to this.id)
+
+        @JvmSynthetic
+        internal fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [CompactionTrigger]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [CompactionTrigger]. */
+        class Builder internal constructor() {
+
+            private var type: JsonValue = JsonValue.from("compaction_trigger")
+            private var id: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(compactionTrigger: CompactionTrigger) = apply {
+                type = compactionTrigger.type
+                id = compactionTrigger.id
+                additionalProperties = compactionTrigger.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("compaction_trigger")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /** The unique ID of this compaction trigger. */
+            fun id(id: String?) = id(JsonField.ofNullable(id))
+
+            /** Alias for calling [Builder.id] with `id.orElse(null)`. */
+            fun id(id: Optional<String>) = id(id.getOrNull())
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [CompactionTrigger].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): CompactionTrigger =
+                CompactionTrigger(type, id, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): CompactionTrigger = apply {
+            if (validated) {
+                return@apply
+            }
+
+            typeOrThrow()
+            id()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            type.let { if (it == JsonValue.from("compaction_trigger")) 1 else 0 } +
+                (if (id.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is CompactionTrigger &&
+                type == other.type &&
+                id == other.id &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(type, id, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "CompactionTrigger{type=$type, id=$id, additionalProperties=$additionalProperties}"
     }
 
     /** An internal identifier for an item to reference. */
