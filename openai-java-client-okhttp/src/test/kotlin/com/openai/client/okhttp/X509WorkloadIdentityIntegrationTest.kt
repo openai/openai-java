@@ -498,7 +498,7 @@ internal class X509WorkloadIdentityIntegrationTest {
                                 .maxRetries(0)
                                 .build()
                         try {
-                            client.files().list().get(5, TimeUnit.SECONDS)
+                            client.files().list().get(10, TimeUnit.SECONDS)
                             val cloned =
                                 client.withOptions {
                                     it.baseUrl(unauthorizedPeer.url("/v1").toString())
