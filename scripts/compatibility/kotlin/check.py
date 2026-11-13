@@ -156,6 +156,7 @@ def run(repo, version, work, runtimes):
                 directory,
                 JAVA_PROBES / "CoreRuntimeProbe.java",
                 JAVA_PROBES / "OkHttpRuntimeProbe.java",
+                JAVA_PROBES / "ResponseStreamEvolutionProbe.java",
             ],
             check=True,
         )
