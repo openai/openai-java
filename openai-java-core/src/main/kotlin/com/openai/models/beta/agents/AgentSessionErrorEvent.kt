@@ -15,6 +15,7 @@ import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when a turn or session fails. */
@@ -25,6 +26,7 @@ private constructor(
     private val eventId: JsonField<String>,
     private val sessionId: JsonField<String>,
     private val type: JsonValue,
+    private val obfuscation: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -34,7 +36,10 @@ private constructor(
         @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("session_id") @ExcludeMissing sessionId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(error, eventId, sessionId, type, mutableMapOf())
+        @JsonProperty("obfuscation")
+        @ExcludeMissing
+        obfuscation: JsonField<String> = JsonMissing.of(),
+    ) : this(error, eventId, sessionId, type, obfuscation, mutableMapOf())
 
     /**
      * The error that occurred.
@@ -74,6 +79,14 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * Random alphanumeric padding. Present when stream obfuscation is enabled.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun obfuscation(): Optional<String> = obfuscation.getOptional("obfuscation")
+
+    /**
      * Returns the raw JSON value of [error].
      *
      * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
@@ -93,6 +106,13 @@ private constructor(
      * Unlike [sessionId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("session_id") @ExcludeMissing fun _sessionId(): JsonField<String> = sessionId
+
+    /**
+     * Returns the raw JSON value of [obfuscation].
+     *
+     * Unlike [obfuscation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("obfuscation") @ExcludeMissing fun _obfuscation(): JsonField<String> = obfuscation
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -114,6 +134,7 @@ private constructor(
             "event_id" to this.eventId,
             "session_id" to this.sessionId,
             "type" to this.type,
+            "obfuscation" to this.obfuscation,
         )
 
     /**
@@ -152,6 +173,7 @@ private constructor(
         private var eventId: JsonField<String>? = null
         private var sessionId: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("error")
+        private var obfuscation: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -160,6 +182,7 @@ private constructor(
             eventId = agentSessionErrorEvent.eventId
             sessionId = agentSessionErrorEvent.sessionId
             type = agentSessionErrorEvent.type
+            obfuscation = agentSessionErrorEvent.obfuscation
             additionalProperties = agentSessionErrorEvent.additionalProperties.toMutableMap()
         }
 
@@ -212,6 +235,18 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        /** Random alphanumeric padding. Present when stream obfuscation is enabled. */
+        fun obfuscation(obfuscation: String) = obfuscation(JsonField.of(obfuscation))
+
+        /**
+         * Sets [Builder.obfuscation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.obfuscation] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun obfuscation(obfuscation: JsonField<String>) = apply { this.obfuscation = obfuscation }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -251,6 +286,7 @@ private constructor(
                 checkRequired("eventId", eventId),
                 checkRequired("sessionId", sessionId),
                 type,
+                obfuscation,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -278,6 +314,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        obfuscation()
         validated = true
     }
 
@@ -299,7 +336,8 @@ private constructor(
         (error.asKnown().getOrNull()?.validity() ?: 0) +
             (if (eventId.asKnown().isPresent) 1 else 0) +
             (if (sessionId.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("error")) 1 else 0 }
+            type.let { if (it == JsonValue.from("error")) 1 else 0 } +
+            (if (obfuscation.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -311,15 +349,16 @@ private constructor(
             eventId == other.eventId &&
             sessionId == other.sessionId &&
             type == other.type &&
+            obfuscation == other.obfuscation &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(error, eventId, sessionId, type, additionalProperties)
+        Objects.hash(error, eventId, sessionId, type, obfuscation, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AgentSessionErrorEvent{error=$error, eventId=$eventId, sessionId=$sessionId, type=$type, additionalProperties=$additionalProperties}"
+        "AgentSessionErrorEvent{error=$error, eventId=$eventId, sessionId=$sessionId, type=$type, obfuscation=$obfuscation, additionalProperties=$additionalProperties}"
 }

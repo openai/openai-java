@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -36,6 +37,9 @@ import kotlin.jvm.optionals.getOrNull
 @JsonSerialize(using = AgentSessionInputParam.Serializer::class)
 class AgentSessionInputParam
 private constructor(
+    private val agentSessionInputMcpApprovalRequestResult:
+        AgentSessionInputMcpApprovalRequestResult? =
+        null,
     private val agentSessionInputComputerUseApprovalRequestResult:
         AgentSessionInputComputerUseApprovalRequestResult? =
         null,
@@ -44,6 +48,11 @@ private constructor(
     private val agentSessionInputToolResult: AgentSessionInputToolResult? = null,
     private val _json: JsonValue? = null,
 ) {
+
+    /** Responds to a pending MCP tool-call approval request. */
+    fun agentSessionInputMcpApprovalRequestResult():
+        Optional<AgentSessionInputMcpApprovalRequestResult> =
+        Optional.ofNullable(agentSessionInputMcpApprovalRequestResult)
 
     /** Responds to a pending Computer Use approval request. */
     fun agentSessionInputComputerUseApprovalRequestResult():
@@ -62,6 +71,9 @@ private constructor(
     fun agentSessionInputToolResult(): Optional<AgentSessionInputToolResult> =
         Optional.ofNullable(agentSessionInputToolResult)
 
+    fun isAgentSessionInputMcpApprovalRequestResult(): Boolean =
+        agentSessionInputMcpApprovalRequestResult != null
+
     fun isAgentSessionInputComputerUseApprovalRequestResult(): Boolean =
         agentSessionInputComputerUseApprovalRequestResult != null
 
@@ -70,6 +82,12 @@ private constructor(
     fun isAgentSessionInputCancel(): Boolean = agentSessionInputCancel != null
 
     fun isAgentSessionInputToolResult(): Boolean = agentSessionInputToolResult != null
+
+    /** Responds to a pending MCP tool-call approval request. */
+    fun asAgentSessionInputMcpApprovalRequestResult(): AgentSessionInputMcpApprovalRequestResult =
+        agentSessionInputMcpApprovalRequestResult.getOrThrow(
+            "agentSessionInputMcpApprovalRequestResult"
+        )
 
     /** Responds to a pending Computer Use approval request. */
     fun asAgentSessionInputComputerUseApprovalRequestResult():
@@ -104,8 +122,8 @@ private constructor(
      *
      * Optional<String> result = agentSessionInputParam.accept(new AgentSessionInputParam.Visitor<Optional<String>>() {
      *     @Override
-     *     public Optional<String> visitAgentSessionInputComputerUseApprovalRequestResult(AgentSessionInputComputerUseApprovalRequestResult agentSessionInputComputerUseApprovalRequestResult) {
-     *         return Optional.of(agentSessionInputComputerUseApprovalRequestResult.toString());
+     *     public Optional<String> visitAgentSessionInputMcpApprovalRequestResult(AgentSessionInputMcpApprovalRequestResult agentSessionInputMcpApprovalRequestResult) {
+     *         return Optional.of(agentSessionInputMcpApprovalRequestResult.toString());
      *     }
      *
      *     // ...
@@ -123,6 +141,10 @@ private constructor(
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
+            agentSessionInputMcpApprovalRequestResult != null ->
+                visitor.visitAgentSessionInputMcpApprovalRequestResult(
+                    agentSessionInputMcpApprovalRequestResult
+                )
             agentSessionInputComputerUseApprovalRequestResult != null ->
                 visitor.visitAgentSessionInputComputerUseApprovalRequestResult(
                     agentSessionInputComputerUseApprovalRequestResult
@@ -153,6 +175,13 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
+                override fun visitAgentSessionInputMcpApprovalRequestResult(
+                    agentSessionInputMcpApprovalRequestResult:
+                        AgentSessionInputMcpApprovalRequestResult
+                ) {
+                    agentSessionInputMcpApprovalRequestResult.validate()
+                }
+
                 override fun visitAgentSessionInputComputerUseApprovalRequestResult(
                     agentSessionInputComputerUseApprovalRequestResult:
                         AgentSessionInputComputerUseApprovalRequestResult
@@ -203,6 +232,11 @@ private constructor(
     internal fun validity(): Int =
         accept(
             object : Visitor<Int> {
+                override fun visitAgentSessionInputMcpApprovalRequestResult(
+                    agentSessionInputMcpApprovalRequestResult:
+                        AgentSessionInputMcpApprovalRequestResult
+                ) = agentSessionInputMcpApprovalRequestResult.validity()
+
                 override fun visitAgentSessionInputComputerUseApprovalRequestResult(
                     agentSessionInputComputerUseApprovalRequestResult:
                         AgentSessionInputComputerUseApprovalRequestResult
@@ -232,12 +266,15 @@ private constructor(
         }
 
         return other is AgentSessionInputParam &&
+            agentSessionInputMcpApprovalRequestResult ==
+                other.agentSessionInputMcpApprovalRequestResult &&
             agentSessionInputComputerUseApprovalRequestResult ==
                 other.agentSessionInputComputerUseApprovalRequestResult &&
             agentSessionInputMessage == other.agentSessionInputMessage &&
             agentSessionInputCancel == other.agentSessionInputCancel &&
             agentSessionInputToolResult == other.agentSessionInputToolResult &&
-            (agentSessionInputComputerUseApprovalRequestResult != null ||
+            (agentSessionInputMcpApprovalRequestResult != null ||
+                agentSessionInputComputerUseApprovalRequestResult != null ||
                 agentSessionInputMessage != null ||
                 agentSessionInputCancel != null ||
                 agentSessionInputToolResult != null ||
@@ -246,7 +283,8 @@ private constructor(
 
     override fun hashCode(): Int =
         if (
-            agentSessionInputComputerUseApprovalRequestResult == null &&
+            agentSessionInputMcpApprovalRequestResult == null &&
+                agentSessionInputComputerUseApprovalRequestResult == null &&
                 agentSessionInputMessage == null &&
                 agentSessionInputCancel == null &&
                 agentSessionInputToolResult == null
@@ -254,6 +292,7 @@ private constructor(
             Objects.hash(_json)
         else
             Objects.hash(
+                agentSessionInputMcpApprovalRequestResult,
                 agentSessionInputComputerUseApprovalRequestResult,
                 agentSessionInputMessage,
                 agentSessionInputCancel,
@@ -262,6 +301,8 @@ private constructor(
 
     override fun toString(): String =
         when {
+            agentSessionInputMcpApprovalRequestResult != null ->
+                "AgentSessionInputParam{agentSessionInputMcpApprovalRequestResult=$agentSessionInputMcpApprovalRequestResult}"
             agentSessionInputComputerUseApprovalRequestResult != null ->
                 "AgentSessionInputParam{agentSessionInputComputerUseApprovalRequestResult=$agentSessionInputComputerUseApprovalRequestResult}"
             agentSessionInputMessage != null ->
@@ -275,6 +316,16 @@ private constructor(
         }
 
     companion object {
+
+        /** Responds to a pending MCP tool-call approval request. */
+        @JvmStatic
+        fun ofAgentSessionInputMcpApprovalRequestResult(
+            agentSessionInputMcpApprovalRequestResult: AgentSessionInputMcpApprovalRequestResult
+        ) =
+            AgentSessionInputParam(
+                agentSessionInputMcpApprovalRequestResult =
+                    agentSessionInputMcpApprovalRequestResult
+            )
 
         /** Responds to a pending Computer Use approval request. */
         @JvmStatic
@@ -312,6 +363,11 @@ private constructor(
      * type [T].
      */
     interface Visitor<out T> {
+
+        /** Responds to a pending MCP tool-call approval request. */
+        fun visitAgentSessionInputMcpApprovalRequestResult(
+            agentSessionInputMcpApprovalRequestResult: AgentSessionInputMcpApprovalRequestResult
+        ): T = unknown(JsonValue.from(agentSessionInputMcpApprovalRequestResult))
 
         /** Responds to a pending Computer Use approval request. */
         fun visitAgentSessionInputComputerUseApprovalRequestResult(
@@ -353,6 +409,18 @@ private constructor(
             val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
 
             when (type) {
+                "agent.session.input.mcp_approval_request_result" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentSessionInputMcpApprovalRequestResult>(),
+                        )
+                        ?.let {
+                            AgentSessionInputParam(
+                                agentSessionInputMcpApprovalRequestResult = it,
+                                _json = json,
+                            )
+                        } ?: AgentSessionInputParam(_json = json)
+                }
                 "agent.session.input.computer_use_approval_request_result" -> {
                     return tryDeserialize(
                             node,
@@ -396,6 +464,8 @@ private constructor(
             provider: SerializerProvider,
         ) {
             when {
+                value.agentSessionInputMcpApprovalRequestResult != null ->
+                    generator.writeObject(value.agentSessionInputMcpApprovalRequestResult)
                 value.agentSessionInputComputerUseApprovalRequestResult != null ->
                     generator.writeObject(value.agentSessionInputComputerUseApprovalRequestResult)
                 value.agentSessionInputMessage != null ->
@@ -408,6 +478,693 @@ private constructor(
                 else -> throw IllegalStateException("Invalid AgentSessionInputParam")
             }
         }
+    }
+
+    /** Responds to a pending MCP tool-call approval request. */
+    class AgentSessionInputMcpApprovalRequestResult
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val requestId: JsonField<String>,
+        private val response: JsonField<Response>,
+        private val type: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("request_id")
+            @ExcludeMissing
+            requestId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("response")
+            @ExcludeMissing
+            response: JsonField<Response> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        ) : this(requestId, response, type, mutableMapOf())
+
+        /**
+         * The opaque approval ID from the required action.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun requestId(): String = requestId.getRequired("request_id")
+
+        /**
+         * The user's decision for a pending MCP tool call.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun response(): Response = response.getRequired("response")
+
+        /**
+         * The type of the object. Always `agent.session.input.mcp_approval_request_result`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("agent.session.input.mcp_approval_request_result")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * Returns the raw JSON value of [requestId].
+         *
+         * Unlike [requestId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("request_id") @ExcludeMissing fun _requestId(): JsonField<String> = requestId
+
+        /**
+         * Returns the raw JSON value of [response].
+         *
+         * Unlike [response], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("response") @ExcludeMissing fun _response(): JsonField<Response> = response
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "request_id" to this.requestId,
+                "response" to this.response,
+                "type" to this.type,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [AgentSessionInputMcpApprovalRequestResult].
+             *
+             * The following fields are required:
+             * ```java
+             * .requestId()
+             * .response()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [AgentSessionInputMcpApprovalRequestResult]. */
+        class Builder internal constructor() {
+
+            private var requestId: JsonField<String>? = null
+            private var response: JsonField<Response>? = null
+            private var type: JsonValue =
+                JsonValue.from("agent.session.input.mcp_approval_request_result")
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(
+                agentSessionInputMcpApprovalRequestResult: AgentSessionInputMcpApprovalRequestResult
+            ) = apply {
+                requestId = agentSessionInputMcpApprovalRequestResult.requestId
+                response = agentSessionInputMcpApprovalRequestResult.response
+                type = agentSessionInputMcpApprovalRequestResult.type
+                additionalProperties =
+                    agentSessionInputMcpApprovalRequestResult.additionalProperties.toMutableMap()
+            }
+
+            /** The opaque approval ID from the required action. */
+            fun requestId(requestId: String) = requestId(JsonField.of(requestId))
+
+            /**
+             * Sets [Builder.requestId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.requestId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun requestId(requestId: JsonField<String>) = apply { this.requestId = requestId }
+
+            /** The user's decision for a pending MCP tool call. */
+            fun response(response: Response) = response(JsonField.of(response))
+
+            /**
+             * Sets [Builder.response] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.response] with a well-typed [Response] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun response(response: JsonField<Response>) = apply { this.response = response }
+
+            /**
+             * Alias for calling [response] with the following:
+             * ```java
+             * Response.builder()
+             *     .decision(decision)
+             *     .build()
+             * ```
+             */
+            fun mcpToolCallResponse(decision: Response.Decision) =
+                response(Response.builder().decision(decision).build())
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("agent.session.input.mcp_approval_request_result")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [AgentSessionInputMcpApprovalRequestResult].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .requestId()
+             * .response()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): AgentSessionInputMcpApprovalRequestResult =
+                AgentSessionInputMcpApprovalRequestResult(
+                    checkRequired("requestId", requestId),
+                    checkRequired("response", response),
+                    type,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): AgentSessionInputMcpApprovalRequestResult = apply {
+            if (validated) {
+                return@apply
+            }
+
+            requestId()
+            response().validate()
+            _type().let {
+                if (it != JsonValue.from("agent.session.input.mcp_approval_request_result")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (requestId.asKnown().isPresent) 1 else 0) +
+                (response.asKnown().getOrNull()?.validity() ?: 0) +
+                type.let {
+                    if (it == JsonValue.from("agent.session.input.mcp_approval_request_result")) 1
+                    else 0
+                }
+
+        /** The user's decision for a pending MCP tool call. */
+        class Response
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val decision: JsonField<Decision>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("decision")
+                @ExcludeMissing
+                decision: JsonField<Decision> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(decision, type, mutableMapOf())
+
+            /**
+             * Cancel dismisses this request without cancelling the session or turn.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun decision(): Decision = decision.getRequired("decision")
+
+            /**
+             * The type of the object. Always `mcp_tool_call`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("mcp_tool_call")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * Returns the raw JSON value of [decision].
+             *
+             * Unlike [decision], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("decision")
+            @ExcludeMissing
+            fun _decision(): JsonField<Decision> = decision
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "decision" to this.decision,
+                    "type" to this.type,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Response].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .decision()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Response]. */
+            class Builder internal constructor() {
+
+                private var decision: JsonField<Decision>? = null
+                private var type: JsonValue = JsonValue.from("mcp_tool_call")
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(response: Response) = apply {
+                    decision = response.decision
+                    type = response.type
+                    additionalProperties = response.additionalProperties.toMutableMap()
+                }
+
+                /** Cancel dismisses this request without cancelling the session or turn. */
+                fun decision(decision: Decision) = decision(JsonField.of(decision))
+
+                /**
+                 * Sets [Builder.decision] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.decision] with a well-typed [Decision] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun decision(decision: JsonField<Decision>) = apply { this.decision = decision }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("mcp_tool_call")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Response].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .decision()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Response =
+                    Response(
+                        checkRequired("decision", decision),
+                        type,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Response = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                decision().validate()
+                _type().let {
+                    if (it != JsonValue.from("mcp_tool_call")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (decision.asKnown().getOrNull()?.validity() ?: 0) +
+                    type.let { if (it == JsonValue.from("mcp_tool_call")) 1 else 0 }
+
+            /** Cancel dismisses this request without cancelling the session or turn. */
+            class Decision @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val APPROVE = of("approve")
+
+                    @JvmField val DENY = of("deny")
+
+                    @JvmField val CANCEL = of("cancel")
+
+                    @JvmStatic fun of(value: String) = Decision(JsonField.of(value))
+                }
+
+                /** An enum containing [Decision]'s known values. */
+                enum class Known {
+                    APPROVE,
+                    DENY,
+                    CANCEL,
+                }
+
+                /**
+                 * An enum containing [Decision]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Decision] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    APPROVE,
+                    DENY,
+                    CANCEL,
+                    /**
+                     * An enum member indicating that [Decision] was instantiated with an unknown
+                     * value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        APPROVE -> Value.APPROVE
+                        DENY -> Value.DENY
+                        CANCEL -> Value.CANCEL
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        APPROVE -> Known.APPROVE
+                        DENY -> Known.DENY
+                        CANCEL -> Known.CANCEL
+                        else -> throw OpenAIInvalidDataException("Unknown Decision: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Decision = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Decision && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Response &&
+                    decision == other.decision &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(decision, type, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Response{decision=$decision, type=$type, additionalProperties=$additionalProperties}"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is AgentSessionInputMcpApprovalRequestResult &&
+                requestId == other.requestId &&
+                response == other.response &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(requestId, response, type, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "AgentSessionInputMcpApprovalRequestResult{requestId=$requestId, response=$response, type=$type, additionalProperties=$additionalProperties}"
     }
 
     /** Responds to a pending Computer Use approval request. */

@@ -21,6 +21,7 @@ internal class AgentSessionTurnReasoningSummaryPartDoneEventTest {
                 .status(AgentSessionTurnReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
                 .summaryIndex(0L)
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.eventId()).isEqualTo("event_id")
@@ -34,6 +35,8 @@ internal class AgentSessionTurnReasoningSummaryPartDoneEventTest {
             .contains(AgentSessionTurnReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
         assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.summaryIndex()).isEqualTo(0L)
         assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.turnId()).contains("turn_id")
+        assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.obfuscation())
+            .contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 

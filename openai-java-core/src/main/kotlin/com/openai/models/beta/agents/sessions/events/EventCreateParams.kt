@@ -142,6 +142,15 @@ private constructor(
 
         /**
          * Alias for calling [addEvent] with
+         * `AgentSessionInputParam.ofAgentSessionInputMcpApprovalRequestResult(agentSessionInputMcpApprovalRequestResult)`.
+         */
+        fun addEvent(
+            agentSessionInputMcpApprovalRequestResult:
+                AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+        ) = apply { body.addEvent(agentSessionInputMcpApprovalRequestResult) }
+
+        /**
+         * Alias for calling [addEvent] with
          * `AgentSessionInputParam.ofAgentSessionInputComputerUseApprovalRequestResult(agentSessionInputComputerUseApprovalRequestResult)`.
          */
         fun addEvent(
@@ -452,6 +461,20 @@ private constructor(
                         checkKnown("events", it).add(event)
                     }
             }
+
+            /**
+             * Alias for calling [addEvent] with
+             * `AgentSessionInputParam.ofAgentSessionInputMcpApprovalRequestResult(agentSessionInputMcpApprovalRequestResult)`.
+             */
+            fun addEvent(
+                agentSessionInputMcpApprovalRequestResult:
+                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+            ) =
+                addEvent(
+                    AgentSessionInputParam.ofAgentSessionInputMcpApprovalRequestResult(
+                        agentSessionInputMcpApprovalRequestResult
+                    )
+                )
 
             /**
              * Alias for calling [addEvent] with

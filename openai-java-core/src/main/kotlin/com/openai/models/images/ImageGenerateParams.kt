@@ -213,7 +213,7 @@ private constructor(
      * and access to SVG model selection. When model selection is enabled, supply svg.model. When
      * model selection is disabled, omit this object. The top-level model selects the image model
      * that creates the reference image. SVG generation requires n=1 and does not support streaming,
-     * partial images, prompt_rewriter, or output_compression. SVG edits are not supported.
+     * partial images, prompt_rewriter, or output_compression.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -803,8 +803,7 @@ private constructor(
          * output_format=svg and access to SVG model selection. When model selection is enabled,
          * supply svg.model. When model selection is disabled, omit this object. The top-level model
          * selects the image model that creates the reference image. SVG generation requires n=1 and
-         * does not support streaming, partial images, prompt_rewriter, or output_compression. SVG
-         * edits are not supported.
+         * does not support streaming, partial images, prompt_rewriter, or output_compression.
          */
         fun svg(svg: Svg?) = apply { body.svg(svg) }
 
@@ -1248,8 +1247,7 @@ private constructor(
          * output_format=svg and access to SVG model selection. When model selection is enabled,
          * supply svg.model. When model selection is disabled, omit this object. The top-level model
          * selects the image model that creates the reference image. SVG generation requires n=1 and
-         * does not support streaming, partial images, prompt_rewriter, or output_compression. SVG
-         * edits are not supported.
+         * does not support streaming, partial images, prompt_rewriter, or output_compression.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1949,7 +1947,7 @@ private constructor(
              * supply svg.model. When model selection is disabled, omit this object. The top-level
              * model selects the image model that creates the reference image. SVG generation
              * requires n=1 and does not support streaming, partial images, prompt_rewriter, or
-             * output_compression. SVG edits are not supported.
+             * output_compression.
              */
             fun svg(svg: Svg?) = svg(JsonField.ofNullable(svg))
 
@@ -2626,9 +2624,9 @@ private constructor(
 
             @JvmField val PNG = of("png")
 
-            @JvmField val JPEG = of("jpeg")
-
             @JvmField val WEBP = of("webp")
+
+            @JvmField val JPEG = of("jpeg")
 
             @JvmField val GIF = of("gif")
 
@@ -2640,8 +2638,8 @@ private constructor(
         /** An enum containing [OutputFormat]'s known values. */
         enum class Known {
             PNG,
-            JPEG,
             WEBP,
+            JPEG,
             GIF,
             SVG,
         }
@@ -2657,8 +2655,8 @@ private constructor(
          */
         enum class Value {
             PNG,
-            JPEG,
             WEBP,
+            JPEG,
             GIF,
             SVG,
             /**
@@ -2677,8 +2675,8 @@ private constructor(
         fun value(): Value =
             when (this) {
                 PNG -> Value.PNG
-                JPEG -> Value.JPEG
                 WEBP -> Value.WEBP
+                JPEG -> Value.JPEG
                 GIF -> Value.GIF
                 SVG -> Value.SVG
                 else -> Value._UNKNOWN
@@ -2696,8 +2694,8 @@ private constructor(
         fun known(): Known =
             when (this) {
                 PNG -> Known.PNG
-                JPEG -> Known.JPEG
                 WEBP -> Known.WEBP
+                JPEG -> Known.JPEG
                 GIF -> Known.GIF
                 SVG -> Known.SVG
                 else -> throw OpenAIInvalidDataException("Unknown OutputFormat: $value")
@@ -3469,7 +3467,7 @@ private constructor(
      * and access to SVG model selection. When model selection is enabled, supply svg.model. When
      * model selection is disabled, omit this object. The top-level model selects the image model
      * that creates the reference image. SVG generation requires n=1 and does not support streaming,
-     * partial images, prompt_rewriter, or output_compression. SVG edits are not supported.
+     * partial images, prompt_rewriter, or output_compression.
      */
     class Svg
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)

@@ -64,7 +64,8 @@ private constructor(
     fun message(): String = message.getRequired("message")
 
     /**
-     * The Retry-After and Retry-After-Ms headers returned with the original error, if any.
+     * Headers returned with the original error. These can include Retry-After, Retry-After-Ms, and,
+     * on opted-in deployments, x-openai-inference-capacity-reason.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -239,7 +240,10 @@ private constructor(
          */
         fun message(message: JsonField<String>) = apply { this.message = message }
 
-        /** The Retry-After and Retry-After-Ms headers returned with the original error, if any. */
+        /**
+         * Headers returned with the original error. These can include Retry-After, Retry-After-Ms,
+         * and, on opted-in deployments, x-openai-inference-capacity-reason.
+         */
         fun headers(headers: Headers) = headers(JsonField.of(headers))
 
         /**
@@ -383,7 +387,10 @@ private constructor(
             (if (param.asKnown().isPresent) 1 else 0) +
             (if (type.asKnown().isPresent) 1 else 0)
 
-    /** The Retry-After and Retry-After-Ms headers returned with the original error, if any. */
+    /**
+     * Headers returned with the original error. These can include Retry-After, Retry-After-Ms, and,
+     * on opted-in deployments, x-openai-inference-capacity-reason.
+     */
     class Headers
     @JsonCreator
     private constructor(

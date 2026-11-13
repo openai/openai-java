@@ -43,6 +43,9 @@ internal class TurnTest {
                         .totalTokens(0L)
                         .build()
                 )
+                .promptCacheOptions(
+                    Turn.PromptCacheOptions.builder().ttl(Turn.PromptCacheOptions.Ttl._30M).build()
+                )
                 .build()
 
         assertThat(turn.id()).isEqualTo("id")
@@ -74,6 +77,10 @@ internal class TurnTest {
                     )
                     .totalTokens(0L)
                     .build()
+            )
+        assertThat(turn.promptCacheOptions())
+            .contains(
+                Turn.PromptCacheOptions.builder().ttl(Turn.PromptCacheOptions.Ttl._30M).build()
             )
 
         val jsonMapper = jsonMapper()

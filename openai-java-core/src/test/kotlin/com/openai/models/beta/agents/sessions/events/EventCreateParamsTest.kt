@@ -3,7 +3,6 @@
 package com.openai.models.beta.agents.sessions.events
 
 import com.openai.core.http.Headers
-import com.openai.models.beta.agents.AgentBrowserAuthenticationSubmitParam
 import com.openai.models.beta.agents.AgentSessionInputParam
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -16,17 +15,17 @@ internal class EventCreateParamsTest {
             .sessionId("session_id")
             .idempotencyKey("x")
             .addEvent(
-                AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult.builder()
+                AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult.builder()
                     .requestId("request_id")
                     .response(
-                        AgentBrowserAuthenticationSubmitParam.builder()
-                            .addField(
-                                AgentBrowserAuthenticationSubmitParam.Field.builder()
-                                    .fieldId("field_id")
-                                    .value("value")
-                                    .build()
+                        AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult.Response
+                            .builder()
+                            .decision(
+                                AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                    .Response
+                                    .Decision
+                                    .APPROVE
                             )
-                            .selectedOption("selected_option")
                             .build()
                     )
                     .build()
@@ -40,16 +39,19 @@ internal class EventCreateParamsTest {
             EventCreateParams.builder()
                 .sessionId("session_id")
                 .addEvent(
-                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
-                        .builder()
+                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult.builder()
                         .requestId("request_id")
-                        .agentBrowserAuthenticationSubmitParamResponse(
-                            listOf(
-                                AgentBrowserAuthenticationSubmitParam.Field.builder()
-                                    .fieldId("field_id")
-                                    .value("value")
-                                    .build()
-                            )
+                        .response(
+                            AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                .Response
+                                .builder()
+                                .decision(
+                                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                        .Response
+                                        .Decision
+                                        .APPROVE
+                                )
+                                .build()
                         )
                         .build()
                 )
@@ -67,18 +69,18 @@ internal class EventCreateParamsTest {
                 .sessionId("session_id")
                 .idempotencyKey("x")
                 .addEvent(
-                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
-                        .builder()
+                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult.builder()
                         .requestId("request_id")
                         .response(
-                            AgentBrowserAuthenticationSubmitParam.builder()
-                                .addField(
-                                    AgentBrowserAuthenticationSubmitParam.Field.builder()
-                                        .fieldId("field_id")
-                                        .value("value")
-                                        .build()
+                            AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                .Response
+                                .builder()
+                                .decision(
+                                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                        .Response
+                                        .Decision
+                                        .APPROVE
                                 )
-                                .selectedOption("selected_option")
                                 .build()
                         )
                         .build()
@@ -96,16 +98,19 @@ internal class EventCreateParamsTest {
             EventCreateParams.builder()
                 .sessionId("session_id")
                 .addEvent(
-                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
-                        .builder()
+                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult.builder()
                         .requestId("request_id")
-                        .agentBrowserAuthenticationSubmitParamResponse(
-                            listOf(
-                                AgentBrowserAuthenticationSubmitParam.Field.builder()
-                                    .fieldId("field_id")
-                                    .value("value")
-                                    .build()
-                            )
+                        .response(
+                            AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                .Response
+                                .builder()
+                                .decision(
+                                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                        .Response
+                                        .Decision
+                                        .APPROVE
+                                )
+                                .build()
                         )
                         .build()
                 )
@@ -123,18 +128,18 @@ internal class EventCreateParamsTest {
                 .sessionId("session_id")
                 .idempotencyKey("x")
                 .addEvent(
-                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
-                        .builder()
+                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult.builder()
                         .requestId("request_id")
                         .response(
-                            AgentBrowserAuthenticationSubmitParam.builder()
-                                .addField(
-                                    AgentBrowserAuthenticationSubmitParam.Field.builder()
-                                        .fieldId("field_id")
-                                        .value("value")
-                                        .build()
+                            AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                .Response
+                                .builder()
+                                .decision(
+                                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                        .Response
+                                        .Decision
+                                        .APPROVE
                                 )
-                                .selectedOption("selected_option")
                                 .build()
                         )
                         .build()
@@ -145,19 +150,19 @@ internal class EventCreateParamsTest {
 
         assertThat(body.events())
             .containsExactly(
-                AgentSessionInputParam.ofAgentSessionInputComputerUseApprovalRequestResult(
-                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
-                        .builder()
+                AgentSessionInputParam.ofAgentSessionInputMcpApprovalRequestResult(
+                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult.builder()
                         .requestId("request_id")
                         .response(
-                            AgentBrowserAuthenticationSubmitParam.builder()
-                                .addField(
-                                    AgentBrowserAuthenticationSubmitParam.Field.builder()
-                                        .fieldId("field_id")
-                                        .value("value")
-                                        .build()
+                            AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                .Response
+                                .builder()
+                                .decision(
+                                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                        .Response
+                                        .Decision
+                                        .APPROVE
                                 )
-                                .selectedOption("selected_option")
                                 .build()
                         )
                         .build()
@@ -171,16 +176,19 @@ internal class EventCreateParamsTest {
             EventCreateParams.builder()
                 .sessionId("session_id")
                 .addEvent(
-                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
-                        .builder()
+                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult.builder()
                         .requestId("request_id")
-                        .agentBrowserAuthenticationSubmitParamResponse(
-                            listOf(
-                                AgentBrowserAuthenticationSubmitParam.Field.builder()
-                                    .fieldId("field_id")
-                                    .value("value")
-                                    .build()
-                            )
+                        .response(
+                            AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                .Response
+                                .builder()
+                                .decision(
+                                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                        .Response
+                                        .Decision
+                                        .APPROVE
+                                )
+                                .build()
                         )
                         .build()
                 )
@@ -190,17 +198,20 @@ internal class EventCreateParamsTest {
 
         assertThat(body.events())
             .containsExactly(
-                AgentSessionInputParam.ofAgentSessionInputComputerUseApprovalRequestResult(
-                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
-                        .builder()
+                AgentSessionInputParam.ofAgentSessionInputMcpApprovalRequestResult(
+                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult.builder()
                         .requestId("request_id")
-                        .agentBrowserAuthenticationSubmitParamResponse(
-                            listOf(
-                                AgentBrowserAuthenticationSubmitParam.Field.builder()
-                                    .fieldId("field_id")
-                                    .value("value")
-                                    .build()
-                            )
+                        .response(
+                            AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                .Response
+                                .builder()
+                                .decision(
+                                    AgentSessionInputParam.AgentSessionInputMcpApprovalRequestResult
+                                        .Response
+                                        .Decision
+                                        .APPROVE
+                                )
+                                .build()
                         )
                         .build()
                 )
