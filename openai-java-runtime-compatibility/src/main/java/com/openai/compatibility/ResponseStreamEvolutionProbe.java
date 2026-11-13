@@ -55,8 +55,9 @@ public final class ResponseStreamEvolutionProbe {
                     ResponseCreateParams.builder().model("test").input("test").build();
             try (StreamResponse<ResponseStreamEvent> response =
                     client.responses().createStreaming(params)) {
-                List<String> received =
-                        response.stream().map(ResponseStreamEvolutionProbe::readEvent).collect(Collectors.toList());
+                List<String> received = response.stream()
+                        .map(ResponseStreamEvolutionProbe::readEvent)
+                        .collect(Collectors.toList());
                 if (!received.equals(Arrays.asList("response.future", "hello"))) {
                     throw new AssertionError("Unexpected event sequence: " + received);
                 }
