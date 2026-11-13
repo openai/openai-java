@@ -186,6 +186,9 @@ object CoreCompilationShards {
             }
         }
 
+        if (path == "com/openai/responses/internal/ResponseStreamEventValidation.kt") {
+            return CoreCompilationShard.SERVICES_RESPONSES
+        }
         if (path.startsWith("com/openai/services/")) return serviceShardFor(path)
         if (path in clientBaseSources) return CoreCompilationShard.CLIENT_BASE
         if (path.startsWith("com/openai/auth/")) return CoreCompilationShard.CLIENT_BASE
