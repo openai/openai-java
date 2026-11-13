@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.105.0](https://github.com/openai/openai-java/compare/v4.104.0...v4.105.0) (2026-11-13)
+
+
+### Features
+
+* **api:** update Managed Agents, Live, and image APIs ([#1389](https://github.com/openai/openai-java/issues/1389)) ([b2325af](https://github.com/openai/openai-java/commit/b2325af67836dc2b80bd8f5730b940cd510386e5))
+
 ## [4.104.0](https://github.com/openai/openai-java/compare/v4.103.0...v4.104.0) (2026-11-12)
 
 
