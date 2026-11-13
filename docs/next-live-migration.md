@@ -47,7 +47,7 @@ Kotlin callers can register callbacks on the same builder. For a shell tool with
 ```kotlin
 val containerId = tool.match(
     Tool.Handler.builder<String>()
-        .onShell { it.environment().get().asContainerReference().containerId() }
+        .onShell { it.environment().get().asContainerReference().containerIdOrThrow() }
         .build()
 )
 ```
