@@ -163,6 +163,7 @@ internal class StructuredResponseOutputItemTest {
         private val LOCAL_SHELL_CALL_OUTPUT =
             ResponseOutputItem.LocalShellCallOutput.builder()
                 .id(STRING)
+                .callId("call_local_shell")
                 .output(STRING)
                 .status(ResponseOutputItem.LocalShellCallOutput.Status.IN_PROGRESS)
                 .build()

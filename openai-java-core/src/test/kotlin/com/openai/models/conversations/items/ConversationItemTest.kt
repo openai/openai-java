@@ -1557,6 +1557,7 @@ internal class ConversationItemTest {
         val localShellCallOutput =
             ConversationItem.LocalShellCallOutput.builder()
                 .id("id")
+                .callId("call_id")
                 .output("output")
                 .status(ConversationItem.LocalShellCallOutput.Status.IN_PROGRESS)
                 .build()
@@ -1601,6 +1602,7 @@ internal class ConversationItemTest {
             ConversationItem.ofLocalShellCallOutput(
                 ConversationItem.LocalShellCallOutput.builder()
                     .id("id")
+                    .callId("call_id")
                     .output("output")
                     .status(ConversationItem.LocalShellCallOutput.Status.IN_PROGRESS)
                     .build()
