@@ -432,8 +432,13 @@ jobs:
           predicate-type: https://slsa.dev/provenance/v1
           predicate-path: ${{ steps.maven-artifacts.outputs.predicate_path }}
 
+      - name: Stop Gradle daemon before publishing
+        run: ./gradlew --stop
+
       - name: Publish to Maven Central
         env:
+          # Dokka builds the combined Javadoc search index in the Gradle daemon.
+          RELEASE_GRADLE_HEAP: ${{ vars.SDK_GHA_RUNNER == 'sdk-linux-x64-16core' && '16g' || '8g' }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OPENAI_SONATYPE_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OPENAI_SONATYPE_PASSWORD }}
           GPG_SIGNING_KEY: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_KEY }}
@@ -475,7 +480,8 @@ jobs:
             "${publish_exclusions[@]}" \
             --stacktrace \
             --no-parallel \
-            --no-configuration-cache
+            --no-configuration-cache \
+            "-Dorg.gradle.jvmargs=-Xmx${RELEASE_GRADLE_HEAP} -XX:+UseParallelGC -XX:ReservedCodeCacheSize=512m -XX:MaxMetaspaceSize=2G"
 
       - name: Verify attested Maven artifacts
         run: sha256sum --check "$RUNNER_TEMP/maven-artifact-provenance.sha256"
