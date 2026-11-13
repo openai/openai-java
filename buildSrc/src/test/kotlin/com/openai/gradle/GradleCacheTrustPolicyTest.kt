@@ -1239,7 +1239,8 @@ class GradleCacheTrustPolicyTest {
         )
         assertEquals("./gradlew --stop", publishSteps[daemonStop].run)
 
-        val attestation = publishSteps.indexOfFirst { it.name == "Attest Maven artifact provenance" }
+        val attestation =
+            publishSteps.indexOfFirst { it.name == "Attest Maven artifact provenance" }
         val publish = publishSteps.indexOfFirst { it.name == "Publish to Maven Central" }
         assertTrue(attestation >= 0 && publish > attestation + 1)
         assertEquals("Stop Gradle daemon before publishing", publishSteps[publish - 1].name)
