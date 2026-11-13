@@ -533,6 +533,7 @@ class GradleCacheTrustPolicyTest {
                     .apply {
                         environment()["RUNNER_TEMP"] = runnerTemp.toString()
                         environment()["MAVEN_ARTIFACTS"] = artifacts.joinToString(" ")
+                        environment()["RELEASE_GRADLE_HEAP"] = "16g"
                     }
                     .start()
             val output = process.inputStream.bufferedReader().readText()
@@ -557,6 +558,7 @@ class GradleCacheTrustPolicyTest {
             assertEquals("attested-" + artifacts[index], subject.readText())
         }
         val arguments = runnerTemp.resolve("publication-arguments").readText().lines()
+        assertTrue(arguments.any { it.startsWith("-Dorg.gradle.jvmargs=-Xmx16g ") })
         artifacts.forEach { artifact ->
             val index = arguments.indexOf(":$artifact:jar")
             assertTrue(index > 0 && arguments[index - 1] == "--exclude-task")
