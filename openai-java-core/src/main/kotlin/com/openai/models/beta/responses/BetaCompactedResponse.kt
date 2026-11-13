@@ -27,7 +27,7 @@ private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
     private val object_: JsonValue,
-    private val output: JsonField<List<BetaResponseOutputItem>>,
+    private val output: JsonField<List<BetaResponseItem>>,
     private val usage: JsonField<BetaResponseUsage>,
     private val image: JsonField<Image>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -40,7 +40,7 @@ private constructor(
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("output")
         @ExcludeMissing
-        output: JsonField<List<BetaResponseOutputItem>> = JsonMissing.of(),
+        output: JsonField<List<BetaResponseItem>> = JsonMissing.of(),
         @JsonProperty("usage")
         @ExcludeMissing
         usage: JsonField<BetaResponseUsage> = JsonMissing.of(),
@@ -97,18 +97,17 @@ private constructor(
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<JsonValue> = object_
 
     /**
-     * The compacted list of output items. This is a list of all user messages, followed by a single
-     * compaction item. The schema requires this property. Returns empty if the JSON property is
-     * missing or null.
+     * The compacted list of output items. The schema requires this property. Returns empty if the
+     * JSON property is missing or null.
      *
      * @throws OpenAIInvalidDataException if the value has an unexpected type.
      */
-    fun output(): java.util.Optional<List<BetaResponseOutputItem>> = output.getOptional("output")
+    fun output(): java.util.Optional<List<BetaResponseItem>> = output.getOptional("output")
 
     /**
      * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
-    fun outputOrThrow(): List<BetaResponseOutputItem> = output.getRequired("output")
+    fun outputOrThrow(): List<BetaResponseItem> = output.getRequired("output")
 
     /**
      * Token accounting for the compaction pass, including cached, reasoning, and total tokens. The
@@ -156,7 +155,7 @@ private constructor(
      */
     @JsonProperty("output")
     @ExcludeMissing
-    fun _output(): JsonField<List<BetaResponseOutputItem>> = output
+    fun _output(): JsonField<List<BetaResponseItem>> = output
 
     /**
      * Returns the raw JSON value of [usage].
@@ -228,7 +227,7 @@ private constructor(
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
         private var object_: JsonValue = JsonValue.from("response.compaction")
-        private var output: JsonField<MutableList<BetaResponseOutputItem>>? = null
+        private var output: JsonField<MutableList<BetaResponseItem>>? = null
         private var usage: JsonField<BetaResponseUsage>? = null
         private var image: JsonField<Image> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -280,229 +279,232 @@ private constructor(
          */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
-        /**
-         * The compacted list of output items. This is a list of all user messages, followed by a
-         * single compaction item.
-         */
-        fun output(output: List<BetaResponseOutputItem>) = output(JsonField.of(output))
+        /** The compacted list of output items. */
+        fun output(output: List<BetaResponseItem>) = output(JsonField.of(output))
 
         /**
          * Sets [Builder.output] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.output] with a well-typed `List<BetaResponseOutputItem>`
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
+         * You should usually call [Builder.output] with a well-typed `List<BetaResponseItem>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun output(output: JsonField<List<BetaResponseOutputItem>>) = apply {
+        fun output(output: JsonField<List<BetaResponseItem>>) = apply {
             this.output = output.map { it.toMutableList() }
         }
 
         /**
-         * Adds a single [BetaResponseOutputItem] to [Builder.output].
+         * Adds a single [BetaResponseItem] to [Builder.output].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addOutput(output: BetaResponseOutputItem) = apply {
+        fun addOutput(output: BetaResponseItem) = apply {
             this.output =
                 (this.output ?: JsonField.of(mutableListOf())).also {
                     checkKnown("output", it).add(output)
                 }
         }
 
-        /** Alias for calling [addOutput] with `BetaResponseOutputItem.ofMessage(message)`. */
-        fun addOutput(message: BetaResponseOutputMessage) =
-            addOutput(BetaResponseOutputItem.ofMessage(message))
+        /**
+         * Alias for calling [addOutput] with
+         * `BetaResponseItem.ofBetaResponseInputMessageItem(betaResponseInputMessageItem)`.
+         */
+        fun addOutput(betaResponseInputMessageItem: BetaResponseInputMessageItem) =
+            addOutput(BetaResponseItem.ofBetaResponseInputMessageItem(betaResponseInputMessageItem))
 
         /**
          * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofFileSearchCall(fileSearchCall)`.
+         * `BetaResponseItem.ofBetaResponseOutputMessage(betaResponseOutputMessage)`.
+         */
+        fun addOutput(betaResponseOutputMessage: BetaResponseOutputMessage) =
+            addOutput(BetaResponseItem.ofBetaResponseOutputMessage(betaResponseOutputMessage))
+
+        /**
+         * Alias for calling [addOutput] with `BetaResponseItem.ofFileSearchCall(fileSearchCall)`.
          */
         fun addOutput(fileSearchCall: BetaResponseFileSearchToolCall) =
-            addOutput(BetaResponseOutputItem.ofFileSearchCall(fileSearchCall))
+            addOutput(BetaResponseItem.ofFileSearchCall(fileSearchCall))
 
-        /**
-         * Alias for calling [addOutput] with `BetaResponseOutputItem.ofFunctionCall(functionCall)`.
-         */
-        fun addOutput(functionCall: BetaResponseFunctionToolCall) =
-            addOutput(BetaResponseOutputItem.ofFunctionCall(functionCall))
-
-        /**
-         * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofFunctionCallOutput(functionCallOutput)`.
-         */
-        fun addOutput(functionCallOutput: BetaResponseFunctionToolCallOutputItem) =
-            addOutput(BetaResponseOutputItem.ofFunctionCallOutput(functionCallOutput))
-
-        /**
-         * Alias for calling [addOutput] with `BetaResponseOutputItem.ofAgentMessage(agentMessage)`.
-         */
-        fun addOutput(agentMessage: BetaResponseOutputItem.AgentMessage) =
-            addOutput(BetaResponseOutputItem.ofAgentMessage(agentMessage))
-
-        /**
-         * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofMultiAgentCall(multiAgentCall)`.
-         */
-        fun addOutput(multiAgentCall: BetaResponseOutputItem.MultiAgentCall) =
-            addOutput(BetaResponseOutputItem.ofMultiAgentCall(multiAgentCall))
-
-        /**
-         * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofMultiAgentCallOutput(multiAgentCallOutput)`.
-         */
-        fun addOutput(multiAgentCallOutput: BetaResponseOutputItem.MultiAgentCallOutput) =
-            addOutput(BetaResponseOutputItem.ofMultiAgentCallOutput(multiAgentCallOutput))
-
-        /**
-         * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofWebSearchCall(webSearchCall)`.
-         */
-        fun addOutput(webSearchCall: BetaResponseFunctionWebSearch) =
-            addOutput(BetaResponseOutputItem.ofWebSearchCall(webSearchCall))
-
-        /**
-         * Alias for calling [addOutput] with `BetaResponseOutputItem.ofComputerCall(computerCall)`.
-         */
+        /** Alias for calling [addOutput] with `BetaResponseItem.ofComputerCall(computerCall)`. */
         fun addOutput(computerCall: BetaResponseComputerToolCall) =
-            addOutput(BetaResponseOutputItem.ofComputerCall(computerCall))
+            addOutput(BetaResponseItem.ofComputerCall(computerCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofComputerCallOutput(computerCallOutput)`.
+         * `BetaResponseItem.ofComputerCallOutput(computerCallOutput)`.
          */
         fun addOutput(computerCallOutput: BetaResponseComputerToolCallOutputItem) =
-            addOutput(BetaResponseOutputItem.ofComputerCallOutput(computerCallOutput))
+            addOutput(BetaResponseItem.ofComputerCallOutput(computerCallOutput))
 
-        /** Alias for calling [addOutput] with `BetaResponseOutputItem.ofReasoning(reasoning)`. */
-        fun addOutput(reasoning: BetaResponseReasoningItem) =
-            addOutput(BetaResponseOutputItem.ofReasoning(reasoning))
+        /** Alias for calling [addOutput] with `BetaResponseItem.ofWebSearchCall(webSearchCall)`. */
+        fun addOutput(webSearchCall: BetaResponseFunctionWebSearch) =
+            addOutput(BetaResponseItem.ofWebSearchCall(webSearchCall))
 
-        /** Alias for calling [addOutput] with `BetaResponseOutputItem.ofProgram(program)`. */
-        fun addOutput(program: BetaResponseOutputItem.Program) =
-            addOutput(BetaResponseOutputItem.ofProgram(program))
+        /** Alias for calling [addOutput] with `BetaResponseItem.ofFunctionCall(functionCall)`. */
+        fun addOutput(functionCall: BetaResponseFunctionToolCallItem) =
+            addOutput(BetaResponseItem.ofFunctionCall(functionCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofProgramOutput(programOutput)`.
+         * `BetaResponseItem.ofFunctionCallOutput(functionCallOutput)`.
          */
-        fun addOutput(programOutput: BetaResponseOutputItem.ProgramOutput) =
-            addOutput(BetaResponseOutputItem.ofProgramOutput(programOutput))
+        fun addOutput(functionCallOutput: BetaResponseFunctionToolCallOutputItem) =
+            addOutput(BetaResponseItem.ofFunctionCallOutput(functionCallOutput))
+
+        /** Alias for calling [addOutput] with `BetaResponseItem.ofAgentMessage(agentMessage)`. */
+        fun addOutput(agentMessage: BetaResponseItem.AgentMessage) =
+            addOutput(BetaResponseItem.ofAgentMessage(agentMessage))
+
+        /**
+         * Alias for calling [addOutput] with `BetaResponseItem.ofMultiAgentCall(multiAgentCall)`.
+         */
+        fun addOutput(multiAgentCall: BetaResponseItem.MultiAgentCall) =
+            addOutput(BetaResponseItem.ofMultiAgentCall(multiAgentCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofToolSearchCall(toolSearchCall)`.
+         * `BetaResponseItem.ofMultiAgentCallOutput(multiAgentCallOutput)`.
+         */
+        fun addOutput(multiAgentCallOutput: BetaResponseItem.MultiAgentCallOutput) =
+            addOutput(BetaResponseItem.ofMultiAgentCallOutput(multiAgentCallOutput))
+
+        /**
+         * Alias for calling [addOutput] with `BetaResponseItem.ofToolSearchCall(toolSearchCall)`.
          */
         fun addOutput(toolSearchCall: BetaResponseToolSearchCall) =
-            addOutput(BetaResponseOutputItem.ofToolSearchCall(toolSearchCall))
+            addOutput(BetaResponseItem.ofToolSearchCall(toolSearchCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofToolSearchOutput(toolSearchOutput)`.
+         * `BetaResponseItem.ofToolSearchOutput(toolSearchOutput)`.
          */
         fun addOutput(toolSearchOutput: BetaResponseToolSearchOutputItem) =
-            addOutput(BetaResponseOutputItem.ofToolSearchOutput(toolSearchOutput))
+            addOutput(BetaResponseItem.ofToolSearchOutput(toolSearchOutput))
+
+        /**
+         * Alias for calling [addOutput] with `BetaResponseItem.ofAdditionalTools(additionalTools)`.
+         */
+        fun addOutput(additionalTools: BetaResponseItem.AdditionalTools) =
+            addOutput(BetaResponseItem.ofAdditionalTools(additionalTools))
 
         /**
          * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofAdditionalTools(additionalTools)`.
+         * `BetaResponseItem.ofConfigurationUpdate(configurationUpdate)`.
          */
-        fun addOutput(additionalTools: BetaResponseOutputItem.AdditionalTools) =
-            addOutput(BetaResponseOutputItem.ofAdditionalTools(additionalTools))
+        fun addOutput(configurationUpdate: BetaResponseConfigurationUpdateItem) =
+            addOutput(BetaResponseItem.ofConfigurationUpdate(configurationUpdate))
 
-        /** Alias for calling [addOutput] with `BetaResponseOutputItem.ofCompaction(compaction)`. */
+        /**
+         * Alias for calling [addOutput] with the following:
+         * ```java
+         * BetaResponseConfigurationUpdateItem.builder()
+         *     .id(id)
+         *     .build()
+         * ```
+         */
+        fun addConfigurationUpdateOutput(id: String) =
+            addOutput(BetaResponseConfigurationUpdateItem.builder().id(id).build())
+
+        /** Alias for calling [addOutput] with `BetaResponseItem.ofReasoning(reasoning)`. */
+        fun addOutput(reasoning: BetaResponseReasoningItem) =
+            addOutput(BetaResponseItem.ofReasoning(reasoning))
+
+        /** Alias for calling [addOutput] with `BetaResponseItem.ofProgram(program)`. */
+        fun addOutput(program: BetaResponseItem.Program) =
+            addOutput(BetaResponseItem.ofProgram(program))
+
+        /** Alias for calling [addOutput] with `BetaResponseItem.ofProgramOutput(programOutput)`. */
+        fun addOutput(programOutput: BetaResponseItem.ProgramOutput) =
+            addOutput(BetaResponseItem.ofProgramOutput(programOutput))
+
+        /** Alias for calling [addOutput] with `BetaResponseItem.ofCompaction(compaction)`. */
         fun addOutput(compaction: BetaResponseCompactionItem) =
-            addOutput(BetaResponseOutputItem.ofCompaction(compaction))
+            addOutput(BetaResponseItem.ofCompaction(compaction))
 
         /**
          * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofImageGenerationCall(imageGenerationCall)`.
+         * `BetaResponseItem.ofImageGenerationCall(imageGenerationCall)`.
          */
-        fun addOutput(imageGenerationCall: BetaResponseOutputItem.ImageGenerationCall) =
-            addOutput(BetaResponseOutputItem.ofImageGenerationCall(imageGenerationCall))
+        fun addOutput(imageGenerationCall: BetaResponseItem.ImageGenerationCall) =
+            addOutput(BetaResponseItem.ofImageGenerationCall(imageGenerationCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofCodeInterpreterCall(codeInterpreterCall)`.
+         * `BetaResponseItem.ofCodeInterpreterCall(codeInterpreterCall)`.
          */
         fun addOutput(codeInterpreterCall: BetaResponseCodeInterpreterToolCall) =
-            addOutput(BetaResponseOutputItem.ofCodeInterpreterCall(codeInterpreterCall))
+            addOutput(BetaResponseItem.ofCodeInterpreterCall(codeInterpreterCall))
+
+        /**
+         * Alias for calling [addOutput] with `BetaResponseItem.ofLocalShellCall(localShellCall)`.
+         */
+        fun addOutput(localShellCall: BetaResponseItem.LocalShellCall) =
+            addOutput(BetaResponseItem.ofLocalShellCall(localShellCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofLocalShellCall(localShellCall)`.
+         * `BetaResponseItem.ofLocalShellCallOutput(localShellCallOutput)`.
          */
-        fun addOutput(localShellCall: BetaResponseOutputItem.LocalShellCall) =
-            addOutput(BetaResponseOutputItem.ofLocalShellCall(localShellCall))
+        fun addOutput(localShellCallOutput: BetaResponseItem.LocalShellCallOutput) =
+            addOutput(BetaResponseItem.ofLocalShellCallOutput(localShellCallOutput))
 
-        /**
-         * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofLocalShellCallOutput(localShellCallOutput)`.
-         */
-        fun addOutput(localShellCallOutput: BetaResponseOutputItem.LocalShellCallOutput) =
-            addOutput(BetaResponseOutputItem.ofLocalShellCallOutput(localShellCallOutput))
-
-        /** Alias for calling [addOutput] with `BetaResponseOutputItem.ofShellCall(shellCall)`. */
+        /** Alias for calling [addOutput] with `BetaResponseItem.ofShellCall(shellCall)`. */
         fun addOutput(shellCall: BetaResponseFunctionShellToolCall) =
-            addOutput(BetaResponseOutputItem.ofShellCall(shellCall))
+            addOutput(BetaResponseItem.ofShellCall(shellCall))
 
         /**
-         * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofShellCallOutput(shellCallOutput)`.
+         * Alias for calling [addOutput] with `BetaResponseItem.ofShellCallOutput(shellCallOutput)`.
          */
         fun addOutput(shellCallOutput: BetaResponseFunctionShellToolCallOutput) =
-            addOutput(BetaResponseOutputItem.ofShellCallOutput(shellCallOutput))
+            addOutput(BetaResponseItem.ofShellCallOutput(shellCallOutput))
 
         /**
-         * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofApplyPatchCall(applyPatchCall)`.
+         * Alias for calling [addOutput] with `BetaResponseItem.ofApplyPatchCall(applyPatchCall)`.
          */
         fun addOutput(applyPatchCall: BetaResponseApplyPatchToolCall) =
-            addOutput(BetaResponseOutputItem.ofApplyPatchCall(applyPatchCall))
+            addOutput(BetaResponseItem.ofApplyPatchCall(applyPatchCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofApplyPatchCallOutput(applyPatchCallOutput)`.
+         * `BetaResponseItem.ofApplyPatchCallOutput(applyPatchCallOutput)`.
          */
         fun addOutput(applyPatchCallOutput: BetaResponseApplyPatchToolCallOutput) =
-            addOutput(BetaResponseOutputItem.ofApplyPatchCallOutput(applyPatchCallOutput))
+            addOutput(BetaResponseItem.ofApplyPatchCallOutput(applyPatchCallOutput))
 
-        /** Alias for calling [addOutput] with `BetaResponseOutputItem.ofMcpCall(mcpCall)`. */
-        fun addOutput(mcpCall: BetaResponseOutputItem.McpCall) =
-            addOutput(BetaResponseOutputItem.ofMcpCall(mcpCall))
-
-        /**
-         * Alias for calling [addOutput] with `BetaResponseOutputItem.ofMcpListTools(mcpListTools)`.
-         */
-        fun addOutput(mcpListTools: BetaResponseOutputItem.McpListTools) =
-            addOutput(BetaResponseOutputItem.ofMcpListTools(mcpListTools))
+        /** Alias for calling [addOutput] with `BetaResponseItem.ofMcpListTools(mcpListTools)`. */
+        fun addOutput(mcpListTools: BetaResponseItem.McpListTools) =
+            addOutput(BetaResponseItem.ofMcpListTools(mcpListTools))
 
         /**
          * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofMcpApprovalRequest(mcpApprovalRequest)`.
+         * `BetaResponseItem.ofMcpApprovalRequest(mcpApprovalRequest)`.
          */
-        fun addOutput(mcpApprovalRequest: BetaResponseOutputItem.McpApprovalRequest) =
-            addOutput(BetaResponseOutputItem.ofMcpApprovalRequest(mcpApprovalRequest))
+        fun addOutput(mcpApprovalRequest: BetaResponseItem.McpApprovalRequest) =
+            addOutput(BetaResponseItem.ofMcpApprovalRequest(mcpApprovalRequest))
 
         /**
          * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofMcpApprovalResponse(mcpApprovalResponse)`.
+         * `BetaResponseItem.ofMcpApprovalResponse(mcpApprovalResponse)`.
          */
-        fun addOutput(mcpApprovalResponse: BetaResponseOutputItem.McpApprovalResponse) =
-            addOutput(BetaResponseOutputItem.ofMcpApprovalResponse(mcpApprovalResponse))
+        fun addOutput(mcpApprovalResponse: BetaResponseItem.McpApprovalResponse) =
+            addOutput(BetaResponseItem.ofMcpApprovalResponse(mcpApprovalResponse))
+
+        /** Alias for calling [addOutput] with `BetaResponseItem.ofMcpCall(mcpCall)`. */
+        fun addOutput(mcpCall: BetaResponseItem.McpCall) =
+            addOutput(BetaResponseItem.ofMcpCall(mcpCall))
+
+        /**
+         * Alias for calling [addOutput] with `BetaResponseItem.ofCustomToolCall(customToolCall)`.
+         */
+        fun addOutput(customToolCall: BetaResponseCustomToolCallItem) =
+            addOutput(BetaResponseItem.ofCustomToolCall(customToolCall))
 
         /**
          * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofCustomToolCall(customToolCall)`.
-         */
-        fun addOutput(customToolCall: BetaResponseCustomToolCall) =
-            addOutput(BetaResponseOutputItem.ofCustomToolCall(customToolCall))
-
-        /**
-         * Alias for calling [addOutput] with
-         * `BetaResponseOutputItem.ofCustomToolCallOutput(customToolCallOutput)`.
+         * `BetaResponseItem.ofCustomToolCallOutput(customToolCallOutput)`.
          */
         fun addOutput(customToolCallOutput: BetaResponseCustomToolCallOutputItem) =
-            addOutput(BetaResponseOutputItem.ofCustomToolCallOutput(customToolCallOutput))
+            addOutput(BetaResponseItem.ofCustomToolCallOutput(customToolCallOutput))
 
         /**
          * Token accounting for the compaction pass, including cached, reasoning, and total tokens.

@@ -2493,7 +2493,9 @@ internal class ResponseInputItemTest {
 
     @Test
     fun ofCompactionTrigger() {
-        val responseInputItem = ResponseInputItem.ofCompactionTrigger()
+        val compactionTrigger = ResponseInputItem.CompactionTrigger.builder().id("msg_123").build()
+
+        val responseInputItem = ResponseInputItem.ofCompactionTrigger(compactionTrigger)
 
         assertThat(responseInputItem.easyInputMessage()).isEmpty
         assertThat(responseInputItem.message()).isEmpty
@@ -2524,8 +2526,7 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.mcpCall()).isEmpty
         assertThat(responseInputItem.customToolCallOutput()).isEmpty
         assertThat(responseInputItem.customToolCall()).isEmpty
-        assertThat(responseInputItem.compactionTrigger())
-            .contains(JsonValue.from(mapOf("type" to "compaction_trigger")))
+        assertThat(responseInputItem.compactionTrigger()).contains(compactionTrigger)
         assertThat(responseInputItem.itemReference()).isEmpty
         assertThat(responseInputItem.program()).isEmpty
         assertThat(responseInputItem.programOutput()).isEmpty
@@ -2534,7 +2535,10 @@ internal class ResponseInputItemTest {
     @Test
     fun ofCompactionTriggerRoundtrip() {
         val jsonMapper = jsonMapper()
-        val responseInputItem = ResponseInputItem.ofCompactionTrigger()
+        val responseInputItem =
+            ResponseInputItem.ofCompactionTrigger(
+                ResponseInputItem.CompactionTrigger.builder().id("msg_123").build()
+            )
 
         val roundtrippedResponseInputItem =
             jsonMapper.readValue(
