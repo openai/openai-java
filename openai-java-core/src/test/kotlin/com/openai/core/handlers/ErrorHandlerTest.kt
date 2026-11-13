@@ -74,7 +74,7 @@ internal class ErrorHandlerTest {
         assertThat(response.closeCount).isEqualTo(1)
         assertThat(failure).isExactlyInstanceOf(expectedType)
         assertThat(failure.statusCode()).isEqualTo(statusCode)
-        assertThat(failure.headers().values("Error-Header")).containsExactly("42")
+        assertThat(failure.headers().get().values("Error-Header")).containsExactly("42")
         assertThat(failure.body()).isEqualTo(ERROR_BODY)
     }
 
@@ -86,7 +86,7 @@ internal class ErrorHandlerTest {
 
         assertThat(response.closeCount).isEqualTo(1)
         assertThat(failure.statusCode()).isEqualTo(400)
-        assertThat(failure.headers().values("Error-Header")).containsExactly("42")
+        assertThat(failure.headers().get().values("Error-Header")).containsExactly("42")
     }
 
     @ParameterizedTest

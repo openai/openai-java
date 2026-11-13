@@ -255,14 +255,15 @@ internal class X509TokenExchangeTest {
 
             assertThat(failure).isInstanceOf(UnexpectedStatusCodeException::class.java)
             val statusError = failure as UnexpectedStatusCodeException
+            val headers = statusError.headers().get()
             assertThat(statusError.statusCode()).isEqualTo(503)
-            assertThat(statusError.headers().values("Set-Cookie")).isEmpty()
-            assertThat(statusError.headers().values("Authorization")).isEmpty()
-            assertThat(statusError.headers().values("X-Api-Key")).isEmpty()
-            assertThat(statusError.headers().values("X-Request-ID")).containsExactly("<redacted>")
-            assertThat(statusError.headers().values("Retry-After")).containsExactly("1")
-            assertThat(statusError.headers().values("Traceparent")).containsExactly("<redacted>")
-            assertThat(statusError.headers().values("Tracestate")).containsExactly("<redacted>")
+            assertThat(headers.values("Set-Cookie")).isEmpty()
+            assertThat(headers.values("Authorization")).isEmpty()
+            assertThat(headers.values("X-Api-Key")).isEmpty()
+            assertThat(headers.values("X-Request-ID")).containsExactly("<redacted>")
+            assertThat(headers.values("Retry-After")).containsExactly("1")
+            assertThat(headers.values("Traceparent")).containsExactly("<redacted>")
+            assertThat(headers.values("Tracestate")).containsExactly("<redacted>")
             assertThat(statusError.code()).contains("invalid_grant")
             assertThat(statusError.message).contains("invalid_grant")
             assertThat(statusError.toString())
@@ -277,7 +278,7 @@ internal class X509TokenExchangeTest {
                     "aaaaaaaa.bbbbbbbb.cccccccc",
                     "sk-test-not-a-real-credential-00000000",
                 )
-            assertThat(statusError.headers().toString())
+            assertThat(headers.toString())
                 .doesNotContain(
                     "aaaaaaaa.bbbbbbbb.cccccccc",
                     "sk-test-not-a-real-credential-00000000",
@@ -308,11 +309,12 @@ internal class X509TokenExchangeTest {
 
             assertThat(failure).isInstanceOf(UnexpectedStatusCodeException::class.java)
             val statusError = failure as UnexpectedStatusCodeException
-            assertThat(statusError.headers().values("X-Request-ID")).containsExactly("<redacted>")
-            assertThat(statusError.headers().values("Tracestate")).containsExactly("<redacted>")
-            assertThat(statusError.headers().values("Retry-After")).isEmpty()
-            assertThat(statusError.headers().values("Content-Type")).isEmpty()
-            assertThat(statusError.headers().toString())
+            val headers = statusError.headers().get()
+            assertThat(headers.values("X-Request-ID")).containsExactly("<redacted>")
+            assertThat(headers.values("Tracestate")).containsExactly("<redacted>")
+            assertThat(headers.values("Retry-After")).isEmpty()
+            assertThat(headers.values("Content-Type")).isEmpty()
+            assertThat(headers.toString())
                 .doesNotContain(
                     "short-request-secret",
                     "short-trace-secret",

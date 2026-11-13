@@ -8,7 +8,6 @@ import java.io.InputStream
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -69,9 +68,12 @@ internal class WorkloadIdentityHttpClientTest {
                 .baseUrl("https://api.openai.com/v1/models")
                 .build()
 
-        assertThatThrownBy { client.execute(request, RequestOptions.none()) }
-            .isInstanceOf(OpenAIRetryableException::class.java)
-            .hasMessage("OAuth token is expired")
+        val error =
+            assertThrows<OpenAIRetryableException> {
+                client.execute(request, RequestOptions.none())
+            }
+        assertThat(error).hasMessage("OAuth token is expired")
+        assertThat(error.headers().get().values("x-request-id")).containsExactly("req_expired")
 
         verify(workloadIdentityAuth).invalidateToken()
     }
@@ -96,11 +98,13 @@ internal class WorkloadIdentityHttpClientTest {
                 .baseUrl("https://api.openai.com/v1/models")
                 .build()
 
-        assertThatThrownBy { client.executeAsync(request, RequestOptions.none()).get() }
-            .isInstanceOf(ExecutionException::class.java)
-            .hasCauseInstanceOf(OpenAIRetryableException::class.java)
-            .cause()
-            .hasMessage("OAuth token is expired")
+        val failure =
+            assertThrows<ExecutionException> {
+                client.executeAsync(request, RequestOptions.none()).get()
+            }
+        val error = failure.cause as OpenAIRetryableException
+        assertThat(error).hasMessage("OAuth token is expired")
+        assertThat(error.headers().get().values("x-request-id")).containsExactly("req_expired")
 
         verify(workloadIdentityAuth).invalidateToken()
     }
@@ -213,7 +217,7 @@ internal class WorkloadIdentityHttpClientTest {
         return object : HttpResponse {
             override fun statusCode() = statusCode
 
-            override fun headers() = Headers.builder().build()
+            override fun headers() = Headers.builder().put("x-request-id", "req_expired").build()
 
             override fun body(): InputStream = ByteArrayInputStream(body.toByteArray())
 

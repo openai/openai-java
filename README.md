@@ -1388,6 +1388,9 @@ This can be used to quickly log failing requests and report them back to OpenAI.
 
 ## Error handling
 
+Call `OpenAIException.headers()` to read response headers when a request fails.
+[Java 5 migration examples](docs/next-exception-headers.md) show how to read a request ID in Java and Kotlin.
+
 The SDK throws custom unchecked exception types:
 
 - [`OpenAIServiceException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIServiceException.kt): Base class for HTTP errors. See this table for which exception subclass is thrown for each HTTP status code:

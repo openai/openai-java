@@ -35,7 +35,7 @@ private constructor(
 
     override fun type(): Optional<String> = error.asKnown().map { it.typeOrThrow() }
 
-    override fun headers(): Headers = headers
+    override fun headers(): Optional<Headers> = Optional.of(headers)
 
     fun toBuilder() = Builder().from(this)
 

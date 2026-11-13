@@ -36,7 +36,7 @@ private constructor(
 
     override fun statusCode(): Int = statusCode
 
-    override fun headers(): Headers = headers
+    override fun headers(): Optional<Headers> = Optional.of(headers)
 
     fun toBuilder() = Builder().from(this)
 
