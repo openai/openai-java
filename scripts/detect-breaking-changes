@@ -68,6 +68,11 @@ if git cat-file -e "${BASE_COMMIT}:${compaction_policy}" 2>/dev/null; then
     git show "${BASE_COMMIT}:${compaction_policy}" | python3 -I - "${BASE_COMMIT}"
 fi
 
+grader_policy=scripts/compatibility/next_grader_fixture.py
+if git cat-file -e "${BASE_COMMIT}:${grader_policy}" 2>/dev/null; then
+    git show "${BASE_COMMIT}:${grader_policy}" | python3 -I - "${BASE_COMMIT}"
+fi
+
 PROPOSED_TEST_PATHS=0
 for PATHSPEC in "${TEST_PATHS[@]}"; do
     if [ ! -d "${PATHSPEC}" ]; then
