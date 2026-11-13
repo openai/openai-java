@@ -6,11 +6,11 @@ import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.AsyncStreamResponse
-import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
 import com.openai.models.beta.responses.BetaCompactedResponse
 import com.openai.models.beta.responses.BetaResponse
+import com.openai.models.beta.responses.BetaResponseDeleteResponse
 import com.openai.models.beta.responses.BetaResponseStreamEvent
 import com.openai.models.beta.responses.ResponseCancelParams
 import com.openai.models.beta.responses.ResponseCompactParams
@@ -215,7 +215,7 @@ interface ResponseServiceAsync {
         retrieveStreaming(responseId, ResponseRetrieveParams.none(), requestOptions)
 
     /** Deletes a model response with the given ID. */
-    fun delete(responseId: String): CompletableFuture<Void?> =
+    fun delete(responseId: String): CompletableFuture<BetaResponseDeleteResponse> =
         delete(responseId, ResponseDeleteParams.none())
 
     /** @see delete */
@@ -223,27 +223,31 @@ interface ResponseServiceAsync {
         responseId: String,
         params: ResponseDeleteParams = ResponseDeleteParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<BetaResponseDeleteResponse> =
         delete(params.toBuilder().responseId(responseId).build(), requestOptions)
 
     /** @see delete */
     fun delete(
         responseId: String,
         params: ResponseDeleteParams = ResponseDeleteParams.none(),
-    ): CompletableFuture<Void?> = delete(responseId, params, RequestOptions.none())
+    ): CompletableFuture<BetaResponseDeleteResponse> =
+        delete(responseId, params, RequestOptions.none())
 
     /** @see delete */
     fun delete(
         params: ResponseDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<BetaResponseDeleteResponse>
 
     /** @see delete */
-    fun delete(params: ResponseDeleteParams): CompletableFuture<Void?> =
+    fun delete(params: ResponseDeleteParams): CompletableFuture<BetaResponseDeleteResponse> =
         delete(params, RequestOptions.none())
 
     /** @see delete */
-    fun delete(responseId: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun delete(
+        responseId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<BetaResponseDeleteResponse> =
         delete(responseId, ResponseDeleteParams.none(), requestOptions)
 
     /**
@@ -476,7 +480,9 @@ interface ResponseServiceAsync {
          * Returns a raw HTTP response for `delete /responses/{response_id}?beta=true`, but is
          * otherwise the same as [ResponseServiceAsync.delete].
          */
-        fun delete(responseId: String): CompletableFuture<HttpResponse> =
+        fun delete(
+            responseId: String
+        ): CompletableFuture<HttpResponseFor<BetaResponseDeleteResponse>> =
             delete(responseId, ResponseDeleteParams.none())
 
         /** @see delete */
@@ -484,30 +490,33 @@ interface ResponseServiceAsync {
             responseId: String,
             params: ResponseDeleteParams = ResponseDeleteParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<BetaResponseDeleteResponse>> =
             delete(params.toBuilder().responseId(responseId).build(), requestOptions)
 
         /** @see delete */
         fun delete(
             responseId: String,
             params: ResponseDeleteParams = ResponseDeleteParams.none(),
-        ): CompletableFuture<HttpResponse> = delete(responseId, params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<BetaResponseDeleteResponse>> =
+            delete(responseId, params, RequestOptions.none())
 
         /** @see delete */
         fun delete(
             params: ResponseDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<BetaResponseDeleteResponse>>
 
         /** @see delete */
-        fun delete(params: ResponseDeleteParams): CompletableFuture<HttpResponse> =
+        fun delete(
+            params: ResponseDeleteParams
+        ): CompletableFuture<HttpResponseFor<BetaResponseDeleteResponse>> =
             delete(params, RequestOptions.none())
 
         /** @see delete */
         fun delete(
             responseId: String,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<BetaResponseDeleteResponse>> =
             delete(responseId, ResponseDeleteParams.none(), requestOptions)
 
         /**

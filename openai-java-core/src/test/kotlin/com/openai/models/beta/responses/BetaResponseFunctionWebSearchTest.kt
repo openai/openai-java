@@ -14,6 +14,7 @@ internal class BetaResponseFunctionWebSearchTest {
         val betaResponseFunctionWebSearch =
             BetaResponseFunctionWebSearch.builder()
                 .id("id")
+                .status(BetaResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .action(
                     BetaResponseFunctionWebSearch.Action.Search.builder()
                         .addQuery("string")
@@ -25,13 +26,14 @@ internal class BetaResponseFunctionWebSearchTest {
                         )
                         .build()
                 )
-                .status(BetaResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .agent(
                     BetaResponseFunctionWebSearch.Agent.builder().agentName("agent_name").build()
                 )
                 .build()
 
         assertThat(betaResponseFunctionWebSearch.id()).contains("id")
+        assertThat(betaResponseFunctionWebSearch.status())
+            .contains(BetaResponseFunctionWebSearch.Status.IN_PROGRESS)
         assertThat(betaResponseFunctionWebSearch.action())
             .contains(
                 BetaResponseFunctionWebSearch.Action.ofSearch(
@@ -46,8 +48,6 @@ internal class BetaResponseFunctionWebSearchTest {
                         .build()
                 )
             )
-        assertThat(betaResponseFunctionWebSearch.status())
-            .contains(BetaResponseFunctionWebSearch.Status.IN_PROGRESS)
         assertThat(betaResponseFunctionWebSearch.agent())
             .contains(BetaResponseFunctionWebSearch.Agent.builder().agentName("agent_name").build())
 

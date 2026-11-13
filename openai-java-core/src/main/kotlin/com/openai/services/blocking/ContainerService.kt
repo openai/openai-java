@@ -5,11 +5,11 @@ package com.openai.services.blocking
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
-import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.containers.ContainerCreateParams
 import com.openai.models.containers.ContainerCreateResponse
 import com.openai.models.containers.ContainerDeleteParams
+import com.openai.models.containers.ContainerDeleteResponse
 import com.openai.models.containers.ContainerListPage
 import com.openai.models.containers.ContainerListParams
 import com.openai.models.containers.ContainerRetrieveParams
@@ -94,30 +94,35 @@ interface ContainerService {
         list(ContainerListParams.none(), requestOptions)
 
     /** Delete Container */
-    fun delete(containerId: String) = delete(containerId, ContainerDeleteParams.none())
+    fun delete(containerId: String): ContainerDeleteResponse =
+        delete(containerId, ContainerDeleteParams.none())
 
     /** @see delete */
     fun delete(
         containerId: String,
         params: ContainerDeleteParams = ContainerDeleteParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = delete(params.toBuilder().containerId(containerId).build(), requestOptions)
+    ): ContainerDeleteResponse =
+        delete(params.toBuilder().containerId(containerId).build(), requestOptions)
 
     /** @see delete */
-    fun delete(containerId: String, params: ContainerDeleteParams = ContainerDeleteParams.none()) =
-        delete(containerId, params, RequestOptions.none())
+    fun delete(
+        containerId: String,
+        params: ContainerDeleteParams = ContainerDeleteParams.none(),
+    ): ContainerDeleteResponse = delete(containerId, params, RequestOptions.none())
 
     /** @see delete */
     fun delete(
         params: ContainerDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): ContainerDeleteResponse
 
     /** @see delete */
-    fun delete(params: ContainerDeleteParams) = delete(params, RequestOptions.none())
+    fun delete(params: ContainerDeleteParams): ContainerDeleteResponse =
+        delete(params, RequestOptions.none())
 
     /** @see delete */
-    fun delete(containerId: String, requestOptions: RequestOptions) =
+    fun delete(containerId: String, requestOptions: RequestOptions): ContainerDeleteResponse =
         delete(containerId, ContainerDeleteParams.none(), requestOptions)
 
     /** A view of [ContainerService] that provides access to raw HTTP responses for each method. */
@@ -225,7 +230,7 @@ interface ContainerService {
          * same as [ContainerService.delete].
          */
         @MustBeClosed
-        fun delete(containerId: String): HttpResponse =
+        fun delete(containerId: String): HttpResponseFor<ContainerDeleteResponse> =
             delete(containerId, ContainerDeleteParams.none())
 
         /** @see delete */
@@ -234,7 +239,7 @@ interface ContainerService {
             containerId: String,
             params: ContainerDeleteParams = ContainerDeleteParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse =
+        ): HttpResponseFor<ContainerDeleteResponse> =
             delete(params.toBuilder().containerId(containerId).build(), requestOptions)
 
         /** @see delete */
@@ -242,23 +247,27 @@ interface ContainerService {
         fun delete(
             containerId: String,
             params: ContainerDeleteParams = ContainerDeleteParams.none(),
-        ): HttpResponse = delete(containerId, params, RequestOptions.none())
+        ): HttpResponseFor<ContainerDeleteResponse> =
+            delete(containerId, params, RequestOptions.none())
 
         /** @see delete */
         @MustBeClosed
         fun delete(
             params: ContainerDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<ContainerDeleteResponse>
 
         /** @see delete */
         @MustBeClosed
-        fun delete(params: ContainerDeleteParams): HttpResponse =
+        fun delete(params: ContainerDeleteParams): HttpResponseFor<ContainerDeleteResponse> =
             delete(params, RequestOptions.none())
 
         /** @see delete */
         @MustBeClosed
-        fun delete(containerId: String, requestOptions: RequestOptions): HttpResponse =
+        fun delete(
+            containerId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ContainerDeleteResponse> =
             delete(containerId, ContainerDeleteParams.none(), requestOptions)
     }
 }

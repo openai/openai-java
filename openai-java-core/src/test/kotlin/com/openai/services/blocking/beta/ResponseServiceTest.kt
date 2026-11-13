@@ -207,12 +207,15 @@ internal class ResponseServiceTest {
                 .build()
         val responseService = client.beta().responses()
 
-        responseService.delete(
-            ResponseDeleteParams.builder()
-                .responseId("resp_677efb5139a88190b512bc3fef8e535d")
-                .addBeta(ResponseDeleteParams.Beta.RESPONSES_MULTI_AGENT_V1)
-                .build()
-        )
+        val response =
+            responseService.delete(
+                ResponseDeleteParams.builder()
+                    .responseId("resp_677efb5139a88190b512bc3fef8e535d")
+                    .addBeta(ResponseDeleteParams.Beta.RESPONSES_MULTI_AGENT_V1)
+                    .build()
+            )
+
+        response.validate()
     }
 
     @Test

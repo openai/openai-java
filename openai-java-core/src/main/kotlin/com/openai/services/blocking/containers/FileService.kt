@@ -5,11 +5,11 @@ package com.openai.services.blocking.containers
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
-import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.containers.files.FileCreateParams
 import com.openai.models.containers.files.FileCreateResponse
 import com.openai.models.containers.files.FileDeleteParams
+import com.openai.models.containers.files.FileDeleteResponse
 import com.openai.models.containers.files.FileListPage
 import com.openai.models.containers.files.FileListParams
 import com.openai.models.containers.files.FileRetrieveParams
@@ -119,7 +119,7 @@ interface FileService {
         list(containerId, FileListParams.none(), requestOptions)
 
     /** Delete Container File */
-    fun delete(fileId: String, params: FileDeleteParams) =
+    fun delete(fileId: String, params: FileDeleteParams): FileDeleteResponse =
         delete(fileId, params, RequestOptions.none())
 
     /** @see delete */
@@ -127,13 +127,16 @@ interface FileService {
         fileId: String,
         params: FileDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = delete(params.toBuilder().fileId(fileId).build(), requestOptions)
+    ): FileDeleteResponse = delete(params.toBuilder().fileId(fileId).build(), requestOptions)
 
     /** @see delete */
-    fun delete(params: FileDeleteParams) = delete(params, RequestOptions.none())
+    fun delete(params: FileDeleteParams): FileDeleteResponse = delete(params, RequestOptions.none())
 
     /** @see delete */
-    fun delete(params: FileDeleteParams, requestOptions: RequestOptions = RequestOptions.none())
+    fun delete(
+        params: FileDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): FileDeleteResponse
 
     /** A view of [FileService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -273,7 +276,7 @@ interface FileService {
          * is otherwise the same as [FileService.delete].
          */
         @MustBeClosed
-        fun delete(fileId: String, params: FileDeleteParams): HttpResponse =
+        fun delete(fileId: String, params: FileDeleteParams): HttpResponseFor<FileDeleteResponse> =
             delete(fileId, params, RequestOptions.none())
 
         /** @see delete */
@@ -282,17 +285,19 @@ interface FileService {
             fileId: String,
             params: FileDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = delete(params.toBuilder().fileId(fileId).build(), requestOptions)
+        ): HttpResponseFor<FileDeleteResponse> =
+            delete(params.toBuilder().fileId(fileId).build(), requestOptions)
 
         /** @see delete */
         @MustBeClosed
-        fun delete(params: FileDeleteParams): HttpResponse = delete(params, RequestOptions.none())
+        fun delete(params: FileDeleteParams): HttpResponseFor<FileDeleteResponse> =
+            delete(params, RequestOptions.none())
 
         /** @see delete */
         @MustBeClosed
         fun delete(
             params: FileDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<FileDeleteResponse>
     }
 }

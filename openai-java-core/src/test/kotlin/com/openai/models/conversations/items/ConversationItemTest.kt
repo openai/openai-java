@@ -370,6 +370,7 @@ internal class ConversationItemTest {
         val webSearchCall =
             ResponseFunctionWebSearch.builder()
                 .id("id")
+                .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .action(
                     ResponseFunctionWebSearch.Action.Search.builder()
                         .addQuery("string")
@@ -381,7 +382,6 @@ internal class ConversationItemTest {
                         )
                         .build()
                 )
-                .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .build()
 
         val conversationItem = ConversationItem.ofWebSearchCall(webSearchCall)
@@ -424,6 +424,7 @@ internal class ConversationItemTest {
             ConversationItem.ofWebSearchCall(
                 ResponseFunctionWebSearch.builder()
                     .id("id")
+                    .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                     .action(
                         ResponseFunctionWebSearch.Action.Search.builder()
                             .addQuery("string")
@@ -435,7 +436,6 @@ internal class ConversationItemTest {
                             )
                             .build()
                     )
-                    .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                     .build()
             )
 

@@ -14,6 +14,7 @@ internal class ResponseFunctionWebSearchTest {
         val responseFunctionWebSearch =
             ResponseFunctionWebSearch.builder()
                 .id("id")
+                .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .action(
                     ResponseFunctionWebSearch.Action.Search.builder()
                         .addQuery("string")
@@ -25,10 +26,11 @@ internal class ResponseFunctionWebSearchTest {
                         )
                         .build()
                 )
-                .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .build()
 
         assertThat(responseFunctionWebSearch.id()).contains("id")
+        assertThat(responseFunctionWebSearch.status())
+            .contains(ResponseFunctionWebSearch.Status.IN_PROGRESS)
         assertThat(responseFunctionWebSearch.action())
             .contains(
                 ResponseFunctionWebSearch.Action.ofSearch(
@@ -43,8 +45,6 @@ internal class ResponseFunctionWebSearchTest {
                         .build()
                 )
             )
-        assertThat(responseFunctionWebSearch.status())
-            .contains(ResponseFunctionWebSearch.Status.IN_PROGRESS)
 
         val jsonMapper = jsonMapper()
 

@@ -83,6 +83,8 @@ internal class ContainerServiceTest {
                 .build()
         val containerService = client.containers()
 
-        containerService.delete("container_id")
+        val container = containerService.delete("container_id")
+
+        container.validate()
     }
 }

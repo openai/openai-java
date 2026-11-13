@@ -40,9 +40,9 @@ class BetaResponseFunctionWebSearch
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
-    private val action: JsonField<Action>,
     private val status: JsonField<Status>,
     private val type: JsonValue,
+    private val action: JsonField<Action>,
     private val agent: JsonField<Agent>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -50,11 +50,11 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("action") @ExcludeMissing action: JsonField<Action> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("action") @ExcludeMissing action: JsonField<Action> = JsonMissing.of(),
         @JsonProperty("agent") @ExcludeMissing agent: JsonField<Agent> = JsonMissing.of(),
-    ) : this(id, action, status, type, agent, mutableMapOf())
+    ) : this(id, status, type, action, agent, mutableMapOf())
 
     /**
      * The unique ID of the web search tool call. The schema requires this property. Returns empty
@@ -68,20 +68,6 @@ private constructor(
      * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
      */
     fun idOrThrow(): String = id.getRequired("id")
-
-    /**
-     * An object describing the specific action taken in this web search call. Includes details on
-     * how the model used the web (search, open_page, find_in_page). The schema requires this
-     * property. Returns empty if the JSON property is missing or null.
-     *
-     * @throws OpenAIInvalidDataException if the value has an unexpected type.
-     */
-    fun action(): java.util.Optional<Action> = action.getOptional("action")
-
-    /**
-     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
-     */
-    fun actionOrThrow(): Action = action.getRequired("action")
 
     /**
      * The status of the web search tool call. The schema requires this property. Returns empty if
@@ -120,6 +106,20 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
+     * An object describing the specific action taken in this web search call. Includes details on
+     * how the model used the web (search, open_page, find_in_page). Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun action(): java.util.Optional<Action> = action.getOptional("action")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun actionOrThrow(): Action = action.getRequired("action")
+
+    /**
      * The agent that produced this item. Returns empty if the JSON property is missing or null.
      *
      * @throws OpenAIInvalidDataException if the value has an unexpected type.
@@ -139,18 +139,18 @@ private constructor(
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /**
-     * Returns the raw JSON value of [action].
-     *
-     * Unlike [action], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("action") @ExcludeMissing fun _action(): JsonField<Action> = action
-
-    /**
      * Returns the raw JSON value of [status].
      *
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+    /**
+     * Returns the raw JSON value of [action].
+     *
+     * Unlike [action], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("action") @ExcludeMissing fun _action(): JsonField<Action> = action
 
     /**
      * Returns the raw JSON value of [agent].
@@ -176,9 +176,9 @@ private constructor(
         collectAllProperties(
             additionalProperties,
             "id" to this.id,
-            "action" to this.action,
             "status" to this.status,
             "type" to this.type,
+            "action" to this.action,
             "agent" to this.agent,
         )
 
@@ -201,7 +201,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .action()
          * .status()
          * ```
          */
@@ -212,18 +211,18 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var action: JsonField<Action>? = null
         private var status: JsonField<Status>? = null
         private var type: JsonValue = JsonValue.from("web_search_call")
+        private var action: JsonField<Action> = JsonMissing.of()
         private var agent: JsonField<Agent> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(betaResponseFunctionWebSearch: BetaResponseFunctionWebSearch) = apply {
             id = betaResponseFunctionWebSearch.id
-            action = betaResponseFunctionWebSearch.action
             status = betaResponseFunctionWebSearch.status
             type = betaResponseFunctionWebSearch.type
+            action = betaResponseFunctionWebSearch.action
             agent = betaResponseFunctionWebSearch.agent
             additionalProperties = betaResponseFunctionWebSearch.additionalProperties.toMutableMap()
         }
@@ -238,29 +237,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
-
-        /**
-         * An object describing the specific action taken in this web search call. Includes details
-         * on how the model used the web (search, open_page, find_in_page).
-         */
-        fun action(action: Action) = action(JsonField.of(action))
-
-        /**
-         * Sets [Builder.action] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.action] with a well-typed [Action] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun action(action: JsonField<Action>) = apply { this.action = action }
-
-        /** Alias for calling [action] with `Action.ofSearch(search)`. */
-        fun action(search: Action.Search) = action(Action.ofSearch(search))
-
-        /** Alias for calling [action] with `Action.ofOpenPage(openPage)`. */
-        fun action(openPage: Action.OpenPage) = action(Action.ofOpenPage(openPage))
-
-        /** Alias for calling [action] with `Action.ofFindInPage(findInPage)`. */
-        fun action(findInPage: Action.FindInPage) = action(Action.ofFindInPage(findInPage))
 
         /** The status of the web search tool call. */
         fun status(status: Status) = status(JsonField.of(status))
@@ -286,6 +262,29 @@ private constructor(
          * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
+
+        /**
+         * An object describing the specific action taken in this web search call. Includes details
+         * on how the model used the web (search, open_page, find_in_page).
+         */
+        fun action(action: Action) = action(JsonField.of(action))
+
+        /**
+         * Sets [Builder.action] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.action] with a well-typed [Action] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun action(action: JsonField<Action>) = apply { this.action = action }
+
+        /** Alias for calling [action] with `Action.ofSearch(search)`. */
+        fun action(search: Action.Search) = action(Action.ofSearch(search))
+
+        /** Alias for calling [action] with `Action.ofOpenPage(openPage)`. */
+        fun action(openPage: Action.OpenPage) = action(Action.ofOpenPage(openPage))
+
+        /** Alias for calling [action] with `Action.ofFindInPage(findInPage)`. */
+        fun action(findInPage: Action.FindInPage) = action(Action.ofFindInPage(findInPage))
 
         /** The agent that produced this item. */
         fun agent(agent: Agent?) = agent(JsonField.ofNullable(agent))
@@ -328,7 +327,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .action()
          * .status()
          * ```
          *
@@ -337,9 +335,9 @@ private constructor(
         fun build(): BetaResponseFunctionWebSearch =
             BetaResponseFunctionWebSearch(
                 checkRequired("id", id),
-                checkRequired("action", action),
                 checkRequired("status", status),
                 type,
+                action,
                 agent,
                 additionalProperties.toMutableMap(),
             )
@@ -361,9 +359,9 @@ private constructor(
         }
 
         idOrThrow()
-        actionOrThrow().validate()
         statusOrThrow().validate()
         typeOrThrow()
+        action().ifPresent { it.validate() }
         agent().ifPresent { it.validate() }
         validated = true
     }
@@ -384,10 +382,167 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
-            (action.asKnown().getOrNull()?.validity() ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             type.let { if (it == JsonValue.from("web_search_call")) 1 else 0 } +
+            (action.asKnown().getOrNull()?.validity() ?: 0) +
             (agent.asKnown().getOrNull()?.validity() ?: 0)
+
+    /** The status of the web search tool call. */
+    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val IN_PROGRESS = of("in_progress")
+
+            @JvmField val SEARCHING = of("searching")
+
+            @JvmField val COMPLETED = of("completed")
+
+            @JvmField val FAILED = of("failed")
+
+            @JvmField val INCOMPLETE = of("incomplete")
+
+            @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+        }
+
+        /** An enum containing [Status]'s known values. */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
+        enum class Known {
+            IN_PROGRESS,
+            SEARCHING,
+            COMPLETED,
+            FAILED,
+            INCOMPLETE,
+        }
+
+        /**
+         * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Status] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
+        enum class Value {
+            IN_PROGRESS,
+            SEARCHING,
+            COMPLETED,
+            FAILED,
+            INCOMPLETE,
+            /** An enum member indicating that [Status] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
+        fun value(): Value =
+            when (this) {
+                IN_PROGRESS -> Value.IN_PROGRESS
+                SEARCHING -> Value.SEARCHING
+                COMPLETED -> Value.COMPLETED
+                FAILED -> Value.FAILED
+                INCOMPLETE -> Value.INCOMPLETE
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        @Deprecated("Use asString() for string values or _value() for raw JSON.")
+        fun known(): Known =
+            when (this) {
+                IN_PROGRESS -> Known.IN_PROGRESS
+                SEARCHING -> Known.SEARCHING
+                COMPLETED -> Known.COMPLETED
+                FAILED -> Known.FAILED
+                INCOMPLETE -> Known.INCOMPLETE
+                else -> throw OpenAIInvalidDataException("Unknown Status: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Status = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Status && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     /**
      * An object describing the specific action taken in this web search call. Includes details on
@@ -1752,163 +1907,6 @@ private constructor(
         }
     }
 
-    /** The status of the web search tool call. */
-    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val IN_PROGRESS = of("in_progress")
-
-            @JvmField val SEARCHING = of("searching")
-
-            @JvmField val COMPLETED = of("completed")
-
-            @JvmField val FAILED = of("failed")
-
-            @JvmField val INCOMPLETE = of("incomplete")
-
-            @JvmStatic fun of(value: String) = Status(JsonField.of(value))
-        }
-
-        /** An enum containing [Status]'s known values. */
-        @Deprecated("Use asString() for string values or _value() for raw JSON.")
-        enum class Known {
-            IN_PROGRESS,
-            SEARCHING,
-            COMPLETED,
-            FAILED,
-            INCOMPLETE,
-        }
-
-        /**
-         * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Status] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        @Deprecated("Use asString() for string values or _value() for raw JSON.")
-        enum class Value {
-            IN_PROGRESS,
-            SEARCHING,
-            COMPLETED,
-            FAILED,
-            INCOMPLETE,
-            /** An enum member indicating that [Status] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        @Deprecated("Use asString() for string values or _value() for raw JSON.")
-        fun value(): Value =
-            when (this) {
-                IN_PROGRESS -> Value.IN_PROGRESS
-                SEARCHING -> Value.SEARCHING
-                COMPLETED -> Value.COMPLETED
-                FAILED -> Value.FAILED
-                INCOMPLETE -> Value.INCOMPLETE
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        @Deprecated("Use asString() for string values or _value() for raw JSON.")
-        fun known(): Known =
-            when (this) {
-                IN_PROGRESS -> Known.IN_PROGRESS
-                SEARCHING -> Known.SEARCHING
-                COMPLETED -> Known.COMPLETED
-                FAILED -> Known.FAILED
-                INCOMPLETE -> Known.INCOMPLETE
-                else -> throw OpenAIInvalidDataException("Unknown Status: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        /**
-         * Validates that the types of all values in this object match their expected types
-         * recursively.
-         *
-         * This method is _not_ forwards compatible with new types from the API for existing fields.
-         *
-         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-         *   expected type.
-         */
-        fun validate(): Status = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Status && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
-
     /** The agent that produced this item. */
     class Agent
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -2104,19 +2102,19 @@ private constructor(
 
         return other is BetaResponseFunctionWebSearch &&
             id == other.id &&
-            action == other.action &&
             status == other.status &&
             type == other.type &&
+            action == other.action &&
             agent == other.agent &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, action, status, type, agent, additionalProperties)
+        Objects.hash(id, status, type, action, agent, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "BetaResponseFunctionWebSearch{id=$id, action=$action, status=$status, type=$type, agent=$agent, additionalProperties=$additionalProperties}"
+        "BetaResponseFunctionWebSearch{id=$id, status=$status, type=$type, action=$action, agent=$agent, additionalProperties=$additionalProperties}"
 }

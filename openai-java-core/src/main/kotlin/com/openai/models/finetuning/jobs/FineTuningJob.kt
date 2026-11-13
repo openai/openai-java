@@ -605,7 +605,6 @@ private constructor(
          * .model()
          * .organizationId()
          * .resultFiles()
-         * .seed()
          * .status()
          * .trainingFile()
          * ```
@@ -626,7 +625,7 @@ private constructor(
         private var object_: JsonValue = JsonValue.from("fine_tuning.job")
         private var organizationId: JsonField<String>? = null
         private var resultFiles: JsonField<MutableList<String>>? = null
-        private var seed: JsonField<Long>? = null
+        private var seed: JsonField<Long>? = JsonNull.of()
         private var status: JsonField<Status>? = null
         private var trainedTokens: JsonField<Long>? = JsonNull.of()
         private var trainingFile: JsonField<String>? = null
@@ -835,7 +834,17 @@ private constructor(
         }
 
         /** The seed used for the fine-tuning job. */
-        fun seed(seed: Long) = seed(JsonField.of(seed))
+        fun seed(seed: Long?) = seed(JsonField.ofNullable(seed))
+
+        /**
+         * Alias for [Builder.seed].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun seed(seed: Long) = seed(seed as Long?)
+
+        /** Alias for calling [Builder.seed] with `seed.orElse(null)`. */
+        fun seed(seed: Optional<Long>) = seed(seed.getOrNull())
 
         /**
          * Sets [Builder.seed] to an arbitrary JSON value.
@@ -1061,7 +1070,6 @@ private constructor(
          * .model()
          * .organizationId()
          * .resultFiles()
-         * .seed()
          * .status()
          * .trainingFile()
          * ```
@@ -1118,7 +1126,7 @@ private constructor(
         object_OrThrow()
         organizationIdOrThrow()
         resultFilesOrThrow()
-        seedOrThrow()
+        seed()
         statusOrThrow().validate()
         trainedTokens()
         trainingFileOrThrow()

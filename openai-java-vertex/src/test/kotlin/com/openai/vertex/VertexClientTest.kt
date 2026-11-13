@@ -478,7 +478,9 @@ internal class VertexClientTest {
                 )
                 .isEqualTo("resp_test")
             assertThat(client.responses().retrieve("resp_test").idOrThrow()).isEqualTo("resp_test")
-            client.responses().delete("resp_test")
+            client.responses().withRawResponse().delete("resp_test").use {
+                assertThat(it.statusCode()).isEqualTo(204)
+            }
         } finally {
             client.close()
         }

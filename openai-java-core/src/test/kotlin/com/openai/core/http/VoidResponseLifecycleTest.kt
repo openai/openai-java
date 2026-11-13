@@ -2,9 +2,9 @@ package com.openai.core.http
 
 import com.openai.core.ClientOptions
 import com.openai.errors.NotFoundException
-import com.openai.services.async.ResponseServiceAsyncImpl
+import com.openai.services.async.live.SessionServiceAsyncImpl
 import com.openai.services.async.realtime.CallServiceAsyncImpl
-import com.openai.services.blocking.ResponseServiceImpl
+import com.openai.services.blocking.live.SessionServiceImpl
 import com.openai.services.blocking.realtime.CallServiceImpl
 import java.io.ByteArrayInputStream
 import java.util.concurrent.CompletableFuture
@@ -32,11 +32,11 @@ internal class VoidResponseLifecycleTest {
         val rawBlocking: (ClientOptions) -> HttpResponse,
         val rawAsync: (ClientOptions) -> CompletableFuture<HttpResponse>,
     ) {
-        RESPONSES_DELETE(
-            { ResponseServiceImpl(it).delete("resp_test") },
-            { ResponseServiceAsyncImpl(it).delete("resp_test") },
-            { ResponseServiceImpl(it).withRawResponse().delete("resp_test") },
-            { ResponseServiceAsyncImpl(it).withRawResponse().delete("resp_test") },
+        LIVE_HANGUP(
+            { SessionServiceImpl(it).hangup("sess_test") },
+            { SessionServiceAsyncImpl(it).hangup("sess_test") },
+            { SessionServiceImpl(it).withRawResponse().hangup("sess_test") },
+            { SessionServiceAsyncImpl(it).withRawResponse().hangup("sess_test") },
         ),
         REALTIME_HANGUP(
             { CallServiceImpl(it).hangup("call_test") },

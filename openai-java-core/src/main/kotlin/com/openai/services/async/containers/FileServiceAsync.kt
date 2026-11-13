@@ -4,11 +4,11 @@ package com.openai.services.async.containers
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
-import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.containers.files.FileCreateParams
 import com.openai.models.containers.files.FileCreateResponse
 import com.openai.models.containers.files.FileDeleteParams
+import com.openai.models.containers.files.FileDeleteResponse
 import com.openai.models.containers.files.FileListPageAsync
 import com.openai.models.containers.files.FileListParams
 import com.openai.models.containers.files.FileRetrieveParams
@@ -134,7 +134,7 @@ interface FileServiceAsync {
         list(containerId, FileListParams.none(), requestOptions)
 
     /** Delete Container File */
-    fun delete(fileId: String, params: FileDeleteParams): CompletableFuture<Void?> =
+    fun delete(fileId: String, params: FileDeleteParams): CompletableFuture<FileDeleteResponse> =
         delete(fileId, params, RequestOptions.none())
 
     /** @see delete */
@@ -142,17 +142,18 @@ interface FileServiceAsync {
         fileId: String,
         params: FileDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?> = delete(params.toBuilder().fileId(fileId).build(), requestOptions)
+    ): CompletableFuture<FileDeleteResponse> =
+        delete(params.toBuilder().fileId(fileId).build(), requestOptions)
 
     /** @see delete */
-    fun delete(params: FileDeleteParams): CompletableFuture<Void?> =
+    fun delete(params: FileDeleteParams): CompletableFuture<FileDeleteResponse> =
         delete(params, RequestOptions.none())
 
     /** @see delete */
     fun delete(
         params: FileDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<FileDeleteResponse>
 
     /** A view of [FileServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -283,7 +284,10 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `delete /containers/{container_id}/files/{file_id}`, but
          * is otherwise the same as [FileServiceAsync.delete].
          */
-        fun delete(fileId: String, params: FileDeleteParams): CompletableFuture<HttpResponse> =
+        fun delete(
+            fileId: String,
+            params: FileDeleteParams,
+        ): CompletableFuture<HttpResponseFor<FileDeleteResponse>> =
             delete(fileId, params, RequestOptions.none())
 
         /** @see delete */
@@ -291,17 +295,19 @@ interface FileServiceAsync {
             fileId: String,
             params: FileDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<FileDeleteResponse>> =
             delete(params.toBuilder().fileId(fileId).build(), requestOptions)
 
         /** @see delete */
-        fun delete(params: FileDeleteParams): CompletableFuture<HttpResponse> =
+        fun delete(
+            params: FileDeleteParams
+        ): CompletableFuture<HttpResponseFor<FileDeleteResponse>> =
             delete(params, RequestOptions.none())
 
         /** @see delete */
         fun delete(
             params: FileDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<FileDeleteResponse>>
     }
 }

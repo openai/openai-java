@@ -17,6 +17,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** An object representing a list of Chat Completions. */
@@ -243,7 +244,10 @@ private constructor(
         }
 
         /** The identifier of the first chat completion in the data array. */
-        fun firstId(firstId: String) = firstId(JsonField.of(firstId))
+        fun firstId(firstId: String?) = firstId(JsonField.ofNullable(firstId))
+
+        /** Alias for calling [Builder.firstId] with `firstId.orElse(null)`. */
+        fun firstId(firstId: Optional<String>) = firstId(firstId.getOrNull())
 
         /**
          * Sets [Builder.firstId] to an arbitrary JSON value.
@@ -265,7 +269,10 @@ private constructor(
         fun hasMore(hasMore: JsonField<Boolean>) = apply { this.hasMore = hasMore }
 
         /** The identifier of the last chat completion in the data array. */
-        fun lastId(lastId: String) = lastId(JsonField.of(lastId))
+        fun lastId(lastId: String?) = lastId(JsonField.ofNullable(lastId))
+
+        /** Alias for calling [Builder.lastId] with `lastId.orElse(null)`. */
+        fun lastId(lastId: Optional<String>) = lastId(lastId.getOrNull())
 
         /**
          * Sets [Builder.lastId] to an arbitrary JSON value.
@@ -350,9 +357,9 @@ private constructor(
         }
 
         dataOrThrow().forEach { it.validate() }
-        firstIdOrThrow()
+        firstId()
         hasMoreOrThrow()
-        lastIdOrThrow()
+        lastId()
         object_OrThrow()
         validated = true
     }

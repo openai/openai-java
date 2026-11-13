@@ -469,12 +469,7 @@ private constructor(
          * .id()
          * .createdAt()
          * .dataSource()
-         * .error()
          * .evalId()
-         * .model()
-         * .name()
-         * .perModelUsage()
-         * .perTestingCriteriaResults()
          * .reportUrl()
          * .resultCounts()
          * .status()
@@ -489,11 +484,11 @@ private constructor(
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
         private var dataSource: JsonField<DataSource>? = null
-        private var error: JsonField<EvalApiError>? = null
+        private var error: JsonField<EvalApiError>? = JsonNull.of()
         private var evalId: JsonField<String>? = null
         private var metadata: JsonField<Metadata>? = JsonNull.of()
-        private var model: JsonField<String>? = null
-        private var name: JsonField<String>? = null
+        private var model: JsonField<String>? = JsonNull.of()
+        private var name: JsonField<String>? = JsonNull.of()
         private var object_: JsonValue = JsonValue.from("eval.run")
         private var perModelUsage: JsonField<MutableList<PerModelUsage>>? = null
         private var perTestingCriteriaResults: JsonField<MutableList<PerTestingCriteriaResult>>? =
@@ -754,7 +749,10 @@ private constructor(
             responsesDataSource(DataSource.Responses.Source.ofResponses(responses))
 
         /** An object representing an error response from the Eval API. */
-        fun error(error: EvalApiError) = error(JsonField.of(error))
+        fun error(error: EvalApiError?) = error(JsonField.ofNullable(error))
+
+        /** Alias for calling [Builder.error] with `error.orElse(null)`. */
+        fun error(error: Optional<EvalApiError>) = error(error.getOrNull())
 
         /**
          * Sets [Builder.error] to an arbitrary JSON value.
@@ -799,7 +797,10 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /** The model that is evaluated, if applicable. */
-        fun model(model: String) = model(JsonField.of(model))
+        fun model(model: String?) = model(JsonField.ofNullable(model))
+
+        /** Alias for calling [Builder.model] with `model.orElse(null)`. */
+        fun model(model: Optional<String>) = model(model.getOrNull())
 
         /**
          * Sets [Builder.model] to an arbitrary JSON value.
@@ -810,7 +811,10 @@ private constructor(
         fun model(model: JsonField<String>) = apply { this.model = model }
 
         /** The name of the evaluation run. */
-        fun name(name: String) = name(JsonField.of(name))
+        fun name(name: String?) = name(JsonField.ofNullable(name))
+
+        /** Alias for calling [Builder.name] with `name.orElse(null)`. */
+        fun name(name: Optional<String>) = name(name.getOrNull())
 
         /**
          * Sets [Builder.name] to an arbitrary JSON value.
@@ -835,8 +839,12 @@ private constructor(
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** Usage statistics for each model during the evaluation run. */
-        fun perModelUsage(perModelUsage: List<PerModelUsage>) =
-            perModelUsage(JsonField.of(perModelUsage))
+        fun perModelUsage(perModelUsage: List<PerModelUsage>?) =
+            perModelUsage(JsonField.ofNullable(perModelUsage))
+
+        /** Alias for calling [Builder.perModelUsage] with `perModelUsage.orElse(null)`. */
+        fun perModelUsage(perModelUsage: Optional<List<PerModelUsage>>) =
+            perModelUsage(perModelUsage.getOrNull())
 
         /**
          * Sets [Builder.perModelUsage] to an arbitrary JSON value.
@@ -862,8 +870,16 @@ private constructor(
         }
 
         /** Results per testing criteria applied during the evaluation run. */
-        fun perTestingCriteriaResults(perTestingCriteriaResults: List<PerTestingCriteriaResult>) =
-            perTestingCriteriaResults(JsonField.of(perTestingCriteriaResults))
+        fun perTestingCriteriaResults(perTestingCriteriaResults: List<PerTestingCriteriaResult>?) =
+            perTestingCriteriaResults(JsonField.ofNullable(perTestingCriteriaResults))
+
+        /**
+         * Alias for calling [Builder.perTestingCriteriaResults] with
+         * `perTestingCriteriaResults.orElse(null)`.
+         */
+        fun perTestingCriteriaResults(
+            perTestingCriteriaResults: Optional<List<PerTestingCriteriaResult>>
+        ) = perTestingCriteriaResults(perTestingCriteriaResults.getOrNull())
 
         /**
          * Sets [Builder.perTestingCriteriaResults] to an arbitrary JSON value.
@@ -957,12 +973,7 @@ private constructor(
          * .id()
          * .createdAt()
          * .dataSource()
-         * .error()
          * .evalId()
-         * .model()
-         * .name()
-         * .perModelUsage()
-         * .perTestingCriteriaResults()
          * .reportUrl()
          * .resultCounts()
          * .status()
@@ -981,10 +992,14 @@ private constructor(
                 checkRequired("model", model),
                 checkRequired("name", name),
                 object_,
-                checkRequired("perModelUsage", perModelUsage).map { it.toImmutable() },
-                checkRequired("perTestingCriteriaResults", perTestingCriteriaResults).map {
+                checkRequired("perModelUsage", perModelUsage ?: JsonNull.of()).map {
                     it.toImmutable()
                 },
+                checkRequired(
+                        "perTestingCriteriaResults",
+                        perTestingCriteriaResults ?: JsonNull.of(),
+                    )
+                    .map { it.toImmutable() },
                 checkRequired("reportUrl", reportUrl),
                 checkRequired("resultCounts", resultCounts),
                 checkRequired("status", status),
@@ -1010,14 +1025,14 @@ private constructor(
         idOrThrow()
         createdAtOrThrow()
         dataSourceOrThrow().validate()
-        errorOrThrow().validate()
+        error().ifPresent { it.validate() }
         evalIdOrThrow()
         metadata().ifPresent { it.validate() }
-        modelOrThrow()
-        nameOrThrow()
+        model()
+        name()
         object_OrThrow()
-        perModelUsageOrThrow().forEach { it.validate() }
-        perTestingCriteriaResultsOrThrow().forEach { it.validate() }
+        perModelUsage().ifPresent { it.forEach { it.validate() } }
+        perTestingCriteriaResults().ifPresent { it.forEach { it.validate() } }
         reportUrlOrThrow()
         resultCountsOrThrow().validate()
         statusOrThrow()

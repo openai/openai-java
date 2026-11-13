@@ -817,7 +817,17 @@ private constructor(
         fun cancellingAt(cancellingAt: JsonField<Long>) = apply { this.cancellingAt = cancellingAt }
 
         /** The Unix timestamp (in seconds) for when the batch was completed. */
-        fun completedAt(completedAt: Long) = completedAt(JsonField.of(completedAt))
+        fun completedAt(completedAt: Long?) = completedAt(JsonField.ofNullable(completedAt))
+
+        /**
+         * Alias for [Builder.completedAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun completedAt(completedAt: Long) = completedAt(completedAt as Long?)
+
+        /** Alias for calling [Builder.completedAt] with `completedAt.orElse(null)`. */
+        fun completedAt(completedAt: Optional<Long>) = completedAt(completedAt.getOrNull())
 
         /**
          * Sets [Builder.completedAt] to an arbitrary JSON value.
@@ -829,7 +839,10 @@ private constructor(
         fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
 
         /** The ID of the file containing the outputs of requests with errors. */
-        fun errorFileId(errorFileId: String) = errorFileId(JsonField.of(errorFileId))
+        fun errorFileId(errorFileId: String?) = errorFileId(JsonField.ofNullable(errorFileId))
+
+        /** Alias for calling [Builder.errorFileId] with `errorFileId.orElse(null)`. */
+        fun errorFileId(errorFileId: Optional<String>) = errorFileId(errorFileId.getOrNull())
 
         /**
          * Sets [Builder.errorFileId] to an arbitrary JSON value.
@@ -862,7 +875,17 @@ private constructor(
         fun expiredAt(expiredAt: JsonField<Long>) = apply { this.expiredAt = expiredAt }
 
         /** The Unix timestamp (in seconds) for when the batch will expire. */
-        fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
+        fun expiresAt(expiresAt: Long?) = expiresAt(JsonField.ofNullable(expiresAt))
+
+        /**
+         * Alias for [Builder.expiresAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun expiresAt(expiresAt: Long) = expiresAt(expiresAt as Long?)
+
+        /** Alias for calling [Builder.expiresAt] with `expiresAt.orElse(null)`. */
+        fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.getOrNull())
 
         /**
          * Sets [Builder.expiresAt] to an arbitrary JSON value.
@@ -884,7 +907,17 @@ private constructor(
         fun failedAt(failedAt: JsonField<Long>) = apply { this.failedAt = failedAt }
 
         /** The Unix timestamp (in seconds) for when the batch started finalizing. */
-        fun finalizingAt(finalizingAt: Long) = finalizingAt(JsonField.of(finalizingAt))
+        fun finalizingAt(finalizingAt: Long?) = finalizingAt(JsonField.ofNullable(finalizingAt))
+
+        /**
+         * Alias for [Builder.finalizingAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun finalizingAt(finalizingAt: Long) = finalizingAt(finalizingAt as Long?)
+
+        /** Alias for calling [Builder.finalizingAt] with `finalizingAt.orElse(null)`. */
+        fun finalizingAt(finalizingAt: Optional<Long>) = finalizingAt(finalizingAt.getOrNull())
 
         /**
          * Sets [Builder.finalizingAt] to an arbitrary JSON value.
@@ -896,7 +929,17 @@ private constructor(
         fun finalizingAt(finalizingAt: JsonField<Long>) = apply { this.finalizingAt = finalizingAt }
 
         /** The Unix timestamp (in seconds) for when the batch started processing. */
-        fun inProgressAt(inProgressAt: Long) = inProgressAt(JsonField.of(inProgressAt))
+        fun inProgressAt(inProgressAt: Long?) = inProgressAt(JsonField.ofNullable(inProgressAt))
+
+        /**
+         * Alias for [Builder.inProgressAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun inProgressAt(inProgressAt: Long) = inProgressAt(inProgressAt as Long?)
+
+        /** Alias for calling [Builder.inProgressAt] with `inProgressAt.orElse(null)`. */
+        fun inProgressAt(inProgressAt: Optional<Long>) = inProgressAt(inProgressAt.getOrNull())
 
         /**
          * Sets [Builder.inProgressAt] to an arbitrary JSON value.
@@ -946,7 +989,10 @@ private constructor(
         fun model(model: JsonField<String>) = apply { this.model = model }
 
         /** The ID of the file containing the outputs of successfully executed requests. */
-        fun outputFileId(outputFileId: String) = outputFileId(JsonField.of(outputFileId))
+        fun outputFileId(outputFileId: String?) = outputFileId(JsonField.ofNullable(outputFileId))
+
+        /** Alias for calling [Builder.outputFileId] with `outputFileId.orElse(null)`. */
+        fun outputFileId(outputFileId: Optional<String>) = outputFileId(outputFileId.getOrNull())
 
         /**
          * Sets [Builder.outputFileId] to an arbitrary JSON value.

@@ -3751,6 +3751,23 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                    - container.deleted
+                  deleted:
+                    type: boolean
+                  id:
+                    type: string
+                required:
+                - object
+                - deleted
+                - id
         '404':
           description: The container was not found.
           content:
@@ -3978,6 +3995,23 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                    - container.file.deleted
+                  deleted:
+                    type: boolean
+                  id:
+                    type: string
+                required:
+                - object
+                - deleted
+                - id
         '404':
           description: The container was not found or has expired, or the file was not found in the container.
           content:
@@ -21132,6 +21166,25 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                    - response.deleted
+                    default: response.deleted
+                    x-stainless-const: true
+                  deleted:
+                    type: boolean
+                  id:
+                    type: string
+                required:
+                - object
+                - deleted
+                - id
         '404':
           description: Not Found
           content:
@@ -27893,6 +27946,25 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    enum:
+                    - response.deleted
+                    default: response.deleted
+                    x-stainless-const: true
+                  deleted:
+                    type: boolean
+                  id:
+                    type: string
+                required:
+                - object
+                - deleted
+                - id
         '404':
           description: Not Found
           content:
@@ -36508,29 +36580,41 @@ components:
           - cancelling
           - cancelled
         output_file_id:
-          type: string
+          type:
+          - string
+          - 'null'
           description: The ID of the file containing the outputs of successfully executed requests.
         error_file_id:
-          type: string
+          type:
+          - string
+          - 'null'
           description: The ID of the file containing the outputs of requests with errors.
         created_at:
           type: integer
           format: unixtime
           description: The Unix timestamp (in seconds) for when the batch was created.
         in_progress_at:
-          type: integer
+          type:
+          - integer
+          - 'null'
           format: unixtime
           description: The Unix timestamp (in seconds) for when the batch started processing.
         expires_at:
-          type: integer
+          type:
+          - integer
+          - 'null'
           format: unixtime
           description: The Unix timestamp (in seconds) for when the batch will expire.
         finalizing_at:
-          type: integer
+          type:
+          - integer
+          - 'null'
           format: unixtime
           description: The Unix timestamp (in seconds) for when the batch started finalizing.
         completed_at:
-          type: integer
+          type:
+          - integer
+          - 'null'
           format: unixtime
           description: The Unix timestamp (in seconds) for when the batch was completed.
         failed_at:
@@ -36891,10 +36975,14 @@ components:
           items:
             $ref: '#/components/schemas/CreateChatCompletionResponse'
         first_id:
-          type: string
+          type:
+          - string
+          - 'null'
           description: The identifier of the first chat completion in the data array.
         last_id:
-          type: string
+          type:
+          - string
+          - 'null'
           description: The identifier of the last chat completion in the data array.
         has_more:
           type: boolean
@@ -37027,10 +37115,14 @@ components:
                       - $ref: '#/components/schemas/ChatCompletionRequestMessageContentPartImage'
                   - type: 'null'
         first_id:
-          type: string
+          type:
+          - string
+          - 'null'
           description: The identifier of the first chat message in the data array.
         last_id:
-          type: string
+          type:
+          - string
+          - 'null'
           description: The identifier of the last chat message in the data array.
         has_more:
           type: boolean
@@ -44413,10 +44505,14 @@ components:
           type: string
           description: The status of the evaluation run.
         model:
-          type: string
+          type:
+          - string
+          - 'null'
           description: The model that is evaluated, if applicable.
         name:
-          type: string
+          type:
+          - string
+          - 'null'
           description: The name of the evaluation run.
         created_at:
           type: integer
@@ -44448,7 +44544,9 @@ components:
           - failed
           - passed
         per_model_usage:
-          type: array
+          type:
+          - array
+          - 'null'
           description: Usage statistics for each model during the evaluation run.
           items:
             type: object
@@ -44482,7 +44580,9 @@ components:
             - total_tokens
             - cached_tokens
         per_testing_criteria_results:
-          type: array
+          type:
+          - array
+          - 'null'
           description: Results per testing criteria applied during the evaluation run.
           items:
             type: object
@@ -44512,7 +44612,9 @@ components:
         metadata:
           $ref: '#/components/schemas/Metadata'
         error:
-          $ref: '#/components/schemas/EvalApiError'
+          anyOf:
+          - $ref: '#/components/schemas/EvalApiError'
+          - type: 'null'
       required:
       - object
       - id
@@ -44880,7 +44982,9 @@ components:
               - prompt_tokens
               - cached_tokens
             error:
-              $ref: '#/components/schemas/EvalApiError'
+              anyOf:
+              - $ref: '#/components/schemas/EvalApiError'
+              - type: 'null'
             temperature:
               type: number
               description: The sampling temperature used.
@@ -45800,7 +45904,9 @@ components:
                 propertyName: type
           - type: 'null'
         seed:
-          type: integer
+          type:
+          - integer
+          - 'null'
           description: The seed used for the fine-tuning job.
         estimated_finish:
           anyOf:
@@ -66414,7 +66520,23 @@ components:
               additionalProperties: {}
             token_usage:
               anyOf:
-              - type: integer
+              - type: object
+                properties:
+                  prompt_tokens:
+                    type: integer
+                  total_tokens:
+                    type: integer
+                  completion_tokens:
+                    anyOf:
+                    - type: integer
+                    - type: 'null'
+                  cached_tokens:
+                    anyOf:
+                    - type: integer
+                    - type: 'null'
+                required:
+                - prompt_tokens
+                - total_tokens
               - type: 'null'
             sampled_model_name:
               anyOf:
@@ -69828,7 +69950,7 @@ components:
           description: The object type, which is always `vector_store.file_batch`.
           type: string
           enum:
-          - vector_store.files_batch
+          - vector_store.file_batch
           x-stainless-const: true
         created_at:
           description: The Unix timestamp (in seconds) for when the vector store files batch was created.
@@ -69882,7 +70004,7 @@ components:
         example: |
           {
             "id": "vsfb_123",
-            "object": "vector_store.files_batch",
+            "object": "vector_store.file_batch",
             "created_at": 1698107661,
             "vector_store_id": "vs_abc123",
             "status": "completed",
@@ -70752,7 +70874,6 @@ components:
       - id
       - type
       - status
-      - action
     WebhookAgentEnvironmentExpired:
       type: object
       title: agent.environment.expired
@@ -75999,9 +76120,13 @@ components:
           default: conversation
           x-stainless-const: true
         metadata:
+          additionalProperties:
+            type: string
+          type: object
           description: |-
             Set of 16 key-value pairs that can be attached to an object. This can be         useful for storing additional information about the object in a structured         format, and querying for objects via API or the dashboard.
                     Keys are strings with a maximum length of 64 characters. Values are strings         with a maximum length of 512 characters.
+          x-oaiTypeLabel: map
         created_at:
           type: integer
           format: unixtime
@@ -100847,7 +100972,6 @@ components:
       - id
       - type
       - status
-      - action
     BetaWebSearchActionFind:
       type: object
       title: Find action

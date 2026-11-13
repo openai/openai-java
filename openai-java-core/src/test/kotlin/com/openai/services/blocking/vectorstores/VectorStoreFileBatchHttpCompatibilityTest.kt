@@ -11,6 +11,7 @@ import com.openai.core.JsonValue
 import com.openai.models.vectorstores.filebatches.FileBatchCancelParams
 import com.openai.models.vectorstores.filebatches.FileBatchCreateParams
 import com.openai.models.vectorstores.filebatches.FileBatchRetrieveParams
+import com.openai.models.vectorstores.filebatches.VectorStoreFileBatch
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.parallel.ResourceLock
 import org.junit.jupiter.params.ParameterizedTest
@@ -65,7 +66,10 @@ internal class VectorStoreFileBatchHttpCompatibilityTest {
                     asyncBatches.create(create).join(),
                     asyncBatches.cancel(cancel).join(),
                 )
-            results.forEach { assertThat(it._object_()).isEqualTo(JsonValue.from(value)) }
+            results.forEach { batch ->
+                assertThat(batch._object_()).isEqualTo(JsonValue.from(value))
+                assertThat(batch.status()).contains(VectorStoreFileBatch.Status.COMPLETED)
+            }
         } finally {
             client.close()
         }
