@@ -1,0 +1,36 @@
+diff --git a/openai-java-core/src/test/kotlin/com/openai/models/finetuning/alpha/graders/GraderRunResponseTest.kt b/openai-java-core/src/test/kotlin/com/openai/models/finetuning/alpha/graders/GraderRunResponseTest.kt
+index 121d551ceecec07af8b732c4bb381ada565798af..e8557403f71729ec0f52548419d1fe4437aeb9ce 100644
+--- a/openai-java-core/src/test/kotlin/com/openai/models/finetuning/alpha/graders/GraderRunResponseTest.kt
++++ b/openai-java-core/src/test/kotlin/com/openai/models/finetuning/alpha/graders/GraderRunResponseTest.kt
+@@ -44,7 +44,14 @@ internal class GraderRunResponseTest {
+                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                 .build()
+                         )
+-                        .tokenUsage(0L)
++                        .tokenUsage(
++                            GraderRunResponse.Metadata.TokenUsage.builder()
++                                .promptTokens(0L)
++                                .totalTokens(0L)
++                                .cachedTokens(0L)
++                                .completionTokens(0L)
++                                .build()
++                        )
+                         .type("type")
+                         .build()
+                 )
+@@ -90,7 +97,14 @@ internal class GraderRunResponseTest {
+                             .putAdditionalProperty("foo", JsonValue.from("bar"))
+                             .build()
+                     )
+-                    .tokenUsage(0L)
++                    .tokenUsage(
++                        GraderRunResponse.Metadata.TokenUsage.builder()
++                            .promptTokens(0L)
++                            .totalTokens(0L)
++                            .cachedTokens(0L)
++                            .completionTokens(0L)
++                            .build()
++                    )
+                     .type("type")
+                     .build()
+             )
