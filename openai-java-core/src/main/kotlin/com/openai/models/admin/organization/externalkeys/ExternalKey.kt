@@ -34,7 +34,9 @@ private constructor(
     private val audience: JsonField<String>,
     private val externalId: JsonField<String>,
     private val keyName: JsonField<String>,
+    private val keyOcid: JsonField<String>,
     private val keyVersion: JsonField<String>,
+    private val keyVersionOcid: JsonField<String>,
     private val kmsArn: JsonField<String>,
     private val kmsKeyLocation: JsonField<String>,
     private val kmsKeyName: JsonField<String>,
@@ -42,8 +44,10 @@ private constructor(
     private val kmsKeyVersion: JsonField<String>,
     private val kmsProjectId: JsonField<String>,
     private val purpose: JsonField<Purpose>,
+    private val region: JsonField<String>,
     private val roleArn: JsonField<String>,
     private val tenantId: JsonField<String>,
+    private val vaultOcid: JsonField<String>,
     private val vaultUri: JsonField<String>,
     private val workloadIdentityPoolId: JsonField<String>,
     private val workloadIdentityProjectNumber: JsonField<String>,
@@ -69,9 +73,13 @@ private constructor(
         @ExcludeMissing
         externalId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("key_name") @ExcludeMissing keyName: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("key_ocid") @ExcludeMissing keyOcid: JsonField<String> = JsonMissing.of(),
         @JsonProperty("key_version")
         @ExcludeMissing
         keyVersion: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("key_version_ocid")
+        @ExcludeMissing
+        keyVersionOcid: JsonField<String> = JsonMissing.of(),
         @JsonProperty("kms_arn") @ExcludeMissing kmsArn: JsonField<String> = JsonMissing.of(),
         @JsonProperty("kms_key_location")
         @ExcludeMissing
@@ -89,8 +97,10 @@ private constructor(
         @ExcludeMissing
         kmsProjectId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("purpose") @ExcludeMissing purpose: JsonField<Purpose> = JsonMissing.of(),
+        @JsonProperty("region") @ExcludeMissing region: JsonField<String> = JsonMissing.of(),
         @JsonProperty("role_arn") @ExcludeMissing roleArn: JsonField<String> = JsonMissing.of(),
         @JsonProperty("tenant_id") @ExcludeMissing tenantId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("vault_ocid") @ExcludeMissing vaultOcid: JsonField<String> = JsonMissing.of(),
         @JsonProperty("vault_uri") @ExcludeMissing vaultUri: JsonField<String> = JsonMissing.of(),
         @JsonProperty("workload_identity_pool_id")
         @ExcludeMissing
@@ -112,7 +122,9 @@ private constructor(
         audience,
         externalId,
         keyName,
+        keyOcid,
         keyVersion,
+        keyVersionOcid,
         kmsArn,
         kmsKeyLocation,
         kmsKeyName,
@@ -120,8 +132,10 @@ private constructor(
         kmsKeyVersion,
         kmsProjectId,
         purpose,
+        region,
         roleArn,
         tenantId,
+        vaultOcid,
         vaultUri,
         workloadIdentityPoolId,
         workloadIdentityProjectNumber,
@@ -193,7 +207,19 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
+    fun keyOcid(): Optional<String> = keyOcid.getOptional("key_ocid")
+
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun keyVersion(): Optional<String> = keyVersion.getOptional("key_version")
+
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun keyVersionOcid(): Optional<String> = keyVersionOcid.getOptional("key_version_ocid")
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -241,6 +267,12 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
+    fun region(): Optional<String> = region.getOptional("region")
+
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun roleArn(): Optional<String> = roleArn.getOptional("role_arn")
 
     /**
@@ -248,6 +280,12 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun tenantId(): Optional<String> = tenantId.getOptional("tenant_id")
+
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun vaultOcid(): Optional<String> = vaultOcid.getOptional("vault_ocid")
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -351,11 +389,27 @@ private constructor(
     @JsonProperty("key_name") @ExcludeMissing fun _keyName(): JsonField<String> = keyName
 
     /**
+     * Returns the raw JSON value of [keyOcid].
+     *
+     * Unlike [keyOcid], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("key_ocid") @ExcludeMissing fun _keyOcid(): JsonField<String> = keyOcid
+
+    /**
      * Returns the raw JSON value of [keyVersion].
      *
      * Unlike [keyVersion], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("key_version") @ExcludeMissing fun _keyVersion(): JsonField<String> = keyVersion
+
+    /**
+     * Returns the raw JSON value of [keyVersionOcid].
+     *
+     * Unlike [keyVersionOcid], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("key_version_ocid")
+    @ExcludeMissing
+    fun _keyVersionOcid(): JsonField<String> = keyVersionOcid
 
     /**
      * Returns the raw JSON value of [kmsArn].
@@ -415,6 +469,13 @@ private constructor(
     @JsonProperty("purpose") @ExcludeMissing fun _purpose(): JsonField<Purpose> = purpose
 
     /**
+     * Returns the raw JSON value of [region].
+     *
+     * Unlike [region], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("region") @ExcludeMissing fun _region(): JsonField<String> = region
+
+    /**
      * Returns the raw JSON value of [roleArn].
      *
      * Unlike [roleArn], this method doesn't throw if the JSON field has an unexpected type.
@@ -427,6 +488,13 @@ private constructor(
      * Unlike [tenantId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("tenant_id") @ExcludeMissing fun _tenantId(): JsonField<String> = tenantId
+
+    /**
+     * Returns the raw JSON value of [vaultOcid].
+     *
+     * Unlike [vaultOcid], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("vault_ocid") @ExcludeMissing fun _vaultOcid(): JsonField<String> = vaultOcid
 
     /**
      * Returns the raw JSON value of [vaultUri].
@@ -491,7 +559,9 @@ private constructor(
             "audience" to this.audience,
             "external_id" to this.externalId,
             "key_name" to this.keyName,
+            "key_ocid" to this.keyOcid,
             "key_version" to this.keyVersion,
+            "key_version_ocid" to this.keyVersionOcid,
             "kms_arn" to this.kmsArn,
             "kms_key_location" to this.kmsKeyLocation,
             "kms_key_name" to this.kmsKeyName,
@@ -499,8 +569,10 @@ private constructor(
             "kms_key_version" to this.kmsKeyVersion,
             "kms_project_id" to this.kmsProjectId,
             "purpose" to this.purpose,
+            "region" to this.region,
             "role_arn" to this.roleArn,
             "tenant_id" to this.tenantId,
+            "vault_ocid" to this.vaultOcid,
             "vault_uri" to this.vaultUri,
             "workload_identity_pool_id" to this.workloadIdentityPoolId,
             "workload_identity_project_number" to this.workloadIdentityProjectNumber,
@@ -553,7 +625,9 @@ private constructor(
         private var audience: JsonField<String> = JsonMissing.of()
         private var externalId: JsonField<String> = JsonMissing.of()
         private var keyName: JsonField<String> = JsonMissing.of()
+        private var keyOcid: JsonField<String> = JsonMissing.of()
         private var keyVersion: JsonField<String> = JsonMissing.of()
+        private var keyVersionOcid: JsonField<String> = JsonMissing.of()
         private var kmsArn: JsonField<String> = JsonMissing.of()
         private var kmsKeyLocation: JsonField<String> = JsonMissing.of()
         private var kmsKeyName: JsonField<String> = JsonMissing.of()
@@ -561,8 +635,10 @@ private constructor(
         private var kmsKeyVersion: JsonField<String> = JsonMissing.of()
         private var kmsProjectId: JsonField<String> = JsonMissing.of()
         private var purpose: JsonField<Purpose> = JsonMissing.of()
+        private var region: JsonField<String> = JsonMissing.of()
         private var roleArn: JsonField<String> = JsonMissing.of()
         private var tenantId: JsonField<String> = JsonMissing.of()
+        private var vaultOcid: JsonField<String> = JsonMissing.of()
         private var vaultUri: JsonField<String> = JsonMissing.of()
         private var workloadIdentityPoolId: JsonField<String> = JsonMissing.of()
         private var workloadIdentityProjectNumber: JsonField<String> = JsonMissing.of()
@@ -581,7 +657,9 @@ private constructor(
             audience = externalKey.audience
             externalId = externalKey.externalId
             keyName = externalKey.keyName
+            keyOcid = externalKey.keyOcid
             keyVersion = externalKey.keyVersion
+            keyVersionOcid = externalKey.keyVersionOcid
             kmsArn = externalKey.kmsArn
             kmsKeyLocation = externalKey.kmsKeyLocation
             kmsKeyName = externalKey.kmsKeyName
@@ -589,8 +667,10 @@ private constructor(
             kmsKeyVersion = externalKey.kmsKeyVersion
             kmsProjectId = externalKey.kmsProjectId
             purpose = externalKey.purpose
+            region = externalKey.region
             roleArn = externalKey.roleArn
             tenantId = externalKey.tenantId
+            vaultOcid = externalKey.vaultOcid
             vaultUri = externalKey.vaultUri
             workloadIdentityPoolId = externalKey.workloadIdentityPoolId
             workloadIdentityProjectNumber = externalKey.workloadIdentityProjectNumber
@@ -715,6 +795,16 @@ private constructor(
          */
         fun keyName(keyName: JsonField<String>) = apply { this.keyName = keyName }
 
+        fun keyOcid(keyOcid: String) = keyOcid(JsonField.of(keyOcid))
+
+        /**
+         * Sets [Builder.keyOcid] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.keyOcid] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun keyOcid(keyOcid: JsonField<String>) = apply { this.keyOcid = keyOcid }
+
         fun keyVersion(keyVersion: String) = keyVersion(JsonField.of(keyVersion))
 
         /**
@@ -725,6 +815,19 @@ private constructor(
          * value.
          */
         fun keyVersion(keyVersion: JsonField<String>) = apply { this.keyVersion = keyVersion }
+
+        fun keyVersionOcid(keyVersionOcid: String) = keyVersionOcid(JsonField.of(keyVersionOcid))
+
+        /**
+         * Sets [Builder.keyVersionOcid] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.keyVersionOcid] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun keyVersionOcid(keyVersionOcid: JsonField<String>) = apply {
+            this.keyVersionOcid = keyVersionOcid
+        }
 
         fun kmsArn(kmsArn: String) = kmsArn(JsonField.of(kmsArn))
 
@@ -809,6 +912,16 @@ private constructor(
          */
         fun purpose(purpose: JsonField<Purpose>) = apply { this.purpose = purpose }
 
+        fun region(region: String) = region(JsonField.of(region))
+
+        /**
+         * Sets [Builder.region] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.region] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun region(region: JsonField<String>) = apply { this.region = region }
+
         fun roleArn(roleArn: String) = roleArn(JsonField.of(roleArn))
 
         /**
@@ -828,6 +941,17 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun tenantId(tenantId: JsonField<String>) = apply { this.tenantId = tenantId }
+
+        fun vaultOcid(vaultOcid: String) = vaultOcid(JsonField.of(vaultOcid))
+
+        /**
+         * Sets [Builder.vaultOcid] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vaultOcid] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun vaultOcid(vaultOcid: JsonField<String>) = apply { this.vaultOcid = vaultOcid }
 
         fun vaultUri(vaultUri: String) = vaultUri(JsonField.of(vaultUri))
 
@@ -931,7 +1055,9 @@ private constructor(
                 audience,
                 externalId,
                 keyName,
+                keyOcid,
                 keyVersion,
+                keyVersionOcid,
                 kmsArn,
                 kmsKeyLocation,
                 kmsKeyName,
@@ -939,8 +1065,10 @@ private constructor(
                 kmsKeyVersion,
                 kmsProjectId,
                 purpose,
+                region,
                 roleArn,
                 tenantId,
+                vaultOcid,
                 vaultUri,
                 workloadIdentityPoolId,
                 workloadIdentityProjectNumber,
@@ -974,7 +1102,9 @@ private constructor(
         audience()
         externalId()
         keyName()
+        keyOcid()
         keyVersion()
+        keyVersionOcid()
         kmsArn()
         kmsKeyLocation()
         kmsKeyName()
@@ -982,8 +1112,10 @@ private constructor(
         kmsKeyVersion()
         kmsProjectId()
         purpose().ifPresent { it.validate() }
+        region()
         roleArn()
         tenantId()
+        vaultOcid()
         vaultUri()
         workloadIdentityPoolId()
         workloadIdentityProjectNumber()
@@ -1016,7 +1148,9 @@ private constructor(
             (if (audience.asKnown().isPresent) 1 else 0) +
             (if (externalId.asKnown().isPresent) 1 else 0) +
             (if (keyName.asKnown().isPresent) 1 else 0) +
+            (if (keyOcid.asKnown().isPresent) 1 else 0) +
             (if (keyVersion.asKnown().isPresent) 1 else 0) +
+            (if (keyVersionOcid.asKnown().isPresent) 1 else 0) +
             (if (kmsArn.asKnown().isPresent) 1 else 0) +
             (if (kmsKeyLocation.asKnown().isPresent) 1 else 0) +
             (if (kmsKeyName.asKnown().isPresent) 1 else 0) +
@@ -1024,8 +1158,10 @@ private constructor(
             (if (kmsKeyVersion.asKnown().isPresent) 1 else 0) +
             (if (kmsProjectId.asKnown().isPresent) 1 else 0) +
             (purpose.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (region.asKnown().isPresent) 1 else 0) +
             (if (roleArn.asKnown().isPresent) 1 else 0) +
             (if (tenantId.asKnown().isPresent) 1 else 0) +
+            (if (vaultOcid.asKnown().isPresent) 1 else 0) +
             (if (vaultUri.asKnown().isPresent) 1 else 0) +
             (if (workloadIdentityPoolId.asKnown().isPresent) 1 else 0) +
             (if (workloadIdentityProjectNumber.asKnown().isPresent) 1 else 0) +
@@ -1181,7 +1317,9 @@ private constructor(
             audience == other.audience &&
             externalId == other.externalId &&
             keyName == other.keyName &&
+            keyOcid == other.keyOcid &&
             keyVersion == other.keyVersion &&
+            keyVersionOcid == other.keyVersionOcid &&
             kmsArn == other.kmsArn &&
             kmsKeyLocation == other.kmsKeyLocation &&
             kmsKeyName == other.kmsKeyName &&
@@ -1189,8 +1327,10 @@ private constructor(
             kmsKeyVersion == other.kmsKeyVersion &&
             kmsProjectId == other.kmsProjectId &&
             purpose == other.purpose &&
+            region == other.region &&
             roleArn == other.roleArn &&
             tenantId == other.tenantId &&
+            vaultOcid == other.vaultOcid &&
             vaultUri == other.vaultUri &&
             workloadIdentityPoolId == other.workloadIdentityPoolId &&
             workloadIdentityProjectNumber == other.workloadIdentityProjectNumber &&
@@ -1210,7 +1350,9 @@ private constructor(
             audience,
             externalId,
             keyName,
+            keyOcid,
             keyVersion,
+            keyVersionOcid,
             kmsArn,
             kmsKeyLocation,
             kmsKeyName,
@@ -1218,8 +1360,10 @@ private constructor(
             kmsKeyVersion,
             kmsProjectId,
             purpose,
+            region,
             roleArn,
             tenantId,
+            vaultOcid,
             vaultUri,
             workloadIdentityPoolId,
             workloadIdentityProjectNumber,
@@ -1231,5 +1375,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ExternalKey{id=$id, apiProjectIds=$apiProjectIds, createdAt=$createdAt, name=$name, object_=$object_, type=$type, workspaceId=$workspaceId, audience=$audience, externalId=$externalId, keyName=$keyName, keyVersion=$keyVersion, kmsArn=$kmsArn, kmsKeyLocation=$kmsKeyLocation, kmsKeyName=$kmsKeyName, kmsKeyRingName=$kmsKeyRingName, kmsKeyVersion=$kmsKeyVersion, kmsProjectId=$kmsProjectId, purpose=$purpose, roleArn=$roleArn, tenantId=$tenantId, vaultUri=$vaultUri, workloadIdentityPoolId=$workloadIdentityPoolId, workloadIdentityProjectNumber=$workloadIdentityProjectNumber, workloadIdentityProviderId=$workloadIdentityProviderId, additionalProperties=$additionalProperties}"
+        "ExternalKey{id=$id, apiProjectIds=$apiProjectIds, createdAt=$createdAt, name=$name, object_=$object_, type=$type, workspaceId=$workspaceId, audience=$audience, externalId=$externalId, keyName=$keyName, keyOcid=$keyOcid, keyVersion=$keyVersion, keyVersionOcid=$keyVersionOcid, kmsArn=$kmsArn, kmsKeyLocation=$kmsKeyLocation, kmsKeyName=$kmsKeyName, kmsKeyRingName=$kmsKeyRingName, kmsKeyVersion=$kmsKeyVersion, kmsProjectId=$kmsProjectId, purpose=$purpose, region=$region, roleArn=$roleArn, tenantId=$tenantId, vaultOcid=$vaultOcid, vaultUri=$vaultUri, workloadIdentityPoolId=$workloadIdentityPoolId, workloadIdentityProjectNumber=$workloadIdentityProjectNumber, workloadIdentityProviderId=$workloadIdentityProviderId, additionalProperties=$additionalProperties}"
 }

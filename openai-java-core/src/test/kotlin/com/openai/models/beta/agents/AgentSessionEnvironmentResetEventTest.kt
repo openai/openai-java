@@ -18,6 +18,7 @@ internal class AgentSessionEnvironmentResetEventTest {
                 .resetCount(0L)
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionEnvironmentResetEvent.environmentId()).isEqualTo("environment_id")
@@ -25,6 +26,7 @@ internal class AgentSessionEnvironmentResetEventTest {
         assertThat(agentSessionEnvironmentResetEvent.resetCount()).isEqualTo(0L)
         assertThat(agentSessionEnvironmentResetEvent.sessionId()).isEqualTo("session_id")
         assertThat(agentSessionEnvironmentResetEvent.turnId()).contains("turn_id")
+        assertThat(agentSessionEnvironmentResetEvent.obfuscation()).contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 

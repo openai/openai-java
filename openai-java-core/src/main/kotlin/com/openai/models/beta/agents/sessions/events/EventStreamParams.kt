@@ -16,11 +16,15 @@ import kotlin.jvm.optionals.getOrNull
 class EventStreamParams
 private constructor(
     private val sessionId: String?,
+    private val includeObfuscation: Boolean?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     fun sessionId(): Optional<String> = Optional.ofNullable(sessionId)
+
+    /** Whether to include obfuscation padding in events on this connection. Defaults to `true`. */
+    fun includeObfuscation(): Optional<Boolean> = Optional.ofNullable(includeObfuscation)
 
     /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -42,12 +46,14 @@ private constructor(
     class Builder internal constructor() {
 
         private var sessionId: String? = null
+        private var includeObfuscation: Boolean? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
         @JvmSynthetic
         internal fun from(eventStreamParams: EventStreamParams) = apply {
             sessionId = eventStreamParams.sessionId
+            includeObfuscation = eventStreamParams.includeObfuscation
             additionalHeaders = eventStreamParams.additionalHeaders.toBuilder()
             additionalQueryParams = eventStreamParams.additionalQueryParams.toBuilder()
         }
@@ -56,6 +62,27 @@ private constructor(
 
         /** Alias for calling [Builder.sessionId] with `sessionId.orElse(null)`. */
         fun sessionId(sessionId: Optional<String>) = sessionId(sessionId.getOrNull())
+
+        /**
+         * Whether to include obfuscation padding in events on this connection. Defaults to `true`.
+         */
+        fun includeObfuscation(includeObfuscation: Boolean?) = apply {
+            this.includeObfuscation = includeObfuscation
+        }
+
+        /**
+         * Alias for [Builder.includeObfuscation].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun includeObfuscation(includeObfuscation: Boolean) =
+            includeObfuscation(includeObfuscation as Boolean?)
+
+        /**
+         * Alias for calling [Builder.includeObfuscation] with `includeObfuscation.orElse(null)`.
+         */
+        fun includeObfuscation(includeObfuscation: Optional<Boolean>) =
+            includeObfuscation(includeObfuscation.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -161,7 +188,12 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): EventStreamParams =
-            EventStreamParams(sessionId, additionalHeaders.build(), additionalQueryParams.build())
+            EventStreamParams(
+                sessionId,
+                includeObfuscation,
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
     }
 
     fun _pathParam(index: Int): String =
@@ -172,7 +204,13 @@ private constructor(
 
     override fun _headers(): Headers = additionalHeaders
 
-    override fun _queryParams(): QueryParams = additionalQueryParams
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                includeObfuscation?.let { put("include_obfuscation", it.toString()) }
+                putAll(additionalQueryParams)
+            }
+            .build()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -181,12 +219,14 @@ private constructor(
 
         return other is EventStreamParams &&
             sessionId == other.sessionId &&
+            includeObfuscation == other.includeObfuscation &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = Objects.hash(sessionId, additionalHeaders, additionalQueryParams)
+    override fun hashCode(): Int =
+        Objects.hash(sessionId, includeObfuscation, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
-        "EventStreamParams{sessionId=$sessionId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "EventStreamParams{sessionId=$sessionId, includeObfuscation=$includeObfuscation, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

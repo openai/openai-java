@@ -67,8 +67,16 @@ internal class SessionCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+            .promptCacheOptions(
+                SessionCreateParams.PromptCacheOptions.builder()
+                    .ttl(SessionCreateParams.PromptCacheOptions.Ttl._30M)
+                    .build()
+            )
             .review(SessionCreateParams.Review.NONE)
             .spendControl(SessionCreateParams.SpendControl.builder().limit(1L).build())
+            .streamOptions(
+                SessionCreateParams.StreamOptions.builder().includeObfuscation(true).build()
+            )
             .addVaultId("string")
             .build()
     }
@@ -131,8 +139,16 @@ internal class SessionCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .promptCacheOptions(
+                    SessionCreateParams.PromptCacheOptions.builder()
+                        .ttl(SessionCreateParams.PromptCacheOptions.Ttl._30M)
+                        .build()
+                )
                 .review(SessionCreateParams.Review.NONE)
                 .spendControl(SessionCreateParams.SpendControl.builder().limit(1L).build())
+                .streamOptions(
+                    SessionCreateParams.StreamOptions.builder().includeObfuscation(true).build()
+                )
                 .addVaultId("string")
                 .build()
 
@@ -190,9 +206,17 @@ internal class SessionCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+        assertThat(body.promptCacheOptions())
+            .contains(
+                SessionCreateParams.PromptCacheOptions.builder()
+                    .ttl(SessionCreateParams.PromptCacheOptions.Ttl._30M)
+                    .build()
+            )
         assertThat(body.review()).contains(SessionCreateParams.Review.NONE)
         assertThat(body.spendControl())
             .contains(SessionCreateParams.SpendControl.builder().limit(1L).build())
+        assertThat(body.streamOptions())
+            .contains(SessionCreateParams.StreamOptions.builder().includeObfuscation(true).build())
         assertThat(body.vaultIds().getOrNull()).containsExactly("string")
     }
 

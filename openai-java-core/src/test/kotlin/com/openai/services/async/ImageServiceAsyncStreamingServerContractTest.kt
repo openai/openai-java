@@ -44,6 +44,16 @@ internal class ImageServiceAsyncStreamingServerContractTest {
                     .responseFormat(ImageEditParams.ResponseFormat.URL)
                     .safetyIdentifier("user-1234")
                     .size(ImageEditParams.Size._1024X1024)
+                    .svg(
+                        ImageEditParams.Svg.builder()
+                            .model("x")
+                            .reasoning(
+                                ImageEditParams.Svg.Reasoning.builder()
+                                    .effort(ImageEditParams.Svg.Reasoning.ReasoningEffortEnum.NONE)
+                                    .build()
+                            )
+                            .build()
+                    )
                     .user("user-1234")
                     .build()
             )

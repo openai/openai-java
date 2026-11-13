@@ -43,6 +43,7 @@ private constructor(
     private val fineTuningJobFailed: FineTuningJobFailedWebhookEvent? = null,
     private val fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent? = null,
     private val liveCallIncoming: LiveCallIncomingWebhookEvent? = null,
+    private val liveTransportConnected: LiveTransportConnectedWebhookEvent? = null,
     private val liveTransportIncoming: LiveTransportIncomingWebhookEvent? = null,
     private val realtimeCallIncoming: RealtimeCallIncomingWebhookEvent? = null,
     private val responseCancelled: ResponseCancelledWebhookEvent? = null,
@@ -145,6 +146,13 @@ private constructor(
         Optional.ofNullable(liveCallIncoming)
 
     /**
+     * Sent when a direct Live WebRTC session is created or an Instant Connect session activates.
+     * Use its session ID to attach a sideband observer.
+     */
+    fun liveTransportConnected(): Optional<LiveTransportConnectedWebhookEvent> =
+        Optional.ofNullable(liveTransportConnected)
+
+    /**
      * Sent when an incoming API SIP session is available for Live acceptance. The same pending
      * session can also emit `realtime.call.incoming`; the first successful Realtime or Live accept
      * endpoint selects the runtime surface.
@@ -230,6 +238,8 @@ private constructor(
     fun isFineTuningJobSucceeded(): Boolean = fineTuningJobSucceeded != null
 
     @Deprecated("deprecated") fun isLiveCallIncoming(): Boolean = liveCallIncoming != null
+
+    fun isLiveTransportConnected(): Boolean = liveTransportConnected != null
 
     fun isLiveTransportIncoming(): Boolean = liveTransportIncoming != null
 
@@ -340,6 +350,13 @@ private constructor(
         liveCallIncoming.getOrThrow("liveCallIncoming")
 
     /**
+     * Sent when a direct Live WebRTC session is created or an Instant Connect session activates.
+     * Use its session ID to attach a sideband observer.
+     */
+    fun asLiveTransportConnected(): LiveTransportConnectedWebhookEvent =
+        liveTransportConnected.getOrThrow("liveTransportConnected")
+
+    /**
      * Sent when an incoming API SIP session is available for Live acceptance. The same pending
      * session can also emit `realtime.call.incoming`; the first successful Realtime or Live accept
      * endpoint selects the runtime surface.
@@ -447,6 +464,8 @@ private constructor(
             fineTuningJobSucceeded != null ->
                 visitor.visitFineTuningJobSucceeded(fineTuningJobSucceeded)
             liveCallIncoming != null -> visitor.visitLiveCallIncoming(liveCallIncoming)
+            liveTransportConnected != null ->
+                visitor.visitLiveTransportConnected(liveTransportConnected)
             liveTransportIncoming != null ->
                 visitor.visitLiveTransportIncoming(liveTransportIncoming)
             realtimeCallIncoming != null -> visitor.visitRealtimeCallIncoming(realtimeCallIncoming)
@@ -580,6 +599,12 @@ private constructor(
 
                 override fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent) {
                     liveCallIncoming.validate()
+                }
+
+                override fun visitLiveTransportConnected(
+                    liveTransportConnected: LiveTransportConnectedWebhookEvent
+                ) {
+                    liveTransportConnected.validate()
                 }
 
                 override fun visitLiveTransportIncoming(
@@ -732,6 +757,10 @@ private constructor(
                 override fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent) =
                     liveCallIncoming.validity()
 
+                override fun visitLiveTransportConnected(
+                    liveTransportConnected: LiveTransportConnectedWebhookEvent
+                ) = liveTransportConnected.validity()
+
                 override fun visitLiveTransportIncoming(
                     liveTransportIncoming: LiveTransportIncomingWebhookEvent
                 ) = liveTransportIncoming.validity()
@@ -801,6 +830,7 @@ private constructor(
             fineTuningJobFailed == other.fineTuningJobFailed &&
             fineTuningJobSucceeded == other.fineTuningJobSucceeded &&
             liveCallIncoming == other.liveCallIncoming &&
+            liveTransportConnected == other.liveTransportConnected &&
             liveTransportIncoming == other.liveTransportIncoming &&
             realtimeCallIncoming == other.realtimeCallIncoming &&
             responseCancelled == other.responseCancelled &&
@@ -831,6 +861,7 @@ private constructor(
                 fineTuningJobFailed != null ||
                 fineTuningJobSucceeded != null ||
                 liveCallIncoming != null ||
+                liveTransportConnected != null ||
                 liveTransportIncoming != null ||
                 realtimeCallIncoming != null ||
                 responseCancelled != null ||
@@ -866,6 +897,7 @@ private constructor(
                 fineTuningJobFailed == null &&
                 fineTuningJobSucceeded == null &&
                 liveCallIncoming == null &&
+                liveTransportConnected == null &&
                 liveTransportIncoming == null &&
                 realtimeCallIncoming == null &&
                 responseCancelled == null &&
@@ -900,6 +932,7 @@ private constructor(
                 fineTuningJobFailed,
                 fineTuningJobSucceeded,
                 liveCallIncoming,
+                liveTransportConnected,
                 liveTransportIncoming,
                 realtimeCallIncoming,
                 responseCancelled,
@@ -945,6 +978,8 @@ private constructor(
             fineTuningJobSucceeded != null ->
                 "UnwrapWebhookEvent{fineTuningJobSucceeded=$fineTuningJobSucceeded}"
             liveCallIncoming != null -> "UnwrapWebhookEvent{liveCallIncoming=$liveCallIncoming}"
+            liveTransportConnected != null ->
+                "UnwrapWebhookEvent{liveTransportConnected=$liveTransportConnected}"
             liveTransportIncoming != null ->
                 "UnwrapWebhookEvent{liveTransportIncoming=$liveTransportIncoming}"
             realtimeCallIncoming != null ->
@@ -1085,6 +1120,14 @@ private constructor(
         @JvmStatic
         fun ofLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent) =
             UnwrapWebhookEvent(liveCallIncoming = liveCallIncoming)
+
+        /**
+         * Sent when a direct Live WebRTC session is created or an Instant Connect session
+         * activates. Use its session ID to attach a sideband observer.
+         */
+        @JvmStatic
+        fun ofLiveTransportConnected(liveTransportConnected: LiveTransportConnectedWebhookEvent) =
+            UnwrapWebhookEvent(liveTransportConnected = liveTransportConnected)
 
         /**
          * Sent when an incoming API SIP session is available for Live acceptance. The same pending
@@ -1245,6 +1288,14 @@ private constructor(
          */
         @Deprecated("deprecated")
         fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent): T
+
+        /**
+         * Sent when a direct Live WebRTC session is created or an Instant Connect session
+         * activates. Use its session ID to attach a sideband observer.
+         */
+        fun visitLiveTransportConnected(
+            liveTransportConnected: LiveTransportConnectedWebhookEvent
+        ): T = unknown(JsonValue.from(liveTransportConnected))
 
         /**
          * Sent when an incoming API SIP session is available for Live acceptance. The same pending
@@ -1430,6 +1481,14 @@ private constructor(
                         ?.let { UnwrapWebhookEvent(liveCallIncoming = it, _json = json) }
                         ?: UnwrapWebhookEvent(_json = json)
                 }
+                "live.transport.connected" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<LiveTransportConnectedWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(liveTransportConnected = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
                 "live.transport.incoming" -> {
                     return tryDeserialize(node, jacksonTypeRef<LiveTransportIncomingWebhookEvent>())
                         ?.let { UnwrapWebhookEvent(liveTransportIncoming = it, _json = json) }
@@ -1527,6 +1586,8 @@ private constructor(
                 value.fineTuningJobSucceeded != null ->
                     generator.writeObject(value.fineTuningJobSucceeded)
                 value.liveCallIncoming != null -> generator.writeObject(value.liveCallIncoming)
+                value.liveTransportConnected != null ->
+                    generator.writeObject(value.liveTransportConnected)
                 value.liveTransportIncoming != null ->
                     generator.writeObject(value.liveTransportIncoming)
                 value.realtimeCallIncoming != null ->

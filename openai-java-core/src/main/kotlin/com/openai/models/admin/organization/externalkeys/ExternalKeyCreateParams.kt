@@ -88,6 +88,9 @@ private constructor(
         /** Alias for calling [body] with `Body.ofAzure(azure)`. */
         fun body(azure: Body.Azure) = body(Body.ofAzure(azure))
 
+        /** Alias for calling [body] with `Body.ofOci(oci)`. */
+        fun body(oci: Body.Oci) = body(Body.ofOci(oci))
+
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
             putAllAdditionalHeaders(additionalHeaders)
@@ -219,6 +222,7 @@ private constructor(
         private val aws: Aws? = null,
         private val gcp: Gcp? = null,
         private val azure: Azure? = null,
+        private val oci: Oci? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -228,17 +232,23 @@ private constructor(
 
         fun azure(): Optional<Azure> = Optional.ofNullable(azure)
 
+        fun oci(): Optional<Oci> = Optional.ofNullable(oci)
+
         fun isAws(): Boolean = aws != null
 
         fun isGcp(): Boolean = gcp != null
 
         fun isAzure(): Boolean = azure != null
 
+        fun isOci(): Boolean = oci != null
+
         fun asAws(): Aws = aws.getOrThrow("aws")
 
         fun asGcp(): Gcp = gcp.getOrThrow("gcp")
 
         fun asAzure(): Azure = azure.getOrThrow("azure")
+
+        fun asOci(): Oci = oci.getOrThrow("oci")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -276,6 +286,7 @@ private constructor(
                 aws != null -> visitor.visitAws(aws)
                 gcp != null -> visitor.visitGcp(gcp)
                 azure != null -> visitor.visitAzure(azure)
+                oci != null -> visitor.visitOci(oci)
                 else -> visitor.unknown(_json)
             }
 
@@ -308,6 +319,10 @@ private constructor(
                     override fun visitAzure(azure: Azure) {
                         azure.validate()
                     }
+
+                    override fun visitOci(oci: Oci) {
+                        oci.validate()
+                    }
                 }
             )
             validated = true
@@ -337,6 +352,8 @@ private constructor(
 
                     override fun visitAzure(azure: Azure) = azure.validity()
 
+                    override fun visitOci(oci: Oci) = oci.validity()
+
                     override fun unknown(json: JsonValue?) = 0
                 }
             )
@@ -350,18 +367,20 @@ private constructor(
                 aws == other.aws &&
                 gcp == other.gcp &&
                 azure == other.azure &&
-                (aws != null || gcp != null || azure != null || _json == other._json)
+                oci == other.oci &&
+                (aws != null || gcp != null || azure != null || oci != null || _json == other._json)
         }
 
         override fun hashCode(): Int =
-            if (aws == null && gcp == null && azure == null) Objects.hash(_json)
-            else Objects.hash(aws, gcp, azure)
+            if (aws == null && gcp == null && azure == null && oci == null) Objects.hash(_json)
+            else Objects.hash(aws, gcp, azure, oci)
 
         override fun toString(): String =
             when {
                 aws != null -> "Body{aws=$aws}"
                 gcp != null -> "Body{gcp=$gcp}"
                 azure != null -> "Body{azure=$azure}"
+                oci != null -> "Body{oci=$oci}"
                 _json != null -> "Body{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Body")
             }
@@ -373,6 +392,8 @@ private constructor(
             @JvmStatic fun ofGcp(gcp: Gcp) = Body(gcp = gcp)
 
             @JvmStatic fun ofAzure(azure: Azure) = Body(azure = azure)
+
+            @JvmStatic fun ofOci(oci: Oci) = Body(oci = oci)
         }
 
         /** An interface that defines how to map each variant of [Body] to a value of type [T]. */
@@ -383,6 +404,8 @@ private constructor(
             fun visitGcp(gcp: Gcp): T
 
             fun visitAzure(azure: Azure): T
+
+            fun visitOci(oci: Oci): T = unknown(JsonValue.from(oci))
 
             /**
              * Maps an unknown variant of [Body] to a value of type [T].
@@ -420,6 +443,11 @@ private constructor(
                             Body(azure = it, _json = json)
                         } ?: Body(_json = json)
                     }
+                    "oci" -> {
+                        return tryDeserialize(node, jacksonTypeRef<Oci>())?.let {
+                            Body(oci = it, _json = json)
+                        } ?: Body(_json = json)
+                    }
                 }
 
                 return Body(_json = json)
@@ -437,6 +465,7 @@ private constructor(
                     value.aws != null -> generator.writeObject(value.aws)
                     value.gcp != null -> generator.writeObject(value.gcp)
                     value.azure != null -> generator.writeObject(value.azure)
+                    value.oci != null -> generator.writeObject(value.oci)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Body")
                 }
@@ -2459,6 +2488,608 @@ private constructor(
 
             override fun toString() =
                 "Azure{keyName=$keyName, name=$name, tenantId=$tenantId, type=$type, vaultUri=$vaultUri, keyVersion=$keyVersion, purpose=$purpose, additionalProperties=$additionalProperties}"
+        }
+
+        class Oci
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val keyOcid: JsonField<String>,
+            private val name: JsonField<String>,
+            private val region: JsonField<String>,
+            private val type: JsonValue,
+            private val vaultOcid: JsonField<String>,
+            private val keyVersionOcid: JsonField<String>,
+            private val purpose: JsonField<Purpose>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("key_ocid")
+                @ExcludeMissing
+                keyOcid: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("region")
+                @ExcludeMissing
+                region: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("vault_ocid")
+                @ExcludeMissing
+                vaultOcid: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("key_version_ocid")
+                @ExcludeMissing
+                keyVersionOcid: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("purpose")
+                @ExcludeMissing
+                purpose: JsonField<Purpose> = JsonMissing.of(),
+            ) : this(
+                keyOcid,
+                name,
+                region,
+                type,
+                vaultOcid,
+                keyVersionOcid,
+                purpose,
+                mutableMapOf(),
+            )
+
+            /**
+             * The OCI Vault key OCID
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun keyOcid(): String = keyOcid.getRequired("key_ocid")
+
+            /**
+             * A friendly name to identify this config
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun name(): String = name.getRequired("name")
+
+            /**
+             * The OCI region containing the vault
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun region(): String = region.getRequired("region")
+
+            /**
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("oci")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * The customer OCI Vault OCID
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun vaultOcid(): String = vaultOcid.getRequired("vault_ocid")
+
+            /**
+             * The exact OCI key version OCID for PSP decryption.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun keyVersionOcid(): Optional<String> = keyVersionOcid.getOptional("key_version_ocid")
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun purpose(): Optional<Purpose> = purpose.getOptional("purpose")
+
+            /**
+             * Returns the raw JSON value of [keyOcid].
+             *
+             * Unlike [keyOcid], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("key_ocid") @ExcludeMissing fun _keyOcid(): JsonField<String> = keyOcid
+
+            /**
+             * Returns the raw JSON value of [name].
+             *
+             * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+            /**
+             * Returns the raw JSON value of [region].
+             *
+             * Unlike [region], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("region") @ExcludeMissing fun _region(): JsonField<String> = region
+
+            /**
+             * Returns the raw JSON value of [vaultOcid].
+             *
+             * Unlike [vaultOcid], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("vault_ocid")
+            @ExcludeMissing
+            fun _vaultOcid(): JsonField<String> = vaultOcid
+
+            /**
+             * Returns the raw JSON value of [keyVersionOcid].
+             *
+             * Unlike [keyVersionOcid], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("key_version_ocid")
+            @ExcludeMissing
+            fun _keyVersionOcid(): JsonField<String> = keyVersionOcid
+
+            /**
+             * Returns the raw JSON value of [purpose].
+             *
+             * Unlike [purpose], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("purpose") @ExcludeMissing fun _purpose(): JsonField<Purpose> = purpose
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "key_ocid" to this.keyOcid,
+                    "name" to this.name,
+                    "region" to this.region,
+                    "type" to this.type,
+                    "vault_ocid" to this.vaultOcid,
+                    "key_version_ocid" to this.keyVersionOcid,
+                    "purpose" to this.purpose,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Oci].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .keyOcid()
+                 * .name()
+                 * .region()
+                 * .vaultOcid()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Oci]. */
+            class Builder internal constructor() {
+
+                private var keyOcid: JsonField<String>? = null
+                private var name: JsonField<String>? = null
+                private var region: JsonField<String>? = null
+                private var type: JsonValue = JsonValue.from("oci")
+                private var vaultOcid: JsonField<String>? = null
+                private var keyVersionOcid: JsonField<String> = JsonMissing.of()
+                private var purpose: JsonField<Purpose> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(oci: Oci) = apply {
+                    keyOcid = oci.keyOcid
+                    name = oci.name
+                    region = oci.region
+                    type = oci.type
+                    vaultOcid = oci.vaultOcid
+                    keyVersionOcid = oci.keyVersionOcid
+                    purpose = oci.purpose
+                    additionalProperties = oci.additionalProperties.toMutableMap()
+                }
+
+                /** The OCI Vault key OCID */
+                fun keyOcid(keyOcid: String) = keyOcid(JsonField.of(keyOcid))
+
+                /**
+                 * Sets [Builder.keyOcid] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.keyOcid] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun keyOcid(keyOcid: JsonField<String>) = apply { this.keyOcid = keyOcid }
+
+                /** A friendly name to identify this config */
+                fun name(name: String) = name(JsonField.of(name))
+
+                /**
+                 * Sets [Builder.name] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.name] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun name(name: JsonField<String>) = apply { this.name = name }
+
+                /** The OCI region containing the vault */
+                fun region(region: String) = region(JsonField.of(region))
+
+                /**
+                 * Sets [Builder.region] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.region] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun region(region: JsonField<String>) = apply { this.region = region }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("oci")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                /** The customer OCI Vault OCID */
+                fun vaultOcid(vaultOcid: String) = vaultOcid(JsonField.of(vaultOcid))
+
+                /**
+                 * Sets [Builder.vaultOcid] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.vaultOcid] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun vaultOcid(vaultOcid: JsonField<String>) = apply { this.vaultOcid = vaultOcid }
+
+                /** The exact OCI key version OCID for PSP decryption. */
+                fun keyVersionOcid(keyVersionOcid: String) =
+                    keyVersionOcid(JsonField.of(keyVersionOcid))
+
+                /**
+                 * Sets [Builder.keyVersionOcid] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.keyVersionOcid] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun keyVersionOcid(keyVersionOcid: JsonField<String>) = apply {
+                    this.keyVersionOcid = keyVersionOcid
+                }
+
+                fun purpose(purpose: Purpose) = purpose(JsonField.of(purpose))
+
+                /**
+                 * Sets [Builder.purpose] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.purpose] with a well-typed [Purpose] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun purpose(purpose: JsonField<Purpose>) = apply { this.purpose = purpose }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Oci].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .keyOcid()
+                 * .name()
+                 * .region()
+                 * .vaultOcid()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Oci =
+                    Oci(
+                        checkRequired("keyOcid", keyOcid),
+                        checkRequired("name", name),
+                        checkRequired("region", region),
+                        type,
+                        checkRequired("vaultOcid", vaultOcid),
+                        keyVersionOcid,
+                        purpose,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Oci = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                keyOcid()
+                name()
+                region()
+                _type().let {
+                    if (it != JsonValue.from("oci")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                vaultOcid()
+                keyVersionOcid()
+                purpose().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (keyOcid.asKnown().isPresent) 1 else 0) +
+                    (if (name.asKnown().isPresent) 1 else 0) +
+                    (if (region.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("oci")) 1 else 0 } +
+                    (if (vaultOcid.asKnown().isPresent) 1 else 0) +
+                    (if (keyVersionOcid.asKnown().isPresent) 1 else 0) +
+                    (purpose.asKnown().getOrNull()?.validity() ?: 0)
+
+            class Purpose @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val EKM = of("ekm")
+
+                    @JvmField val PSP_DECRYPTION = of("psp_decryption")
+
+                    @JvmStatic fun of(value: String) = Purpose(JsonField.of(value))
+                }
+
+                /** An enum containing [Purpose]'s known values. */
+                enum class Known {
+                    EKM,
+                    PSP_DECRYPTION,
+                }
+
+                /**
+                 * An enum containing [Purpose]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Purpose] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    EKM,
+                    PSP_DECRYPTION,
+                    /**
+                     * An enum member indicating that [Purpose] was instantiated with an unknown
+                     * value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        EKM -> Value.EKM
+                        PSP_DECRYPTION -> Value.PSP_DECRYPTION
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        EKM -> Known.EKM
+                        PSP_DECRYPTION -> Known.PSP_DECRYPTION
+                        else -> throw OpenAIInvalidDataException("Unknown Purpose: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Purpose = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Purpose && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Oci &&
+                    keyOcid == other.keyOcid &&
+                    name == other.name &&
+                    region == other.region &&
+                    type == other.type &&
+                    vaultOcid == other.vaultOcid &&
+                    keyVersionOcid == other.keyVersionOcid &&
+                    purpose == other.purpose &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    keyOcid,
+                    name,
+                    region,
+                    type,
+                    vaultOcid,
+                    keyVersionOcid,
+                    purpose,
+                    additionalProperties,
+                )
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Oci{keyOcid=$keyOcid, name=$name, region=$region, type=$type, vaultOcid=$vaultOcid, keyVersionOcid=$keyVersionOcid, purpose=$purpose, additionalProperties=$additionalProperties}"
         }
     }
 

@@ -88,7 +88,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun instructions(): Optional<String> = body.instructions()
+    @Deprecated("deprecated") fun instructions(): Optional<String> = body.instructions()
 
     /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
@@ -180,7 +180,7 @@ private constructor(
      *
      * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _instructions(): JsonField<String> = body._instructions()
+    @Deprecated("deprecated") fun _instructions(): JsonField<String> = body._instructions()
 
     /**
      * Returns the raw JSON value of [previousResponseId].
@@ -355,9 +355,11 @@ private constructor(
          * over to the next response. This makes it simple to swap out system (or developer)
          * messages in new responses.
          */
+        @Deprecated("deprecated")
         fun instructions(instructions: String?) = apply { body.instructions(instructions) }
 
         /** Alias for calling [Builder.instructions] with `instructions.orElse(null)`. */
+        @Deprecated("deprecated")
         fun instructions(instructions: Optional<String>) = instructions(instructions.getOrNull())
 
         /**
@@ -367,6 +369,7 @@ private constructor(
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
+        @Deprecated("deprecated")
         fun instructions(instructions: JsonField<String>) = apply {
             body.instructions(instructions)
         }
@@ -744,6 +747,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
+        @Deprecated("deprecated")
         fun instructions(): Optional<String> = instructions.getOptional("instructions")
 
         /**
@@ -842,6 +846,7 @@ private constructor(
          * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected
          * type.
          */
+        @Deprecated("deprecated")
         @JsonProperty("instructions")
         @ExcludeMissing
         fun _instructions(): JsonField<String> = instructions
@@ -1050,10 +1055,12 @@ private constructor(
              * carried over to the next response. This makes it simple to swap out system (or
              * developer) messages in new responses.
              */
+            @Deprecated("deprecated")
             fun instructions(instructions: String?) =
                 instructions(JsonField.ofNullable(instructions))
 
             /** Alias for calling [Builder.instructions] with `instructions.orElse(null)`. */
+            @Deprecated("deprecated")
             fun instructions(instructions: Optional<String>) =
                 instructions(instructions.getOrNull())
 
@@ -1064,6 +1071,7 @@ private constructor(
              * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
+            @Deprecated("deprecated")
             fun instructions(instructions: JsonField<String>) = apply {
                 this.instructions = instructions
             }

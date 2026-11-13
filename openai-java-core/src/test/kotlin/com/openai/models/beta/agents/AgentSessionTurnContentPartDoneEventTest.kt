@@ -20,6 +20,7 @@ internal class AgentSessionTurnContentPartDoneEventTest {
                 .part(OutputText.builder().text("text").build())
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionTurnContentPartDoneEvent.contentIndex()).isEqualTo(0L)
@@ -30,6 +31,7 @@ internal class AgentSessionTurnContentPartDoneEventTest {
             .isEqualTo(OutputText.builder().text("text").build())
         assertThat(agentSessionTurnContentPartDoneEvent.sessionId()).isEqualTo("session_id")
         assertThat(agentSessionTurnContentPartDoneEvent.turnId()).contains("turn_id")
+        assertThat(agentSessionTurnContentPartDoneEvent.obfuscation()).contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 

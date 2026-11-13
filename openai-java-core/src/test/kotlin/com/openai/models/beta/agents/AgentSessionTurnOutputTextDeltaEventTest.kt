@@ -20,6 +20,7 @@ internal class AgentSessionTurnOutputTextDeltaEventTest {
                 .outputIndex(0L)
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionTurnOutputTextDeltaEvent.contentIndex()).isEqualTo(0L)
@@ -29,6 +30,7 @@ internal class AgentSessionTurnOutputTextDeltaEventTest {
         assertThat(agentSessionTurnOutputTextDeltaEvent.outputIndex()).isEqualTo(0L)
         assertThat(agentSessionTurnOutputTextDeltaEvent.sessionId()).isEqualTo("session_id")
         assertThat(agentSessionTurnOutputTextDeltaEvent.turnId()).contains("turn_id")
+        assertThat(agentSessionTurnOutputTextDeltaEvent.obfuscation()).contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 

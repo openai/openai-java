@@ -84,8 +84,16 @@ internal class SessionServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
+                    .promptCacheOptions(
+                        SessionCreateParams.PromptCacheOptions.builder()
+                            .ttl(SessionCreateParams.PromptCacheOptions.Ttl._30M)
+                            .build()
+                    )
                     .review(SessionCreateParams.Review.NONE)
                     .spendControl(SessionCreateParams.SpendControl.builder().limit(1L).build())
+                    .streamOptions(
+                        SessionCreateParams.StreamOptions.builder().includeObfuscation(true).build()
+                    )
                     .addVaultId("string")
                     .build()
             )
@@ -158,6 +166,11 @@ internal class SessionServiceTest {
                     .metadata(
                         SessionUpdateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .promptCacheOptions(
+                        SessionUpdateParams.PromptCacheOptions.builder()
+                            .ttl(SessionUpdateParams.PromptCacheOptions.Ttl._30M)
                             .build()
                     )
                     .review(SessionUpdateParams.Review.NONE)
