@@ -92,3 +92,24 @@ These fixtures validate detection of real linkage failures; they are not an old
 SDK consumer suite. For an SDK migration, also run representative
 consumers compiled against the selected release with the proposed SDK JARs and
 their complete runtime dependencies, without recompiling the consumers.
+
+## Responses streaming consumer
+
+The OkHttp runtime probe sends a request to a loopback server that emits an
+unknown event followed by a text delta. It checks the unknown event's JSON
+type, distinct nested wire keys, and an additional field on the known event.
+
+To check binary and source compatibility across two SDK installations, supply
+their complete, separately resolved runtime classpaths. This probe exercises
+the raw `_delta()` accessor. Compare typed getter descriptors separately with
+`check_binary_api.py`. The baseline must
+provide the APIs used by the probe, including `_allProperties()`. Use a JDK
+with `javac --release 8` support.
+
+```sh
+scripts/compatibility/evolution/check-sdk "$baseline_classpath" "$candidate_classpath"
+```
+
+The script runs the baseline consumer with each SDK, then recompiles and runs
+it with the candidate. Each run uses a separate JVM. The ordinary runtime
+compatibility workflow also runs the same probe on its supported JVM matrix.

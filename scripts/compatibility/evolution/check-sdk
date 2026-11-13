@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Run from any directory with resolved, isolated SDK consumer classpaths.
+set -euo pipefail
+
+if [[ $# -ne 2 ]]; then
+    echo "Usage: $0 <baseline-classpath> <candidate-classpath>" >&2
+    exit 2
+fi
+
+root=$(cd "$(dirname "$0")/../../.." && pwd)
+probe=com.openai.compatibility.ResponseStreamEvolutionProbe
+source="$root/openai-java-runtime-compatibility/src/main/java/com/openai/compatibility/ResponseStreamEvolutionProbe.java"
+classes=$(mktemp -d)
+trap 'rm -rf "$classes"' EXIT
+
+compile_probe() {
+    javac --release 8 -Xlint:-options -cp "$1" -d "$classes/$2" "$source"
+}
+
+compile_probe "$1" baseline
+java -cp "$classes/baseline:$1" "$probe"
+status=0
+if ! java -cp "$classes/baseline:$2" "$probe"; then
+    echo "Baseline bytecode failed with the candidate SDK" >&2
+    status=1
+fi
+if ! compile_probe "$2" candidate; then
+    echo "Consumer source failed to compile with the candidate SDK" >&2
+    status=1
+elif ! java -cp "$classes/candidate:$2" "$probe"; then
+    echo "Recompiled consumer failed with the candidate SDK" >&2
+    status=1
+fi
+exit "$status"

@@ -34,6 +34,7 @@ public final class OkHttpRuntimeProbe {
             server.stop(0);
         }
 
+        ResponseStreamEvolutionProbe.main(args);
         System.out.printf("Exercised an OkHttp SDK client on Java %s.%n", System.getProperty("java.version"));
     }
 
