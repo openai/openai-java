@@ -19,7 +19,6 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
@@ -202,25 +201,12 @@ private constructor(
          */
         fun session(session: JsonField<Session>) = apply { this.session = session }
 
-        /**
-         * Alias for calling [session] with
-         * `Session.ofRealtimeSessionCreateRequest(realtimeSessionCreateRequest)`.
-         */
-        fun session(realtimeSessionCreateRequest: RealtimeSessionCreateRequest) =
-            session(Session.ofRealtimeSessionCreateRequest(realtimeSessionCreateRequest))
+        /** Alias for calling [session] with `Session.ofRealtime(realtime)`. */
+        fun session(realtime: RealtimeSessionCreateRequest) = session(Session.ofRealtime(realtime))
 
-        /**
-         * Alias for calling [session] with
-         * `Session.ofRealtimeTranscriptionSessionCreateRequest(realtimeTranscriptionSessionCreateRequest)`.
-         */
-        fun session(
-            realtimeTranscriptionSessionCreateRequest: RealtimeTranscriptionSessionCreateRequest
-        ) =
-            session(
-                Session.ofRealtimeTranscriptionSessionCreateRequest(
-                    realtimeTranscriptionSessionCreateRequest
-                )
-            )
+        /** Alias for calling [session] with `Session.ofTranscription(transcription)`. */
+        fun session(transcription: RealtimeTranscriptionSessionCreateRequest) =
+            session(Session.ofTranscription(transcription))
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -336,37 +322,28 @@ private constructor(
     @JsonSerialize(using = Session.Serializer::class)
     class Session
     private constructor(
-        private val realtimeSessionCreateRequest: RealtimeSessionCreateRequest? = null,
-        private val realtimeTranscriptionSessionCreateRequest:
-            RealtimeTranscriptionSessionCreateRequest? =
-            null,
+        private val realtime: RealtimeSessionCreateRequest? = null,
+        private val transcription: RealtimeTranscriptionSessionCreateRequest? = null,
         private val _json: JsonValue? = null,
     ) {
 
         /** Realtime session object configuration. */
-        fun realtimeSessionCreateRequest(): Optional<RealtimeSessionCreateRequest> =
-            Optional.ofNullable(realtimeSessionCreateRequest)
+        fun realtime(): Optional<RealtimeSessionCreateRequest> = Optional.ofNullable(realtime)
 
         /** Realtime transcription session object configuration. */
-        fun realtimeTranscriptionSessionCreateRequest():
-            Optional<RealtimeTranscriptionSessionCreateRequest> =
-            Optional.ofNullable(realtimeTranscriptionSessionCreateRequest)
+        fun transcription(): Optional<RealtimeTranscriptionSessionCreateRequest> =
+            Optional.ofNullable(transcription)
 
-        fun isRealtimeSessionCreateRequest(): Boolean = realtimeSessionCreateRequest != null
+        fun isRealtime(): Boolean = realtime != null
 
-        fun isRealtimeTranscriptionSessionCreateRequest(): Boolean =
-            realtimeTranscriptionSessionCreateRequest != null
+        fun isTranscription(): Boolean = transcription != null
 
         /** Realtime session object configuration. */
-        fun asRealtimeSessionCreateRequest(): RealtimeSessionCreateRequest =
-            realtimeSessionCreateRequest.getOrThrow("realtimeSessionCreateRequest")
+        fun asRealtime(): RealtimeSessionCreateRequest = realtime.getOrThrow("realtime")
 
         /** Realtime transcription session object configuration. */
-        fun asRealtimeTranscriptionSessionCreateRequest():
-            RealtimeTranscriptionSessionCreateRequest =
-            realtimeTranscriptionSessionCreateRequest.getOrThrow(
-                "realtimeTranscriptionSessionCreateRequest"
-            )
+        fun asTranscription(): RealtimeTranscriptionSessionCreateRequest =
+            transcription.getOrThrow("transcription")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -382,8 +359,8 @@ private constructor(
          *
          * Optional<String> result = session.accept(new Session.Visitor<Optional<String>>() {
          *     @Override
-         *     public Optional<String> visitRealtimeSessionCreateRequest(RealtimeSessionCreateRequest realtimeSessionCreateRequest) {
-         *         return Optional.of(realtimeSessionCreateRequest.toString());
+         *     public Optional<String> visitRealtime(RealtimeSessionCreateRequest realtime) {
+         *         return Optional.of(realtime.toString());
          *     }
          *
          *     // ...
@@ -401,12 +378,8 @@ private constructor(
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
-                realtimeSessionCreateRequest != null ->
-                    visitor.visitRealtimeSessionCreateRequest(realtimeSessionCreateRequest)
-                realtimeTranscriptionSessionCreateRequest != null ->
-                    visitor.visitRealtimeTranscriptionSessionCreateRequest(
-                        realtimeTranscriptionSessionCreateRequest
-                    )
+                realtime != null -> visitor.visitRealtime(realtime)
+                transcription != null -> visitor.visitTranscription(transcription)
                 else -> visitor.unknown(_json)
             }
 
@@ -428,17 +401,14 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitRealtimeSessionCreateRequest(
-                        realtimeSessionCreateRequest: RealtimeSessionCreateRequest
-                    ) {
-                        realtimeSessionCreateRequest.validate()
+                    override fun visitRealtime(realtime: RealtimeSessionCreateRequest) {
+                        realtime.validate()
                     }
 
-                    override fun visitRealtimeTranscriptionSessionCreateRequest(
-                        realtimeTranscriptionSessionCreateRequest:
-                            RealtimeTranscriptionSessionCreateRequest
+                    override fun visitTranscription(
+                        transcription: RealtimeTranscriptionSessionCreateRequest
                     ) {
-                        realtimeTranscriptionSessionCreateRequest.validate()
+                        transcription.validate()
                     }
                 }
             )
@@ -463,14 +433,12 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitRealtimeSessionCreateRequest(
-                        realtimeSessionCreateRequest: RealtimeSessionCreateRequest
-                    ) = realtimeSessionCreateRequest.validity()
+                    override fun visitRealtime(realtime: RealtimeSessionCreateRequest) =
+                        realtime.validity()
 
-                    override fun visitRealtimeTranscriptionSessionCreateRequest(
-                        realtimeTranscriptionSessionCreateRequest:
-                            RealtimeTranscriptionSessionCreateRequest
-                    ) = realtimeTranscriptionSessionCreateRequest.validity()
+                    override fun visitTranscription(
+                        transcription: RealtimeTranscriptionSessionCreateRequest
+                    ) = transcription.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -482,32 +450,19 @@ private constructor(
             }
 
             return other is Session &&
-                realtimeSessionCreateRequest == other.realtimeSessionCreateRequest &&
-                realtimeTranscriptionSessionCreateRequest ==
-                    other.realtimeTranscriptionSessionCreateRequest &&
-                (realtimeSessionCreateRequest != null ||
-                    realtimeTranscriptionSessionCreateRequest != null ||
-                    _json == other._json)
+                realtime == other.realtime &&
+                transcription == other.transcription &&
+                (realtime != null || transcription != null || _json == other._json)
         }
 
         override fun hashCode(): Int =
-            if (
-                realtimeSessionCreateRequest == null &&
-                    realtimeTranscriptionSessionCreateRequest == null
-            )
-                Objects.hash(_json)
-            else
-                Objects.hash(
-                    realtimeSessionCreateRequest,
-                    realtimeTranscriptionSessionCreateRequest,
-                )
+            if (realtime == null && transcription == null) Objects.hash(_json)
+            else Objects.hash(realtime, transcription)
 
         override fun toString(): String =
             when {
-                realtimeSessionCreateRequest != null ->
-                    "Session{realtimeSessionCreateRequest=$realtimeSessionCreateRequest}"
-                realtimeTranscriptionSessionCreateRequest != null ->
-                    "Session{realtimeTranscriptionSessionCreateRequest=$realtimeTranscriptionSessionCreateRequest}"
+                realtime != null -> "Session{realtime=$realtime}"
+                transcription != null -> "Session{transcription=$transcription}"
                 _json != null -> "Session{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Session")
             }
@@ -516,19 +471,12 @@ private constructor(
 
             /** Realtime session object configuration. */
             @JvmStatic
-            fun ofRealtimeSessionCreateRequest(
-                realtimeSessionCreateRequest: RealtimeSessionCreateRequest
-            ) = Session(realtimeSessionCreateRequest = realtimeSessionCreateRequest)
+            fun ofRealtime(realtime: RealtimeSessionCreateRequest) = Session(realtime = realtime)
 
             /** Realtime transcription session object configuration. */
             @JvmStatic
-            fun ofRealtimeTranscriptionSessionCreateRequest(
-                realtimeTranscriptionSessionCreateRequest: RealtimeTranscriptionSessionCreateRequest
-            ) =
-                Session(
-                    realtimeTranscriptionSessionCreateRequest =
-                        realtimeTranscriptionSessionCreateRequest
-                )
+            fun ofTranscription(transcription: RealtimeTranscriptionSessionCreateRequest) =
+                Session(transcription = transcription)
         }
 
         /**
@@ -537,14 +485,12 @@ private constructor(
         interface Visitor<out T> {
 
             /** Realtime session object configuration. */
-            fun visitRealtimeSessionCreateRequest(
-                realtimeSessionCreateRequest: RealtimeSessionCreateRequest
-            ): T = unknown(JsonValue.from(realtimeSessionCreateRequest))
+            fun visitRealtime(realtime: RealtimeSessionCreateRequest): T =
+                unknown(JsonValue.from(realtime))
 
             /** Realtime transcription session object configuration. */
-            fun visitRealtimeTranscriptionSessionCreateRequest(
-                realtimeTranscriptionSessionCreateRequest: RealtimeTranscriptionSessionCreateRequest
-            ): T = unknown(JsonValue.from(realtimeTranscriptionSessionCreateRequest))
+            fun visitTranscription(transcription: RealtimeTranscriptionSessionCreateRequest): T =
+                unknown(JsonValue.from(transcription))
 
             /**
              * Maps an unknown variant of [Session] to a value of type [T].
@@ -567,35 +513,24 @@ private constructor(
 
             override fun ObjectCodec.deserialize(node: JsonNode): Session {
                 val json = JsonValue.fromJsonNode(node)
+                val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
 
-                val bestMatches =
-                    sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<RealtimeSessionCreateRequest>())
-                                ?.let { Session(realtimeSessionCreateRequest = it, _json = json) },
-                            tryDeserialize(
-                                    node,
-                                    jacksonTypeRef<RealtimeTranscriptionSessionCreateRequest>(),
-                                )
-                                ?.let {
-                                    Session(
-                                        realtimeTranscriptionSessionCreateRequest = it,
-                                        _json = json,
-                                    )
-                                },
-                        )
-                        .filterNotNull()
-                        .allMaxBy { it.validity() }
-                        .toList()
-                return when (bestMatches.size) {
-                    // This can happen if what we're deserializing is completely incompatible with
-                    // all the possible variants (e.g. deserializing from boolean).
-                    0 -> Session(_json = json)
-                    1 -> bestMatches.single()
-                    // If there's more than one match with the highest validity, then use the first
-                    // completely valid match, or simply the first match if none are completely
-                    // valid.
-                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                when (type) {
+                    "realtime" -> {
+                        return tryDeserialize(node, jacksonTypeRef<RealtimeSessionCreateRequest>())
+                            ?.let { Session(realtime = it, _json = json) } ?: Session(_json = json)
+                    }
+                    "transcription" -> {
+                        return tryDeserialize(
+                                node,
+                                jacksonTypeRef<RealtimeTranscriptionSessionCreateRequest>(),
+                            )
+                            ?.let { Session(transcription = it, _json = json) }
+                            ?: Session(_json = json)
+                    }
                 }
+
+                return Session(_json = json)
             }
         }
 
@@ -607,10 +542,8 @@ private constructor(
                 provider: SerializerProvider,
             ) {
                 when {
-                    value.realtimeSessionCreateRequest != null ->
-                        generator.writeObject(value.realtimeSessionCreateRequest)
-                    value.realtimeTranscriptionSessionCreateRequest != null ->
-                        generator.writeObject(value.realtimeTranscriptionSessionCreateRequest)
+                    value.realtime != null -> generator.writeObject(value.realtime)
+                    value.transcription != null -> generator.writeObject(value.transcription)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Session")
                 }

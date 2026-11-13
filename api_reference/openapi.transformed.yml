@@ -55274,6 +55274,11 @@ components:
           anyOf:
           - $ref: '#/components/schemas/RealtimeSessionCreateRequestGA'
           - $ref: '#/components/schemas/RealtimeTranscriptionSessionCreateRequestGA'
+          discriminator:
+            propertyName: type
+            mapping:
+              realtime: '#/components/schemas/RealtimeSessionCreateRequestGA'
+              transcription: '#/components/schemas/RealtimeTranscriptionSessionCreateRequestGA'
       required:
       - type
       - session
@@ -55789,6 +55794,9 @@ components:
           - $ref: '#/components/schemas/RealtimeTranscriptionSessionCreateRequestGA'
           discriminator:
             propertyName: type
+            mapping:
+              realtime: '#/components/schemas/RealtimeSessionCreateRequestGA'
+              transcription: '#/components/schemas/RealtimeTranscriptionSessionCreateRequestGA'
     RealtimeCreateClientSecretResponse:
       type: object
       title: Realtime session and client secret
