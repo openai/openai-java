@@ -6,7 +6,6 @@ import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.SecurityOptions
 import com.openai.core.checkRequired
-import com.openai.core.handlers.emptyHandler
 import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
@@ -23,6 +22,7 @@ import com.openai.core.prepareAsync
 import com.openai.models.containers.files.FileCreateParams
 import com.openai.models.containers.files.FileCreateResponse
 import com.openai.models.containers.files.FileDeleteParams
+import com.openai.models.containers.files.FileDeleteResponse
 import com.openai.models.containers.files.FileListPageAsync
 import com.openai.models.containers.files.FileListPageResponse
 import com.openai.models.containers.files.FileListParams
@@ -74,10 +74,10 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
     override fun delete(
         params: FileDeleteParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<FileDeleteResponse> =
         // delete /containers/{container_id}/files/{file_id}
-        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
-        withRawResponse().delete(params, requestOptions).thenApply { it.close() }.thenAccept {}
+        // Keep parse and close upstream of the caller's cancellable future.
+        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }.thenApply { it }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         FileServiceAsync.WithRawResponse {
@@ -223,12 +223,13 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 }
         }
 
-        private val deleteHandler: Handler<Void?> = emptyHandler()
+        private val deleteHandler: Handler<FileDeleteResponse> =
+            jsonHandler<FileDeleteResponse>(clientOptions.jsonMapper)
 
         override fun delete(
             params: FileDeleteParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<FileDeleteResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fileId", params.fileId().getOrNull())
@@ -254,7 +255,13 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { deleteHandler.handle(it) }
+                        response
+                            .use { deleteHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

@@ -6,7 +6,6 @@ import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.SecurityOptions
 import com.openai.core.checkRequired
-import com.openai.core.handlers.emptyHandler
 import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
@@ -22,6 +21,7 @@ import com.openai.core.prepare
 import com.openai.models.containers.files.FileCreateParams
 import com.openai.models.containers.files.FileCreateResponse
 import com.openai.models.containers.files.FileDeleteParams
+import com.openai.models.containers.files.FileDeleteResponse
 import com.openai.models.containers.files.FileListPage
 import com.openai.models.containers.files.FileListPageResponse
 import com.openai.models.containers.files.FileListParams
@@ -65,10 +65,12 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
         // get /containers/{container_id}/files
         withRawResponse().list(params, requestOptions).parse()
 
-    override fun delete(params: FileDeleteParams, requestOptions: RequestOptions) {
+    override fun delete(
+        params: FileDeleteParams,
+        requestOptions: RequestOptions,
+    ): FileDeleteResponse =
         // delete /containers/{container_id}/files/{file_id}
-        withRawResponse().delete(params, requestOptions).close()
-    }
+        withRawResponse().delete(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         FileService.WithRawResponse {
@@ -204,12 +206,13 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             }
         }
 
-        private val deleteHandler: Handler<Void?> = emptyHandler()
+        private val deleteHandler: Handler<FileDeleteResponse> =
+            jsonHandler<FileDeleteResponse>(clientOptions.jsonMapper)
 
         override fun delete(
             params: FileDeleteParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<FileDeleteResponse> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fileId", params.fileId().getOrNull())
@@ -233,7 +236,13 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { deleteHandler.handle(it) }
+                response
+                    .use { deleteHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
     }

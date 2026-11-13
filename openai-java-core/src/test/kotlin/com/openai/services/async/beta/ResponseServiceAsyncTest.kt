@@ -209,7 +209,7 @@ internal class ResponseServiceAsyncTest {
                 .build()
         val responseServiceAsync = client.beta().responses()
 
-        val future =
+        val responseFuture =
             responseServiceAsync.delete(
                 ResponseDeleteParams.builder()
                     .responseId("resp_677efb5139a88190b512bc3fef8e535d")
@@ -217,7 +217,8 @@ internal class ResponseServiceAsyncTest {
                     .build()
             )
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 
     @Test

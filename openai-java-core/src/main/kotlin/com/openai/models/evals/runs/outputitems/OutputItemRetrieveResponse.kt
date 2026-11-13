@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -1552,7 +1553,6 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .error()
              * .finishReason()
              * .input()
              * .maxCompletionTokens()
@@ -1570,7 +1570,7 @@ private constructor(
         /** A builder for [Sample]. */
         class Builder internal constructor() {
 
-            private var error: JsonField<EvalApiError>? = null
+            private var error: JsonField<EvalApiError>? = JsonNull.of()
             private var finishReason: JsonField<String>? = null
             private var input: JsonField<MutableList<Input>>? = null
             private var maxCompletionTokens: JsonField<Long>? = null
@@ -1598,7 +1598,10 @@ private constructor(
             }
 
             /** An object representing an error response from the Eval API. */
-            fun error(error: EvalApiError) = error(JsonField.of(error))
+            fun error(error: EvalApiError?) = error(JsonField.ofNullable(error))
+
+            /** Alias for calling [Builder.error] with `error.orElse(null)`. */
+            fun error(error: Optional<EvalApiError>) = error(error.getOrNull())
 
             /**
              * Sets [Builder.error] to an arbitrary JSON value.
@@ -1778,7 +1781,6 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .error()
              * .finishReason()
              * .input()
              * .maxCompletionTokens()
@@ -1824,7 +1826,7 @@ private constructor(
                 return@apply
             }
 
-            errorOrThrow().validate()
+            error().ifPresent { it.validate() }
             finishReasonOrThrow()
             inputOrThrow().forEach { it.validate() }
             maxCompletionTokensOrThrow()

@@ -78,8 +78,11 @@ internal class FileServiceTest {
                 .build()
         val fileService = client.containers().files()
 
-        fileService.delete(
-            FileDeleteParams.builder().containerId("container_id").fileId("file_id").build()
-        )
+        val file =
+            fileService.delete(
+                FileDeleteParams.builder().containerId("container_id").fileId("file_id").build()
+            )
+
+        file.validate()
     }
 }

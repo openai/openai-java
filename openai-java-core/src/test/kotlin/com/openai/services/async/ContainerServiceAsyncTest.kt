@@ -86,8 +86,9 @@ internal class ContainerServiceAsyncTest {
                 .build()
         val containerServiceAsync = client.containers()
 
-        val future = containerServiceAsync.delete("container_id")
+        val containerFuture = containerServiceAsync.delete("container_id")
 
-        val response = future.get()
+        val container = containerFuture.get()
+        container.validate()
     }
 }

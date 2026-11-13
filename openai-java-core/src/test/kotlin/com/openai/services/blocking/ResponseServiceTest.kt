@@ -201,7 +201,9 @@ internal class ResponseServiceTest {
                 .build()
         val responseService = client.responses()
 
-        responseService.delete("resp_677efb5139a88190b512bc3fef8e535d")
+        val response = responseService.delete("resp_677efb5139a88190b512bc3fef8e535d")
+
+        response.validate()
     }
 
     @Test

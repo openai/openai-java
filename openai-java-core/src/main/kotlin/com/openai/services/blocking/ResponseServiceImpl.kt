@@ -7,7 +7,6 @@ import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
 import com.openai.core.SecurityOptions
 import com.openai.core.checkRequired
-import com.openai.core.handlers.emptyHandler
 import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
@@ -29,6 +28,7 @@ import com.openai.models.responses.ResponseCancelParams
 import com.openai.models.responses.ResponseCompactParams
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
+import com.openai.models.responses.ResponseDeleteResponse
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseStreamEvent
 import com.openai.services.blocking.responses.InputItemService
@@ -93,10 +93,12 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
         // get /responses/{response_id}
         withRawResponse().retrieveStreaming(params, requestOptions).parse()
 
-    override fun delete(params: ResponseDeleteParams, requestOptions: RequestOptions) {
+    override fun delete(
+        params: ResponseDeleteParams,
+        requestOptions: RequestOptions,
+    ): ResponseDeleteResponse =
         // delete /responses/{response_id}
-        withRawResponse().delete(params, requestOptions).close()
-    }
+        withRawResponse().delete(params, requestOptions).parse()
 
     override fun cancel(params: ResponseCancelParams, requestOptions: RequestOptions): Response =
         // post /responses/{response_id}/cancel
@@ -284,12 +286,13 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             }
         }
 
-        private val deleteHandler: Handler<Void?> = emptyHandler()
+        private val deleteHandler: Handler<ResponseDeleteResponse> =
+            jsonHandler<ResponseDeleteResponse>(clientOptions.jsonMapper)
 
         override fun delete(
             params: ResponseDeleteParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<ResponseDeleteResponse> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("responseId", params.responseId().getOrNull())
@@ -308,7 +311,13 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
-                response.use { deleteHandler.handle(it) }
+                response
+                    .use { deleteHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
         }
 

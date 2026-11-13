@@ -16,12 +16,21 @@ internal class ConversationTest {
             Conversation.builder()
                 .id("id")
                 .createdAt(0L)
-                .metadata(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    Conversation.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .build()
 
         assertThat(conversation.id()).contains("id")
         assertThat(conversation.createdAt()).contains(0L)
-        assertThat(conversation._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(conversation.metadata())
+            .contains(
+                Conversation.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
+            )
 
         val jsonMapper = jsonMapper()
 

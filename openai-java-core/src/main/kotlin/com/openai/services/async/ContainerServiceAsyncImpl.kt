@@ -6,7 +6,6 @@ import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.SecurityOptions
 import com.openai.core.checkRequired
-import com.openai.core.handlers.emptyHandler
 import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
@@ -21,6 +20,7 @@ import com.openai.core.prepareAsync
 import com.openai.models.containers.ContainerCreateParams
 import com.openai.models.containers.ContainerCreateResponse
 import com.openai.models.containers.ContainerDeleteParams
+import com.openai.models.containers.ContainerDeleteResponse
 import com.openai.models.containers.ContainerListPageAsync
 import com.openai.models.containers.ContainerListPageResponse
 import com.openai.models.containers.ContainerListParams
@@ -72,10 +72,10 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
     override fun delete(
         params: ContainerDeleteParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<ContainerDeleteResponse> =
         // delete /containers/{container_id}
-        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
-        withRawResponse().delete(params, requestOptions).thenApply { it.close() }.thenAccept {}
+        // Keep parse and close upstream of the caller's cancellable future.
+        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }.thenApply { it }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ContainerServiceAsync.WithRawResponse {
@@ -210,12 +210,13 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
                 }
         }
 
-        private val deleteHandler: Handler<Void?> = emptyHandler()
+        private val deleteHandler: Handler<ContainerDeleteResponse> =
+            jsonHandler<ContainerDeleteResponse>(clientOptions.jsonMapper)
 
         override fun delete(
             params: ContainerDeleteParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<ContainerDeleteResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("containerId", params.containerId().getOrNull())
@@ -236,7 +237,13 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { deleteHandler.handle(it) }
+                        response
+                            .use { deleteHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

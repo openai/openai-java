@@ -93,8 +93,8 @@ private constructor(
         val raw = object_
         return when {
             raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
-            !(raw == JsonValue.from("vector_store.files_batch") ||
-                raw == JsonValue.from("vector_store.file_batch")) ->
+            !(raw == JsonValue.from("vector_store.file_batch") ||
+                raw == JsonValue.from("vector_store.files_batch")) ->
                 throw OpenAIInvalidDataException("`object` is invalid")
             else -> java.util.Optional.of(raw)
         }
@@ -232,7 +232,7 @@ private constructor(
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
         private var fileCounts: JsonField<FileCounts>? = null
-        private var object_: JsonValue = JsonValue.from("vector_store.files_batch")
+        private var object_: JsonValue = JsonValue.from("vector_store.file_batch")
         private var status: JsonField<Status>? = null
         private var vectorStoreId: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -287,7 +287,7 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("vector_store.files_batch")
+         * JsonValue.from("vector_store.file_batch")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
@@ -417,8 +417,8 @@ private constructor(
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (fileCounts.asKnown().getOrNull()?.validity() ?: 0) +
             (if (
-                object_ == JsonValue.from("vector_store.files_batch") ||
-                    object_ == JsonValue.from("vector_store.file_batch")
+                object_ == JsonValue.from("vector_store.file_batch") ||
+                    object_ == JsonValue.from("vector_store.files_batch")
             )
                 1
             else 0) +

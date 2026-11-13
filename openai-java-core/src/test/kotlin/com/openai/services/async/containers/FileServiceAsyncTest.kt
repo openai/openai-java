@@ -81,11 +81,12 @@ internal class FileServiceAsyncTest {
                 .build()
         val fileServiceAsync = client.containers().files()
 
-        val future =
+        val fileFuture =
             fileServiceAsync.delete(
                 FileDeleteParams.builder().containerId("container_id").fileId("file_id").build()
             )
 
-        val response = future.get()
+        val file = fileFuture.get()
+        file.validate()
     }
 }

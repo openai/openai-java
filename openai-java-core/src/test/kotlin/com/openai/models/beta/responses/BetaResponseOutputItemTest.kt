@@ -704,6 +704,7 @@ internal class BetaResponseOutputItemTest {
         val webSearchCall =
             BetaResponseFunctionWebSearch.builder()
                 .id("id")
+                .status(BetaResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .action(
                     BetaResponseFunctionWebSearch.Action.Search.builder()
                         .addQuery("string")
@@ -715,7 +716,6 @@ internal class BetaResponseOutputItemTest {
                         )
                         .build()
                 )
-                .status(BetaResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .agent(
                     BetaResponseFunctionWebSearch.Agent.builder().agentName("agent_name").build()
                 )
@@ -763,6 +763,7 @@ internal class BetaResponseOutputItemTest {
             BetaResponseOutputItem.ofWebSearchCall(
                 BetaResponseFunctionWebSearch.builder()
                     .id("id")
+                    .status(BetaResponseFunctionWebSearch.Status.IN_PROGRESS)
                     .action(
                         BetaResponseFunctionWebSearch.Action.Search.builder()
                             .addQuery("string")
@@ -774,7 +775,6 @@ internal class BetaResponseOutputItemTest {
                             )
                             .build()
                     )
-                    .status(BetaResponseFunctionWebSearch.Status.IN_PROGRESS)
                     .agent(
                         BetaResponseFunctionWebSearch.Agent.builder()
                             .agentName("agent_name")

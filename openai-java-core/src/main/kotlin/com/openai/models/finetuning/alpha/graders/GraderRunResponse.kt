@@ -333,7 +333,7 @@ private constructor(
         private val name: JsonField<String>,
         private val sampledModelName: JsonField<String>,
         private val scores: JsonField<Scores>,
-        private val tokenUsage: JsonField<Long>,
+        private val tokenUsage: JsonField<TokenUsage>,
         private val type: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -351,7 +351,7 @@ private constructor(
             @JsonProperty("scores") @ExcludeMissing scores: JsonField<Scores> = JsonMissing.of(),
             @JsonProperty("token_usage")
             @ExcludeMissing
-            tokenUsage: JsonField<Long> = JsonMissing.of(),
+            tokenUsage: JsonField<TokenUsage> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonField<String> = JsonMissing.of(),
         ) : this(
             errors,
@@ -436,13 +436,13 @@ private constructor(
          *
          * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
-        fun tokenUsage(): java.util.Optional<Long> = tokenUsage.getOptional("token_usage")
+        fun tokenUsage(): java.util.Optional<TokenUsage> = tokenUsage.getOptional("token_usage")
 
         /**
          * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
          * invalid.
          */
-        fun tokenUsageOrThrow(): Long = tokenUsage.getRequired("token_usage")
+        fun tokenUsageOrThrow(): TokenUsage = tokenUsage.getRequired("token_usage")
 
         /**
          * The schema requires this property. Returns empty if the JSON property is missing or null.
@@ -503,7 +503,9 @@ private constructor(
          *
          * Unlike [tokenUsage], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("token_usage") @ExcludeMissing fun _tokenUsage(): JsonField<Long> = tokenUsage
+        @JsonProperty("token_usage")
+        @ExcludeMissing
+        fun _tokenUsage(): JsonField<TokenUsage> = tokenUsage
 
         /**
          * Returns the raw JSON value of [type].
@@ -572,7 +574,7 @@ private constructor(
             private var name: JsonField<String>? = null
             private var sampledModelName: JsonField<String>? = JsonNull.of()
             private var scores: JsonField<Scores>? = null
-            private var tokenUsage: JsonField<Long>? = JsonNull.of()
+            private var tokenUsage: JsonField<TokenUsage>? = JsonNull.of()
             private var type: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -654,26 +656,21 @@ private constructor(
              */
             fun scores(scores: JsonField<Scores>) = apply { this.scores = scores }
 
-            fun tokenUsage(tokenUsage: Long?) = tokenUsage(JsonField.ofNullable(tokenUsage))
-
-            /**
-             * Alias for [Builder.tokenUsage].
-             *
-             * This unboxed primitive overload exists for backwards compatibility.
-             */
-            fun tokenUsage(tokenUsage: Long) = tokenUsage(tokenUsage as Long?)
+            fun tokenUsage(tokenUsage: TokenUsage?) = tokenUsage(JsonField.ofNullable(tokenUsage))
 
             /** Alias for calling [Builder.tokenUsage] with `tokenUsage.orElse(null)`. */
-            fun tokenUsage(tokenUsage: Optional<Long>) = tokenUsage(tokenUsage.getOrNull())
+            fun tokenUsage(tokenUsage: Optional<TokenUsage>) = tokenUsage(tokenUsage.getOrNull())
 
             /**
              * Sets [Builder.tokenUsage] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.tokenUsage] with a well-typed [Long] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
+             * You should usually call [Builder.tokenUsage] with a well-typed [TokenUsage] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun tokenUsage(tokenUsage: JsonField<Long>) = apply { this.tokenUsage = tokenUsage }
+            fun tokenUsage(tokenUsage: JsonField<TokenUsage>) = apply {
+                this.tokenUsage = tokenUsage
+            }
 
             fun type(type: String) = type(JsonField.of(type))
 
@@ -755,7 +752,7 @@ private constructor(
             nameOrThrow()
             sampledModelName()
             scoresOrThrow().validate()
-            tokenUsage()
+            tokenUsage().ifPresent { it.validate() }
             typeOrThrow()
             validated = true
         }
@@ -781,7 +778,7 @@ private constructor(
                 (if (name.asKnown().isPresent) 1 else 0) +
                 (if (sampledModelName.asKnown().isPresent) 1 else 0) +
                 (scores.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (tokenUsage.asKnown().isPresent) 1 else 0) +
+                (tokenUsage.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (type.asKnown().isPresent) 1 else 0)
 
         class Errors
@@ -1863,6 +1860,390 @@ private constructor(
             override fun hashCode(): Int = hashCode
 
             override fun toString() = "Scores{additionalProperties=$additionalProperties}"
+        }
+
+        class TokenUsage
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val promptTokens: JsonField<Long>,
+            private val totalTokens: JsonField<Long>,
+            private val cachedTokens: JsonField<Long>,
+            private val completionTokens: JsonField<Long>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("prompt_tokens")
+                @ExcludeMissing
+                promptTokens: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("total_tokens")
+                @ExcludeMissing
+                totalTokens: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("cached_tokens")
+                @ExcludeMissing
+                cachedTokens: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("completion_tokens")
+                @ExcludeMissing
+                completionTokens: JsonField<Long> = JsonMissing.of(),
+            ) : this(promptTokens, totalTokens, cachedTokens, completionTokens, mutableMapOf())
+
+            /**
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun promptTokens(): java.util.Optional<Long> = promptTokens.getOptional("prompt_tokens")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun promptTokensOrThrow(): Long = promptTokens.getRequired("prompt_tokens")
+
+            /**
+             * The schema requires this property. Returns empty if the JSON property is missing or
+             * null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun totalTokens(): java.util.Optional<Long> = totalTokens.getOptional("total_tokens")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun totalTokensOrThrow(): Long = totalTokens.getRequired("total_tokens")
+
+            /**
+             * Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun cachedTokens(): java.util.Optional<Long> = cachedTokens.getOptional("cached_tokens")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun cachedTokensOrThrow(): Long = cachedTokens.getRequired("cached_tokens")
+
+            /**
+             * Returns empty if the JSON property is missing or null.
+             *
+             * @throws OpenAIInvalidDataException if the value has an unexpected type.
+             */
+            fun completionTokens(): java.util.Optional<Long> =
+                completionTokens.getOptional("completion_tokens")
+
+            /**
+             * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+             * invalid.
+             */
+            fun completionTokensOrThrow(): Long = completionTokens.getRequired("completion_tokens")
+
+            /**
+             * Returns the raw JSON value of [promptTokens].
+             *
+             * Unlike [promptTokens], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("prompt_tokens")
+            @ExcludeMissing
+            fun _promptTokens(): JsonField<Long> = promptTokens
+
+            /**
+             * Returns the raw JSON value of [totalTokens].
+             *
+             * Unlike [totalTokens], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("total_tokens")
+            @ExcludeMissing
+            fun _totalTokens(): JsonField<Long> = totalTokens
+
+            /**
+             * Returns the raw JSON value of [cachedTokens].
+             *
+             * Unlike [cachedTokens], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("cached_tokens")
+            @ExcludeMissing
+            fun _cachedTokens(): JsonField<Long> = cachedTokens
+
+            /**
+             * Returns the raw JSON value of [completionTokens].
+             *
+             * Unlike [completionTokens], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("completion_tokens")
+            @ExcludeMissing
+            fun _completionTokens(): JsonField<Long> = completionTokens
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "prompt_tokens" to this.promptTokens,
+                    "total_tokens" to this.totalTokens,
+                    "cached_tokens" to this.cachedTokens,
+                    "completion_tokens" to this.completionTokens,
+                )
+
+            @JvmSynthetic
+            internal fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [TokenUsage].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .promptTokens()
+                 * .totalTokens()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [TokenUsage]. */
+            class Builder internal constructor() {
+
+                private var promptTokens: JsonField<Long>? = null
+                private var totalTokens: JsonField<Long>? = null
+                private var cachedTokens: JsonField<Long> = JsonMissing.of()
+                private var completionTokens: JsonField<Long> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(tokenUsage: TokenUsage) = apply {
+                    promptTokens = tokenUsage.promptTokens
+                    totalTokens = tokenUsage.totalTokens
+                    cachedTokens = tokenUsage.cachedTokens
+                    completionTokens = tokenUsage.completionTokens
+                    additionalProperties = tokenUsage.additionalProperties.toMutableMap()
+                }
+
+                fun promptTokens(promptTokens: Long) = promptTokens(JsonField.of(promptTokens))
+
+                /**
+                 * Sets [Builder.promptTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.promptTokens] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun promptTokens(promptTokens: JsonField<Long>) = apply {
+                    this.promptTokens = promptTokens
+                }
+
+                fun totalTokens(totalTokens: Long) = totalTokens(JsonField.of(totalTokens))
+
+                /**
+                 * Sets [Builder.totalTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.totalTokens] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun totalTokens(totalTokens: JsonField<Long>) = apply {
+                    this.totalTokens = totalTokens
+                }
+
+                fun cachedTokens(cachedTokens: Long?) =
+                    cachedTokens(JsonField.ofNullable(cachedTokens))
+
+                /**
+                 * Alias for [Builder.cachedTokens].
+                 *
+                 * This unboxed primitive overload exists for backwards compatibility.
+                 */
+                fun cachedTokens(cachedTokens: Long) = cachedTokens(cachedTokens as Long?)
+
+                /** Alias for calling [Builder.cachedTokens] with `cachedTokens.orElse(null)`. */
+                fun cachedTokens(cachedTokens: Optional<Long>) =
+                    cachedTokens(cachedTokens.getOrNull())
+
+                /**
+                 * Sets [Builder.cachedTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.cachedTokens] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun cachedTokens(cachedTokens: JsonField<Long>) = apply {
+                    this.cachedTokens = cachedTokens
+                }
+
+                fun completionTokens(completionTokens: Long?) =
+                    completionTokens(JsonField.ofNullable(completionTokens))
+
+                /**
+                 * Alias for [Builder.completionTokens].
+                 *
+                 * This unboxed primitive overload exists for backwards compatibility.
+                 */
+                fun completionTokens(completionTokens: Long) =
+                    completionTokens(completionTokens as Long?)
+
+                /**
+                 * Alias for calling [Builder.completionTokens] with
+                 * `completionTokens.orElse(null)`.
+                 */
+                fun completionTokens(completionTokens: Optional<Long>) =
+                    completionTokens(completionTokens.getOrNull())
+
+                /**
+                 * Sets [Builder.completionTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.completionTokens] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun completionTokens(completionTokens: JsonField<Long>) = apply {
+                    this.completionTokens = completionTokens
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [TokenUsage].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .promptTokens()
+                 * .totalTokens()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): TokenUsage =
+                    TokenUsage(
+                        checkRequired("promptTokens", promptTokens),
+                        checkRequired("totalTokens", totalTokens),
+                        cachedTokens,
+                        completionTokens,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): TokenUsage = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                promptTokensOrThrow()
+                totalTokensOrThrow()
+                cachedTokens()
+                completionTokens()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (promptTokens.asKnown().isPresent) 1 else 0) +
+                    (if (totalTokens.asKnown().isPresent) 1 else 0) +
+                    (if (cachedTokens.asKnown().isPresent) 1 else 0) +
+                    (if (completionTokens.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is TokenUsage &&
+                    promptTokens == other.promptTokens &&
+                    totalTokens == other.totalTokens &&
+                    cachedTokens == other.cachedTokens &&
+                    completionTokens == other.completionTokens &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    promptTokens,
+                    totalTokens,
+                    cachedTokens,
+                    completionTokens,
+                    additionalProperties,
+                )
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "TokenUsage{promptTokens=$promptTokens, totalTokens=$totalTokens, cachedTokens=$cachedTokens, completionTokens=$completionTokens, additionalProperties=$additionalProperties}"
         }
 
         override fun equals(other: Any?): Boolean {

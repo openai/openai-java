@@ -31,6 +31,7 @@ internal class VectorStoreFileBatchCompatibilityTest {
         val batch = decode(json)
         assertThat(batch.validate()).isSameAs(batch)
         assertThat(batch.isValid()).isTrue()
+        assertThat(batch.object_()).contains(JsonValue.from(value))
         assertThat(batch._object_()).isEqualTo(JsonValue.from(value))
         assertThat(mapper.readTree(mapper.writeValueAsString(batch)))
             .isEqualTo(mapper.readTree(json))
@@ -49,7 +50,7 @@ internal class VectorStoreFileBatchCompatibilityTest {
     }
 
     @Test
-    fun preservesDefaultAndOtherValidation() {
+    fun buildsWithCanonicalObjectTypeAndValidatesOtherFields() {
         val json = payload("vector_store.files_batch")
         val missing = decode(json.replace("\"object\": \"vector_store.files_batch\",", ""))
         assertThrows<OpenAIInvalidDataException> { missing.validate() }
@@ -62,7 +63,9 @@ internal class VectorStoreFileBatchCompatibilityTest {
                 .status(source.statusOrThrow())
                 .vectorStoreId(source.vectorStoreIdOrThrow())
                 .build()
-        assertThat(built._object_()).isEqualTo(JsonValue.from("vector_store.files_batch"))
+        assertThat(built._object_()).isEqualTo(JsonValue.from("vector_store.file_batch"))
+        assertThat(mapper.readTree(mapper.writeValueAsString(built)).get("object").asText())
+            .isEqualTo("vector_store.file_batch")
         built.validate()
         val invalid =
             decode(payload("vector_store.file_batch").replace("\"completed\",", "\"unknown\","))

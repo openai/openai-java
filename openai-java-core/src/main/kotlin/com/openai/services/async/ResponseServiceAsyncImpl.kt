@@ -7,7 +7,6 @@ import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
 import com.openai.core.SecurityOptions
 import com.openai.core.checkRequired
-import com.openai.core.handlers.emptyHandler
 import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
@@ -31,6 +30,7 @@ import com.openai.models.responses.ResponseCancelParams
 import com.openai.models.responses.ResponseCompactParams
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
+import com.openai.models.responses.ResponseDeleteResponse
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseStreamEvent
 import com.openai.services.async.responses.InputItemServiceAsync
@@ -112,10 +112,10 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
     override fun delete(
         params: ResponseDeleteParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<ResponseDeleteResponse> =
         // delete /responses/{response_id}
-        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
-        withRawResponse().delete(params, requestOptions).thenApply { it.close() }.thenAccept {}
+        // Keep parse and close upstream of the caller's cancellable future.
+        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }.thenApply { it }
 
     override fun cancel(
         params: ResponseCancelParams,
@@ -318,12 +318,13 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                 }
         }
 
-        private val deleteHandler: Handler<Void?> = emptyHandler()
+        private val deleteHandler: Handler<ResponseDeleteResponse> =
+            jsonHandler<ResponseDeleteResponse>(clientOptions.jsonMapper)
 
         override fun delete(
             params: ResponseDeleteParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<ResponseDeleteResponse>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("responseId", params.responseId().getOrNull())
@@ -344,7 +345,13 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
-                        response.use { deleteHandler.handle(it) }
+                        response
+                            .use { deleteHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
                 }
         }

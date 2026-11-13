@@ -5,7 +5,6 @@ package com.openai.services.blocking
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
-import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
 import com.openai.models.responses.CompactedResponse
@@ -14,6 +13,7 @@ import com.openai.models.responses.ResponseCancelParams
 import com.openai.models.responses.ResponseCompactParams
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
+import com.openai.models.responses.ResponseDeleteResponse
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseStreamEvent
 import com.openai.models.responses.StructuredResponse
@@ -243,27 +243,35 @@ interface ResponseService {
         retrieveStreaming(responseId, ResponseRetrieveParams.none(), requestOptions)
 
     /** Deletes a model response with the given ID. */
-    fun delete(responseId: String) = delete(responseId, ResponseDeleteParams.none())
+    fun delete(responseId: String): ResponseDeleteResponse =
+        delete(responseId, ResponseDeleteParams.none())
 
     /** @see delete */
     fun delete(
         responseId: String,
         params: ResponseDeleteParams = ResponseDeleteParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = delete(params.toBuilder().responseId(responseId).build(), requestOptions)
+    ): ResponseDeleteResponse =
+        delete(params.toBuilder().responseId(responseId).build(), requestOptions)
 
     /** @see delete */
-    fun delete(responseId: String, params: ResponseDeleteParams = ResponseDeleteParams.none()) =
-        delete(responseId, params, RequestOptions.none())
+    fun delete(
+        responseId: String,
+        params: ResponseDeleteParams = ResponseDeleteParams.none(),
+    ): ResponseDeleteResponse = delete(responseId, params, RequestOptions.none())
 
     /** @see delete */
-    fun delete(params: ResponseDeleteParams, requestOptions: RequestOptions = RequestOptions.none())
+    fun delete(
+        params: ResponseDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ResponseDeleteResponse
 
     /** @see delete */
-    fun delete(params: ResponseDeleteParams) = delete(params, RequestOptions.none())
+    fun delete(params: ResponseDeleteParams): ResponseDeleteResponse =
+        delete(params, RequestOptions.none())
 
     /** @see delete */
-    fun delete(responseId: String, requestOptions: RequestOptions) =
+    fun delete(responseId: String, requestOptions: RequestOptions): ResponseDeleteResponse =
         delete(responseId, ResponseDeleteParams.none(), requestOptions)
 
     /**
@@ -489,7 +497,7 @@ interface ResponseService {
          * same as [ResponseService.delete].
          */
         @MustBeClosed
-        fun delete(responseId: String): HttpResponse =
+        fun delete(responseId: String): HttpResponseFor<ResponseDeleteResponse> =
             delete(responseId, ResponseDeleteParams.none())
 
         /** @see delete */
@@ -498,30 +506,35 @@ interface ResponseService {
             responseId: String,
             params: ResponseDeleteParams = ResponseDeleteParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = delete(params.toBuilder().responseId(responseId).build(), requestOptions)
+        ): HttpResponseFor<ResponseDeleteResponse> =
+            delete(params.toBuilder().responseId(responseId).build(), requestOptions)
 
         /** @see delete */
         @MustBeClosed
         fun delete(
             responseId: String,
             params: ResponseDeleteParams = ResponseDeleteParams.none(),
-        ): HttpResponse = delete(responseId, params, RequestOptions.none())
+        ): HttpResponseFor<ResponseDeleteResponse> =
+            delete(responseId, params, RequestOptions.none())
 
         /** @see delete */
         @MustBeClosed
         fun delete(
             params: ResponseDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<ResponseDeleteResponse>
 
         /** @see delete */
         @MustBeClosed
-        fun delete(params: ResponseDeleteParams): HttpResponse =
+        fun delete(params: ResponseDeleteParams): HttpResponseFor<ResponseDeleteResponse> =
             delete(params, RequestOptions.none())
 
         /** @see delete */
         @MustBeClosed
-        fun delete(responseId: String, requestOptions: RequestOptions): HttpResponse =
+        fun delete(
+            responseId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ResponseDeleteResponse> =
             delete(responseId, ResponseDeleteParams.none(), requestOptions)
 
         /**

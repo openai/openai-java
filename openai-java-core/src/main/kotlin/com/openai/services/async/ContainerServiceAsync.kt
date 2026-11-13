@@ -4,11 +4,11 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
-import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.containers.ContainerCreateParams
 import com.openai.models.containers.ContainerCreateResponse
 import com.openai.models.containers.ContainerDeleteParams
+import com.openai.models.containers.ContainerDeleteResponse
 import com.openai.models.containers.ContainerListPageAsync
 import com.openai.models.containers.ContainerListParams
 import com.openai.models.containers.ContainerRetrieveParams
@@ -99,7 +99,7 @@ interface ContainerServiceAsync {
         list(ContainerListParams.none(), requestOptions)
 
     /** Delete Container */
-    fun delete(containerId: String): CompletableFuture<Void?> =
+    fun delete(containerId: String): CompletableFuture<ContainerDeleteResponse> =
         delete(containerId, ContainerDeleteParams.none())
 
     /** @see delete */
@@ -107,27 +107,31 @@ interface ContainerServiceAsync {
         containerId: String,
         params: ContainerDeleteParams = ContainerDeleteParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<ContainerDeleteResponse> =
         delete(params.toBuilder().containerId(containerId).build(), requestOptions)
 
     /** @see delete */
     fun delete(
         containerId: String,
         params: ContainerDeleteParams = ContainerDeleteParams.none(),
-    ): CompletableFuture<Void?> = delete(containerId, params, RequestOptions.none())
+    ): CompletableFuture<ContainerDeleteResponse> =
+        delete(containerId, params, RequestOptions.none())
 
     /** @see delete */
     fun delete(
         params: ContainerDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<ContainerDeleteResponse>
 
     /** @see delete */
-    fun delete(params: ContainerDeleteParams): CompletableFuture<Void?> =
+    fun delete(params: ContainerDeleteParams): CompletableFuture<ContainerDeleteResponse> =
         delete(params, RequestOptions.none())
 
     /** @see delete */
-    fun delete(containerId: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun delete(
+        containerId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<ContainerDeleteResponse> =
         delete(containerId, ContainerDeleteParams.none(), requestOptions)
 
     /**
@@ -236,7 +240,9 @@ interface ContainerServiceAsync {
          * Returns a raw HTTP response for `delete /containers/{container_id}`, but is otherwise the
          * same as [ContainerServiceAsync.delete].
          */
-        fun delete(containerId: String): CompletableFuture<HttpResponse> =
+        fun delete(
+            containerId: String
+        ): CompletableFuture<HttpResponseFor<ContainerDeleteResponse>> =
             delete(containerId, ContainerDeleteParams.none())
 
         /** @see delete */
@@ -244,30 +250,33 @@ interface ContainerServiceAsync {
             containerId: String,
             params: ContainerDeleteParams = ContainerDeleteParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<ContainerDeleteResponse>> =
             delete(params.toBuilder().containerId(containerId).build(), requestOptions)
 
         /** @see delete */
         fun delete(
             containerId: String,
             params: ContainerDeleteParams = ContainerDeleteParams.none(),
-        ): CompletableFuture<HttpResponse> = delete(containerId, params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<ContainerDeleteResponse>> =
+            delete(containerId, params, RequestOptions.none())
 
         /** @see delete */
         fun delete(
             params: ContainerDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<ContainerDeleteResponse>>
 
         /** @see delete */
-        fun delete(params: ContainerDeleteParams): CompletableFuture<HttpResponse> =
+        fun delete(
+            params: ContainerDeleteParams
+        ): CompletableFuture<HttpResponseFor<ContainerDeleteResponse>> =
             delete(params, RequestOptions.none())
 
         /** @see delete */
         fun delete(
             containerId: String,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<ContainerDeleteResponse>> =
             delete(containerId, ContainerDeleteParams.none(), requestOptions)
     }
 }
