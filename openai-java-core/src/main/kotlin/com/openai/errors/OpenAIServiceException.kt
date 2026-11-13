@@ -9,7 +9,7 @@ protected constructor(message: String, cause: Throwable? = null) : OpenAIExcepti
 
     abstract fun statusCode(): Int
 
-    abstract fun headers(): Headers
+    abstract override fun headers(): Optional<Headers>
 
     abstract fun body(): JsonValue
 

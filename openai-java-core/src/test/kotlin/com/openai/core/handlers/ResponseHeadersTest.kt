@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpResponse
 import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIException
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.errors.OpenAIIoException
+import com.openai.errors.SseException
 import java.io.InputStream
 import java.io.InterruptedIOException
 import org.assertj.core.api.Assertions.assertThat
@@ -18,7 +20,19 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 internal class ResponseHeadersTest {
-    private val headers = Headers.builder().put("x-request-id", "req_test").build()
+    private val headers =
+        Headers.builder()
+            .put("x-request-id", "req_test")
+            .put("Set-Cookie", "synthetic-cookie")
+            .build()
+
+    private fun assertResponseHeaders(error: OpenAIException) {
+        assertThat(error.headers()).contains(headers)
+        assertThat(error.headers().get().values("x-request-id")).containsExactly("req_test")
+        assertThat(error.message).doesNotContain("req_test", "synthetic-cookie")
+        assertThat(error.toString()).doesNotContain("req_test", "synthetic-cookie")
+        assertThat(error.stackTraceToString()).doesNotContain("req_test", "synthetic-cookie")
+    }
 
     @Test
     fun malformedJsonRetainsHeaders() {
@@ -27,8 +41,7 @@ internal class ResponseHeadersTest {
             assertThrows<OpenAIInvalidDataException> {
                 jsonHandler<Map<String, String>>(jsonMapper()).handle(response)
             }
-        assertThat(error.headers()).contains(headers)
-        assertThat(error.toString()).doesNotContain("req_test")
+        assertResponseHeaders(error)
         assertThat(error)
             .hasMessage("Error reading response")
             .hasCauseInstanceOf(JsonProcessingException::class.java)
@@ -42,8 +55,7 @@ internal class ResponseHeadersTest {
             assertThrows<OpenAIInvalidDataException> {
                 jsonHandler<Map<String, String>>(jsonMapper()).handle(response)
             }
-        assertThat(error.headers()).contains(headers)
-        assertThat(error.toString()).doesNotContain("req_test")
+        assertResponseHeaders(error)
         assertThat(error).hasMessage("Error reading response").hasCause(timeout)
     }
 
@@ -55,8 +67,7 @@ internal class ResponseHeadersTest {
             assertThrows<OpenAIIoException> {
                 sseHandler(jsonMapper()).handle(response).use { it.stream().count() }
             }
-        assertThat(error.headers()).contains(headers)
-        assertThat(error.toString()).doesNotContain("req_test")
+        assertResponseHeaders(error)
         assertThat(error).hasMessage("Stream failed").hasCause(timeout)
     }
 
@@ -70,11 +81,23 @@ internal class ResponseHeadersTest {
                     it.stream().count()
                 }
             }
-        assertThat(error.headers()).contains(headers)
-        assertThat(error.toString()).doesNotContain("req_test")
+        assertResponseHeaders(error)
         assertThat(error)
             .hasMessage("Error reading response")
             .hasCauseInstanceOf(JsonProcessingException::class.java)
+    }
+
+    @Test
+    fun sseServerErrorRetainsHeaders() {
+        val body = "data: {\"error\":{\"message\":\"test failure\"}}\n\n"
+        val error =
+            assertThrows<SseException> {
+                sseHandler(jsonMapper()).handle(response(body.byteInputStream())).use {
+                    it.stream().count()
+                }
+            }
+        assertResponseHeaders(error)
+        assertThat(error.statusCode()).isEqualTo(200)
     }
 
     @Test
@@ -96,6 +119,8 @@ internal class ResponseHeadersTest {
         val cause = InterruptedIOException("timeout")
         val ioError = OpenAIIoException("Request failed", cause)
         val dataError = OpenAIInvalidDataException("Invalid local data", cause)
+        assertThat(OpenAIException().headers()).isEmpty()
+        assertThat(OpenAIException("message", cause).cause).isSameAs(cause)
         assertThat(ioError.headers()).isEmpty()
         assertThat(dataError.headers()).isEmpty()
         assertThat(ioError).hasCause(cause)

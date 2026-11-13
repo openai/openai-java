@@ -177,7 +177,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(400)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -293,7 +293,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(400)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -409,7 +409,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(401)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -525,7 +525,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(401)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -641,7 +641,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(403)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -757,7 +757,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(403)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -873,7 +873,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(404)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -989,7 +989,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(404)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -1105,7 +1105,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(422)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -1221,7 +1221,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(422)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -1337,7 +1337,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(429)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -1453,7 +1453,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(429)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -1569,7 +1569,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(500)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -1685,7 +1685,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(500)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -1801,7 +1801,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(999)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(
@@ -1917,7 +1917,7 @@ internal class ErrorHandlingTest {
             }
 
         assertThat(e.statusCode()).isEqualTo(999)
-        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.headers().get().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
         assertThat(e.body())
             .isEqualTo(
                 JsonValue.from(

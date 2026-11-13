@@ -6,6 +6,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
+import com.openai.errors.OpenAIException
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ChatModel
 import com.openai.models.responses.ResponseCreateParams
@@ -46,8 +47,25 @@ internal class ResponseStreamEventValidationTest {
         assertThat(result.error)
             .isInstanceOf(OpenAIInvalidDataException::class.java)
             .hasMessage("Unknown ResponseStreamEvent")
+        val failure = result.error as OpenAIException
+        assertThat(failure.headers()).contains(HEADERS)
         assertThat(result.events.map(::eventType)).containsExactly("response.output_text.delta")
         assertThat(result.outputTextDeltas()).containsExactly("before")
+    }
+
+    @ParameterizedTest
+    @EnumSource(StreamingCall::class)
+    fun userCallbackFailureKeepsItsIdentityAndHasNoResponseHeaders(streamingCall: StreamingCall) {
+        val cause = IllegalArgumentException("user callback")
+        val expected = OpenAIInvalidDataException("user failure", cause)
+        val result =
+            consume(streamingCall, responseValidation = true, middleType = "keepalive") {
+                throw expected
+            }
+
+        assertThat(result.error).isSameAs(expected)
+        assertThat(expected.cause).isSameAs(cause)
+        assertThat(expected.headers()).isEmpty()
     }
 
     @Test
@@ -73,6 +91,7 @@ internal class ResponseStreamEventValidationTest {
         streamingCall: StreamingCall,
         responseValidation: Boolean,
         middleType: String,
+        onEvent: (ResponseStreamEvent) -> Unit = {},
     ): ConsumeResult {
         val clientOptions =
             ClientOptions.builder()
@@ -82,28 +101,32 @@ internal class ResponseStreamEventValidationTest {
                 .streamHandlerExecutor(Executor(Runnable::run))
                 .build()
         val events = mutableListOf<ResponseStreamEvent>()
+        val receive: (ResponseStreamEvent) -> Unit = { event ->
+            onEvent(event)
+            events.add(event)
+        }
         var error: Throwable? = null
 
         try {
             when (streamingCall) {
                 StreamingCall.BLOCKING_CREATE ->
                     ResponseServiceImpl(clientOptions).createStreaming(CREATE_PARAMS).use {
-                        it.stream().forEach(events::add)
+                        it.stream().forEach(receive)
                     }
                 StreamingCall.BLOCKING_RETRIEVE ->
                     ResponseServiceImpl(clientOptions).retrieveStreaming("response_id").use {
-                        it.stream().forEach(events::add)
+                        it.stream().forEach(receive)
                     }
                 StreamingCall.ASYNC_CREATE -> {
                     val stream =
                         ResponseServiceAsyncImpl(clientOptions).createStreaming(CREATE_PARAMS)
-                    stream.subscribe(events::add)
+                    stream.subscribe(receive)
                     stream.onCompleteFuture().join()
                 }
                 StreamingCall.ASYNC_RETRIEVE -> {
                     val stream =
                         ResponseServiceAsyncImpl(clientOptions).retrieveStreaming("response_id")
-                    stream.subscribe(events::add)
+                    stream.subscribe(receive)
                     stream.onCompleteFuture().join()
                 }
             }
@@ -132,8 +155,7 @@ internal class ResponseStreamEventValidationTest {
             object : HttpResponse {
                 override fun statusCode(): Int = 200
 
-                override fun headers(): Headers =
-                    Headers.builder().put("Content-Type", "text/event-stream").build()
+                override fun headers(): Headers = HEADERS
 
                 override fun body(): InputStream = body.byteInputStream()
 
@@ -154,6 +176,7 @@ internal class ResponseStreamEventValidationTest {
     }
 
     private companion object {
+        val HEADERS = Headers.builder().put("x-request-id", "req_stream_validation").build()
         val CREATE_PARAMS =
             ResponseCreateParams.builder().input("test").model(ChatModel.GPT_4O_MINI).build()
 

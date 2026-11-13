@@ -1,5 +1,6 @@
 package com.openai.core.http
 
+import com.openai.errors.OpenAIException
 import java.io.InputStream
 
 interface HttpResponseFor<T> : HttpResponse {
@@ -11,7 +12,15 @@ interface HttpResponseFor<T> : HttpResponse {
 internal fun <T> HttpResponse.parseable(parse: () -> T): HttpResponseFor<T> =
     object : HttpResponseFor<T> {
 
-        private val parsed = lazy { parse() }
+        private val parsed = lazy {
+            val responseHeaders = this@parseable.headers()
+            try {
+                parse()
+            } catch (e: OpenAIException) {
+                e.attachHeaders(responseHeaders)
+                throw e
+            }
+        }
 
         override fun parse(): T = parsed.value
 
