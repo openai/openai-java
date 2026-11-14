@@ -11,6 +11,8 @@ import com.openai.core.http.HttpResponse
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.errors.OpenAIIoException
 import com.openai.errors.UnexpectedStatusCodeException
+import com.openai.http.okhttp.X509TokenExchange
+import com.openai.http.okhttp.X509Transport
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream

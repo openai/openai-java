@@ -43,6 +43,16 @@ enum class CoreCompilationShard(val id: String) {
                 SERVICES_GENERAL -> listOf(CLIENT_BASE, MODELS_GENERAL, MODELS_EVALS)
             }
 
+    /** Published dependency added at this shard and inherited by downstream shards. */
+    val distributionDependency: CoreDistribution?
+        get() =
+            when (this) {
+                RUNTIME -> CoreDistribution.RUNTIME
+                // Full Response services expose the extracted input item and token services.
+                SERVICES_RESPONSES -> CoreDistribution.RESPONSES
+                else -> null
+            }
+
     fun transitiveDependencies(): List<CoreCompilationShard> {
         val transitiveDependencies = linkedSetOf<CoreCompilationShard>()
 
@@ -199,7 +209,10 @@ object CoreCompilationShards {
             return CoreCompilationShard.CLIENT_BASE
         }
         // These helpers depend on both Responses and Chat models.
-        if (path == "com/openai/core/StructuredOutputs.kt") {
+        if (
+            path == "com/openai/core/StructuredOutputs.kt" ||
+                path == "com/openai/core/ChatStructuredOutputs.kt"
+        ) {
             return CoreCompilationShard.MODELS_COMMON
         }
 

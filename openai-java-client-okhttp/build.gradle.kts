@@ -10,6 +10,8 @@ plugins {
 
 // Keep multipart cancellation coordination internal across the SDK's owned transport modules.
 tasks.withType<KotlinCompile>().configureEach {
+    friendPaths.from(project(":openai-java-runtime").layout.buildDirectory.dir("classes/kotlin/main"))
+    friendPaths.from(project(":openai-java-http-okhttp").layout.buildDirectory.dir("classes/kotlin/main"))
     friendPaths.from(project(":openai-java-core").layout.buildDirectory.dir("classes/kotlin/main"))
 }
 
@@ -18,6 +20,7 @@ tasks.named<JavaCompile>("compileTestJava") {
     options.release.set(17)
 }
 tasks.named<KotlinCompile>("compileTestKotlin") {
+    friendPaths.from(project(":openai-java-core").layout.buildDirectory.dir("classes/kotlin/full-only"))
     compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
     compilerOptions.freeCompilerArgs.set(
         compilerOptions.freeCompilerArgs.get().map {
@@ -45,7 +48,7 @@ listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath)
 dependencies {
     api(project(":openai-java-core"))
 
-    api(libs.okhttp.client)
+    api(project(":openai-java-http-okhttp"))
 
     testImplementation(kotlin("test"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

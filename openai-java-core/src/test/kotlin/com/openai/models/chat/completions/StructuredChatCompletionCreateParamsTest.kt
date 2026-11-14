@@ -25,7 +25,6 @@ import com.openai.core.checkOneDelegationWrite
 import com.openai.core.findDelegationMethod
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
-import com.openai.core.responseFormatFromClass
 import com.openai.models.ChatModel
 import com.openai.models.FunctionDefinition
 import com.openai.models.ResponseFormatJsonSchema

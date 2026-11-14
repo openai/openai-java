@@ -4,6 +4,9 @@ import com.openai.core.Timeout
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.errors.OpenAIIoException
+import com.openai.http.okhttp.X509TokenExchange
+import com.openai.http.okhttp.X509Transport
+import com.openai.http.okhttp.fixedAliasKeyManager
 import java.net.Socket
 import java.security.KeyStore
 import java.security.Principal

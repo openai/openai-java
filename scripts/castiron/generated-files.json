@@ -3499,7 +3499,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/chat/completions/ChatCompletionCreateParams.kt": {
       "mode": "100644",
-      "sha256": "46ef69f4bf7f69aefcac559d3f5e60e31518e03e74c416e50265711a51c6ad98"
+      "sha256": "44a49add15c3baf4146941f30317810503f19161d79b69ea6298d73cea5dd2ab"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/chat/completions/ChatCompletionCustomTool.kt": {
       "mode": "100644",
@@ -6663,7 +6663,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/ResponseServiceAsyncImpl.kt": {
       "mode": "100644",
-      "sha256": "291a0897b610735aa5a7c9224170ab876aee8a3f56ca6e61ff778e6aa5e55c03"
+      "sha256": "fa4d1a0f92a8c30706da2b88406f3c00736e98798f01c2731d63931d3f5992b9"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/SafetyServiceAsync.kt": {
       "mode": "100644",
@@ -7425,6 +7425,14 @@
       "mode": "100644",
       "sha256": "c308f45d04e94bff821013e4b7fedfd7d2d5495143ae48b3c888b581b2981e6c"
     },
+    "openai-java-core/src/main/kotlin/com/openai/services/async/responses/ResponseServiceAsync.kt": {
+      "mode": "100644",
+      "sha256": "63946cc67c43334794d397817ae653800dd5b0c4c8d0f3d64dc79dff83dedef9"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/async/responses/ResponseServiceAsyncImpl.kt": {
+      "mode": "100644",
+      "sha256": "9b4e87029ef1bd6e2169cb721ae530f7408ced162b064690696419a7d7fcef4e"
+    },
     "openai-java-core/src/main/kotlin/com/openai/services/async/safety/AlertServiceAsync.kt": {
       "mode": "100644",
       "sha256": "9cb22cf1ff773e98cf3e4b03c611d8180b182d54644b4bd1f2d6da138b410a55"
@@ -7663,7 +7671,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/ResponseServiceImpl.kt": {
       "mode": "100644",
-      "sha256": "123f66f38a9be89fd26b2f9bdae26889e4d02b3b176b3cd3a80158d9a1d7ea69"
+      "sha256": "8eb503e7bb74d760335b31c876ea32e48514dfdb339e2943ddacd8086f2227fb"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/SafetyService.kt": {
       "mode": "100644",
@@ -8424,6 +8432,14 @@
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/responses/InputTokenServiceImpl.kt": {
       "mode": "100644",
       "sha256": "31bab2480bd0934582bcc700098a8b4917764d659ea27f1c05f2f303afe3c026"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/blocking/responses/ResponseService.kt": {
+      "mode": "100644",
+      "sha256": "e09d108015915e1153a8b811627104ed65f4d34ca22212b7c15518a3eefcc5b9"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/blocking/responses/ResponseServiceImpl.kt": {
+      "mode": "100644",
+      "sha256": "c96035be52eb2e325699114bc57e1b4b953cc90d9162af7c6af9723529aa333e"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/safety/AlertService.kt": {
       "mode": "100644",

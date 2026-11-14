@@ -1,4 +1,4 @@
-package com.openai.client.okhttp
+package com.openai.http.okhttp
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions

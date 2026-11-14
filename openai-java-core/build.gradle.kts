@@ -1,3 +1,5 @@
+import com.openai.gradle.CoreDistribution
+import com.openai.gradle.DistributionSourceSpec
 import com.openai.gradle.CoreCompilationClaimedSourceSpec
 import com.openai.gradle.CoreCompilationDependencies
 import com.openai.gradle.CoreCompilationShards
@@ -38,9 +40,11 @@ val mockitoAgent by configurations.creating {
 val coreCompilationShardProjects =
     CoreCompilationShards.projectNames.map { project(":$it") }
 val clientLayerClassesDirectory = layout.buildDirectory.dir("classes/kotlin/client-layer")
+val fullOnlyClassesDirectory = layout.buildDirectory.dir("classes/kotlin/full-only")
 val combinedClassesDirectory = layout.buildDirectory.dir("classes/kotlin/main")
 
 kotlin.sourceSets.named("main") {
+    kotlin.include(DistributionSourceSpec(CoreDistribution.FULL))
     kotlin.exclude(CoreCompilationClaimedSourceSpec())
 }
 
@@ -53,18 +57,33 @@ val compileCoreClientLayer = tasks.named<KotlinCompile>("compileKotlin") {
     )
 }
 
+val distributionOutputs = listOf("openai-java-runtime", "openai-java-responses-api").map {
+    project(":$it").layout.buildDirectory.dir("classes/kotlin/main")
+}
+tasks.withType<KotlinCompile>().configureEach { friendPaths.from(distributionOutputs) }
+
 val coreCompilationShardOutputs =
     coreCompilationShardProjects.map {
         it.layout.buildDirectory.dir("classes/kotlin/main")
     }
 
-val assembleCoreClasses = tasks.register<Sync>("assembleCoreClasses") {
+val assembleFullOnlyClasses = tasks.register<Sync>("assembleFullOnlyClasses") {
     group = "build"
     description = "Assembles the client layer and internal shards into the core class directory."
     dependsOn(compileCoreClientLayer)
     dependsOn(coreCompilationShardProjects.map { "${it.path}:classes" })
     from(compileCoreClientLayer.flatMap { it.destinationDirectory })
     from(coreCompilationShardOutputs)
+    into(fullOnlyClassesDirectory)
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+}
+
+// Existing compatibility detectors inspect this directory directly. Keep the complete full
+// classpath here while publishing each class through exactly one artifact.
+val assembleCoreClasses = tasks.register<Sync>("assembleCoreClasses") {
+    from(assembleFullOnlyClasses)
+    dependsOn(":openai-java-runtime:classes", ":openai-java-responses-api:classes")
+    from(distributionOutputs)
     into(combinedClassesDirectory)
     duplicatesStrategy = DuplicatesStrategy.FAIL
 }
@@ -74,7 +93,7 @@ val assembleCoreClasses = tasks.register<Sync>("assembleCoreClasses") {
 // outputs after compilation.
 val mainClassesDirectories =
     sourceSets.main.get().output.classesDirs as ConfigurableFileCollection
-mainClassesDirectories.setFrom(combinedClassesDirectory)
+mainClassesDirectories.setFrom(fullOnlyClassesDirectory)
 mainClassesDirectories.builtBy(assembleCoreClasses)
 tasks.named("classes") { dependsOn(assembleCoreClasses) }
 
@@ -98,7 +117,7 @@ independentModelTests.forEach { (name, pattern) ->
     kotlin.sourceSets.named("test") { kotlin.exclude(pattern) }
 
     val compileModelTests = tasks.named<KotlinCompile>(modelTests.getCompileTaskName("kotlin")) {
-        friendPaths.setFrom(sourceSets.main.map { it.output.classesDirs })
+        friendPaths.setFrom(sourceSets.main.map { it.output.classesDirs }, distributionOutputs)
     }
     coreTestClassesDirectories.from(compileModelTests.flatMap { it.destinationDirectory })
     tasks.named("testClasses") { dependsOn(modelTests.classesTaskName) }
@@ -111,11 +130,14 @@ val coreJar = tasks.named<Jar>("jar") {
     duplicatesStrategy = DuplicatesStrategy.FAIL
 }
 
+sourceSets.main { resources.exclude("META-INF/proguard/**") }
+
 val coreSourcesJar = tasks.named<Jar>("sourcesJar") {
     duplicatesStrategy = DuplicatesStrategy.FAIL
     // Eclipse resolves sources from their package paths, without the Kotlin source-set prefix.
     filesMatching("**/*.kt") {
         path = path.removePrefix("main/")
+        if (CoreDistribution.owner(path) != CoreDistribution.FULL) exclude()
     }
 }
 
@@ -123,10 +145,16 @@ val verifyCoreCompilationArtifact =
     tasks.register<VerifyCoreCompilationArtifactTask>("verifyCoreCompilationArtifact") {
         group = "verification"
         description = "Verifies that the assembled core classes and sources are published once."
-        classesDirectory.set(combinedClassesDirectory)
-        sourceDirectory.set(layout.projectDirectory.dir("src/main/kotlin"))
-        binaryJar.set(coreJar.flatMap { it.archiveFile })
-        sourcesJar.set(coreSourcesJar.flatMap { it.archiveFile })
+        classesDirectories.from(fullOnlyClassesDirectory, distributionOutputs)
+        sourceDirectories.from(layout.projectDirectory.dir("src/main/kotlin"))
+        binaryJars.from(coreJar)
+        sourcesJars.from(coreSourcesJar)
+        listOf("openai-java-runtime", "openai-java-responses-api").forEach { module ->
+            val distribution = project(":$module")
+            sourceDirectories.from(distribution.layout.projectDirectory.dir("src/main/kotlin"))
+            binaryJars.from(distribution.tasks.named("jar"))
+            sourcesJars.from(distribution.tasks.named("sourcesJar"))
+        }
         publicApiManifest.set(
             layout.projectDirectory.file(
                 "src/apiCompatibility/structured-output-public-api.txt"
@@ -137,10 +165,15 @@ val verifyCoreCompilationArtifact =
 
 tasks.named("check") { dependsOn(verifyCoreCompilationArtifact) }
 
-tasks.withType<AbstractDokkaLeafTask>().configureEach {
-    dokkaSourceSets.configureEach {
-        sourceRoots.from(layout.projectDirectory.dir("src/main/kotlin"))
+val fullDocumentationSources = tasks.register<Sync>("selectFullDocumentationSources") {
+    from(layout.projectDirectory.dir("src/main/kotlin")) {
+        include(DistributionSourceSpec(CoreDistribution.FULL))
     }
+    into(layout.buildDirectory.dir("docs/full-sources"))
+}
+tasks.withType<AbstractDokkaLeafTask>().configureEach {
+    dependsOn(fullDocumentationSources)
+    dokkaSourceSets.configureEach { sourceRoots.setFrom(fullDocumentationSources) }
 }
 
 // Runtime classpath for `testJacksonCompatibility`: the same dependencies as
@@ -194,6 +227,7 @@ configurations.matching {
 }
 
 dependencies {
+    api(project(":openai-java-responses-api"))
     coreCompilationShardProjects.forEach { compileOnly(it) }
 
     CoreCompilationDependencies.publishedApiDependencies(jacksonPublishedVersion).forEach { api(it) }

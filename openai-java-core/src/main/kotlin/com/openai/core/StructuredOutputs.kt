@@ -15,10 +15,6 @@ import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder
 import com.github.victools.jsonschema.module.jackson.JacksonModule
 import com.github.victools.jsonschema.module.swagger2.Swagger2Module
 import com.openai.errors.OpenAIInvalidDataException
-import com.openai.models.FunctionDefinition
-import com.openai.models.ResponseFormatJsonSchema
-import com.openai.models.chat.completions.ChatCompletionFunctionTool
-import com.openai.models.chat.completions.ChatCompletionTool
 import com.openai.models.responses.FunctionTool
 import com.openai.models.responses.ResponseFormatTextJsonSchemaConfig
 import com.openai.models.responses.ResponseTextConfig
@@ -36,40 +32,17 @@ private val MAPPER =
 
 private val swaggerAnnotationsAvailable =
     try {
+        val loader = JsonSchemaLocalValidation::class.java.classLoader
+        Class.forName("io.swagger.v3.oas.annotations.media.Schema", false, loader)
         Class.forName(
-            "io.swagger.v3.oas.annotations.media.Schema",
+            "com.github.victools.jsonschema.module.swagger2.Swagger2Module",
             false,
-            Swagger2Module::class.java.classLoader,
+            loader,
         )
         true
     } catch (_: ClassNotFoundException) {
         false
     }
-
-/**
- * Builds a response format using a JSON schema derived from the structure of an arbitrary Java
- * class.
- */
-@JvmSynthetic
-internal fun responseFormatFromClass(
-    type: Class<*>,
-    localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
-): ResponseFormatJsonSchema =
-    ResponseFormatJsonSchema.builder()
-        .jsonSchema(
-            ResponseFormatJsonSchema.JsonSchema.builder()
-                .name("json-schema-from-${type.simpleName}")
-                .schema(
-                    JsonValue.fromJsonNode(
-                        validateSchema(extractSchema(type), type, localValidation)
-                    )
-                )
-                // Ensure the model's output strictly adheres to this JSON schema. This is the
-                // essential "ON switch" for Structured Outputs.
-                .strict(true)
-                .build()
-        )
-        .build()
 
 /**
  * Validates the given JSON schema with respect to OpenAI's JSON schema restrictions.
@@ -147,34 +120,6 @@ internal fun extractFunctionInfo(
     val description: String? = descriptionNode?.textValue()
 
     return FunctionInfo(name, description, schema)
-}
-
-/**
- * Creates a Chat Completions API tool defining a function whose input parameters are derived from
- * the fields of a class.
- */
-@JvmSynthetic
-internal fun functionToolFromClass(
-    parametersType: Class<*>,
-    localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
-): ChatCompletionTool {
-    val functionInfo = extractFunctionInfo(parametersType, localValidation)
-
-    return ChatCompletionTool.ofFunction(
-        ChatCompletionFunctionTool.builder()
-            .function(
-                FunctionDefinition.builder()
-                    .name(functionInfo.name)
-                    .apply { functionInfo.description?.let(::description) }
-                    .parameters(JsonValue.fromJsonNode(functionInfo.schema))
-                    // OpenAI: "Setting strict to true will ensure function calls reliably adhere to
-                    // the function schema, instead of being best effort. We recommend always
-                    // enabling strict mode."
-                    .strict(true)
-                    .build()
-            )
-            .build()
-    )
 }
 
 /**

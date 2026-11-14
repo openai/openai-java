@@ -73,7 +73,7 @@ class CoreCompilationShardsTest {
     }
 
     @Test
-    fun `independent model domains do not depend on Responses or Chat models`() {
+    fun `admin and beta model domains do not depend on the common model shard`() {
         val interactiveModelSources =
             listOf(
                 "com/openai/models/AllModels.kt",
@@ -96,6 +96,23 @@ class CoreCompilationShardsTest {
                     )
                 }
             }
+    }
+
+    @Test
+    fun `only the Responses service shard needs the Responses API distribution`() {
+        for (shard in CoreCompilationShard.values()) {
+            val distributions =
+                (shard.transitiveDependencies() + shard)
+                    .mapNotNull { it.distributionDependency }
+                    .toSet()
+            val expected =
+                if (shard == CoreCompilationShard.SERVICES_RESPONSES) {
+                    setOf(CoreDistribution.RUNTIME, CoreDistribution.RESPONSES)
+                } else {
+                    setOf(CoreDistribution.RUNTIME)
+                }
+            assertEquals(expected, distributions, shard.id)
+        }
     }
 
     @Test

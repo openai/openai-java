@@ -9,7 +9,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.openai.errors.OpenAIInvalidDataException
-import com.openai.models.chat.completions.functionToolFromClass as chatFunctionToolFromClass
+import com.openai.models.chat.completions.ChatCompletionCreateParams
+import com.openai.models.chat.completions.functionToolFromClass
+import com.openai.models.chat.completions.responseFormatFromClass
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Schema
 import java.util.Optional
@@ -1940,7 +1942,13 @@ internal class StructuredOutputsTest {
         @Suppress("unused") @JsonClassDescription("Something about X") class X(val s: String)
 
         val functionTool = functionToolFromClass(X::class.java)
-        assertThat(chatFunctionToolFromClass(X::class.java)).isEqualTo(functionTool)
+        val params =
+            ChatCompletionCreateParams.builder()
+                .model("test")
+                .addUserMessage("hello")
+                .addTool(X::class.java)
+                .build()
+        assertThat(params.tools().get()).containsExactly(functionTool)
         val fnDef = functionTool.function().get().functionOrThrow()
 
         // The "strict" flag _must_ be set to ensure that the model's output will _always_ conform
