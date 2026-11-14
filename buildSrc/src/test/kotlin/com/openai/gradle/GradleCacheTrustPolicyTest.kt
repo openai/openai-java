@@ -400,6 +400,16 @@ class GradleCacheTrustPolicyTest {
                     "",
                 ),
                 workflow.replaceFirst("            --no-parallel \\\n", ""),
+                workflow.replaceFirst(
+                    "      - name: Stop Gradle daemon before publishing\n" +
+                        "        run: ./gradlew --stop\n\n",
+                    "",
+                ),
+                workflow.replaceFirst("'16g' || '8g'", "'8g' || '8g'"),
+                workflow.replaceFirst(
+                    "-Dorg.gradle.jvmargs=-Xmx\${RELEASE_GRADLE_HEAP}",
+                    "-Dorg.gradle.jvmargs=-Xmx8g",
+                ),
             )
             .forEach { poisonedWorkflow ->
                 assertTrue(poisonedWorkflow != workflow)
@@ -471,13 +481,18 @@ class GradleCacheTrustPolicyTest {
             )
         val guardedPublication = publishScript.substringAfter("export GPG_SIGNING_KEY_ID\n")
         val runnerTemp = temporaryDirectory.resolve("runner").also(Files::createDirectories)
+        val bom = "openai-java-bom"
+        val bomPom = temporaryDirectory.resolve("$bom/build/publications/maven/pom-default.xml")
+        Files.createDirectories(bomPom.parent)
+        bomPom.writeText("attested-$bom")
+        val bomModule = bomPom.resolveSibling("module.json").apply { writeText("attested-module") }
         val subjects =
             artifacts.map { artifact ->
                 temporaryDirectory.resolve("$artifact/build/libs/$artifact-test.jar").apply {
                     Files.createDirectories(parent)
                     writeText("attested-$artifact")
                 }
-            }
+            } + listOf(bomPom, bomModule)
         val manifest = runnerTemp.resolve("maven-artifact-provenance.sha256")
         val digest =
             ProcessBuilder(
@@ -523,33 +538,143 @@ class GradleCacheTrustPolicyTest {
                     .apply {
                         environment()["RUNNER_TEMP"] = runnerTemp.toString()
                         environment()["MAVEN_ARTIFACTS"] = artifacts.joinToString(" ")
+                        environment()["RELEASE_GRADLE_HEAP"] = "16g"
+                        environment()["MAVEN_BOM"] = bom
                     }
                     .start()
             val output = process.inputStream.bufferedReader().readText()
             return process.waitFor() to output
         }
 
-        val altered = subjects[1]
-        val original = altered.readText()
-        altered.writeText("tampered-after-attestation")
-        val rejected = publish()
-        assertTrue(rejected.first != 0, rejected.second)
-        assertFalse(
-            Files.exists(runnerTemp.resolve("publication-started")),
-            "Tampered artifacts must never reach the irreversible publication invocation.",
-        )
-
-        altered.writeText(original)
+        for (altered in listOf(subjects[1], bomPom, bomModule)) {
+            val original = altered.readText()
+            altered.writeText("tampered-after-attestation")
+            val rejected = publish()
+            assertTrue(rejected.first != 0, rejected.second)
+            assertFalse(
+                Files.exists(runnerTemp.resolve("publication-started")),
+                "Tampered artifacts must never reach the irreversible publication invocation.",
+            )
+            altered.writeText(original)
+        }
         val accepted = publish()
         assertEquals(0, accepted.first, accepted.second)
         assertTrue(Files.exists(runnerTemp.resolve("publication-started")))
-        subjects.forEachIndexed { index, subject ->
-            assertEquals("attested-" + artifacts[index], subject.readText())
+        (artifacts + bom).zip(subjects).forEach { (artifact, subject) ->
+            assertEquals("attested-$artifact", subject.readText())
         }
         val arguments = runnerTemp.resolve("publication-arguments").readText().lines()
-        artifacts.forEach { artifact ->
-            val index = arguments.indexOf(":$artifact:jar")
+        assertTrue(arguments.any { it.startsWith("-Dorg.gradle.jvmargs=-Xmx16g ") })
+        assertEquals("attested-module", bomModule.readText())
+        val producers =
+            artifacts.map { ":$it:jar" } +
+                listOf(
+                    ":$bom:generatePomFileForMavenPublication",
+                    ":$bom:generateMetadataFileForMavenPublication",
+                )
+        producers.forEach { producer ->
+            val index = arguments.indexOf(producer)
             assertTrue(index > 0 && arguments[index - 1] == "--exclude-task")
+        }
+    }
+
+    @Test
+    fun `release inventory and visibility follow the selected tag`() {
+        val workflow = parseWorkflow(Path.of("../.github/workflows/create-releases.yml").readText())
+        val steps = workflow.job("publish").steps
+        val legacy = workflow.environment.getValue("MAVEN_ARTIFACTS")
+        val split =
+            listOf(
+                "openai-java-runtime",
+                "openai-java-http-okhttp",
+                "openai-java-responses-api",
+                "openai-java-responses",
+            )
+        val bom = "openai-java-bom"
+        val runner = Files.createDirectory(temporaryDirectory.resolve("runner"))
+        val envFile = Files.createFile(runner.resolve("env"))
+        val urls = runner.resolve("urls")
+        val curl = runner.resolve("curl")
+        curl.writeText("#!/usr/bin/env bash\nprintf '%s\\n' \"\${!#}\" >> \"\$RUNNER_TEMP/urls\"\n")
+        assertTrue(curl.toFile().setExecutable(true))
+
+        fun runStep(name: String, vararg variables: Pair<String, String>): Int {
+            val script = requireNotNull(steps.single { it.name == name }.run)
+            val process =
+                ProcessBuilder("bash", "-eu", "-o", "pipefail", "-c", script)
+                    .directory(temporaryDirectory.toFile())
+                    .redirectErrorStream(true)
+                    .apply {
+                        environment()
+                            .putAll(
+                                mapOf(
+                                    "RUNNER_TEMP" to runner.toString(),
+                                    "GITHUB_ENV" to envFile.toString(),
+                                    "MAVEN_ARTIFACTS" to legacy,
+                                    "RELEASE_TAG" to "v1.2.3",
+                                    "MAVEN_CENTRAL_BASE_URL" to "https://example.invalid",
+                                    "PATH" to "$runner:${System.getenv("PATH")}",
+                                )
+                            )
+                        environment().putAll(variables.toMap())
+                    }
+                    .start()
+            process.inputStream.readBytes()
+            return process.waitFor()
+        }
+
+        val inventory = "Select Maven inventory from release source"
+        val visibility = "Wait for Maven Central"
+        assertEquals(0, runStep(inventory))
+        assertEquals("", envFile.readText())
+        assertEquals(0, runStep(visibility))
+        assertEquals(
+            legacy.split(" ").size * 4,
+            urls.readText().lines().filter(String::isNotEmpty).size,
+        )
+        Files.delete(urls)
+
+        fun fixture(path: String): Path =
+            temporaryDirectory.resolve(path).apply {
+                Files.createDirectories(parent)
+                writeText("fixture for $path")
+            }
+        fixture("$bom/build.gradle.kts")
+        assertTrue(runStep(inventory) != 0)
+        split.forEach { fixture("$it/build.gradle.kts") }
+        fixture("scripts/compatibility/responses_native_image.py")
+        fun probe(name: String) =
+            fixture(
+                "openai-java-runtime-compatibility/src/main/java/com/openai/compatibility/$name.java"
+            )
+
+        val traceSources = listOf("RuntimeProbe", "ResponsesApiRuntimeProbe").map(::probe)
+        val smokeSources = listOf("HttpOkHttpRuntimeProbe", "ResponsesRuntimeProbe").map(::probe)
+        assertTrue(runStep(inventory) != 0)
+        assertEquals(0, runStep("Preserve Responses metadata verifier from workflow revision"))
+        smokeSources.forEach { it.writeText("changed after trusted checkout") }
+        assertEquals(0, runStep(inventory))
+        val binaries = "$legacy ${split.joinToString(" ")}"
+        assertEquals(
+            listOf("MAVEN_ARTIFACTS=$binaries", "MAVEN_BOM=$bom"),
+            envFile.readText().trim().lines(),
+        )
+        assertEquals(0, runStep(visibility, "MAVEN_ARTIFACTS" to binaries, "MAVEN_BOM" to bom))
+        val suffixes = listOf(".jar", ".pom", ".module", "-sources.jar", "-javadoc.jar")
+        val expected =
+            binaries.split(" ").flatMap { id -> suffixes.map { "$id-1.2.3$it" } } +
+                listOf("$bom-1.2.3.pom", "$bom-1.2.3.module")
+        assertEquals(
+            expected.sorted(),
+            urls.readText().trim().lines().map { it.substringAfterLast('/') }.sorted(),
+        )
+        for (source in traceSources) {
+            val original = source.readText()
+            source.writeText("changed after trusted checkout")
+            assertTrue(runStep(inventory) != 0)
+            Files.delete(source)
+            assertTrue(runStep(inventory) != 0)
+            source.writeText(original)
         }
     }
 
@@ -1227,8 +1352,15 @@ class GradleCacheTrustPolicyTest {
         )
         assertEquals("./gradlew --stop", publishSteps[daemonStop].run)
 
-        val publication =
-            requireNotNull(publishSteps.single { it.name == "Publish to Maven Central" }.run)
+        val attestation =
+            publishSteps.indexOfFirst { it.name == "Attest Maven artifact provenance" }
+        val publish = publishSteps.indexOfFirst { it.name == "Publish to Maven Central" }
+        assertTrue(attestation >= 0 && publish > attestation + 1)
+        assertEquals("Stop Gradle daemon before publishing", publishSteps[publish - 1].name)
+        assertEquals("./gradlew --stop", publishSteps[publish - 1].run)
+
+        val publishStep = publishSteps[publish]
+        val publication = requireNotNull(publishStep.run)
         val serializedInvocation =
             "./gradlew publishAndReleaseToMavenCentral \\\n" +
                 "  \"\${publish_exclusions[@]}\" \\\n" +
@@ -1239,6 +1371,11 @@ class GradleCacheTrustPolicyTest {
             publication.contains(serializedInvocation),
             "Serialize Dokka publication tasks to keep the standard runner within memory limits.",
         )
+        assertEquals(
+            "\${{ vars.SDK_GHA_RUNNER == 'sdk-linux-x64-16core' && '16g' || '8g' }}",
+            publishStep.environment["RELEASE_GRADLE_HEAP"],
+        )
+        assertContains(publication, "\"-Dorg.gradle.jvmargs=-Xmx\${RELEASE_GRADLE_HEAP} ")
     }
 
     private fun assertPublishingProvenancePolicy(workflow: String) {
@@ -1259,7 +1396,7 @@ class GradleCacheTrustPolicyTest {
                 "openai-java-vertex",
             ),
             parsedWorkflow.environment.getValue("MAVEN_ARTIFACTS").split(" "),
-            "Every published Maven artifact must receive a provenance attestation.",
+            "Retries of tags predating the split SDK must still attest their binary artifacts.",
         )
 
         val preparation = publishJob.steps.single { it.id == "maven-artifacts" }

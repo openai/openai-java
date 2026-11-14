@@ -26,7 +26,7 @@ concurrency:
 
 env:
   MAVEN_CENTRAL_BASE_URL: https://repo.maven.apache.org/maven2/com/openai
-  # Keep this list in sync with projects that apply the openai.publish plugin.
+  # Fallback for release tags that predate the split SDK and BOM.
   MAVEN_ARTIFACTS: openai-java openai-java-core openai-java-client-okhttp openai-java-bedrock openai-java-vertex
 
 jobs:
@@ -271,10 +271,39 @@ jobs:
       - name: Preserve GraalVM test script for older release retries
         run: install -m 700 .github/scripts/run-graalvm-tests.sh "$RUNNER_TEMP/run-graalvm-tests.sh"
 
+      - name: Preserve Responses metadata verifier from workflow revision
+        if: ${{ hashFiles('scripts/compatibility/responses_native_image.py') != '' }}
+        run: |
+          set -euo pipefail
+          helper=scripts/compatibility/responses_native_image.py
+          fixtures=openai-java-runtime-compatibility/src/main/java/com/openai/compatibility
+          install -m 600 "$helper" "$RUNNER_TEMP/responses_native_image.py"
+          sha256sum "$helper" "$fixtures"/{RuntimeProbe,ResponsesApiRuntimeProbe}.java \
+            > "$RUNNER_TEMP/responses-trace-inputs.sha256"
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           persist-credentials: false
           ref: ${{ needs.release.outputs.source_sha }}
+
+      - name: Select Maven inventory from release source
+        run: |
+          set -euo pipefail
+          split=(openai-java-runtime openai-java-http-okhttp openai-java-responses-api openai-java-responses)
+          present=0
+          for artifact in openai-java-bom "${split[@]}"; do
+            if [[ -d "$artifact" ]]; then present=$((present + 1)); fi
+          done
+          helper=scripts/compatibility/responses_native_image.py
+          fixture=openai-java-runtime-compatibility/src/main/java/com/openai/compatibility/ResponsesApiRuntimeProbe.java
+          if (( present == 0 )) && [[ ! -e "$helper" && ! -e "$fixture" ]]; then exit 0; fi
+          for artifact in openai-java-bom "${split[@]}"; do
+            test -f "$artifact/build.gradle.kts"
+          done
+          sha256sum --check "$RUNNER_TEMP/responses-trace-inputs.sha256"
+          cmp "$helper" "$RUNNER_TEMP/responses_native_image.py"
+          echo "MAVEN_ARTIFACTS=$MAVEN_ARTIFACTS ${split[*]}" >> "$GITHUB_ENV"
+          echo "MAVEN_BOM=openai-java-bom" >> "$GITHUB_ENV"
 
       - name: Set up Java
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
@@ -330,6 +359,14 @@ jobs:
             exit 1
           fi
 
+      - name: Trace neutral Responses reachability
+        if: ${{ env.MAVEN_BOM != '' }}
+        run: |
+          set -euo pipefail
+          metadata="$(mktemp -d "$RUNNER_TEMP/responses-graalvm.XXXXXXXX")"
+          python3 "$RUNNER_TEMP/responses_native_image.py" trace "$metadata"
+          echo "ORG_GRADLE_PROJECT_responsesGraalMetadataDir=$metadata" >> "$GITHUB_ENV"
+
       - name: Build Maven artifacts for provenance
         id: maven-artifacts
         env:
@@ -351,12 +388,27 @@ jobs:
           version="${RELEASE_TAG#v}"
           tasks=()
           subjects=()
+          metadata_peers=()
           for artifact in $MAVEN_ARTIFACTS; do
             tasks+=(":$artifact:jar")
+            jar="$artifact/build/libs/$artifact-$version.jar"
             subjects+=("$artifact/build/libs/$artifact-$version.jar")
+            if [[ "$artifact" != openai-java-responses-api ]]; then
+              metadata_peers+=("$jar")
+            fi
           done
+          if [[ -n "${MAVEN_BOM:-}" ]]; then
+            tasks+=(":$MAVEN_BOM:generatePomFileForMavenPublication" ":$MAVEN_BOM:generateMetadataFileForMavenPublication")
+            subjects+=("$MAVEN_BOM/build/publications/maven/pom-default.xml" "$MAVEN_BOM/build/publications/maven/module.json")
+          fi
 
           ./gradlew "${tasks[@]}" --no-configuration-cache
+
+          if [[ -n "${ORG_GRADLE_PROJECT_responsesGraalMetadataDir:-}" ]]; then
+            python3 "$RUNNER_TEMP/responses_native_image.py" check-archive \
+              "$ORG_GRADLE_PROJECT_responsesGraalMetadataDir" \
+              "openai-java-responses-api/build/libs/openai-java-responses-api-$version.jar" "${metadata_peers[@]}"
+          fi
 
           for subject in "${subjects[@]}"; do
             if [[ ! -f "$subject" || -L "$subject" ]]; then
@@ -432,8 +484,13 @@ jobs:
           predicate-type: https://slsa.dev/provenance/v1
           predicate-path: ${{ steps.maven-artifacts.outputs.predicate_path }}
 
+      - name: Stop Gradle daemon before publishing
+        run: ./gradlew --stop
+
       - name: Publish to Maven Central
         env:
+          # Dokka builds the combined Javadoc search index in the Gradle daemon.
+          RELEASE_GRADLE_HEAP: ${{ vars.SDK_GHA_RUNNER == 'sdk-linux-x64-16core' && '16g' || '8g' }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OPENAI_SONATYPE_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OPENAI_SONATYPE_PASSWORD }}
           GPG_SIGNING_KEY: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_KEY }}
@@ -469,13 +526,18 @@ jobs:
           for artifact in $MAVEN_ARTIFACTS; do
             publish_exclusions+=("--exclude-task" ":$artifact:jar")
           done
+          if [[ -n "${MAVEN_BOM:-}" ]]; then
+            publish_exclusions+=("--exclude-task" ":$MAVEN_BOM:generatePomFileForMavenPublication")
+            publish_exclusions+=("--exclude-task" ":$MAVEN_BOM:generateMetadataFileForMavenPublication")
+          fi
 
           sha256sum --check "$RUNNER_TEMP/maven-artifact-provenance.sha256"
           ./gradlew publishAndReleaseToMavenCentral \
             "${publish_exclusions[@]}" \
             --stacktrace \
             --no-parallel \
-            --no-configuration-cache
+            --no-configuration-cache \
+            "-Dorg.gradle.jvmargs=-Xmx${RELEASE_GRADLE_HEAP} -XX:+UseParallelGC -XX:ReservedCodeCacheSize=512m -XX:MaxMetaspaceSize=2G"
 
       - name: Verify attested Maven artifacts
         run: sha256sum --check "$RUNNER_TEMP/maven-artifact-provenance.sha256"
@@ -489,8 +551,14 @@ jobs:
           version="${RELEASE_TAG#v}"
           for attempt in {1..31}; do
             missing=()
-            for artifact in $MAVEN_ARTIFACTS; do
-              for suffix in .pom .jar -sources.jar -javadoc.jar; do
+            for artifact in $MAVEN_ARTIFACTS ${MAVEN_BOM:-}; do
+              suffixes=(.pom .jar -sources.jar -javadoc.jar)
+              if [[ "$artifact" == "${MAVEN_BOM:-}" ]]; then
+                suffixes=(.pom .module)
+              elif [[ -n "${MAVEN_BOM:-}" ]]; then
+                suffixes+=(.module)
+              fi
+              for suffix in "${suffixes[@]}"; do
                 file="$artifact-$version$suffix"
                 url="$MAVEN_CENTRAL_BASE_URL/$artifact/$version/$file"
                 if ! curl --fail --silent --show-error --head --location \
