@@ -643,21 +643,16 @@ class GradleCacheTrustPolicyTest {
         assertTrue(runStep(inventory) != 0)
         split.forEach { fixture("$it/build.gradle.kts") }
         fixture("scripts/compatibility/responses_native_image.py")
-        val probes =
-            listOf(
-                "RuntimeProbe",
-                "ResponsesApiRuntimeProbe",
-                "ResponsesRuntimeProbe",
-                "HttpOkHttpRuntimeProbe",
+        fun probe(name: String) =
+            fixture(
+                "openai-java-runtime-compatibility/src/main/java/com/openai/compatibility/$name.java"
             )
-        val sources =
-            probes.map {
-                fixture(
-                    "openai-java-runtime-compatibility/src/main/java/com/openai/compatibility/$it.java"
-                )
-            }
+
+        val traceSources = listOf("RuntimeProbe", "ResponsesApiRuntimeProbe").map(::probe)
+        val smokeSources = listOf("HttpOkHttpRuntimeProbe", "ResponsesRuntimeProbe").map(::probe)
         assertTrue(runStep(inventory) != 0)
         assertEquals(0, runStep("Preserve Responses metadata verifier from workflow revision"))
+        smokeSources.forEach { it.writeText("changed after trusted checkout") }
         assertEquals(0, runStep(inventory))
         val binaries = "$legacy ${split.joinToString(" ")}"
         assertEquals(
@@ -673,8 +668,14 @@ class GradleCacheTrustPolicyTest {
             expected.sorted(),
             urls.readText().trim().lines().map { it.substringAfterLast('/') }.sorted(),
         )
-        sources.first().writeText("changed after trusted checkout")
-        assertTrue(runStep(inventory) != 0)
+        for (source in traceSources) {
+            val original = source.readText()
+            source.writeText("changed after trusted checkout")
+            assertTrue(runStep(inventory) != 0)
+            Files.delete(source)
+            assertTrue(runStep(inventory) != 0)
+            source.writeText(original)
+        }
     }
 
     @Test

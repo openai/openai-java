@@ -278,7 +278,7 @@ jobs:
           helper=scripts/compatibility/responses_native_image.py
           fixtures=openai-java-runtime-compatibility/src/main/java/com/openai/compatibility
           install -m 600 "$helper" "$RUNNER_TEMP/responses_native_image.py"
-          sha256sum "$helper" "$fixtures"/{RuntimeProbe,ResponsesApiRuntimeProbe,ResponsesRuntimeProbe,HttpOkHttpRuntimeProbe}.java \
+          sha256sum "$helper" "$fixtures"/{RuntimeProbe,ResponsesApiRuntimeProbe}.java \
             > "$RUNNER_TEMP/responses-trace-inputs.sha256"
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
