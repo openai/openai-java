@@ -8,9 +8,9 @@ For questions about that process, contact disclosure@openai.com.
 
 Do not report security vulnerabilities through public GitHub issues, pull requests, or discussions.
 
-This policy covers source code in this repository and the official `com.openai`
-Maven artifacts `openai-java`, `openai-java-core`,
-`openai-java-client-okhttp`, `openai-java-bedrock`, and `openai-java-vertex`.
+This policy covers source code in this repository, the official OpenAI Java SDK
+binaries listed in [the artifact inventory](gradle/version-support.properties),
+and the `com.openai:openai-java-bom` that aligns their versions.
 Supported releases are described in the [Java version support policy](docs/version-support-policy.md).
 
 ## What to include
