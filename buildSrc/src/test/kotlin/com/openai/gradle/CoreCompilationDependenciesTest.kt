@@ -19,7 +19,9 @@ class CoreCompilationDependenciesTest {
         assertEquals(6, jacksonDependencies.size)
         assertTrue(jacksonDependencies.all { it.endsWith(":$jacksonPublishedVersion") })
         assertEquals(
-            publishedDependencies,
+            CoreCompilationDependencies.publishedApiDependencies(jacksonPublishedVersion) +
+                CoreCompilationDependencies.compileOnlyDependencies() +
+                CoreCompilationDependencies.publishedImplementationDependencies(jacksonPublishedVersion),
             CoreCompilationDependencies.compilerClasspathDependencies(jacksonPublishedVersion),
         )
         assertTrue(
