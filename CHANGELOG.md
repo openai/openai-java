@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.105.1](https://github.com/openai/openai-java/compare/v4.105.0...v4.105.1) (2026-11-14)
+
+
+### Bug Fixes
+
+* **ci:** give Maven Javadoc publishing more heap ([#1397](https://github.com/openai/openai-java/issues/1397)) ([6d20a83](https://github.com/openai/openai-java/commit/6d20a833c649cd30901b2720cc322d820cf49c06))
+
 ## [4.105.0](https://github.com/openai/openai-java/compare/v4.104.0...v4.105.0) (2026-11-13)
 
 
