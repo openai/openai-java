@@ -8,6 +8,9 @@ import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.errors.UnexpectedStatusCodeException
+import com.openai.http.okhttp.OkHttpClient
+import com.openai.http.okhttp.X509TokenExchange
+import com.openai.http.okhttp.X509Transport
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.net.Socket

@@ -5,6 +5,7 @@ import com.openai.gradle.VerifyVersionSupportPolicyTask
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.compile.JavaCompile
+import org.jetbrains.dokka.gradle.AbstractDokkaLeafTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -99,8 +100,16 @@ subprojects {
 }
 
 subprojects {
-    if (!CoreCompilationShards.isShardProject(name)) {
+    if (!CoreCompilationShards.isShardProject(name) && name != "openai-java-bom") {
         apply(plugin = "org.jetbrains.dokka")
+        pluginManager.withPlugin("openai.core-distribution") {
+            tasks.withType<AbstractDokkaLeafTask>().configureEach {
+                dokkaSourceSets.named("main") {
+                    // The distribution selects its owned SDK sources into build/generated.
+                    suppressGeneratedFiles.set(false)
+                }
+            }
+        }
     }
 }
 
@@ -129,6 +138,8 @@ subprojects {
     val artifactSupport = versionSupport.artifacts[artifactName]
 
     pluginManager.withPlugin("openai.publish") {
+        // Maven platforms have no classes or JVM floor.
+        if (plugins.hasPlugin("java-platform")) return@withPlugin
         checkNotNull(artifactSupport) {
             "$artifactName is published but missing from ${versionSupportFile.asFile}"
         }

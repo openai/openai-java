@@ -13,6 +13,10 @@ val versionSupportPolicy =
     VersionSupportPolicy.load(rootProject.file("gradle/version-support.properties"))
 val runtimeProbes =
     mapOf(
+        "openai-java-runtime" to "com.openai.compatibility.RuntimeProbe",
+        "openai-java-responses-api" to "com.openai.compatibility.ResponsesApiRuntimeProbe",
+        "openai-java-http-okhttp" to "com.openai.compatibility.HttpOkHttpRuntimeProbe",
+        "openai-java-responses" to "com.openai.compatibility.ResponsesRuntimeProbe",
         "openai-java-core" to "com.openai.compatibility.CoreRuntimeProbe",
         "openai-java-client-okhttp" to "com.openai.compatibility.OkHttpRuntimeProbe",
         "openai-java" to "com.openai.compatibility.OkHttpRuntimeProbe",
@@ -74,6 +78,14 @@ val artifactProbeTasks =
                 }
             }
         dependencies.add(runtimeClasspath.name, project(":$artifactName"))
+
+        if (artifactName in setOf("openai-java-responses-api", "openai-java-responses")) {
+            tasks.register<Sync>("stage${artifactName.toTaskSegment()}NativeClasspath") {
+                from(runtimeClasspath)
+                into(layout.buildDirectory.dir("native-classpaths/$artifactName"))
+                duplicatesStrategy = DuplicatesStrategy.FAIL
+            }
+        }
 
         tasks.register<JavaExec>("run${artifactName.toTaskSegment()}RuntimeCompatibility") {
             group = "verification"

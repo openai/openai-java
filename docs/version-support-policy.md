@@ -7,7 +7,7 @@ that apply this policy.
 
 ## Compatibility contract
 
-- Every artifact declares its runtime and bytecode/API floor and lifecycle state in
+- Every binary artifact declares its runtime and bytecode/API floor and lifecycle state in
   [`gradle/version-support.properties`](../gradle/version-support.properties). Framework
   generations and tested ranges belong in the relevant artifact documentation or ADR.
 - A newer build JDK must not silently raise the consumer runtime floor.
@@ -79,10 +79,13 @@ See the [Kotlin migration guide](next-kotlin-migration.md) for consumer build ch
 | Retired Spring Boot 2 starter | OpenAI EOL as of 2026-07-27; 4.45.0 is the final supported and published release, and its source is no longer in the active build. | Keep the final artifact and tagged source available; follow the [Spring Boot 2 EOL decision](spring-boot-2-eol.md); publish no later versions. |
 | Potential Spring Boot 4 integration | Candidate Java 17 integration using a new generation-specific artifact. | Pass the admission gate and Spring ADR before implementation. |
 
-Do not publish an OpenAI Java BOM until independently versioned artifacts or demonstrated consumer
-resolution failures create a real alignment need. Add an optional integration only when it passes
-the lifecycle gate, solves substantial repeated work for SDK users, and has a named owner and funded
-compatibility matrix.
+The next major's Responses and full installations share runtime and model classes. Use the
+`openai-java-bom` to align their versions on the classpath or module path. The BOM contains
+dependency constraints and has no JVM floor. The four binary artifacts for the Responses
+installation have a Java 8 floor. See the [Responses installation guide](next-responses-package.md).
+
+Add an optional integration only when it passes the lifecycle gate, solves substantial repeated
+work for SDK users, and has a named owner and funded compatibility matrix.
 
 ## Jackson in v5
 

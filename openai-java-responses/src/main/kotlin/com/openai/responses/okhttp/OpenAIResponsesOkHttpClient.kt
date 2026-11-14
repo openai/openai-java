@@ -1,0 +1,521 @@
+package com.openai.responses.okhttp
+
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.openai.auth.WorkloadIdentity
+import com.openai.azure.AzureOpenAIServiceVersion
+import com.openai.azure.AzureUrlPathMode
+import com.openai.core.ClientOptions
+import com.openai.core.DataResidency
+import com.openai.core.LogLevel
+import com.openai.core.Sleeper
+import com.openai.core.Timeout
+import com.openai.core.http.AsyncStreamResponse
+import com.openai.core.http.Headers
+import com.openai.core.http.HttpRequestAuthenticator
+import com.openai.core.http.ProxyAuthenticator
+import com.openai.core.http.QueryParams
+import com.openai.credential.Credential
+import com.openai.http.okhttp.OkHttpClientConfiguration
+import com.openai.http.okhttp.X509WorkloadIdentity
+import com.openai.responses.OpenAIResponsesClient
+import com.openai.responses.checkResponsesRuntime
+import java.net.Proxy
+import java.time.Clock
+import java.time.Duration
+import java.util.Optional
+import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
+import javax.net.ssl.HostnameVerifier
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.X509TrustManager
+import kotlin.jvm.optionals.getOrNull
+import okhttp3.Interceptor
+
+/** Builds a Responses client backed by OkHttp. */
+class OpenAIResponsesOkHttpClient private constructor() {
+
+    companion object {
+
+        /** Returns a mutable builder for constructing an instance of [OpenAIResponsesClient]. */
+        @JvmStatic fun builder() = Builder()
+
+        /**
+         * Returns a client configured using system properties and environment variables.
+         *
+         * @see ClientOptions.Builder.fromEnv
+         */
+        @JvmStatic fun fromEnv(): OpenAIResponsesClient = builder().fromEnv().build()
+    }
+
+    /** A builder for [OpenAIResponsesOkHttpClient]. */
+    class Builder internal constructor() {
+
+        init {
+            checkResponsesRuntime(OpenAIResponsesOkHttpClient::class.java.classLoader)
+        }
+
+        private val configuration = OkHttpClientConfiguration()
+        private val clientOptions
+            get() = configuration.clientOptions
+
+        /**
+         * Uses a caller-owned OkHttp client for full transport configuration, including its
+         * dispatcher, DNS, connection pool, TLS, cache, and interceptors. The SDK uses a derived
+         * client and does not shut down its shared dispatcher, evict its pool, or close its cache.
+         * The caller must release those resources after all users have finished.
+         *
+         * Native timeouts apply unless [timeout] is explicitly set on this builder. A stock native
+         * client uses a ten-second read timeout and no overall deadline, instead of ten minutes for
+         * both. Use `timeout(Timeout.builder().build())` to retain SDK timeouts. Request-level
+         * timeouts override client defaults. [addInterceptor] appends application interceptors to
+         * those already on the supplied client.
+         *
+         * Configure other transport settings on the native client: combining this with this
+         * builder's proxy, TLS, pool, dispatcher, or redirect setters is rejected at build time.
+         * Cannot be combined with X.509 workload identity. SDK retries remain authoritative (native
+         * connection retries are disabled), and SDK redirect credential protection is appended
+         * after native network interceptors. Proxy authentication is restricted to proxy
+         * challenges. Other native HTTP settings are retained. SDK WebSockets retain their isolated
+         * dispatcher. Caller network interceptors and authenticators other than
+         * `okhttp3.Authenticator.NONE` are rejected when connecting a WebSocket, before opening a
+         * connection, rather than at build time. WebSocket redirects and compression remain
+         * disabled.
+         */
+        fun okHttpClient(okHttpClient: okhttp3.OkHttpClient) = apply {
+            configuration.okHttpClient = okHttpClient
+        }
+
+        /**
+         * Adds an OkHttp application interceptor. Interceptors run in registration order for each
+         * HTTP attempt, including SDK retries. Instances may be called concurrently.
+         *
+         * Cannot be combined with [x509WorkloadIdentity].
+         */
+        fun addInterceptor(interceptor: Interceptor) = apply {
+            configuration.interceptors.add(interceptor)
+        }
+
+        /**
+         * The executor service to use for running HTTP requests.
+         *
+         * Defaults to OkHttp's
+         * [default executor service](https://github.com/square/okhttp/blob/ace792f443b2ffb17974f5c0d1cecdf589309f26/okhttp/src/commonJvmAndroid/kotlin/okhttp3/Dispatcher.kt#L98-L104).
+         *
+         * This class takes ownership of the executor service and shuts it down when closed.
+         */
+        fun dispatcherExecutorService(dispatcherExecutorService: ExecutorService?) = apply {
+            configuration.dispatcherExecutorService = dispatcherExecutorService
+        }
+
+        /**
+         * Configures whether the underlying transport follows redirects automatically.
+         *
+         * Defaults to true.
+         */
+        fun followRedirects(followRedirects: Boolean) = apply {
+            configuration.followRedirects = followRedirects
+        }
+
+        /**
+         * Alias for calling [Builder.dispatcherExecutorService] with
+         * `dispatcherExecutorService.orElse(null)`.
+         */
+        fun dispatcherExecutorService(dispatcherExecutorService: Optional<ExecutorService>) =
+            dispatcherExecutorService(dispatcherExecutorService.getOrNull())
+
+        fun proxy(proxy: Proxy?) = apply { configuration.proxy = proxy }
+
+        /** Alias for calling [Builder.proxy] with `proxy.orElse(null)`. */
+        fun proxy(proxy: Optional<Proxy>) = proxy(proxy.getOrNull())
+
+        /**
+         * Provides credentials when an HTTP proxy responds with `407 Proxy Authentication
+         * Required`.
+         */
+        fun proxyAuthenticator(proxyAuthenticator: ProxyAuthenticator?) = apply {
+            configuration.proxyAuthenticator = proxyAuthenticator
+        }
+
+        /**
+         * Alias for calling [Builder.proxyAuthenticator] with `proxyAuthenticator.orElse(null)`.
+         */
+        fun proxyAuthenticator(proxyAuthenticator: Optional<ProxyAuthenticator>) =
+            proxyAuthenticator(proxyAuthenticator.getOrNull())
+
+        /**
+         * The maximum number of idle connections kept by the underlying OkHttp connection pool.
+         *
+         * If this is set, then [keepAliveDuration] must also be set.
+         *
+         * If unset, then OkHttp's default is used.
+         */
+        fun maxIdleConnections(maxIdleConnections: Int?) = apply {
+            configuration.maxIdleConnections = maxIdleConnections
+        }
+
+        /**
+         * Alias for [Builder.maxIdleConnections].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun maxIdleConnections(maxIdleConnections: Int) =
+            maxIdleConnections(maxIdleConnections as Int?)
+
+        /**
+         * Alias for calling [Builder.maxIdleConnections] with `maxIdleConnections.orElse(null)`.
+         */
+        fun maxIdleConnections(maxIdleConnections: Optional<Int>) =
+            maxIdleConnections(maxIdleConnections.getOrNull())
+
+        /**
+         * The keep-alive duration for idle connections in the underlying OkHttp connection pool.
+         *
+         * If this is set, then [maxIdleConnections] must also be set.
+         *
+         * If unset, then OkHttp's default is used.
+         */
+        fun keepAliveDuration(keepAliveDuration: Duration?) = apply {
+            configuration.keepAliveDuration = keepAliveDuration
+        }
+
+        /** Alias for calling [Builder.keepAliveDuration] with `keepAliveDuration.orElse(null)`. */
+        fun keepAliveDuration(keepAliveDuration: Optional<Duration>) =
+            keepAliveDuration(keepAliveDuration.getOrNull())
+
+        /**
+         * The socket factory used to secure HTTPS connections.
+         *
+         * If this is set, then [trustManager] must also be set.
+         *
+         * If unset, then the system default is used. Most applications should not call this method,
+         * and instead use the system default. The default include special optimizations that can be
+         * lost if the implementation is modified.
+         */
+        fun sslSocketFactory(sslSocketFactory: SSLSocketFactory?) = apply {
+            configuration.sslSocketFactory = sslSocketFactory
+        }
+
+        /** Alias for calling [Builder.sslSocketFactory] with `sslSocketFactory.orElse(null)`. */
+        fun sslSocketFactory(sslSocketFactory: Optional<SSLSocketFactory>) =
+            sslSocketFactory(sslSocketFactory.getOrNull())
+
+        /**
+         * The trust manager used to secure HTTPS connections.
+         *
+         * If this is set, then [sslSocketFactory] must also be set.
+         *
+         * If unset, then the system default is used. Most applications should not call this method,
+         * and instead use the system default. The default include special optimizations that can be
+         * lost if the implementation is modified.
+         */
+        fun trustManager(trustManager: X509TrustManager?) = apply {
+            configuration.trustManager = trustManager
+        }
+
+        /** Alias for calling [Builder.trustManager] with `trustManager.orElse(null)`. */
+        fun trustManager(trustManager: Optional<X509TrustManager>) =
+            trustManager(trustManager.getOrNull())
+
+        /**
+         * The verifier used to confirm that response certificates apply to requested hostnames for
+         * HTTPS connections.
+         *
+         * If unset, then a default hostname verifier is used.
+         */
+        fun hostnameVerifier(hostnameVerifier: HostnameVerifier?) = apply {
+            configuration.hostnameVerifier = hostnameVerifier
+        }
+
+        /** Alias for calling [Builder.hostnameVerifier] with `hostnameVerifier.orElse(null)`. */
+        fun hostnameVerifier(hostnameVerifier: Optional<HostnameVerifier>) =
+            hostnameVerifier(hostnameVerifier.getOrNull())
+
+        /**
+         * Whether to throw an exception if any of the Jackson versions detected at runtime are
+         * incompatible with the SDK's minimum supported Jackson version (2.13.4).
+         *
+         * Defaults to true. Use extreme caution when disabling this option. There is no guarantee
+         * that the SDK will work correctly when using an incompatible Jackson version.
+         */
+        fun checkJacksonVersionCompatibility(checkJacksonVersionCompatibility: Boolean) = apply {
+            clientOptions.checkJacksonVersionCompatibility(checkJacksonVersionCompatibility)
+        }
+
+        /**
+         * The Jackson JSON mapper to use for serializing and deserializing JSON.
+         *
+         * Defaults to [com.openai.core.jsonMapper]. The default is usually sufficient and rarely
+         * needs to be overridden.
+         */
+        fun jsonMapper(jsonMapper: JsonMapper) = apply { clientOptions.jsonMapper(jsonMapper) }
+
+        /**
+         * The executor to use for running [AsyncStreamResponse.Handler] callbacks.
+         *
+         * Defaults to a dedicated cached thread pool.
+         *
+         * This class takes ownership of the executor and shuts it down, if possible, when closed.
+         */
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            clientOptions.streamHandlerExecutor(streamHandlerExecutor)
+        }
+
+        /**
+         * The interface to use for delaying execution, like during retries.
+         *
+         * This is primarily useful for using fake delays in tests.
+         *
+         * Defaults to real execution delays.
+         *
+         * This class takes ownership of the sleeper and closes it when closed.
+         */
+        fun sleeper(sleeper: Sleeper) = apply { clientOptions.sleeper(sleeper) }
+
+        /**
+         * The clock to use for operations that require timing, like retries.
+         *
+         * This is primarily useful for using a fake clock in tests.
+         *
+         * Defaults to [Clock.systemUTC].
+         */
+        fun clock(clock: Clock) = apply { clientOptions.clock(clock) }
+
+        /**
+         * The base URL to use for every request.
+         *
+         * Defaults to the production environment: `https://api.openai.com/v1`.
+         */
+        fun baseUrl(baseUrl: String?) = apply { configuration.baseUrl(baseUrl) }
+
+        /** Alias for calling [Builder.baseUrl] with `baseUrl.orElse(null)`. */
+        fun baseUrl(baseUrl: Optional<String>) = baseUrl(baseUrl.getOrNull())
+
+        /**
+         * Selects an OpenAI API endpoint by region.
+         *
+         * @see ClientOptions.Builder.dataResidency
+         */
+        fun dataResidency(dataResidency: DataResidency?) = apply {
+            clientOptions.dataResidency(dataResidency)
+        }
+
+        /** Alias for calling [dataResidency] with `dataResidency.orElse(null)`. */
+        fun dataResidency(dataResidency: Optional<DataResidency>) =
+            dataResidency(dataResidency.getOrNull())
+
+        /**
+         * Whether to call `validate` on every response before returning it.
+         *
+         * Setting this to `true` is _not_ forwards compatible with new types from the API for
+         * existing fields.
+         *
+         * Defaults to false, which means the shape of the response will not be validated upfront.
+         * Instead, validation will only occur for the parts of the response that are accessed.
+         */
+        fun responseValidation(responseValidation: Boolean) = apply {
+            clientOptions.responseValidation(responseValidation)
+        }
+
+        /**
+         * Sets the maximum time allowed for various parts of an HTTP call's lifecycle, excluding
+         * retries.
+         *
+         * Defaults to [Timeout.default].
+         */
+        fun timeout(timeout: Timeout) = apply { configuration.timeout(timeout) }
+
+        /**
+         * Sets the maximum time allowed for a complete HTTP call, not including retries.
+         *
+         * See [Timeout.request] for more details.
+         *
+         * For fine-grained control, pass a [Timeout] object.
+         */
+        fun timeout(timeout: Duration) = timeout(Timeout.builder().request(timeout).build())
+
+        /**
+         * The maximum number of times to retry failed requests, with a short exponential backoff
+         * between requests.
+         *
+         * Only the following error types are retried:
+         * - Connection errors (for example, due to a network connectivity problem)
+         * - 408 Request Timeout
+         * - 409 Conflict
+         * - 429 Rate Limit
+         * - 5xx Internal
+         *
+         * The API may also explicitly instruct the SDK to retry or not retry a request.
+         *
+         * Defaults to 2.
+         */
+        fun maxRetries(maxRetries: Int) = apply { clientOptions.maxRetries(maxRetries) }
+
+        /**
+         * The level at which to log request and response information.
+         *
+         * [fromEnv] will set the level from environment variables. See [LogLevel.fromEnv].
+         *
+         * Defaults to [LogLevel.fromEnv].
+         */
+        fun logLevel(logLevel: LogLevel) = apply { clientOptions.logLevel(logLevel) }
+
+        fun apiKey(apiKey: String?) = apply { clientOptions.apiKey(apiKey) }
+
+        /** Alias for calling [Builder.apiKey] with `apiKey.orElse(null)`. */
+        fun apiKey(apiKey: Optional<String>) = apiKey(apiKey.getOrNull())
+
+        fun adminApiKey(adminApiKey: String?) = apply { clientOptions.adminApiKey(adminApiKey) }
+
+        /** Alias for calling [Builder.adminApiKey] with `adminApiKey.orElse(null)`. */
+        fun adminApiKey(adminApiKey: Optional<String>) = adminApiKey(adminApiKey.getOrNull())
+
+        fun credential(credential: Credential) = apply { clientOptions.credential(credential) }
+
+        /** Configures full-request authentication for an OpenAI-owned provider integration. */
+        @JvmSynthetic
+        fun httpRequestAuthenticator(httpRequestAuthenticator: HttpRequestAuthenticator) = apply {
+            clientOptions.httpRequestAuthenticator(httpRequestAuthenticator)
+        }
+
+        fun workloadIdentity(workloadIdentity: WorkloadIdentity?) = apply {
+            clientOptions.workloadIdentity(workloadIdentity)
+        }
+
+        /** Alias for calling [Builder.workloadIdentity] with `workloadIdentity.orElse(null)`. */
+        fun workloadIdentity(workloadIdentity: Optional<WorkloadIdentity>) =
+            workloadIdentity(workloadIdentity.getOrNull())
+
+        /** Authenticates requests using a fixed X.509 client certificate instead of an API key. */
+        fun x509WorkloadIdentity(x509WorkloadIdentity: X509WorkloadIdentity) = apply {
+            configuration.x509WorkloadIdentity = x509WorkloadIdentity
+        }
+
+        fun azureServiceVersion(azureServiceVersion: AzureOpenAIServiceVersion) = apply {
+            clientOptions.azureServiceVersion(azureServiceVersion)
+        }
+
+        fun azureUrlPathMode(azureUrlPathMode: AzureUrlPathMode) = apply {
+            clientOptions.azureUrlPathMode(azureUrlPathMode)
+        }
+
+        /**
+         * Disables SDK-generated telemetry headers, preserving explicit caller headers. Overrides
+         * the `openai.disableTelemetry` system property. Defaults to `false`.
+         */
+        fun disableTelemetry(disableTelemetry: Boolean) = apply {
+            clientOptions.disableTelemetry(disableTelemetry)
+        }
+
+        fun organization(organization: String?) = apply { clientOptions.organization(organization) }
+
+        /** Alias for calling [Builder.organization] with `organization.orElse(null)`. */
+        fun organization(organization: Optional<String>) = organization(organization.getOrNull())
+
+        fun project(project: String?) = apply { clientOptions.project(project) }
+
+        /** Alias for calling [Builder.project] with `project.orElse(null)`. */
+        fun project(project: Optional<String>) = project(project.getOrNull())
+
+        fun webhookSecret(webhookSecret: String?) = apply {
+            clientOptions.webhookSecret(webhookSecret)
+        }
+
+        /** Alias for calling [Builder.webhookSecret] with `webhookSecret.orElse(null)`. */
+        fun webhookSecret(webhookSecret: Optional<String>) =
+            webhookSecret(webhookSecret.getOrNull())
+
+        fun headers(headers: Headers) = apply { clientOptions.headers(headers) }
+
+        fun headers(headers: Map<String, Iterable<String>>) = apply {
+            clientOptions.headers(headers)
+        }
+
+        fun putHeader(name: String, value: String) = apply { clientOptions.putHeader(name, value) }
+
+        fun putHeaders(name: String, values: Iterable<String>) = apply {
+            clientOptions.putHeaders(name, values)
+        }
+
+        fun putAllHeaders(headers: Headers) = apply { clientOptions.putAllHeaders(headers) }
+
+        fun putAllHeaders(headers: Map<String, Iterable<String>>) = apply {
+            clientOptions.putAllHeaders(headers)
+        }
+
+        fun replaceHeaders(name: String, value: String) = apply {
+            clientOptions.replaceHeaders(name, value)
+        }
+
+        fun replaceHeaders(name: String, values: Iterable<String>) = apply {
+            clientOptions.replaceHeaders(name, values)
+        }
+
+        fun replaceAllHeaders(headers: Headers) = apply { clientOptions.replaceAllHeaders(headers) }
+
+        fun replaceAllHeaders(headers: Map<String, Iterable<String>>) = apply {
+            clientOptions.replaceAllHeaders(headers)
+        }
+
+        fun removeHeaders(name: String) = apply { clientOptions.removeHeaders(name) }
+
+        fun removeAllHeaders(names: Set<String>) = apply { clientOptions.removeAllHeaders(names) }
+
+        fun queryParams(queryParams: QueryParams) = apply { clientOptions.queryParams(queryParams) }
+
+        fun queryParams(queryParams: Map<String, Iterable<String>>) = apply {
+            clientOptions.queryParams(queryParams)
+        }
+
+        fun putQueryParam(key: String, value: String) = apply {
+            clientOptions.putQueryParam(key, value)
+        }
+
+        fun putQueryParams(key: String, values: Iterable<String>) = apply {
+            clientOptions.putQueryParams(key, values)
+        }
+
+        fun putAllQueryParams(queryParams: QueryParams) = apply {
+            clientOptions.putAllQueryParams(queryParams)
+        }
+
+        fun putAllQueryParams(queryParams: Map<String, Iterable<String>>) = apply {
+            clientOptions.putAllQueryParams(queryParams)
+        }
+
+        fun replaceQueryParams(key: String, value: String) = apply {
+            clientOptions.replaceQueryParams(key, value)
+        }
+
+        fun replaceQueryParams(key: String, values: Iterable<String>) = apply {
+            clientOptions.replaceQueryParams(key, values)
+        }
+
+        fun replaceAllQueryParams(queryParams: QueryParams) = apply {
+            clientOptions.replaceAllQueryParams(queryParams)
+        }
+
+        fun replaceAllQueryParams(queryParams: Map<String, Iterable<String>>) = apply {
+            clientOptions.replaceAllQueryParams(queryParams)
+        }
+
+        fun removeQueryParams(key: String) = apply { clientOptions.removeQueryParams(key) }
+
+        fun removeAllQueryParams(keys: Set<String>) = apply {
+            clientOptions.removeAllQueryParams(keys)
+        }
+
+        /**
+         * Updates configuration using system properties and environment variables.
+         *
+         * @see ClientOptions.Builder.fromEnv
+         */
+        fun fromEnv() = apply { configuration.fromEnv() }
+
+        /**
+         * Returns an immutable instance of [OpenAIResponsesClient].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
+        fun build(): OpenAIResponsesClient = OpenAIResponsesClient(configuration.build())
+    }
+}

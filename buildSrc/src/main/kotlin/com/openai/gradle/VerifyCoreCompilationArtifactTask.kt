@@ -5,12 +5,12 @@ import java.io.Serializable
 import java.util.SortedSet
 import java.util.zip.ZipFile
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileTreeElement
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.specs.Spec
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
@@ -18,21 +18,21 @@ import org.gradle.work.DisableCachingByDefault
 
 @DisableCachingByDefault(because = "Artifact verification produces no outputs")
 abstract class VerifyCoreCompilationArtifactTask : DefaultTask() {
-    @get:InputDirectory
+    @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val classesDirectory: DirectoryProperty
+    abstract val classesDirectories: ConfigurableFileCollection
 
-    @get:InputDirectory
+    @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val sourceDirectory: DirectoryProperty
+    abstract val sourceDirectories: ConfigurableFileCollection
 
-    @get:InputFile
+    @get:InputFiles
     @get:PathSensitive(PathSensitivity.NAME_ONLY)
-    abstract val binaryJar: RegularFileProperty
+    abstract val binaryJars: ConfigurableFileCollection
 
-    @get:InputFile
+    @get:InputFiles
     @get:PathSensitive(PathSensitivity.NAME_ONLY)
-    abstract val sourcesJar: RegularFileProperty
+    abstract val sourcesJars: ConfigurableFileCollection
 
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -40,10 +40,12 @@ abstract class VerifyCoreCompilationArtifactTask : DefaultTask() {
 
     @TaskAction
     fun verify() {
-        val expectedClasses = relativeFiles(classesDirectory.get().asFile, ".class")
+        val expectedClasses =
+            classesDirectories.files.flatMap { relativeFiles(it, ".class") }.toSortedSet()
         check(expectedClasses.isNotEmpty()) { "The combined core classes directory is empty." }
 
-        val binaryEntries = zipEntryCounts(binaryJar.get().asFile)
+        val binaryEntries =
+            ownedEntryCounts(binaryJars.files, setOf(".class", ".kotlin_module", ".pro"))
         assertNoDuplicateEntries("core jar", binaryEntries)
         assertSameEntries(
             label = "core class",
@@ -51,10 +53,11 @@ abstract class VerifyCoreCompilationArtifactTask : DefaultTask() {
             actual = binaryEntries.keys.filterTo(sortedSetOf()) { it.endsWith(".class") },
         )
 
-        val expectedSources = relativeFiles(sourceDirectory.get().asFile, ".kt")
+        val expectedSources =
+            sourceDirectories.files.flatMap { relativeFiles(it, ".kt") }.toSortedSet()
         check(expectedSources.isNotEmpty()) { "The core source directory is empty." }
 
-        val sourceEntries = zipEntryCounts(sourcesJar.get().asFile)
+        val sourceEntries = ownedEntryCounts(sourcesJars.files, setOf(".kt"))
         assertNoDuplicateEntries("core sources jar", sourceEntries)
         assertSameEntries(
             label = "core Kotlin source",
@@ -76,6 +79,18 @@ abstract class VerifyCoreCompilationArtifactTask : DefaultTask() {
                 "Public API source must appear exactly once in the core sources jar: $className"
             }
         }
+    }
+
+    private fun ownedEntryCounts(archives: Set<File>, extensions: Set<String>): Map<String, Int> {
+        val owned = mutableMapOf<String, Int>()
+        archives.forEach { archive ->
+            val entries = zipEntryCounts(archive)
+            assertNoDuplicateEntries(archive.name, entries)
+            entries.keys
+                .filter { name -> extensions.any(name::endsWith) }
+                .forEach { name -> owned[name] = (owned[name] ?: 0) + 1 }
+        }
+        return owned
     }
 
     private fun relativeFiles(root: File, extension: String): SortedSet<String> =

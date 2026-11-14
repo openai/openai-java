@@ -25,6 +25,9 @@ tasks.withType<AbstractDokkaLeafTask>().configureEach {
         listOf(
                 "openai-java-core",
                 "openai-java-client-okhttp",
+                "openai-java-http-okhttp",
+                "openai-java-responses-api",
+                "openai-java-responses",
                 "openai-java-bedrock",
                 "openai-java-vertex",
             )

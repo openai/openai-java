@@ -30,6 +30,13 @@ implementation("com.openai:openai-java:4.104.0")
 
 <!-- x-release-please-end -->
 
+### Responses-only installation (next major)
+
+Applications that use only the stable Responses API can depend on `com.openai:openai-java-responses`
+and construct a client with `com.openai.responses.okhttp.OpenAIResponsesOkHttpClient.fromEnv()`.
+For a custom HTTP transport, use `com.openai:openai-java-responses-api`. See the
+[Responses installation and module-path guide](docs/next-responses-package.md).
+
 ## Requirements
 
 The framework-neutral SDK artifacts require Java 8 or later. Runtime floors and lifecycle states

@@ -1,4 +1,5 @@
 import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.JavaPlatform
 import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.plugins.signing.SigningExtension
@@ -25,6 +26,8 @@ repositories {
     mavenCentral()
 }
 
+val isPlatform = plugins.hasPlugin("java-platform")
+
 configure<MavenPublishBaseExtension> {
     if (!project.hasProperty("publishLocal")) {
         signAllPublications()
@@ -39,12 +42,16 @@ configure<MavenPublishBaseExtension> {
     }
 
     coordinates(project.group.toString(), project.name, project.version.toString())
-    configure(
-        KotlinJvm(
-            javadocJar = JavadocJar.Dokka("dokkaJavadoc"),
-            sourcesJar = true,
+    if (isPlatform) {
+        configure(JavaPlatform())
+    } else {
+        configure(
+            KotlinJvm(
+                javadocJar = JavadocJar.Dokka("dokkaJavadoc"),
+                sourcesJar = true,
+            )
         )
-    )
+    }
 
     pom {
         name.set("OpenAI API")
@@ -72,10 +79,26 @@ configure<MavenPublishBaseExtension> {
     }
 }
 
-// Preserve Kotlin source paths when Maven Publish uses Gradle's Java sources task.
-tasks.named<Jar>("sourcesJar") {
-    filesMatching("**/*.kt") {
-        path = "main/$path"
+if (!isPlatform) {
+    dependencies {
+        add("api", platform(project(":openai-java-bom")))
+    }
+
+    // Installed consumers resolve each published project dependency from the same local repository.
+    val localPublish = "publishMavenPublicationToLocalFileSystemRepository"
+    val publishedDependencies = configurations.named("runtimeElements")
+    tasks.matching { it.name == localPublish }.configureEach {
+        dependsOn(publishedDependencies.map { elements ->
+            elements.allDependencies.withType<ProjectDependency>().map { "${it.path}:$localPublish" }
+        })
+    }
+
+    val packageRelativeSources = project.name in setOf("openai-java-http-okhttp", "openai-java-responses")
+    tasks.named<Jar>("sourcesJar") {
+        filesMatching("**/*.kt") {
+            // Eclipse looks up split client sources by their package path.
+            path = if (packageRelativeSources) path.removePrefix("main/") else "main/$path"
+        }
     }
 }
 

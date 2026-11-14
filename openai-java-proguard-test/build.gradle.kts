@@ -43,7 +43,7 @@ tasks.shadowJar {
     configurations = listOf(project.configurations.testRuntimeClasspath.get())
 }
 
-val okHttpRules = "../openai-java-client-okhttp/src/main/resources/META-INF/proguard/openai-java-client-okhttp.pro"
+val okHttpRules = "../openai-java-http-okhttp/src/main/resources/META-INF/proguard/openai-java-client-okhttp.pro"
 val shadowJarFile = tasks.shadowJar.flatMap { it.archiveFile }
 val proguardJarPath = "${layout.buildDirectory.get()}/libs/${project.name}-${project.version}-proguard.jar"
 val proguardJar by tasks.registering(proguard.gradle.ProGuardTask::class) {

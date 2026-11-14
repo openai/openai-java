@@ -1,4 +1,4 @@
-package com.openai.client.okhttp
+package com.openai.http.okhttp
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonProcessingException
