@@ -8,9 +8,14 @@ updates:
       - /
       - /openai-java
       - /openai-java-bedrock
+      - /openai-java-bom
       - /openai-java-client-okhttp
       - /openai-java-core
       - /openai-java-example
+      - /openai-java-http-okhttp
+      - /openai-java-responses
+      - /openai-java-responses-api
+      - /openai-java-runtime
       - /openai-java-runtime-compatibility
       - /openai-java-vertex
     schedule:
