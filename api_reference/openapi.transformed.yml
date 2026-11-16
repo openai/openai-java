@@ -40553,9 +40553,7 @@ components:
         type:
           type: string
           description: Always `auto`.
-          enum:
-          - auto
-          x-stainless-const: true
+          const: auto
       required:
       - type
     Batch:
@@ -40565,10 +40563,8 @@ components:
           type: string
         object:
           type: string
-          enum:
-          - batch
+          const: batch
           description: The object type, which is always `batch`.
-          x-stainless-const: true
         endpoint:
           type: string
           description: The OpenAI API endpoint used by the batch.
@@ -40774,9 +40770,7 @@ components:
         anchor:
           description: 'Anchor timestamp after which the expiration policy applies. Supported anchors: `created_at`. Note that the anchor is the file creation time, not the time the batch is created.'
           type: string
-          enum:
-          - created_at
-          x-stainless-const: true
+          const: created_at
         seconds:
           description: The number of seconds after the anchor time that the file will expire. Must be between 3600 (1 hour) and 2592000 (30 days).
           type: integer
@@ -40915,10 +40909,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - allowed_tools
+          const: allowed_tools
           description: Allowed tool configuration type. Always `allowed_tools`.
-          x-stainless-const: true
         allowed_tools:
           $ref: '#/components/schemas/ChatCompletionAllowedTools'
           x-stainless-go-json: omitzero
@@ -40931,9 +40923,7 @@ components:
         object:
           type: string
           description: The type of object being deleted.
-          enum:
-          - chat.completion.deleted
-          x-stainless-const: true
+          const: chat.completion.deleted
         id:
           type: string
           description: The ID of the chat completion that was deleted.
@@ -40977,12 +40967,10 @@ components:
       properties:
         object:
           type: string
-          enum:
-          - list
+          const: list
           default: list
           description: |
             The type of this object. It is always set to "list".
-          x-stainless-const: true
         data:
           type: array
           description: |
@@ -41064,10 +41052,8 @@ components:
           description: The ID of the tool call.
         type:
           type: string
-          enum:
-          - custom
+          const: custom
           description: The type of the tool. Always `custom`.
-          x-stainless-const: true
         custom:
           type: object
           description: The custom tool that the model called.
@@ -41094,12 +41080,10 @@ components:
       properties:
         object:
           type: string
-          enum:
-          - list
+          const: list
           default: list
           description: |
             The type of this object. It is always set to "list".
-          x-stainless-const: true
         data:
           type: array
           description: |
@@ -41170,10 +41154,8 @@ components:
           description: The ID of the tool call.
         type:
           type: string
-          enum:
-          - function
+          const: function
           description: The type of the tool. Currently, only `function` is supported.
-          x-stainless-const: true
         function:
           type: object
           description: The function that the model called.
@@ -41202,10 +41184,8 @@ components:
           description: The ID of the tool call.
         type:
           type: string
-          enum:
-          - function
+          const: function
           description: The type of the tool. Currently, only `function` is supported.
-          x-stainless-const: true
         function:
           type: object
           properties:
@@ -41278,10 +41258,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - error
+          const: error
           description: The object type, which is always `error`.
-          x-stainless-const: true
         code:
           type: string
           description: The error code.
@@ -41298,10 +41276,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - moderation_results
+          const: moderation_results
           description: The object type, which is always `moderation_results`.
-          x-stainless-const: true
         model:
           type: string
           description: The moderation model used to generate the results.
@@ -41321,10 +41297,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - function
+          const: function
           description: For function calling, the type is always `function`.
-          x-stainless-const: true
         function:
           type: object
           properties:
@@ -41344,10 +41318,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - custom
+          const: custom
           description: For custom tool calling, the type is always `custom`.
-          x-stainless-const: true
         custom:
           type: object
           properties:
@@ -41388,10 +41360,8 @@ components:
           - type: 'null'
         role:
           type: string
-          enum:
-          - assistant
+          const: assistant
           description: The role of the messages author, in this case `assistant`.
-          x-stainless-const: true
         name:
           type: string
           description: An optional name for the participant. Provides the model information to differentiate between participants of the same role.
@@ -41459,10 +41429,8 @@ components:
             minItems: 1
         role:
           type: string
-          enum:
-          - developer
+          const: developer
           description: The role of the messages author, in this case `developer`.
-          x-stainless-const: true
         name:
           type: string
           description: An optional name for the participant. Provides the model information to differentiate between participants of the same role.
@@ -41479,10 +41447,8 @@ components:
       properties:
         role:
           type: string
-          enum:
-          - function
+          const: function
           description: The role of the messages author, in this case `function`.
-          x-stainless-const: true
         content:
           anyOf:
           - type: string
@@ -41513,10 +41479,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - input_audio
+          const: input_audio
           description: The type of the content part. Always `input_audio`.
-          x-stainless-const: true
         input_audio:
           type: object
           properties:
@@ -41550,10 +41514,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - file
+          const: file
           description: The type of the content part. Always `file`.
-          x-stainless-const: true
         file:
           type: object
           properties:
@@ -41593,10 +41555,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - image_url
+          const: image_url
           description: The type of the content part.
-          x-stainless-const: true
         image_url:
           type: object
           properties:
@@ -41630,10 +41590,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - refusal
+          const: refusal
           description: The type of the content part.
-          x-stainless-const: true
         refusal:
           type: string
           description: The refusal message generated by the model.
@@ -41648,10 +41606,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - text
+          const: text
           description: The type of the content part.
-          x-stainless-const: true
         text:
           type: string
           description: The text content.
@@ -41685,10 +41641,8 @@ components:
             minItems: 1
         role:
           type: string
-          enum:
-          - system
+          const: system
           description: The role of the messages author, in this case `system`.
-          x-stainless-const: true
         name:
           type: string
           description: An optional name for the participant. Provides the model information to differentiate between participants of the same role.
@@ -41707,10 +41661,8 @@ components:
       properties:
         role:
           type: string
-          enum:
-          - tool
+          const: tool
           description: The role of the messages author, in this case `tool`.
-          x-stainless-const: true
         content:
           description: The contents of the tool message.
           anyOf:
@@ -41758,10 +41710,8 @@ components:
             minItems: 1
         role:
           type: string
-          enum:
-          - user
+          const: user
           description: The role of the messages author, in this case `user`.
-          x-stainless-const: true
         name:
           type: string
           description: An optional name for the participant. Provides the model information to differentiate between participants of the same role.
@@ -41811,9 +41761,7 @@ components:
               type:
                 type: string
                 description: The type of the URL citation. Always `url_citation`.
-                enum:
-                - url_citation
-                x-stainless-const: true
+                const: url_citation
               url_citation:
                 type: object
                 description: A URL citation when using web search.
@@ -41838,10 +41786,8 @@ components:
                     description: The title of the web resource.
         role:
           type: string
-          enum:
-          - assistant
+          const: assistant
           description: The role of the author of this message.
-          x-stainless-const: true
         function_call:
           type: object
           deprecated: true
@@ -42045,10 +41991,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - function
+          const: function
           description: The type of the tool. Currently, only `function` is supported.
-          x-stainless-const: true
         function:
           $ref: '#/components/schemas/FunctionObject'
           x-stainless-go-json: omitzero
@@ -42421,11 +42365,9 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - computer_screenshot
+          const: computer_screenshot
           default: computer_screenshot
           description: "Specifies the event type. For a computer screenshot, this property is \nalways set to `computer_screenshot`.\n"
-          x-stainless-const: true
         image_url:
           type: string
           format: uri
@@ -42490,10 +42432,8 @@ components:
           type: string
           description: |
             The type of the computer tool call output. Always `computer_call_output`.
-          enum:
-          - computer_call_output
+          const: computer_call_output
           default: computer_call_output
-          x-stainless-const: true
         id:
           type: string
           description: |
@@ -43185,9 +43125,7 @@ components:
                     type: string
                     description: |
                       The type of location approximation. Always `approximate`.
-                    enum:
-                    - approximate
-                    x-stainless-const: true
+                    const: approximate
                   approximate:
                     $ref: '#/components/schemas/WebSearchLocation'
                     x-stainless-go-json: omitzero
@@ -43503,9 +43441,7 @@ components:
         object:
           type: string
           description: The object type, which is always `chat.completion`.
-          enum:
-          - chat.completion
-          x-stainless-const: true
+          const: chat.completion
         usage:
           $ref: '#/components/schemas/CompletionUsage'
         moderation:
@@ -43652,9 +43588,7 @@ components:
         object:
           type: string
           description: The object type, which is always `chat.completion.chunk`.
-          enum:
-          - chat.completion.chunk
-          x-stainless-const: true
+          const: chat.completion.chunk
         usage:
           description: |
             An optional field that will only be present when you set
@@ -44150,9 +44084,7 @@ components:
         object:
           type: string
           description: The object type, which is always "list".
-          enum:
-          - list
-          x-stainless-const: true
+          const: list
         usage:
           type: object
           description: The usage information for the request.
@@ -44779,9 +44711,7 @@ components:
               default: auto
               anyOf:
               - type: string
-                enum:
-                - auto
-                x-stainless-const: true
+                const: auto
                 title: Auto
               - type: integer
                 minimum: 1
@@ -44793,9 +44723,7 @@ components:
               default: auto
               anyOf:
               - type: string
-                enum:
-                - auto
-                x-stainless-const: true
+                const: auto
                 title: Auto
               - type: number
                 exclusiveMinimum: 0
@@ -44806,9 +44734,7 @@ components:
               default: auto
               anyOf:
               - type: string
-                enum:
-                - auto
-                x-stainless-const: true
+                const: auto
                 title: Auto
               - type: integer
                 minimum: 1
@@ -44857,9 +44783,7 @@ components:
                   The type of integration to enable. Currently, only "wandb" (Weights and Biases) is supported.
                 anyOf:
                 - type: string
-                  enum:
-                  - wandb
-                  x-stainless-const: true
+                  const: wandb
               wandb:
                 type: object
                 description: |
@@ -45687,49 +45611,37 @@ components:
                     description: The applied input type(s) for the category 'hate'.
                     items:
                       type: string
-                      enum:
-                      - text
-                      x-stainless-const: true
+                      const: text
                   hate/threatening:
                     type: array
                     description: The applied input type(s) for the category 'hate/threatening'.
                     items:
                       type: string
-                      enum:
-                      - text
-                      x-stainless-const: true
+                      const: text
                   harassment:
                     type: array
                     description: The applied input type(s) for the category 'harassment'.
                     items:
                       type: string
-                      enum:
-                      - text
-                      x-stainless-const: true
+                      const: text
                   harassment/threatening:
                     type: array
                     description: The applied input type(s) for the category 'harassment/threatening'.
                     items:
                       type: string
-                      enum:
-                      - text
-                      x-stainless-const: true
+                      const: text
                   illicit:
                     type: array
                     description: The applied input type(s) for the category 'illicit'.
                     items:
                       type: string
-                      enum:
-                      - text
-                      x-stainless-const: true
+                      const: text
                   illicit/violent:
                     type: array
                     description: The applied input type(s) for the category 'illicit/violent'.
                     items:
                       type: string
-                      enum:
-                      - text
-                      x-stainless-const: true
+                      const: text
                   self-harm:
                     type: array
                     description: The applied input type(s) for the category 'self-harm'.
@@ -45767,9 +45679,7 @@ components:
                     description: The applied input type(s) for the category 'sexual/minors'.
                     items:
                       type: string
-                      enum:
-                      - text
-                      x-stainless-const: true
+                      const: text
                   violence:
                     type: array
                     description: The applied input type(s) for the category 'violence'.
@@ -47257,10 +47167,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - custom
+          const: custom
           description: The type of the custom tool. Always `custom`.
-          x-stainless-const: true
         custom:
           type: object
           title: Custom tool properties
@@ -47367,9 +47275,7 @@ components:
           type: string
         object:
           type: string
-          enum:
-          - file
-          x-stainless-const: true
+          const: file
         deleted:
           type: boolean
       required:
@@ -47385,9 +47291,7 @@ components:
         object:
           type: string
           description: The object type, which is always "checkpoint.permission".
-          enum:
-          - checkpoint.permission
-          x-stainless-const: true
+          const: checkpoint.permission
         deleted:
           type: boolean
           description: Whether the fine-tuned model checkpoint permission was successfully deleted.
@@ -47449,9 +47353,7 @@ components:
           type: boolean
         object:
           type: string
-          enum:
-          - vector_store.file.deleted
-          x-stainless-const: true
+          const: vector_store.file.deleted
       required:
       - id
       - object
@@ -47465,9 +47367,7 @@ components:
           type: boolean
         object:
           type: string
-          enum:
-          - vector_store.deleted
-          x-stainless-const: true
+          const: vector_store.deleted
       required:
       - id
       - object
@@ -47760,9 +47660,7 @@ components:
         object:
           type: string
           description: The object type, which is always "embedding".
-          enum:
-          - embedding
-          x-stainless-const: true
+          const: embedding
       required:
       - index
       - object
@@ -49457,9 +49355,7 @@ components:
           default: auto
           anyOf:
           - type: string
-            enum:
-            - auto
-            x-stainless-const: true
+            const: auto
           - type: number
             maximum: 2
             exclusiveMinimum: 0
@@ -49469,9 +49365,7 @@ components:
           default: auto
           anyOf:
           - type: string
-            enum:
-            - auto
-            x-stainless-const: true
+            const: auto
           - type: integer
             minimum: 1
             maximum: 256
@@ -49481,9 +49375,7 @@ components:
           default: auto
           anyOf:
           - type: string
-            enum:
-            - auto
-            x-stainless-const: true
+            const: auto
           - type: number
             exclusiveMinimum: 0
         n_epochs:
@@ -49492,9 +49384,7 @@ components:
           default: auto
           anyOf:
           - type: string
-            enum:
-            - auto
-            x-stainless-const: true
+            const: auto
           - type: integer
             minimum: 1
             maximum: 50
@@ -49533,9 +49423,7 @@ components:
           default: auto
           anyOf:
           - type: string
-            enum:
-            - auto
-            x-stainless-const: true
+            const: auto
           - type: integer
             minimum: 1
             maximum: 256
@@ -49545,9 +49433,7 @@ components:
           default: auto
           anyOf:
           - type: string
-            enum:
-            - auto
-            x-stainless-const: true
+            const: auto
           - type: number
             exclusiveMinimum: 0
         n_epochs:
@@ -49556,9 +49442,7 @@ components:
           default: auto
           anyOf:
           - type: string
-            enum:
-            - auto
-            x-stainless-const: true
+            const: auto
           - type: integer
             minimum: 1
             maximum: 50
@@ -49578,9 +49462,7 @@ components:
           default: auto
           anyOf:
           - type: string
-            enum:
-            - auto
-            x-stainless-const: true
+            const: auto
           - type: number
             maximum: 10
             exclusiveMinimum: 0.00001
@@ -49590,9 +49472,7 @@ components:
           default: auto
           anyOf:
           - type: string
-            enum:
-            - auto
-            x-stainless-const: true
+            const: auto
           - type: integer
             minimum: 1
         eval_samples:
@@ -49601,9 +49481,7 @@ components:
           default: auto
           anyOf:
           - type: string
-            enum:
-            - auto
-            x-stainless-const: true
+            const: auto
           - type: integer
             minimum: 1
     FineTuneReinforcementMethod:
@@ -49633,9 +49511,7 @@ components:
           default: auto
           anyOf:
           - type: string
-            enum:
-            - auto
-            x-stainless-const: true
+            const: auto
           - type: integer
             minimum: 1
             maximum: 256
@@ -49645,9 +49521,7 @@ components:
           default: auto
           anyOf:
           - type: string
-            enum:
-            - auto
-            x-stainless-const: true
+            const: auto
           - type: number
             exclusiveMinimum: 0
         n_epochs:
@@ -49656,9 +49530,7 @@ components:
           default: auto
           anyOf:
           - type: string
-            enum:
-            - auto
-            x-stainless-const: true
+            const: auto
           - type: integer
             minimum: 1
             maximum: 50
@@ -49687,9 +49559,7 @@ components:
         object:
           type: string
           description: The object type, which is always "checkpoint.permission".
-          enum:
-          - checkpoint.permission
-          x-stainless-const: true
+          const: checkpoint.permission
       required:
       - created_at
       - id
@@ -49714,9 +49584,7 @@ components:
         type:
           type: string
           description: The type of the integration being enabled for the fine-tuning job
-          enum:
-          - wandb
-          x-stainless-const: true
+          const: wandb
         wandb:
           type: object
           description: |
@@ -49809,9 +49677,7 @@ components:
                 default: auto
                 anyOf:
                 - type: string
-                  enum:
-                  - auto
-                  x-stainless-const: true
+                  const: auto
                 - type: integer
                   minimum: 1
                   maximum: 256
@@ -49825,9 +49691,7 @@ components:
               default: auto
               anyOf:
               - type: string
-                enum:
-                - auto
-                x-stainless-const: true
+                const: auto
                 title: Auto
               - type: number
                 exclusiveMinimum: 0
@@ -49838,9 +49702,7 @@ components:
               default: auto
               anyOf:
               - type: string
-                enum:
-                - auto
-                x-stainless-const: true
+                const: auto
                 title: Auto
               - type: integer
                 minimum: 1
@@ -49851,9 +49713,7 @@ components:
         object:
           type: string
           description: The object type, which is always "fine_tuning.job".
-          enum:
-          - fine_tuning.job
-          x-stainless-const: true
+          const: fine_tuning.job
         organization_id:
           type: string
           description: The organization that owns the fine-tuning job.
@@ -49971,9 +49831,7 @@ components:
         object:
           type: string
           description: The object type, which is always "fine_tuning.job.checkpoint".
-          enum:
-          - fine_tuning.job.checkpoint
-          x-stainless-const: true
+          const: fine_tuning.job.checkpoint
       required:
       - created_at
       - fine_tuning_job_id
@@ -50009,9 +49867,7 @@ components:
         object:
           type: string
           description: The object type, which is always "fine_tuning.job.event".
-          enum:
-          - fine_tuning.job.event
-          x-stainless-const: true
+          const: fine_tuning.job.event
         id:
           type: string
           description: The object identifier.
@@ -50103,11 +49959,9 @@ components:
             The unique ID of the function tool call.
         type:
           type: string
-          enum:
-          - function_call
+          const: function_call
           description: |
             The type of the function tool call. Always `function_call`.
-          x-stainless-const: true
         call_id:
           type: string
           description: |
@@ -50159,11 +50013,9 @@ components:
             is returned via API.
         type:
           type: string
-          enum:
-          - function_call_output
+          const: function_call_output
           description: |
             The type of the function tool call output. Always `function_call_output`.
-          x-stainless-const: true
         call_id:
           type: string
           description: |
@@ -51687,9 +51539,7 @@ components:
           type: string
           description: |
             The type of the input item. Always `input_audio`.
-          enum:
-          - input_audio
-          x-stainless-const: true
+          const: input_audio
         input_audio:
           type: object
           properties:
@@ -51747,9 +51597,7 @@ components:
           type: string
           description: |
             The type of the message input. Always set to `message`.
-          enum:
-          - message
-          x-stainless-const: true
+          const: message
         role:
           type: string
           description: |
@@ -52203,9 +52051,7 @@ components:
           type: boolean
         object:
           type: string
-          enum:
-          - list
-          x-stainless-const: true
+          const: list
       required:
       - object
       - data
@@ -52274,9 +52120,7 @@ components:
             $ref: '#/components/schemas/FineTuningCheckpointPermission'
         object:
           type: string
-          enum:
-          - list
-          x-stainless-const: true
+          const: list
         first_id:
           anyOf:
           - type: string
@@ -52300,9 +52144,7 @@ components:
             $ref: '#/components/schemas/FineTuningJobCheckpoint'
         object:
           type: string
-          enum:
-          - list
-          x-stainless-const: true
+          const: list
         first_id:
           anyOf:
           - type: string
@@ -52326,9 +52168,7 @@ components:
             $ref: '#/components/schemas/FineTuningJobEvent'
         object:
           type: string
-          enum:
-          - list
-          x-stainless-const: true
+          const: list
         has_more:
           type: boolean
       required:
@@ -52364,9 +52204,7 @@ components:
       properties:
         object:
           type: string
-          enum:
-          - list
-          x-stainless-const: true
+          const: list
         data:
           type: array
           items:
@@ -52385,9 +52223,7 @@ components:
           type: boolean
         object:
           type: string
-          enum:
-          - list
-          x-stainless-const: true
+          const: list
       required:
       - object
       - data
@@ -53046,11 +52882,9 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - mcp_approval_request
+          const: mcp_approval_request
           description: |
             The type of the item. Always `mcp_approval_request`.
-          x-stainless-const: true
         id:
           type: string
           description: |
@@ -53081,11 +52915,9 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - mcp_approval_response
+          const: mcp_approval_response
           description: |
             The type of the item. Always `mcp_approval_response`.
-          x-stainless-const: true
         id:
           anyOf:
           - type: string
@@ -53119,11 +52951,9 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - mcp_approval_response
+          const: mcp_approval_response
           description: |
             The type of the item. Always `mcp_approval_response`.
-          x-stainless-const: true
         id:
           type: string
           description: |
@@ -53156,11 +52986,9 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - mcp_list_tools
+          const: mcp_list_tools
           description: |
             The type of the item. Always `mcp_list_tools`.
-          x-stainless-const: true
         id:
           type: string
           description: |
@@ -53224,10 +53052,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - mcp
+          const: mcp
           description: The type of the MCP tool. Always `mcp`.
-          x-stainless-const: true
         server_label:
           type: string
           description: |
@@ -53356,11 +53182,9 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - mcp_call
+          const: mcp_call
           description: |
             The type of the item. Always `mcp_call`.
-          x-stainless-const: true
         id:
           type: string
           description: |
@@ -54111,9 +53935,7 @@ components:
         object:
           type: string
           description: The object type, which is always "model".
-          enum:
-          - model
-          x-stainless-const: true
+          const: model
         owned_by:
           type: string
           description: The organization that owns the model.
@@ -54486,9 +54308,7 @@ components:
         object:
           type: string
           description: The object type, which is always `file`.
-          enum:
-          - file
-          x-stainless-const: true
+          const: file
         purpose:
           type: string
           description: The intended purpose of the file. Supported values are `assistants`, `assistants_output`, `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`.
@@ -54825,9 +54645,7 @@ components:
         type:
           type: string
           description: Always `other`.
-          enum:
-          - other
-          x-stainless-const: true
+          const: other
       required:
       - type
     OutputAudio:
@@ -54840,9 +54658,7 @@ components:
           type: string
           description: |
             The type of the output audio. Always `output_audio`.
-          enum:
-          - output_audio
-          x-stainless-const: true
+          const: output_audio
         data:
           type: string
           description: |
@@ -54912,16 +54728,12 @@ components:
           type: string
           description: |
             The type of the output message. Always `message`.
-          enum:
-          - message
-          x-stainless-const: true
+          const: message
         role:
           type: string
           description: |
             The role of the output message. Always `assistant`.
-          enum:
-          - assistant
-          x-stainless-const: true
+          const: assistant
         content:
           type: array
           description: |
@@ -65394,9 +65206,7 @@ components:
             type: string
             description: |
               The object type of this resource - always set to `response`.
-            enum:
-            - response
-            x-stainless-const: true
+            const: response
           status:
             type: string
             description: |
@@ -65568,9 +65378,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.audio.delta`.
-          enum:
-          - response.audio.delta
-          x-stainless-const: true
+          const: response.audio.delta
         sequence_number:
           type: integer
           description: |
@@ -65601,9 +65409,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.audio.done`.
-          enum:
-          - response.audio.done
-          x-stainless-const: true
+          const: response.audio.done
         sequence_number:
           type: integer
           description: |
@@ -65629,9 +65435,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.audio.transcript.delta`.
-          enum:
-          - response.audio.transcript.delta
-          x-stainless-const: true
+          const: response.audio.transcript.delta
         delta:
           type: string
           description: |
@@ -65662,9 +65466,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.audio.transcript.done`.
-          enum:
-          - response.audio.transcript.done
-          x-stainless-const: true
+          const: response.audio.transcript.done
         sequence_number:
           type: integer
           description: The sequence number of this event.
@@ -65688,9 +65490,7 @@ components:
         type:
           type: string
           description: The type of the event. Always `response.code_interpreter_call_code.delta`.
-          enum:
-          - response.code_interpreter_call_code.delta
-          x-stainless-const: true
+          const: response.code_interpreter_call_code.delta
         output_index:
           type: integer
           description: The index of the output item in the response for which the code is being streamed.
@@ -65727,9 +65527,7 @@ components:
         type:
           type: string
           description: The type of the event. Always `response.code_interpreter_call_code.done`.
-          enum:
-          - response.code_interpreter_call_code.done
-          x-stainless-const: true
+          const: response.code_interpreter_call_code.done
         output_index:
           type: integer
           description: The index of the output item in the response for which the code is finalized.
@@ -65766,9 +65564,7 @@ components:
         type:
           type: string
           description: The type of the event. Always `response.code_interpreter_call.completed`.
-          enum:
-          - response.code_interpreter_call.completed
-          x-stainless-const: true
+          const: response.code_interpreter_call.completed
         output_index:
           type: integer
           description: The index of the output item in the response for which the code interpreter call is completed.
@@ -65800,9 +65596,7 @@ components:
         type:
           type: string
           description: The type of the event. Always `response.code_interpreter_call.in_progress`.
-          enum:
-          - response.code_interpreter_call.in_progress
-          x-stainless-const: true
+          const: response.code_interpreter_call.in_progress
         output_index:
           type: integer
           description: The index of the output item in the response for which the code interpreter call is in progress.
@@ -65834,9 +65628,7 @@ components:
         type:
           type: string
           description: The type of the event. Always `response.code_interpreter_call.interpreting`.
-          enum:
-          - response.code_interpreter_call.interpreting
-          x-stainless-const: true
+          const: response.code_interpreter_call.interpreting
         output_index:
           type: integer
           description: The index of the output item in the response for which the code interpreter is interpreting code.
@@ -65882,9 +65674,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.completed`.
-          enum:
-          - response.completed
-          x-stainless-const: true
+          const: response.completed
         response:
           $ref: '#/components/schemas/Response'
           description: |
@@ -65974,11 +65764,9 @@ components:
           example: cnfu_123
         type:
           type: string
-          enum:
-          - configuration_update
+          const: configuration_update
           description: The item type. Always `configuration_update`.
           default: configuration_update
-          x-stainless-const: true
         reasoning:
           type: object
           description: The reasoning configuration applied by this update.
@@ -66018,11 +65806,9 @@ components:
           - type: 'null'
         type:
           type: string
-          enum:
-          - configuration_update
+          const: configuration_update
           description: The item type. Always `configuration_update`.
           default: configuration_update
-          x-stainless-const: true
         reasoning:
           type: object
           description: Updates to reasoning configuration. Only effort is supported.
@@ -66055,9 +65841,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.content_part.added`.
-          enum:
-          - response.content_part.added
-          x-stainless-const: true
+          const: response.content_part.added
         item_id:
           type: string
           description: |
@@ -66109,9 +65893,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.content_part.done`.
-          enum:
-          - response.content_part.done
-          x-stainless-const: true
+          const: response.content_part.done
         item_id:
           type: string
           description: |
@@ -66164,9 +65946,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.created`.
-          enum:
-          - response.created
-          x-stainless-const: true
+          const: response.created
         response:
           $ref: '#/components/schemas/Response'
           description: |
@@ -66228,10 +66008,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.custom_tool_call_input.delta
+          const: response.custom_tool_call_input.delta
           description: The event type identifier.
-          x-stainless-const: true
         sequence_number:
           type: integer
           description: The sequence number of this event.
@@ -66269,10 +66047,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.custom_tool_call_input.done
+          const: response.custom_tool_call_input.done
           description: The event type identifier.
-          x-stainless-const: true
         sequence_number:
           type: integer
           description: The sequence number of this event.
@@ -66364,9 +66140,7 @@ components:
           type: string
           description: |
             The type of the event. Always `error`.
-          enum:
-          - error
-          x-stainless-const: true
+          const: error
         code:
           anyOf:
           - type: string
@@ -66412,9 +66186,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.failed`.
-          enum:
-          - response.failed
-          x-stainless-const: true
+          const: response.failed
         sequence_number:
           type: integer
           description: The sequence number of this event.
@@ -66476,9 +66248,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.file_search_call.completed`.
-          enum:
-          - response.file_search_call.completed
-          x-stainless-const: true
+          const: response.file_search_call.completed
         output_index:
           type: integer
           description: |
@@ -66513,9 +66283,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.file_search_call.in_progress`.
-          enum:
-          - response.file_search_call.in_progress
-          x-stainless-const: true
+          const: response.file_search_call.in_progress
         output_index:
           type: integer
           description: |
@@ -66550,9 +66318,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.file_search_call.searching`.
-          enum:
-          - response.file_search_call.searching
-          x-stainless-const: true
+          const: response.file_search_call.searching
         output_index:
           type: integer
           description: |
@@ -66591,9 +66357,7 @@ components:
         type:
           type: string
           description: The type of response format being defined. Always `json_object`.
-          enum:
-          - json_object
-          x-stainless-const: true
+          const: json_object
       required:
       - type
     ResponseFormatJsonSchema:
@@ -66606,9 +66370,7 @@ components:
         type:
           type: string
           description: The type of response format being defined. Always `json_schema`.
-          enum:
-          - json_schema
-          x-stainless-const: true
+          const: json_schema
         json_schema:
           x-openai-structured-output: json_schema
           type: object
@@ -66663,9 +66425,7 @@ components:
         type:
           type: string
           description: The type of response format being defined. Always `text`.
-          enum:
-          - text
-          x-stainless-const: true
+          const: text
       required:
       - type
     ResponseFormatTextGrammar:
@@ -66678,9 +66438,7 @@ components:
         type:
           type: string
           description: The type of response format being defined. Always `grammar`.
-          enum:
-          - grammar
-          x-stainless-const: true
+          const: grammar
         grammar:
           type: string
           description: The custom grammar for the model to follow.
@@ -66697,9 +66455,7 @@ components:
         type:
           type: string
           description: The type of response format being defined. Always `python`.
-          enum:
-          - python
-          x-stainless-const: true
+          const: python
       required:
       - type
     ResponseFunctionCallArgumentsDeltaEvent:
@@ -66710,9 +66466,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.function_call_arguments.delta`.
-          enum:
-          - response.function_call_arguments.delta
-          x-stainless-const: true
+          const: response.function_call_arguments.delta
         item_id:
           type: string
           description: |
@@ -66751,9 +66505,7 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.function_call_arguments.done
-          x-stainless-const: true
+          const: response.function_call_arguments.done
         item_id:
           type: string
           description: The ID of the item.
@@ -66791,10 +66543,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.image_generation_call.completed
+          const: response.image_generation_call.completed
           description: The type of the event. Always 'response.image_generation_call.completed'.
-          x-stainless-const: true
         output_index:
           type: integer
           description: The index of the output item in the response's output array.
@@ -66827,10 +66577,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.image_generation_call.generating
+          const: response.image_generation_call.generating
           description: The type of the event. Always 'response.image_generation_call.generating'.
-          x-stainless-const: true
         output_index:
           type: integer
           description: The index of the output item in the response's output array.
@@ -66863,10 +66611,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.image_generation_call.in_progress
+          const: response.image_generation_call.in_progress
           description: The type of the event. Always 'response.image_generation_call.in_progress'.
-          x-stainless-const: true
         output_index:
           type: integer
           description: The index of the output item in the response's output array.
@@ -66899,10 +66645,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.image_generation_call.partial_image
+          const: response.image_generation_call.partial_image
           description: The type of the event. Always 'response.image_generation_call.partial_image'.
-          x-stainless-const: true
         output_index:
           type: integer
           description: The index of the output item in the response's output array.
@@ -66957,9 +66701,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.in_progress`.
-          enum:
-          - response.in_progress
-          x-stainless-const: true
+          const: response.in_progress
         response:
           $ref: '#/components/schemas/Response'
           description: |
@@ -67026,9 +66768,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.incomplete`.
-          enum:
-          - response.incomplete
-          x-stainless-const: true
+          const: response.incomplete
         response:
           $ref: '#/components/schemas/Response'
           description: |
@@ -67086,9 +66826,8 @@ components:
       description: A list of Response items.
       properties:
         object:
-          x-stainless-const: true
-          description: The type of object returned, must be `list`.
           const: list
+          description: The type of object returned, must be `list`.
         data:
           type: array
           description: A list of items used to generate this response.
@@ -67167,10 +66906,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.mcp_call_arguments.delta
+          const: response.mcp_call_arguments.delta
           description: The type of the event. Always 'response.mcp_call_arguments.delta'.
-          x-stainless-const: true
         output_index:
           type: integer
           description: The index of the output item in the response's output array.
@@ -67209,10 +66946,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.mcp_call_arguments.done
+          const: response.mcp_call_arguments.done
           description: The type of the event. Always 'response.mcp_call_arguments.done'.
-          x-stainless-const: true
         output_index:
           type: integer
           description: The index of the output item in the response's output array.
@@ -67251,10 +66986,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.mcp_call.completed
+          const: response.mcp_call.completed
           description: The type of the event. Always 'response.mcp_call.completed'.
-          x-stainless-const: true
         item_id:
           type: string
           description: The ID of the MCP tool call item that completed.
@@ -67287,10 +67020,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.mcp_call.failed
+          const: response.mcp_call.failed
           description: The type of the event. Always 'response.mcp_call.failed'.
-          x-stainless-const: true
         item_id:
           type: string
           description: The ID of the MCP tool call item that failed.
@@ -67323,10 +67054,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.mcp_call.in_progress
+          const: response.mcp_call.in_progress
           description: The type of the event. Always 'response.mcp_call.in_progress'.
-          x-stainless-const: true
         sequence_number:
           type: integer
           description: The sequence number of this event.
@@ -67359,10 +67088,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.mcp_list_tools.completed
+          const: response.mcp_list_tools.completed
           description: The type of the event. Always 'response.mcp_list_tools.completed'.
-          x-stainless-const: true
         item_id:
           type: string
           description: The ID of the MCP tool call item that produced this output.
@@ -67395,10 +67122,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.mcp_list_tools.failed
+          const: response.mcp_list_tools.failed
           description: The type of the event. Always 'response.mcp_list_tools.failed'.
-          x-stainless-const: true
         item_id:
           type: string
           description: The ID of the MCP tool call item that failed.
@@ -67431,10 +67156,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.mcp_list_tools.in_progress
+          const: response.mcp_list_tools.in_progress
           description: The type of the event. Always 'response.mcp_list_tools.in_progress'.
-          x-stainless-const: true
         item_id:
           type: string
           description: The ID of the MCP tool call item that is being processed.
@@ -67487,9 +67210,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.output_item.added`.
-          enum:
-          - response.output_item.added
-          x-stainless-const: true
+          const: response.output_item.added
         output_index:
           type: integer
           description: |
@@ -67534,9 +67255,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.output_item.done`.
-          enum:
-          - response.output_item.done
-          x-stainless-const: true
+          const: response.output_item.done
         output_index:
           type: integer
           description: |
@@ -67585,10 +67304,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.output_text.annotation.added
+          const: response.output_text.annotation.added
           description: The type of the event. Always 'response.output_text.annotation.added'.
-          x-stainless-const: true
         item_id:
           type: string
           description: The unique identifier of the item to which the annotation is being added.
@@ -67703,10 +67420,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.queued
+          const: response.queued
           description: The type of the event. Always 'response.queued'.
-          x-stainless-const: true
         response:
           $ref: '#/components/schemas/Response'
           description: The full response object that is queued.
@@ -67751,9 +67466,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.reasoning_summary_part.added`.
-          enum:
-          - response.reasoning_summary_part.added
-          x-stainless-const: true
+          const: response.reasoning_summary_part.added
         item_id:
           type: string
           description: |
@@ -67778,9 +67491,7 @@ components:
             type:
               type: string
               description: The type of the summary part. Always `summary_text`.
-              enum:
-              - summary_text
-              x-stainless-const: true
+              const: summary_text
             text:
               type: string
               description: The text of the summary part.
@@ -67817,9 +67528,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.reasoning_summary_part.done`.
-          enum:
-          - response.reasoning_summary_part.done
-          x-stainless-const: true
+          const: response.reasoning_summary_part.done
         item_id:
           type: string
           description: |
@@ -67851,9 +67560,7 @@ components:
             type:
               type: string
               description: The type of the summary part. Always `summary_text`.
-              enum:
-              - summary_text
-              x-stainless-const: true
+              const: summary_text
             text:
               type: string
               description: The text of the summary part.
@@ -67890,9 +67597,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.reasoning_summary_text.delta`.
-          enum:
-          - response.reasoning_summary_text.delta
-          x-stainless-const: true
+          const: response.reasoning_summary_text.delta
         item_id:
           type: string
           description: |
@@ -67940,9 +67645,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.reasoning_summary_text.done`.
-          enum:
-          - response.reasoning_summary_text.done
-          x-stainless-const: true
+          const: response.reasoning_summary_text.done
         item_id:
           type: string
           description: |
@@ -67990,9 +67693,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.reasoning_text.delta`.
-          enum:
-          - response.reasoning_text.delta
-          x-stainless-const: true
+          const: response.reasoning_text.delta
         item_id:
           type: string
           description: |
@@ -68040,9 +67741,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.reasoning_text.done`.
-          enum:
-          - response.reasoning_text.done
-          x-stainless-const: true
+          const: response.reasoning_text.done
         item_id:
           type: string
           description: |
@@ -68090,9 +67789,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.refusal.delta`.
-          enum:
-          - response.refusal.delta
-          x-stainless-const: true
+          const: response.refusal.delta
         item_id:
           type: string
           description: |
@@ -68140,9 +67837,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.refusal.done`.
-          enum:
-          - response.refusal.done
-          x-stainless-const: true
+          const: response.refusal.done
         item_id:
           type: string
           description: |
@@ -68199,10 +67894,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.steer.accepted
+          const: response.steer.accepted
           description: The event discriminator. Always `response.steer.accepted`.
-          x-stainless-const: true
         sequence_number:
           type: integer
           description: The sequence number for this event.
@@ -68299,10 +67992,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.steer
+          const: response.steer
           description: The event discriminator. Always `response.steer`.
-          x-stainless-const: true
         previous_response_id:
           type: string
           description: The ID of the response to steer on this WebSocket connection.
@@ -68347,10 +68038,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.steer.failed
+          const: response.steer.failed
           description: The event discriminator. Always `response.steer.failed`.
-          x-stainless-const: true
         sequence_number:
           type: integer
           description: The sequence number for this event.
@@ -68376,10 +68065,8 @@ components:
           properties:
             type:
               type: string
-              enum:
-              - invalid_request_error
+              const: invalid_request_error
               description: The error type. Always `invalid_request_error`.
-              x-stainless-const: true
             code:
               $ref: '#/components/schemas/ResponseSteerErrorCode'
             message:
@@ -68482,10 +68169,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.steer.pending
+          const: response.steer.pending
           description: The event discriminator. Always `response.steer.pending`.
-          x-stainless-const: true
         sequence_number:
           type: integer
           description: The sequence number for this event.
@@ -68575,9 +68260,7 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - function_call_output
-            x-stainless-const: true
+            const: function_call_output
           call_id:
             type: string
           name:
@@ -68595,9 +68278,7 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - custom_tool_call_output
-            x-stainless-const: true
+            const: custom_tool_call_output
           call_id:
             type: string
         required:
@@ -68612,9 +68293,7 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - computer_call_output
-            x-stainless-const: true
+            const: computer_call_output
           call_id:
             type: string
         required:
@@ -68629,9 +68308,7 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - shell_call_output
-            x-stainless-const: true
+            const: shell_call_output
           call_id:
             type: string
         required:
@@ -68646,9 +68323,7 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - apply_patch_call_output
-            x-stainless-const: true
+            const: apply_patch_call_output
           call_id:
             type: string
         required:
@@ -68663,16 +68338,12 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - tool_search_output
-            x-stainless-const: true
+            const: tool_search_output
           call_id:
             type: string
           execution:
             type: string
-            enum:
-            - client
-            x-stainless-const: true
+            const: client
         required:
         - type
         - call_id
@@ -68687,9 +68358,7 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - mcp_approval_response
-            x-stainless-const: true
+            const: mcp_approval_response
           approval_request_id:
             type: string
         required:
@@ -68787,9 +68456,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.output_text.delta`.
-          enum:
-          - response.output_text.delta
-          x-stainless-const: true
+          const: response.output_text.delta
         item_id:
           type: string
           description: |
@@ -68844,9 +68511,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.output_text.done`.
-          enum:
-          - response.output_text.done
-          x-stainless-const: true
+          const: response.output_text.done
         item_id:
           type: string
           description: |
@@ -68960,9 +68625,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.web_search_call.completed`.
-          enum:
-          - response.web_search_call.completed
-          x-stainless-const: true
+          const: response.web_search_call.completed
         output_index:
           type: integer
           description: |
@@ -68997,9 +68660,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.web_search_call.in_progress`.
-          enum:
-          - response.web_search_call.in_progress
-          x-stainless-const: true
+          const: response.web_search_call.in_progress
         output_index:
           type: integer
           description: |
@@ -69034,9 +68695,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.web_search_call.searching`.
-          enum:
-          - response.web_search_call.searching
-          x-stainless-const: true
+          const: response.web_search_call.searching
         output_index:
           type: integer
           description: |
@@ -69071,9 +68730,7 @@ components:
         type:
           type: string
           description: The type of the event. Always `error`.
-          enum:
-          - error
-          x-stainless-const: true
+          const: error
         status:
           type: integer
           description: The HTTP status code associated with a WebSocket protocol error.
@@ -69120,11 +68777,9 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - response.create
+            const: response.create
             description: |
               The type of the client event. Always `response.create`.
-            x-stainless-const: true
           generate:
             type: boolean
             description: |
@@ -71556,9 +71211,7 @@ components:
         type:
           type: string
           description: Always `static`.
-          enum:
-          - static
-          x-stainless-const: true
+          const: static
         static:
           $ref: '#/components/schemas/StaticChunkingStrategy'
           x-stainless-go-json: omitzero
@@ -71573,9 +71226,7 @@ components:
         type:
           type: string
           description: Always `static`.
-          enum:
-          - static
-          x-stainless-const: true
+          const: static
         static:
           $ref: '#/components/schemas/StaticChunkingStrategy'
       required:
@@ -72524,9 +72175,7 @@ components:
         object:
           type: string
           description: The object type, which is always "upload".
-          enum:
-          - upload
-          x-stainless-const: true
+          const: upload
         file:
           allOf:
           - $ref: '#/components/schemas/OpenAIFile'
@@ -72593,9 +72242,7 @@ components:
         object:
           type: string
           description: The object type, which is always `upload.part`.
-          enum:
-          - upload.part
-          x-stainless-const: true
+          const: upload.part
       required:
       - created_at
       - id
@@ -73598,9 +73245,7 @@ components:
         anchor:
           description: 'Anchor timestamp after which the expiration policy applies. Supported anchors: `last_active_at`.'
           type: string
-          enum:
-          - last_active_at
-          x-stainless-const: true
+          const: last_active_at
         days:
           description: The number of days after the anchor time that the vector store will expire.
           type: integer
@@ -73712,10 +73357,8 @@ components:
       properties:
         object:
           type: string
-          enum:
-          - vector_store.file_content.page
+          const: vector_store.file_content.page
           description: The object type, which is always `vector_store.file_content.page`
-          x-stainless-const: true
         data:
           type: array
           description: Parsed content of the file.
@@ -73752,9 +73395,7 @@ components:
         object:
           description: The object type, which is always `vector_store.file`.
           type: string
-          enum:
-          - vector_store.file
-          x-stainless-const: true
+          const: vector_store.file
         usage_bytes:
           description: The total vector store usage in bytes. Note that this may be different from the original file size.
           type: integer
@@ -73836,9 +73477,7 @@ components:
         object:
           description: The object type, which is always `vector_store`.
           type: string
-          enum:
-          - vector_store
-          x-stainless-const: true
+          const: vector_store
         created_at:
           description: The Unix timestamp (in seconds) for when the vector store was created.
           type: integer
@@ -74029,10 +73668,8 @@ components:
       properties:
         object:
           type: string
-          enum:
-          - vector_store.search_results.page
+          const: vector_store.search_results.page
           description: The object type, which is always `vector_store.search_results.page`
-          x-stainless-const: true
         search_query:
           type: array
           items:
@@ -74304,11 +73941,9 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - find_in_page
+          const: find_in_page
           description: |
             The action type.
-          x-stainless-const: true
         url:
           type: string
           format: uri
@@ -74333,11 +73968,9 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - open_page
+          const: open_page
           description: |
             The action type.
-          x-stainless-const: true
         url:
           description: |
             The URL opened by the model.
@@ -74355,11 +73988,9 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - search
+          const: search
           description: |
             The action type.
-          x-stainless-const: true
         query:
           type: string
           deprecated: true
@@ -74387,11 +74018,9 @@ components:
             properties:
               type:
                 type: string
-                enum:
-                - url
+                const: url
                 description: |
                   The type of source. Always `url`.
-                x-stainless-const: true
               url:
                 type: string
                 format: uri
@@ -74411,11 +74040,9 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - approximate
+            const: approximate
             description: The type of location approximation. Always `approximate`.
             default: approximate
-            x-stainless-const: true
           country:
             anyOf:
             - type: string
@@ -74532,11 +74159,9 @@ components:
             The unique ID of the web search tool call.
         type:
           type: string
-          enum:
-          - web_search_call
+          const: web_search_call
           description: |
             The type of the web search tool call. Always `web_search_call`.
-          x-stainless-const: true
         status:
           description: |
             The status of the web search tool call.
@@ -74580,9 +74205,7 @@ components:
           type:
             type: string
             description: The event type. Always `agent.environment.expired`.
-            enum:
-            - agent.environment.expired
-            x-stainless-const: true
+            const: agent.environment.expired
           data:
             $ref: '#/components/schemas/AgentEnvironmentEvent'
       x-oaiMeta:
@@ -74611,9 +74234,7 @@ components:
           type:
             type: string
             description: The event type. Always `agent.environment.failed`.
-            enum:
-            - agent.environment.failed
-            x-stainless-const: true
+            const: agent.environment.failed
           data:
             $ref: '#/components/schemas/AgentEnvironmentEvent'
       x-oaiMeta:
@@ -74642,9 +74263,7 @@ components:
           type:
             type: string
             description: The event type. Always `agent.environment.ready`.
-            enum:
-            - agent.environment.ready
-            x-stainless-const: true
+            const: agent.environment.ready
           data:
             $ref: '#/components/schemas/AgentEnvironmentEvent'
       x-oaiMeta:
@@ -74673,9 +74292,7 @@ components:
           type:
             type: string
             description: The event type. Always `agent.environment.suspended`.
-            enum:
-            - agent.environment.suspended
-            x-stainless-const: true
+            const: agent.environment.suspended
           data:
             $ref: '#/components/schemas/AgentEnvironmentEvent'
       x-oaiMeta:
@@ -74704,9 +74321,7 @@ components:
           type:
             type: string
             description: The event type. Always `agent.session.action_required`.
-            enum:
-            - agent.session.action_required
-            x-stainless-const: true
+            const: agent.session.action_required
           data:
             $ref: '#/components/schemas/AgentSessionActionRequiredPayloadResource'
       x-oaiMeta:
@@ -74735,9 +74350,7 @@ components:
           type:
             type: string
             description: The event type. Always `agent.session.created`.
-            enum:
-            - agent.session.created
-            x-stainless-const: true
+            const: agent.session.created
           data:
             $ref: '#/components/schemas/AgentSessionCreatedPayloadResource'
       x-oaiMeta:
@@ -74764,9 +74377,7 @@ components:
         object:
           type: string
           description: The object type. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         created_at:
           type: integer
           format: unixtime
@@ -74786,9 +74397,7 @@ components:
           type:
             type: string
             description: The event type. Always `agent.session.failed`.
-            enum:
-            - agent.session.failed
-            x-stainless-const: true
+            const: agent.session.failed
           data:
             $ref: '#/components/schemas/AgentSessionEnvironmentPayloadResource'
       x-oaiMeta:
@@ -74817,9 +74426,7 @@ components:
           type:
             type: string
             description: The event type. Always `agent.session.idle`.
-            enum:
-            - agent.session.idle
-            x-stainless-const: true
+            const: agent.session.idle
           data:
             $ref: '#/components/schemas/AgentSessionEnvironmentPayloadResource'
       x-oaiMeta:
@@ -74848,9 +74455,7 @@ components:
           type:
             type: string
             description: The event type. Always `agent.session.in_progress`.
-            enum:
-            - agent.session.in_progress
-            x-stainless-const: true
+            const: agent.session.in_progress
           data:
             $ref: '#/components/schemas/AgentSessionEnvironmentPayloadResource'
       x-oaiMeta:
@@ -74899,16 +74504,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `batch.cancelled`.
-          enum:
-          - batch.cancelled
-          x-stainless-const: true
+          const: batch.cancelled
       x-oaiMeta:
         name: batch.cancelled
         group: webhook-events
@@ -74956,16 +74557,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `batch.completed`.
-          enum:
-          - batch.completed
-          x-stainless-const: true
+          const: batch.completed
       x-oaiMeta:
         name: batch.completed
         group: webhook-events
@@ -75013,16 +74610,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `batch.expired`.
-          enum:
-          - batch.expired
-          x-stainless-const: true
+          const: batch.expired
       x-oaiMeta:
         name: batch.expired
         group: webhook-events
@@ -75070,16 +74663,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `batch.failed`.
-          enum:
-          - batch.failed
-          x-stainless-const: true
+          const: batch.failed
       x-oaiMeta:
         name: batch.failed
         group: webhook-events
@@ -75127,16 +74716,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `eval.run.canceled`.
-          enum:
-          - eval.run.canceled
-          x-stainless-const: true
+          const: eval.run.canceled
       x-oaiMeta:
         name: eval.run.canceled
         group: webhook-events
@@ -75176,16 +74761,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `eval.run.failed`.
-          enum:
-          - eval.run.failed
-          x-stainless-const: true
+          const: eval.run.failed
       x-oaiMeta:
         name: eval.run.failed
         group: webhook-events
@@ -75225,16 +74806,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `eval.run.succeeded`.
-          enum:
-          - eval.run.succeeded
-          x-stainless-const: true
+          const: eval.run.succeeded
       x-oaiMeta:
         name: eval.run.succeeded
         group: webhook-events
@@ -75274,16 +74851,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `fine_tuning.job.cancelled`.
-          enum:
-          - fine_tuning.job.cancelled
-          x-stainless-const: true
+          const: fine_tuning.job.cancelled
       x-oaiMeta:
         name: fine_tuning.job.cancelled
         group: webhook-events
@@ -75323,16 +74896,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `fine_tuning.job.failed`.
-          enum:
-          - fine_tuning.job.failed
-          x-stainless-const: true
+          const: fine_tuning.job.failed
       x-oaiMeta:
         name: fine_tuning.job.failed
         group: webhook-events
@@ -75372,16 +74941,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `fine_tuning.job.succeeded`.
-          enum:
-          - fine_tuning.job.succeeded
-          x-stainless-const: true
+          const: fine_tuning.job.succeeded
       x-oaiMeta:
         name: fine_tuning.job.succeeded
         group: webhook-events
@@ -75463,16 +75028,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `live.call.incoming`.
-          enum:
-          - live.call.incoming
-          x-stainless-const: true
+          const: live.call.incoming
       x-oaiMeta:
         name: live.call.incoming
         group: webhook-events
@@ -75507,18 +75068,14 @@ components:
           description: The webhook event ID.
         object:
           type: string
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         created_at:
           type: integer
           format: unixtime
           description: Unix time in seconds when the event was created.
         type:
           type: string
-          enum:
-          - live.transport.connected
-          x-stainless-const: true
+          const: live.transport.connected
         data:
           type: object
           required:
@@ -75578,9 +75135,7 @@ components:
             type:
               type: string
               description: The incoming transport type. Always `sip`.
-              enum:
-              - sip
-              x-stainless-const: true
+              const: sip
             session_id:
               type: string
               description: |
@@ -75624,16 +75179,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `live.transport.incoming`.
-          enum:
-          - live.transport.incoming
-          x-stainless-const: true
+          const: live.transport.incoming
       x-oaiMeta:
         name: live.transport.incoming
         group: webhook-events
@@ -75727,16 +75278,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `realtime.call.incoming`.
-          enum:
-          - realtime.call.incoming
-          x-stainless-const: true
+          const: realtime.call.incoming
       x-oaiMeta:
         name: realtime.call.incoming
         group: webhook-events
@@ -75790,16 +75337,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `response.cancelled`.
-          enum:
-          - response.cancelled
-          x-stainless-const: true
+          const: response.cancelled
       x-oaiMeta:
         name: response.cancelled
         group: webhook-events
@@ -75847,16 +75390,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `response.completed`.
-          enum:
-          - response.completed
-          x-stainless-const: true
+          const: response.completed
       x-oaiMeta:
         name: response.completed
         group: webhook-events
@@ -75904,16 +75443,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `response.failed`.
-          enum:
-          - response.failed
-          x-stainless-const: true
+          const: response.failed
       x-oaiMeta:
         name: response.failed
         group: webhook-events
@@ -75961,16 +75496,12 @@ components:
           type: string
           description: |
             The object of the event. Always `event`.
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
         type:
           type: string
           description: |
             The type of the event. Always `response.incomplete`.
-          enum:
-          - response.incomplete
-          x-stainless-const: true
+          const: response.incomplete
       x-oaiMeta:
         name: response.incomplete
         group: webhook-events
@@ -75999,9 +75530,7 @@ components:
           description: The unique ID of the webhook event.
         object:
           type: string
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
           description: Always `event`.
         created_at:
           type: integer
@@ -76009,9 +75538,7 @@ components:
           description: The Unix timestamp in seconds when the event was created.
         type:
           type: string
-          enum:
-          - safety.alert.created
-          x-stainless-const: true
+          const: safety.alert.created
           description: Always `safety.alert.created`.
         data:
           type: object
@@ -76050,9 +75577,7 @@ components:
           description: The unique ID of the webhook event.
         object:
           type: string
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
           description: Always `event`.
         created_at:
           type: integer
@@ -76060,9 +75585,7 @@ components:
           description: The Unix timestamp in seconds when the event was created.
         type:
           type: string
-          enum:
-          - safety.deactivation_issued
-          x-stainless-const: true
+          const: safety.deactivation_issued
           description: Always `safety.deactivation_issued`.
         data:
           type: object
@@ -76100,9 +75623,7 @@ components:
           description: The unique ID of the webhook event.
         object:
           type: string
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
           description: Always `event`.
         created_at:
           type: integer
@@ -76110,9 +75631,7 @@ components:
           description: The Unix timestamp in seconds when the event was created.
         type:
           type: string
-          enum:
-          - safety.org_alert.created
-          x-stainless-const: true
+          const: safety.org_alert.created
           description: Always `safety.org_alert.created`.
         data:
           type: object
@@ -76151,9 +75670,7 @@ components:
           description: The unique ID of the webhook event.
         object:
           type: string
-          enum:
-          - event
-          x-stainless-const: true
+          const: event
           description: Always `event`.
         created_at:
           type: integer
@@ -76161,9 +75678,7 @@ components:
           description: The Unix timestamp in seconds when the event was created.
         type:
           type: string
-          enum:
-          - safety.warning_issued
-          x-stainless-const: true
+          const: safety.warning_issued
           description: Always `safety.warning_issued`.
         data:
           type: object
@@ -87435,7 +86950,7 @@ components:
       properties:
         async:
           type: boolean
-          description: Whether context is compacted in the background. Defaults to true.
+          description: Whether context is compacted in the background. Defaults to false.
       required:
       - async
       additionalProperties: false
@@ -88170,6 +87685,16 @@ components:
         created_by:
           $ref: '#/components/schemas/AutomationCreatedByResource'
           description: Service-recorded provenance; callers cannot supply this field.
+        pause_reason:
+          type:
+          - string
+          - 'null'
+          enum:
+          - target_session_failed
+          - null
+          default: target_session_failed
+          x-stainless-const: true
+          description: Why the service paused this schedule, or null for other schedules.
         expression:
           type: string
           minLength: 0
@@ -88246,6 +87771,16 @@ components:
         created_by:
           $ref: '#/components/schemas/AutomationCreatedByResource'
           description: Service-recorded provenance; callers cannot supply this field.
+        pause_reason:
+          type:
+          - string
+          - 'null'
+          enum:
+          - target_session_failed
+          - null
+          default: target_session_failed
+          x-stainless-const: true
+          description: Why the service paused this schedule, or null for other schedules.
         run_at:
           type: integer
           format: int64
@@ -88482,7 +88017,7 @@ components:
           type:
           - boolean
           - 'null'
-          description: Whether to compact context in the background. Omission or null defaults to true. Set to false to use blocking compaction. Background compaction may increase token usage.
+          description: Whether to compact context in the background. Omission or null defaults to false. Set to true to enable background compaction. Background compaction may increase token usage.
       additionalProperties: false
       description: Settings for compacting the agent's context.
     AgentToolConfigParamFunction:
@@ -88946,7 +88481,7 @@ components:
           anyOf:
           - $ref: '#/components/schemas/CompactionParam'
           - type: 'null'
-          description: Context compaction settings. Omit to keep the current settings. A supplied object replaces the settings; null or an empty object enables background compaction.
+          description: Context compaction settings. Omit to keep the current settings. A supplied object replaces the settings; null or an empty object uses blocking compaction.
         tools:
           type:
           - array
@@ -92916,7 +92451,7 @@ components:
           anyOf:
           - $ref: '#/components/schemas/CompactionParam'
           - type: 'null'
-          description: Context compaction settings. Omission or null enables background compaction.
+          description: Context compaction settings. Omission or null uses blocking compaction.
       required:
       - model
       additionalProperties: false
@@ -92964,7 +92499,7 @@ components:
           anyOf:
           - $ref: '#/components/schemas/CompactionParam'
           - type: 'null'
-          description: Context compaction settings. Omit to keep the current settings. A supplied object replaces the settings; null or an empty object enables background compaction.
+          description: Context compaction settings. Omit to keep the current settings. A supplied object replaces the settings; null or an empty object uses blocking compaction.
         metadata:
           type:
           - object
@@ -97862,6 +97397,8 @@ components:
       properties:
         model:
           $ref: '#/components/schemas/ModelIdsLive'
+        safety_identifier:
+          $ref: '#/components/schemas/safety_identifier'
         instructions:
           anyOf:
           - description: Frontend instructions for voice, conversation, interruptions, and when to delegate. Start with the [Live prompting guide](https://developers.openai.com/api/docs/guides/live-prompting); put business rules and tool workflows in a separate [backend prompt](https://developers.openai.com/api/docs/guides/live-delegation#start-with-your-existing-backend-prompt). Limited to 16,384 client-supplied tokens. Omitted or blank instructions use server defaults. Immutable after startup.
@@ -98974,6 +98511,9 @@ components:
       properties:
         model:
           $ref: '#/components/schemas/ModelIdsLive'
+        safety_identifier:
+          $ref: '#/components/schemas/safety_identifier'
+          x-stainless-go-json: omitzero
         instructions:
           anyOf:
           - description: Frontend instructions for voice, conversation, interruptions, and when to delegate. Start with the [Live prompting guide](https://developers.openai.com/api/docs/guides/live-prompting); put business rules and tool workflows in a separate [backend prompt](https://developers.openai.com/api/docs/guides/live-delegation#start-with-your-existing-backend-prompt). Limited to 16,384 client-supplied tokens. Omitted or blank instructions use server defaults. Immutable after startup.
@@ -101297,9 +100837,7 @@ components:
         type:
           type: string
           description: The type of response format being defined. Always `json_object`.
-          enum:
-          - json_object
-          x-stainless-const: true
+          const: json_object
       required:
       - type
     BetaTextResponseFormatJsonSchema:
@@ -101359,9 +100897,7 @@ components:
         type:
           type: string
           description: The type of response format being defined. Always `text`.
-          enum:
-          - text
-          x-stainless-const: true
+          const: text
       required:
       - type
     BetaTool:
@@ -102281,10 +101817,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - mcp
+          const: mcp
           description: The type of the MCP tool. Always `mcp`.
-          x-stainless-const: true
         server_label:
           type: string
           description: |
@@ -102489,11 +102023,9 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - approximate
+            const: approximate
             description: The type of location approximation. Always `approximate`.
             default: approximate
-            x-stainless-const: true
           country:
             anyOf:
             - type: string
@@ -103274,11 +102806,9 @@ components:
           description: The agent that produced this item.
         type:
           type: string
-          enum:
-          - mcp_call
+          const: mcp_call
           description: |
             The type of the item. Always `mcp_call`.
-          x-stainless-const: true
         id:
           type: string
           description: |
@@ -103398,11 +102928,9 @@ components:
           description: The agent that produced this item.
         type:
           type: string
-          enum:
-          - mcp_approval_response
+          const: mcp_approval_response
           description: |
             The type of the item. Always `mcp_approval_response`.
-          x-stainless-const: true
         id:
           anyOf:
           - type: string
@@ -103441,11 +102969,9 @@ components:
           description: The agent that produced this item.
         type:
           type: string
-          enum:
-          - mcp_approval_request
+          const: mcp_approval_request
           description: |
             The type of the item. Always `mcp_approval_request`.
-          x-stainless-const: true
         id:
           type: string
           description: |
@@ -103481,11 +103007,9 @@ components:
           description: The agent that produced this item.
         type:
           type: string
-          enum:
-          - mcp_list_tools
+          const: mcp_list_tools
           description: |
             The type of the item. Always `mcp_list_tools`.
-          x-stainless-const: true
         id:
           type: string
           description: |
@@ -104461,11 +103985,9 @@ components:
           - type: 'null'
         type:
           type: string
-          enum:
-          - configuration_update
+          const: configuration_update
           description: The item type. Always `configuration_update`.
           default: configuration_update
-          x-stainless-const: true
         reasoning:
           type: object
           description: Updates to reasoning configuration. Only effort is supported.
@@ -105234,11 +104756,9 @@ components:
             The unique ID of the function tool call.
         type:
           type: string
-          enum:
-          - function_call
+          const: function_call
           description: |
             The type of the function tool call. Always `function_call`.
-          x-stainless-const: true
         call_id:
           type: string
           description: |
@@ -105295,11 +104815,9 @@ components:
             The unique ID of the web search tool call.
         type:
           type: string
-          enum:
-          - web_search_call
+          const: web_search_call
           description: |
             The type of the web search tool call. Always `web_search_call`.
-          x-stainless-const: true
         status:
           description: |
             The status of the web search tool call.
@@ -105328,11 +104846,9 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - find_in_page
+          const: find_in_page
           description: |
             The action type.
-          x-stainless-const: true
         url:
           type: string
           format: uri
@@ -105354,11 +104870,9 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - open_page
+          const: open_page
           description: |
             The action type.
-          x-stainless-const: true
         url:
           description: |
             The URL opened by the model.
@@ -105376,11 +104890,9 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - search
+          const: search
           description: |
             The action type.
-          x-stainless-const: true
         query:
           type: string
           deprecated: true
@@ -105408,11 +104920,9 @@ components:
             properties:
               type:
                 type: string
-                enum:
-                - url
+                const: url
                 description: |
                   The type of source. Always `url`.
-                x-stainless-const: true
               url:
                 type: string
                 format: uri
@@ -105504,11 +105014,9 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - computer_screenshot
+          const: computer_screenshot
           default: computer_screenshot
           description: "Specifies the event type. For a computer screenshot, this property is \nalways set to `computer_screenshot`.\n"
-          x-stainless-const: true
         image_url:
           type: string
           format: uri
@@ -105955,16 +105463,12 @@ components:
           type: string
           description: |
             The type of the output message. Always `message`.
-          enum:
-          - message
-          x-stainless-const: true
+          const: message
         role:
           type: string
           description: |
             The role of the output message. Always `assistant`.
-          enum:
-          - assistant
-          x-stainless-const: true
+          const: assistant
         content:
           type: array
           description: |
@@ -106232,9 +105736,7 @@ components:
           type: string
           description: |
             The type of the message input. Always set to `message`.
-          enum:
-          - message
-          x-stainless-const: true
+          const: message
         role:
           type: string
           description: |
@@ -106566,9 +106068,8 @@ components:
       description: A list of Response items.
       properties:
         object:
-          x-stainless-const: true
-          description: The type of object returned, must be `list`.
           const: list
+          description: The type of object returned, must be `list`.
         data:
           type: array
           description: A list of items used to generate this response.
@@ -106723,11 +106224,9 @@ components:
           description: The agent that produced this item.
         type:
           type: string
-          enum:
-          - mcp_approval_response
+          const: mcp_approval_response
           description: |
             The type of the item. Always `mcp_approval_response`.
-          x-stainless-const: true
         id:
           type: string
           description: |
@@ -107247,11 +106746,9 @@ components:
           example: cnfu_123
         type:
           type: string
-          enum:
-          - configuration_update
+          const: configuration_update
           description: The item type. Always `configuration_update`.
           default: configuration_update
-          x-stainless-const: true
         reasoning:
           type: object
           description: The reasoning configuration applied by this update.
@@ -107628,11 +107125,9 @@ components:
             is returned via API.
         type:
           type: string
-          enum:
-          - function_call_output
+          const: function_call_output
           description: |
             The type of the function tool call output. Always `function_call_output`.
-          x-stainless-const: true
         call_id:
           type: string
           description: |
@@ -107735,10 +107230,8 @@ components:
           type: string
           description: |
             The type of the computer tool call output. Always `computer_call_output`.
-          enum:
-          - computer_call_output
+          const: computer_call_output
           default: computer_call_output
-          x-stainless-const: true
         id:
           type: string
           description: |
@@ -108002,10 +107495,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.custom_tool_call_input.done
+          const: response.custom_tool_call_input.done
           description: The event type identifier.
-          x-stainless-const: true
         sequence_number:
           type: integer
           description: The sequence number of this event.
@@ -108048,10 +107539,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.custom_tool_call_input.delta
+          const: response.custom_tool_call_input.delta
           description: The event type identifier.
-          x-stainless-const: true
         sequence_number:
           type: integer
           description: The sequence number of this event.
@@ -108094,10 +107583,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.queued
+          const: response.queued
           description: The type of the event. Always 'response.queued'.
-          x-stainless-const: true
         response:
           $ref: '#/components/schemas/BetaResponse'
           description: The full response object that is queued.
@@ -108170,9 +107657,7 @@ components:
             type: string
             description: |
               The object type of this resource - always set to `response`.
-            enum:
-            - response
-            x-stainless-const: true
+            const: response
           status:
             type: string
             description: |
@@ -108999,10 +108484,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.output_text.annotation.added
+          const: response.output_text.annotation.added
           description: The type of the event. Always 'response.output_text.annotation.added'.
-          x-stainless-const: true
         item_id:
           type: string
           description: The unique identifier of the item to which the annotation is being added.
@@ -109062,10 +108545,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.mcp_list_tools.in_progress
+          const: response.mcp_list_tools.in_progress
           description: The type of the event. Always 'response.mcp_list_tools.in_progress'.
-          x-stainless-const: true
         item_id:
           type: string
           description: The ID of the MCP tool call item that is being processed.
@@ -109103,10 +108584,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.mcp_list_tools.failed
+          const: response.mcp_list_tools.failed
           description: The type of the event. Always 'response.mcp_list_tools.failed'.
-          x-stainless-const: true
         item_id:
           type: string
           description: The ID of the MCP tool call item that failed.
@@ -109144,10 +108623,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.mcp_list_tools.completed
+          const: response.mcp_list_tools.completed
           description: The type of the event. Always 'response.mcp_list_tools.completed'.
-          x-stainless-const: true
         item_id:
           type: string
           description: The ID of the MCP tool call item that produced this output.
@@ -109185,10 +108662,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.mcp_call.in_progress
+          const: response.mcp_call.in_progress
           description: The type of the event. Always 'response.mcp_call.in_progress'.
-          x-stainless-const: true
         sequence_number:
           type: integer
           description: The sequence number of this event.
@@ -109226,10 +108701,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.mcp_call.failed
+          const: response.mcp_call.failed
           description: The type of the event. Always 'response.mcp_call.failed'.
-          x-stainless-const: true
         item_id:
           type: string
           description: The ID of the MCP tool call item that failed.
@@ -109267,10 +108740,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.mcp_call.completed
+          const: response.mcp_call.completed
           description: The type of the event. Always 'response.mcp_call.completed'.
-          x-stainless-const: true
         item_id:
           type: string
           description: The ID of the MCP tool call item that completed.
@@ -109308,10 +108779,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.mcp_call_arguments.done
+          const: response.mcp_call_arguments.done
           description: The type of the event. Always 'response.mcp_call_arguments.done'.
-          x-stainless-const: true
         output_index:
           type: integer
           description: The index of the output item in the response's output array.
@@ -109355,10 +108824,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.mcp_call_arguments.delta
+          const: response.mcp_call_arguments.delta
           description: The type of the event. Always 'response.mcp_call_arguments.delta'.
-          x-stainless-const: true
         output_index:
           type: integer
           description: The index of the output item in the response's output array.
@@ -109402,10 +108869,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.image_generation_call.partial_image
+          const: response.image_generation_call.partial_image
           description: The type of the event. Always 'response.image_generation_call.partial_image'.
-          x-stainless-const: true
         output_index:
           type: integer
           description: The index of the output item in the response's output array.
@@ -109465,10 +108930,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.image_generation_call.in_progress
+          const: response.image_generation_call.in_progress
           description: The type of the event. Always 'response.image_generation_call.in_progress'.
-          x-stainless-const: true
         output_index:
           type: integer
           description: The index of the output item in the response's output array.
@@ -109506,10 +108969,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.image_generation_call.generating
+          const: response.image_generation_call.generating
           description: The type of the event. Always 'response.image_generation_call.generating'.
-          x-stainless-const: true
         output_index:
           type: integer
           description: The index of the output item in the response's output array.
@@ -109547,10 +109008,8 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.image_generation_call.completed
+          const: response.image_generation_call.completed
           description: The type of the event. Always 'response.image_generation_call.completed'.
-          x-stainless-const: true
         output_index:
           type: integer
           description: The index of the output item in the response's output array.
@@ -109588,9 +109047,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.reasoning_text.done`.
-          enum:
-          - response.reasoning_text.done
-          x-stainless-const: true
+          const: response.reasoning_text.done
         item_id:
           type: string
           description: |
@@ -109643,9 +109100,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.reasoning_text.delta`.
-          enum:
-          - response.reasoning_text.delta
-          x-stainless-const: true
+          const: response.reasoning_text.delta
         item_id:
           type: string
           description: |
@@ -109698,9 +109153,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.reasoning_summary_text.done`.
-          enum:
-          - response.reasoning_summary_text.done
-          x-stainless-const: true
+          const: response.reasoning_summary_text.done
         item_id:
           type: string
           description: |
@@ -109753,9 +109206,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.reasoning_summary_text.delta`.
-          enum:
-          - response.reasoning_summary_text.delta
-          x-stainless-const: true
+          const: response.reasoning_summary_text.delta
         item_id:
           type: string
           description: |
@@ -109808,9 +109259,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.reasoning_summary_part.done`.
-          enum:
-          - response.reasoning_summary_part.done
-          x-stainless-const: true
+          const: response.reasoning_summary_part.done
         item_id:
           type: string
           description: |
@@ -109842,9 +109291,7 @@ components:
             type:
               type: string
               description: The type of the summary part. Always `summary_text`.
-              enum:
-              - summary_text
-              x-stainless-const: true
+              const: summary_text
             text:
               type: string
               description: The text of the summary part.
@@ -109886,9 +109333,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.reasoning_summary_part.added`.
-          enum:
-          - response.reasoning_summary_part.added
-          x-stainless-const: true
+          const: response.reasoning_summary_part.added
         item_id:
           type: string
           description: |
@@ -109913,9 +109358,7 @@ components:
             type:
               type: string
               description: The type of the summary part. Always `summary_text`.
-              enum:
-              - summary_text
-              x-stainless-const: true
+              const: summary_text
             text:
               type: string
               description: The text of the summary part.
@@ -109957,9 +109400,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.output_text.done`.
-          enum:
-          - response.output_text.done
-          x-stainless-const: true
+          const: response.output_text.done
         item_id:
           type: string
           description: |
@@ -110046,9 +109487,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.output_text.delta`.
-          enum:
-          - response.output_text.delta
-          x-stainless-const: true
+          const: response.output_text.delta
         item_id:
           type: string
           description: |
@@ -110108,9 +109547,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.refusal.done`.
-          enum:
-          - response.refusal.done
-          x-stainless-const: true
+          const: response.refusal.done
         item_id:
           type: string
           description: |
@@ -110163,9 +109600,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.refusal.delta`.
-          enum:
-          - response.refusal.delta
-          x-stainless-const: true
+          const: response.refusal.delta
         item_id:
           type: string
           description: |
@@ -110218,9 +109653,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.output_item.done`.
-          enum:
-          - response.output_item.done
-          x-stainless-const: true
+          const: response.output_item.done
         output_index:
           type: integer
           description: |
@@ -110274,9 +109707,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.output_item.added`.
-          enum:
-          - response.output_item.added
-          x-stainless-const: true
+          const: response.output_item.added
         output_index:
           type: integer
           description: |
@@ -110326,9 +109757,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.in_progress`.
-          enum:
-          - response.in_progress
-          x-stainless-const: true
+          const: response.in_progress
         response:
           $ref: '#/components/schemas/BetaResponse'
           description: |
@@ -110584,9 +110013,7 @@ components:
           description: The agent that owns this multi-agent streaming event.
         type:
           type: string
-          enum:
-          - response.function_call_arguments.done
-          x-stainless-const: true
+          const: response.function_call_arguments.done
         item_id:
           type: string
           description: The ID of the item.
@@ -110629,9 +110056,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.function_call_arguments.delta`.
-          enum:
-          - response.function_call_arguments.delta
-          x-stainless-const: true
+          const: response.function_call_arguments.delta
         item_id:
           type: string
           description: |
@@ -110677,9 +110102,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.file_search_call.searching`.
-          enum:
-          - response.file_search_call.searching
-          x-stainless-const: true
+          const: response.file_search_call.searching
         output_index:
           type: integer
           description: |
@@ -110719,9 +110142,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.file_search_call.in_progress`.
-          enum:
-          - response.file_search_call.in_progress
-          x-stainless-const: true
+          const: response.file_search_call.in_progress
         output_index:
           type: integer
           description: |
@@ -110761,9 +110182,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.file_search_call.completed`.
-          enum:
-          - response.file_search_call.completed
-          x-stainless-const: true
+          const: response.file_search_call.completed
         output_index:
           type: integer
           description: |
@@ -110803,9 +110222,7 @@ components:
           type: string
           description: |
             The type of the event. Always `error`.
-          enum:
-          - error
-          x-stainless-const: true
+          const: error
         code:
           anyOf:
           - type: string
@@ -110856,9 +110273,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.created`.
-          enum:
-          - response.created
-          x-stainless-const: true
+          const: response.created
         response:
           $ref: '#/components/schemas/BetaResponse'
           description: |
@@ -110925,9 +110340,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.content_part.done`.
-          enum:
-          - response.content_part.done
-          x-stainless-const: true
+          const: response.content_part.done
         item_id:
           type: string
           description: |
@@ -110991,9 +110404,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.content_part.added`.
-          enum:
-          - response.content_part.added
-          x-stainless-const: true
+          const: response.content_part.added
         item_id:
           type: string
           description: |
@@ -111050,9 +110461,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.completed`.
-          enum:
-          - response.completed
-          x-stainless-const: true
+          const: response.completed
         response:
           $ref: '#/components/schemas/BetaResponse'
           description: |
@@ -111171,9 +110580,7 @@ components:
         type:
           type: string
           description: The type of the event. Always `response.code_interpreter_call.interpreting`.
-          enum:
-          - response.code_interpreter_call.interpreting
-          x-stainless-const: true
+          const: response.code_interpreter_call.interpreting
         output_index:
           type: integer
           description: The index of the output item in the response for which the code interpreter is interpreting code.
@@ -111210,9 +110617,7 @@ components:
         type:
           type: string
           description: The type of the event. Always `response.code_interpreter_call.in_progress`.
-          enum:
-          - response.code_interpreter_call.in_progress
-          x-stainless-const: true
+          const: response.code_interpreter_call.in_progress
         output_index:
           type: integer
           description: The index of the output item in the response for which the code interpreter call is in progress.
@@ -111249,9 +110654,7 @@ components:
         type:
           type: string
           description: The type of the event. Always `response.code_interpreter_call.completed`.
-          enum:
-          - response.code_interpreter_call.completed
-          x-stainless-const: true
+          const: response.code_interpreter_call.completed
         output_index:
           type: integer
           description: The index of the output item in the response for which the code interpreter call is completed.
@@ -111288,9 +110691,7 @@ components:
         type:
           type: string
           description: The type of the event. Always `response.code_interpreter_call_code.done`.
-          enum:
-          - response.code_interpreter_call_code.done
-          x-stainless-const: true
+          const: response.code_interpreter_call_code.done
         output_index:
           type: integer
           description: The index of the output item in the response for which the code is finalized.
@@ -111332,9 +110733,7 @@ components:
         type:
           type: string
           description: The type of the event. Always `response.code_interpreter_call_code.delta`.
-          enum:
-          - response.code_interpreter_call_code.delta
-          x-stainless-const: true
+          const: response.code_interpreter_call_code.delta
         output_index:
           type: integer
           description: The index of the output item in the response for which the code is being streamed.
@@ -111377,9 +110776,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.audio.transcript.done`.
-          enum:
-          - response.audio.transcript.done
-          x-stainless-const: true
+          const: response.audio.transcript.done
         sequence_number:
           type: integer
           description: The sequence number of this event.
@@ -111409,9 +110806,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.audio.transcript.delta`.
-          enum:
-          - response.audio.transcript.delta
-          x-stainless-const: true
+          const: response.audio.transcript.delta
         delta:
           type: string
           description: |
@@ -111447,9 +110842,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.audio.done`.
-          enum:
-          - response.audio.done
-          x-stainless-const: true
+          const: response.audio.done
         sequence_number:
           type: integer
           description: |
@@ -111480,9 +110873,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.audio.delta`.
-          enum:
-          - response.audio.delta
-          x-stainless-const: true
+          const: response.audio.delta
         sequence_number:
           type: integer
           description: |
@@ -111523,9 +110914,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.incomplete`.
-          enum:
-          - response.incomplete
-          x-stainless-const: true
+          const: response.incomplete
         response:
           $ref: '#/components/schemas/BetaResponse'
           description: |
@@ -111592,9 +110981,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.failed`.
-          enum:
-          - response.failed
-          x-stainless-const: true
+          const: response.failed
         sequence_number:
           type: integer
           description: The sequence number of this event.
@@ -111661,9 +111048,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.web_search_call.completed`.
-          enum:
-          - response.web_search_call.completed
-          x-stainless-const: true
+          const: response.web_search_call.completed
         output_index:
           type: integer
           description: |
@@ -111703,9 +111088,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.web_search_call.searching`.
-          enum:
-          - response.web_search_call.searching
-          x-stainless-const: true
+          const: response.web_search_call.searching
         output_index:
           type: integer
           description: |
@@ -111745,9 +111128,7 @@ components:
           type: string
           description: |
             The type of the event. Always `response.web_search_call.in_progress`.
-          enum:
-          - response.web_search_call.in_progress
-          x-stainless-const: true
+          const: response.web_search_call.in_progress
         output_index:
           type: integer
           description: |
@@ -111789,10 +111170,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.steer.failed
+          const: response.steer.failed
           description: The event discriminator. Always `response.steer.failed`.
-          x-stainless-const: true
         sequence_number:
           type: integer
           description: The sequence number for this event.
@@ -111818,10 +111197,8 @@ components:
           properties:
             type:
               type: string
-              enum:
-              - invalid_request_error
+              const: invalid_request_error
               description: The error type. Always `invalid_request_error`.
-              x-stainless-const: true
             code:
               $ref: '#/components/schemas/BetaResponseSteerErrorCode'
             message:
@@ -111994,10 +111371,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.steer.pending
+          const: response.steer.pending
           description: The event discriminator. Always `response.steer.pending`.
-          x-stainless-const: true
         sequence_number:
           type: integer
           description: The sequence number for this event.
@@ -112075,9 +111450,7 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - function_call_output
-            x-stainless-const: true
+            const: function_call_output
           call_id:
             type: string
           name:
@@ -112095,9 +111468,7 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - custom_tool_call_output
-            x-stainless-const: true
+            const: custom_tool_call_output
           call_id:
             type: string
         required:
@@ -112112,9 +111483,7 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - computer_call_output
-            x-stainless-const: true
+            const: computer_call_output
           call_id:
             type: string
         required:
@@ -112129,9 +111498,7 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - shell_call_output
-            x-stainless-const: true
+            const: shell_call_output
           call_id:
             type: string
         required:
@@ -112146,9 +111513,7 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - apply_patch_call_output
-            x-stainless-const: true
+            const: apply_patch_call_output
           call_id:
             type: string
         required:
@@ -112163,16 +111528,12 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - tool_search_output
-            x-stainless-const: true
+            const: tool_search_output
           call_id:
             type: string
           execution:
             type: string
-            enum:
-            - client
-            x-stainless-const: true
+            const: client
         required:
         - type
         - call_id
@@ -112187,9 +111548,7 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - mcp_approval_response
-            x-stainless-const: true
+            const: mcp_approval_response
           approval_request_id:
             type: string
         required:
@@ -112224,10 +111583,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.steer.accepted
+          const: response.steer.accepted
           description: The event discriminator. Always `response.steer.accepted`.
-          x-stainless-const: true
         sequence_number:
           type: integer
           description: The sequence number for this event.
@@ -112301,10 +111658,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.steer
+          const: response.steer
           description: The event discriminator. Always `response.steer`.
-          x-stainless-const: true
         previous_response_id:
           type: string
           description: The ID of the response to steer on this WebSocket connection.
@@ -112344,9 +111699,7 @@ components:
           type: string
           description: |
             The type of the output audio. Always `output_audio`.
-          enum:
-          - output_audio
-          x-stainless-const: true
+          const: output_audio
         data:
           type: string
           description: |
@@ -112369,9 +111722,7 @@ components:
           type: string
           description: |
             The type of the input item. Always `input_audio`.
-          enum:
-          - input_audio
-          x-stainless-const: true
+          const: input_audio
         input_audio:
           type: object
           properties:
@@ -113188,10 +112539,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.inject.failed
+          const: response.inject.failed
           description: The event discriminator. Always `response.inject.failed`.
-          x-stainless-const: true
         response_id:
           type: string
           description: The ID of the response that rejected the input.
@@ -113258,10 +112607,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.inject.created
+          const: response.inject.created
           description: The event discriminator. Always `response.inject.created`.
-          x-stainless-const: true
         response_id:
           type: string
           description: The ID of the response that accepted the input.
@@ -113298,9 +112645,7 @@ components:
         type:
           type: string
           description: The type of the event. Always `error`.
-          enum:
-          - error
-          x-stainless-const: true
+          const: error
         status:
           type: integer
           description: The HTTP status code associated with a WebSocket protocol error.
@@ -113458,10 +112803,8 @@ components:
       properties:
         type:
           type: string
-          enum:
-          - response.inject
+          const: response.inject
           description: The event discriminator. Always `response.inject`.
-          x-stainless-const: true
         response_id:
           type: string
           description: The ID of the active response that should receive the input.
@@ -113495,11 +112838,9 @@ components:
         properties:
           type:
             type: string
-            enum:
-            - response.create
+            const: response.create
             description: |
               The type of the client event. Always `response.create`.
-            x-stainless-const: true
           generate:
             type: boolean
             description: |
@@ -113961,9 +113302,7 @@ components:
         type:
           description: Always `image_url`.
           type: string
-          enum:
-          - image_url
-          x-stainless-const: true
+          const: image_url
         image_url:
           type: object
           description: Contains either an image URL or a data URL for a base64 encoded image.
@@ -113986,9 +113325,7 @@ components:
         type:
           description: Always `text`.
           type: string
-          enum:
-          - text
-          x-stainless-const: true
+          const: text
         text:
           description: A string of text to classify.
           type: string

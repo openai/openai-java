@@ -50,6 +50,7 @@ internal class ServerEventTest {
                         .instructions(
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
+                        .safetyIdentifier("safety_identifier")
                         .store(true)
                         .addTrigger(
                             DecisionTrigger.builder()
@@ -142,6 +143,7 @@ internal class ServerEventTest {
                             .instructions(
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
                             )
+                            .safetyIdentifier("safety_identifier")
                             .store(true)
                             .addTrigger(
                                 DecisionTrigger.builder()
@@ -249,6 +251,7 @@ internal class ServerEventTest {
                         .instructions(
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
+                        .safetyIdentifier("safety_identifier")
                         .store(true)
                         .addTrigger(
                             DecisionTrigger.builder()
@@ -379,6 +382,7 @@ internal class ServerEventTest {
                             .instructions(
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
                             )
+                            .safetyIdentifier("safety_identifier")
                             .store(true)
                             .addTrigger(
                                 DecisionTrigger.builder()
@@ -1639,6 +1643,7 @@ internal class ServerEventTest {
                         .instructions(
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
+                        .safetyIdentifier("safety_identifier")
                         .store(true)
                         .addTrigger(
                             DecisionTrigger.builder()
@@ -1733,6 +1738,7 @@ internal class ServerEventTest {
                             .instructions(
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
                             )
+                            .safetyIdentifier("safety_identifier")
                             .store(true)
                             .addTrigger(
                                 DecisionTrigger.builder()
