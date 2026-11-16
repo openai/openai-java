@@ -58,6 +58,41 @@ internal class AgentTurnResultsTest {
             .sessions()
             .createStreaming(createParams())
 
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `domain errors preserve completed creation and follow-up results`(async: Boolean) {
+        for (creation in listOf(false, true)) {
+            val domainError =
+                """{"type":"error","event_id":"error","session_id":"s","error":{"type":"server_error","message":"Session error."}}"""
+            val transport =
+                Transport(
+                    listOf(turn("created"), message(), turn("completed"), domainError, idle())
+                )
+            val params = AgentSessionStreamParams.builder().sessionId("s").input("Question").build()
+            transport.client().useClient { client ->
+                if (async) {
+                    val sessions = client.async().beta().agents().sessions()
+                    val stream =
+                        if (creation) sessions.createStreaming(createParams())
+                        else sessions.stream(params)
+                    val result = AgentTurnResults.getFinalResult(stream).get(5, TimeUnit.SECONDS)
+                    assertThat(result.outputText()).isEqualTo("Answer")
+                    assertThat(AgentTurnResults.getFinalResult(stream).get(5, TimeUnit.SECONDS))
+                        .isSameAs(result)
+                } else {
+                    val sessions = client.beta().agents().sessions()
+                    val stream =
+                        if (creation) sessions.createStreaming(createParams())
+                        else sessions.stream(params)
+                    val result = AgentTurnResults.getFinalResult(stream)
+                    assertThat(result.outputText()).isEqualTo("Answer")
+                    assertThat(AgentTurnResults.getFinalResult(stream)).isSameAs(result)
+                }
+                assertThat(transport.streamingClosed.await(5, TimeUnit.SECONDS)).isTrue()
+            }
+        }
+    }
+
     @Test
     fun `collects all final messages in output order and caches result`() {
         val stream =
@@ -263,6 +298,7 @@ internal class AgentTurnResultsTest {
         val posts = AtomicInteger()
         val closed = AtomicInteger()
         val responseClosed = CountDownLatch(1)
+        val streamingClosed = CountDownLatch(1)
 
         override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
             val streaming =
@@ -305,6 +341,7 @@ internal class AgentTurnResultsTest {
                 override fun close() {
                     closed.incrementAndGet()
                     responseClosed.countDown()
+                    if (streaming) streamingClosed.countDown()
                 }
             }
         }

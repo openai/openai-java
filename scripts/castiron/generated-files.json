@@ -7515,7 +7515,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/beta/agents/SessionServiceAsyncImpl.kt": {
       "mode": "100644",
-      "sha256": "630c557e0a4c106fc04f8e8e4335561d4c1103a253fca8f448d413fe0bab8377"
+      "sha256": "35a415084e56d3d22c93212d3b74cc2c74adea0d159c7551827a149036319908"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/beta/agents/VaultServiceAsync.kt": {
       "mode": "100644",
@@ -7563,7 +7563,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/beta/agents/sessions/EventServiceAsyncImpl.kt": {
       "mode": "100644",
-      "sha256": "aedc0322871bb9071d9cce03482986b45e06a537b1371d188428ccd5f7bfdb1b"
+      "sha256": "e41aeac0ea3578099689954e65ca9d9df09bbe0969b4614cbabc6b1b38398f26"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/beta/agents/sessions/ItemServiceAsync.kt": {
       "mode": "100644",
@@ -8563,7 +8563,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/beta/agents/SessionServiceImpl.kt": {
       "mode": "100644",
-      "sha256": "f325a8390b25fec88e1520a6634105039df80974b841b3d236a8395ea6ea49c3"
+      "sha256": "c7ca813a550400818b4e851ea10fac5dfad4b791fa29e003e1b342c6dd4e80a2"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/beta/agents/VaultService.kt": {
       "mode": "100644",
@@ -8611,7 +8611,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/beta/agents/sessions/EventServiceImpl.kt": {
       "mode": "100644",
-      "sha256": "4db61fee8e6272a49e284dde2fae8d999dc0628ccccfece1fd2d69379bde0485"
+      "sha256": "3fc48b37d7671ee6eac11a38d6d7a8c56c22f1ce9231ee9de472affd02bc53d5"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/beta/agents/sessions/ItemService.kt": {
       "mode": "100644",
