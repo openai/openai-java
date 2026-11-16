@@ -39,7 +39,7 @@ private constructor(
 
     /**
      * Context compaction settings. Omit to keep the current settings. A supplied object replaces
-     * the settings; null or an empty object enables background compaction.
+     * the settings; null or an empty object uses blocking compaction.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -262,7 +262,7 @@ private constructor(
 
         /**
          * Context compaction settings. Omit to keep the current settings. A supplied object
-         * replaces the settings; null or an empty object enables background compaction.
+         * replaces the settings; null or an empty object uses blocking compaction.
          */
         fun compaction(compaction: Compaction?) = apply { body.compaction(compaction) }
 
@@ -692,7 +692,7 @@ private constructor(
 
         /**
          * Context compaction settings. Omit to keep the current settings. A supplied object
-         * replaces the settings; null or an empty object enables background compaction.
+         * replaces the settings; null or an empty object uses blocking compaction.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -959,7 +959,7 @@ private constructor(
 
             /**
              * Context compaction settings. Omit to keep the current settings. A supplied object
-             * replaces the settings; null or an empty object enables background compaction.
+             * replaces the settings; null or an empty object uses blocking compaction.
              */
             fun compaction(compaction: Compaction?) = compaction(JsonField.ofNullable(compaction))
 
@@ -1345,7 +1345,7 @@ private constructor(
 
     /**
      * Context compaction settings. Omit to keep the current settings. A supplied object replaces
-     * the settings; null or an empty object enables background compaction.
+     * the settings; null or an empty object uses blocking compaction.
      */
     class Compaction
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -1360,8 +1360,8 @@ private constructor(
         ) : this(async, mutableMapOf())
 
         /**
-         * Whether to compact context in the background. Omission or null defaults to true. Set to
-         * false to use blocking compaction. Background compaction may increase token usage.
+         * Whether to compact context in the background. Omission or null defaults to false. Set to
+         * true to enable background compaction. Background compaction may increase token usage.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1424,8 +1424,9 @@ private constructor(
             }
 
             /**
-             * Whether to compact context in the background. Omission or null defaults to true. Set
-             * to false to use blocking compaction. Background compaction may increase token usage.
+             * Whether to compact context in the background. Omission or null defaults to false. Set
+             * to true to enable background compaction. Background compaction may increase token
+             * usage.
              */
             fun async(async: Boolean?) = async(JsonField.ofNullable(async))
 

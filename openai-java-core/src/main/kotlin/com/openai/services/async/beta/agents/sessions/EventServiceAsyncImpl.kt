@@ -143,7 +143,14 @@ class EventServiceAsyncImpl internal constructor(private val clientOptions: Clie
                             .let { streamStreamingHandler.handle(it) }
                             .let { streamResponse ->
                                 if (requestOptions.responseValidation!!) {
-                                    streamResponse.map { it.validate() }
+                                    val headers = response.headers()
+                                    streamResponse.map {
+                                        try {
+                                            it.validate()
+                                        } catch (e: com.openai.errors.OpenAIInvalidDataException) {
+                                            throw e.withHeaders(headers)
+                                        }
+                                    }
                                 } else {
                                     streamResponse
                                 }
