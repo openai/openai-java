@@ -784,6 +784,21 @@ internal class AgentSessionStreamTest {
         assertThat(failed.streamClosed).isTrue()
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun domainErrorDoesNotHideLaterLifecycleEvents(async: Boolean) {
+        val domainError =
+            """{"type":"error","event_id":"error","session_id":"s","error":{"type":"server_error","message":"Session error."}}"""
+        val transport = Transport(listOf(turn("created"), turn("completed"), domainError, idle()))
+        val events = consume(transport, async)
+
+        assertThat(events).hasSize(4)
+        assertThat(events[2].isError()).isTrue()
+        assertThat(events[2].asError().error().message()).isEqualTo("Session error.")
+        assertThat(events[3].isIdle()).isTrue()
+        assertThat(transport.streamClosed).isTrue()
+    }
+
     @Test
     fun asyncWaitsForToolAndCancellationCloses() {
         val t =

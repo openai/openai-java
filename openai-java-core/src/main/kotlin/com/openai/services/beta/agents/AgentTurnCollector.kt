@@ -87,7 +87,6 @@ internal class AgentTurnCollector(
             event.failed().getOrNull()?.session()?.let {
                 if (sessionId == null || it.id() == sessionId) failure = error(Reason.TURN_FAILED)
             }
-            if (event.isError()) failure = error(Reason.STREAM_ERROR)
             event.idle().getOrNull()?.session()?.let {
                 if (completed && it.id() == sessionId) idle = true
             }
