@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.106.0](https://github.com/openai/openai-java/compare/v4.105.0...v4.106.0) (2026-11-16)
+
+
+### Features
+
+* **api:** add schedule pause reasons ([#1406](https://github.com/openai/openai-java/issues/1406)) ([60b1855](https://github.com/openai/openai-java/commit/60b1855c3f1de29c500eb30bd247acd0fd119b41))
+* **api:** deliver beta Agents session errors as stream events ([#1408](https://github.com/openai/openai-java/issues/1408)) ([c765e29](https://github.com/openai/openai-java/commit/c765e29b02a085466c0d95106ccdc3ef0f9b97a0))
+
+
+### Bug Fixes
+
+* **ci:** give Maven Javadoc publishing more heap ([#1397](https://github.com/openai/openai-java/issues/1397)) ([6d20a83](https://github.com/openai/openai-java/commit/6d20a833c649cd30901b2720cc322d820cf49c06))
+
 ## [4.105.0](https://github.com/openai/openai-java/compare/v4.104.0...v4.105.0) (2026-11-13)
 
 
