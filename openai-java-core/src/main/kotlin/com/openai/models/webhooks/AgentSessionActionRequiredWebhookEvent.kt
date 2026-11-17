@@ -747,6 +747,8 @@ private constructor(
                     @JvmField
                     val COMPUTER_USE_APPROVAL_REQUEST = of("computer_use_approval_request")
 
+                    @JvmField val MCP_APPROVAL_REQUEST = of("mcp_approval_request")
+
                     @JvmField val FUNCTION_CALL = of("function_call")
 
                     @JvmField val ENVIRONMENT_CONNECTION = of("environment_connection")
@@ -757,6 +759,7 @@ private constructor(
                 /** An enum containing [Type]'s known values. */
                 enum class Known {
                     COMPUTER_USE_APPROVAL_REQUEST,
+                    MCP_APPROVAL_REQUEST,
                     FUNCTION_CALL,
                     ENVIRONMENT_CONNECTION,
                 }
@@ -772,6 +775,7 @@ private constructor(
                  */
                 enum class Value {
                     COMPUTER_USE_APPROVAL_REQUEST,
+                    MCP_APPROVAL_REQUEST,
                     FUNCTION_CALL,
                     ENVIRONMENT_CONNECTION,
                     /**
@@ -790,6 +794,7 @@ private constructor(
                 fun value(): Value =
                     when (this) {
                         COMPUTER_USE_APPROVAL_REQUEST -> Value.COMPUTER_USE_APPROVAL_REQUEST
+                        MCP_APPROVAL_REQUEST -> Value.MCP_APPROVAL_REQUEST
                         FUNCTION_CALL -> Value.FUNCTION_CALL
                         ENVIRONMENT_CONNECTION -> Value.ENVIRONMENT_CONNECTION
                         else -> Value._UNKNOWN
@@ -807,6 +812,7 @@ private constructor(
                 fun known(): Known =
                     when (this) {
                         COMPUTER_USE_APPROVAL_REQUEST -> Known.COMPUTER_USE_APPROVAL_REQUEST
+                        MCP_APPROVAL_REQUEST -> Known.MCP_APPROVAL_REQUEST
                         FUNCTION_CALL -> Known.FUNCTION_CALL
                         ENVIRONMENT_CONNECTION -> Known.ENVIRONMENT_CONNECTION
                         else -> throw OpenAIInvalidDataException("Unknown Type: $value")

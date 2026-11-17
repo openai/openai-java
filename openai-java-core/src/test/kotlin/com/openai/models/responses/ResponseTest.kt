@@ -10,6 +10,7 @@ import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import com.openai.models.ResponsesModel
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -124,6 +125,12 @@ internal class ResponseTest {
                 .image(
                     Response.Image.builder()
                         .contextCompression(Response.Image.ContextCompression.ENABLED)
+                        .build()
+                )
+                .addInputTransformation(
+                    Response.InputTransformation.builder()
+                        .id("id")
+                        .reason(Response.InputTransformation.Reason.ORGANIZATION_MISMATCH)
                         .build()
                 )
                 .maxOutputTokens(0L)
@@ -409,6 +416,13 @@ internal class ResponseTest {
             .contains(
                 Response.Image.builder()
                     .contextCompression(Response.Image.ContextCompression.ENABLED)
+                    .build()
+            )
+        assertThat(response.inputTransformations().getOrNull())
+            .containsExactly(
+                Response.InputTransformation.builder()
+                    .id("id")
+                    .reason(Response.InputTransformation.Reason.ORGANIZATION_MISMATCH)
                     .build()
             )
         assertThat(response.maxOutputTokens()).contains(0L)

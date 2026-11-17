@@ -19,3 +19,25 @@
 -keep class com.openai.models.responses.ResponseInputText$PromptCacheBreakpoint { *; }
 -keep class com.openai.models.responses.ResponseInputTextContent$PromptCacheBreakpoint { *; }
 -keep class com.openai.models.videos.VideoCreateError { *; }
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseInputFile
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseInputFileContent
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseInputImage
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseInputImageContent
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseInputText
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseInputTextContent
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseItem
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseItem$AgentMessage
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseItem$AgentMessage$Content
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseItem$AgentMessage$Content$ComputerScreenshot
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseOutputItem
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseOutputItem$AgentMessage
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseOutputItem$AgentMessage$Content
+-keep,allowoptimization class com.openai.models.beta.responses.BetaResponseOutputItem$AgentMessage$Content$ComputerScreenshot
+-keep,allowoptimization class com.openai.models.conversations.ComputerScreenshotContent
+-keep,allowoptimization class com.openai.models.realtime.RealtimeResponseStatus
+-keep,allowoptimization class com.openai.models.responses.ResponseInputFile
+-keep,allowoptimization class com.openai.models.responses.ResponseInputFileContent
+-keep,allowoptimization class com.openai.models.responses.ResponseInputImage
+-keep,allowoptimization class com.openai.models.responses.ResponseInputImageContent
+-keep,allowoptimization class com.openai.models.responses.ResponseInputText
+-keep,allowoptimization class com.openai.models.responses.ResponseInputTextContent

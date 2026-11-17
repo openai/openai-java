@@ -2,6 +2,7 @@ package com.openai.helpers
 
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.models.admin.organization.externalkeys.ExternalKeyCreateParams
 import com.openai.models.live.DecisionCreateEvent
 import com.openai.models.live.SessionConfig
 import com.openai.models.live.sideband.SidebandClientEvent
@@ -18,7 +19,7 @@ internal class VisitorCompatibilityTest {
     @TempDir lateinit var tempDir: Path
 
     @ParameterizedTest
-    @ValueSource(ints = [1, 2])
+    @ValueSource(ints = [1, 2, 3])
     fun oldVisitorsRemainSourceAndBinaryCompatible(index: Int) {
         val union: Any
         val visitor: Class<*>
@@ -36,7 +37,7 @@ internal class VisitorCompatibilityTest {
                 visitor = SessionConfig.Delegation.Visitor::class.java
                 added = setOf("visitDecisions")
             }
-            else -> {
+            2 -> {
                 union =
                     SidebandClientEvent.ofDecisionCreate(
                         DecisionCreateEvent.builder().eventId("test").build()
@@ -48,6 +49,19 @@ internal class VisitorCompatibilityTest {
                         "visitDecisionItemCreate",
                         "visitDecisionItemDelete",
                     )
+            }
+            else -> {
+                union =
+                    ExternalKeyCreateParams.Body.ofOci(
+                        ExternalKeyCreateParams.Body.Oci.builder()
+                            .name("test-key")
+                            .region("us-ashburn-1")
+                            .vaultOcid("test-vault")
+                            .keyOcid("test-key")
+                            .build()
+                    )
+                visitor = ExternalKeyCreateParams.Body.Visitor::class.java
+                added = setOf("visitOci")
             }
         }
         val methods =

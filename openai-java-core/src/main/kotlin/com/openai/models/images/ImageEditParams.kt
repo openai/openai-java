@@ -176,7 +176,8 @@ private constructor(
 
     /**
      * The format in which the generated images are returned. This parameter is only supported for
-     * the GPT image models. The default value is `png`.
+     * the GPT image models. The default value is `png`. SVG output requires a supported image model
+     * and project access.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -242,6 +243,17 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun size(): Optional<Size> = body.size()
+
+    /**
+     * Selects the author model and reasoning effort for `output_format=svg`. Supply `svg.model`
+     * when SVG model selection is enabled. Otherwise, omit this object. SVG output requires `n=1`
+     * and cannot use streaming, partial images, or output compression. Use multipart fields such as
+     * `svg[model]`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun svg(): Optional<Svg> = body.svg()
 
     /**
      * Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward
@@ -386,6 +398,13 @@ private constructor(
      * Unlike [size], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _size(): MultipartField<Size> = body._size()
+
+    /**
+     * Returns the raw multipart value of [svg].
+     *
+     * Unlike [svg], this method doesn't throw if the multipart field has an unexpected type.
+     */
+    fun _svg(): MultipartField<Svg> = body._svg()
 
     /**
      * Returns the raw multipart value of [user].
@@ -789,7 +808,8 @@ private constructor(
 
         /**
          * The format in which the generated images are returned. This parameter is only supported
-         * for the GPT image models. The default value is `png`.
+         * for the GPT image models. The default value is `png`. SVG output requires a supported
+         * image model and project access.
          */
         fun outputFormat(outputFormat: OutputFormat?) = apply { body.outputFormat(outputFormat) }
 
@@ -941,6 +961,25 @@ private constructor(
          * primarily for setting the field to an undocumented or not yet supported value.
          */
         fun size(value: String) = apply { body.size(value) }
+
+        /**
+         * Selects the author model and reasoning effort for `output_format=svg`. Supply `svg.model`
+         * when SVG model selection is enabled. Otherwise, omit this object. SVG output requires
+         * `n=1` and cannot use streaming, partial images, or output compression. Use multipart
+         * fields such as `svg[model]`.
+         */
+        fun svg(svg: Svg?) = apply { body.svg(svg) }
+
+        /** Alias for calling [Builder.svg] with `svg.orElse(null)`. */
+        fun svg(svg: Optional<Svg>) = svg(svg.getOrNull())
+
+        /**
+         * Sets [Builder.svg] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.svg] with a well-typed [Svg] value instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun svg(svg: MultipartField<Svg>) = apply { body.svg(svg) }
 
         /**
          * Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward
@@ -1111,6 +1150,7 @@ private constructor(
                 "response_format" to _responseFormat(),
                 "safety_identifier" to _safetyIdentifier(),
                 "size" to _size(),
+                "svg" to _svg(),
                 "user" to _user(),
             ) + _additionalBodyProperties().mapValues { (_, value) -> MultipartField.of(value) })
             .toImmutable()
@@ -1139,6 +1179,7 @@ private constructor(
         private val responseFormat: MultipartField<ResponseFormat>,
         private val safetyIdentifier: MultipartField<String>,
         private val size: MultipartField<Size>,
+        private val svg: MultipartField<Svg>,
         private val user: MultipartField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -1283,7 +1324,8 @@ private constructor(
 
         /**
          * The format in which the generated images are returned. This parameter is only supported
-         * for the GPT image models. The default value is `png`.
+         * for the GPT image models. The default value is `png`. SVG output requires a supported
+         * image model and project access.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1353,6 +1395,17 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun size(): Optional<Size> = size.value.getOptional("size")
+
+        /**
+         * Selects the author model and reasoning effort for `output_format=svg`. Supply `svg.model`
+         * when SVG model selection is enabled. Otherwise, omit this object. SVG output requires
+         * `n=1` and cannot use streaming, partial images, or output compression. Use multipart
+         * fields such as `svg[model]`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun svg(): Optional<Svg> = svg.value.getOptional("svg")
 
         /**
          * Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward
@@ -1523,6 +1576,13 @@ private constructor(
         @JsonProperty("size") @ExcludeMissing fun _size(): MultipartField<Size> = size
 
         /**
+         * Returns the raw multipart value of [svg].
+         *
+         * Unlike [svg], this method doesn't throw if the multipart field has an unexpected type.
+         */
+        @JsonProperty("svg") @ExcludeMissing fun _svg(): MultipartField<Svg> = svg
+
+        /**
          * Returns the raw multipart value of [user].
          *
          * Unlike [user], this method doesn't throw if the multipart field has an unexpected type.
@@ -1579,6 +1639,7 @@ private constructor(
             private var responseFormat: MultipartField<ResponseFormat> = MultipartField.of(null)
             private var safetyIdentifier: MultipartField<String> = MultipartField.of(null)
             private var size: MultipartField<Size> = MultipartField.of(null)
+            private var svg: MultipartField<Svg> = MultipartField.of(null)
             private var user: MultipartField<String> = MultipartField.of(null)
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -1602,6 +1663,7 @@ private constructor(
                 responseFormat = body.responseFormat
                 safetyIdentifier = body.safetyIdentifier
                 size = body.size
+                svg = body.svg
                 user = body.user
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -1983,7 +2045,8 @@ private constructor(
 
             /**
              * The format in which the generated images are returned. This parameter is only
-             * supported for the GPT image models. The default value is `png`.
+             * supported for the GPT image models. The default value is `png`. SVG output requires a
+             * supported image model and project access.
              */
             fun outputFormat(outputFormat: OutputFormat?) =
                 outputFormat(MultipartField.of(outputFormat))
@@ -2144,6 +2207,26 @@ private constructor(
             fun size(value: String) = size(Size.of(value))
 
             /**
+             * Selects the author model and reasoning effort for `output_format=svg`. Supply
+             * `svg.model` when SVG model selection is enabled. Otherwise, omit this object. SVG
+             * output requires `n=1` and cannot use streaming, partial images, or output
+             * compression. Use multipart fields such as `svg[model]`.
+             */
+            fun svg(svg: Svg?) = svg(MultipartField.of(svg))
+
+            /** Alias for calling [Builder.svg] with `svg.orElse(null)`. */
+            fun svg(svg: Optional<Svg>) = svg(svg.getOrNull())
+
+            /**
+             * Sets [Builder.svg] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.svg] with a well-typed [Svg] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun svg(svg: MultipartField<Svg>) = apply { this.svg = svg }
+
+            /**
              * Deprecated: use `safety_identifier` instead. This parameter remains accepted for
              * backward compatibility and is used when `safety_identifier` is omitted, null, or
              * empty.
@@ -2213,6 +2296,7 @@ private constructor(
                     responseFormat,
                     safetyIdentifier,
                     size,
+                    svg,
                     user,
                     additionalProperties.toMutableMap(),
                 )
@@ -2252,6 +2336,7 @@ private constructor(
             responseFormat().ifPresent { it.validate() }
             safetyIdentifier()
             size()
+            svg().ifPresent { it.validate() }
             user()
             validated = true
         }
@@ -2288,6 +2373,7 @@ private constructor(
                 responseFormat == other.responseFormat &&
                 safetyIdentifier == other.safetyIdentifier &&
                 size == other.size &&
+                svg == other.svg &&
                 user == other.user &&
                 additionalProperties == other.additionalProperties
         }
@@ -2312,6 +2398,7 @@ private constructor(
                 responseFormat,
                 safetyIdentifier,
                 size,
+                svg,
                 user,
                 additionalProperties,
             )
@@ -2320,7 +2407,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{image=$image, prompt=$prompt, background=$background, complexity=$complexity, frameCount=$frameCount, frameDurationMs=$frameDurationMs, inputFidelity=$inputFidelity, markup=$markup, mask=$mask, model=$model, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, size=$size, user=$user, additionalProperties=$additionalProperties}"
+            "Body{image=$image, prompt=$prompt, background=$background, complexity=$complexity, frameCount=$frameCount, frameDurationMs=$frameDurationMs, inputFidelity=$inputFidelity, markup=$markup, mask=$mask, model=$model, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, size=$size, svg=$svg, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -2952,7 +3039,8 @@ private constructor(
 
     /**
      * The format in which the generated images are returned. This parameter is only supported for
-     * the GPT image models. The default value is `png`.
+     * the GPT image models. The default value is `png`. SVG output requires a supported image model
+     * and project access.
      */
     class OutputFormat @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -2971,11 +3059,13 @@ private constructor(
 
             @JvmField val PNG = of("png")
 
-            @JvmField val JPEG = of("jpeg")
-
             @JvmField val WEBP = of("webp")
 
+            @JvmField val JPEG = of("jpeg")
+
             @JvmField val GIF = of("gif")
+
+            @JvmField val SVG = of("svg")
 
             @JvmStatic fun of(value: String) = OutputFormat(JsonField.of(value))
         }
@@ -2983,9 +3073,10 @@ private constructor(
         /** An enum containing [OutputFormat]'s known values. */
         enum class Known {
             PNG,
-            JPEG,
             WEBP,
+            JPEG,
             GIF,
+            SVG,
         }
 
         /**
@@ -2999,9 +3090,10 @@ private constructor(
          */
         enum class Value {
             PNG,
-            JPEG,
             WEBP,
+            JPEG,
             GIF,
+            SVG,
             /**
              * An enum member indicating that [OutputFormat] was instantiated with an unknown value.
              */
@@ -3018,9 +3110,10 @@ private constructor(
         fun value(): Value =
             when (this) {
                 PNG -> Value.PNG
-                JPEG -> Value.JPEG
                 WEBP -> Value.WEBP
+                JPEG -> Value.JPEG
                 GIF -> Value.GIF
+                SVG -> Value.SVG
                 else -> Value._UNKNOWN
             }
 
@@ -3036,9 +3129,10 @@ private constructor(
         fun known(): Known =
             when (this) {
                 PNG -> Known.PNG
-                JPEG -> Known.JPEG
                 WEBP -> Known.WEBP
+                JPEG -> Known.JPEG
                 GIF -> Known.GIF
+                SVG -> Known.SVG
                 else -> throw OpenAIInvalidDataException("Unknown OutputFormat: $value")
             }
 
@@ -3612,6 +3706,516 @@ private constructor(
         override fun hashCode() = value.hashCode()
 
         override fun toString() = value.toString()
+    }
+
+    /**
+     * Selects the author model and reasoning effort for `output_format=svg`. Supply `svg.model`
+     * when SVG model selection is enabled. Otherwise, omit this object. SVG output requires `n=1`
+     * and cannot use streaming, partial images, or output compression. Use multipart fields such as
+     * `svg[model]`.
+     */
+    class Svg
+    private constructor(
+        private val model: MultipartField<String>,
+        private val reasoning: MultipartField<Reasoning>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun model(): Optional<String> = model.value.getOptional("model")
+
+        /**
+         * Reasoning effort for SVG authoring. When omitted, uses the author model's default in both
+         * Images and Responses.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun reasoning(): Optional<Reasoning> = reasoning.value.getOptional("reasoning")
+
+        /**
+         * Returns the raw multipart value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the multipart field has an unexpected type.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): MultipartField<String> = model
+
+        /**
+         * Returns the raw multipart value of [reasoning].
+         *
+         * Unlike [reasoning], this method doesn't throw if the multipart field has an unexpected
+         * type.
+         */
+        @JsonProperty("reasoning")
+        @ExcludeMissing
+        fun _reasoning(): MultipartField<Reasoning> = reasoning
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Svg]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Svg]. */
+        class Builder internal constructor() {
+
+            private var model: MultipartField<String> = MultipartField.of(null)
+            private var reasoning: MultipartField<Reasoning> = MultipartField.of(null)
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(svg: Svg) = apply {
+                model = svg.model
+                reasoning = svg.reasoning
+                additionalProperties = svg.additionalProperties.toMutableMap()
+            }
+
+            fun model(model: String) = model(MultipartField.of(model))
+
+            /**
+             * Sets [Builder.model] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.model] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun model(model: MultipartField<String>) = apply { this.model = model }
+
+            /**
+             * Reasoning effort for SVG authoring. When omitted, uses the author model's default in
+             * both Images and Responses.
+             */
+            fun reasoning(reasoning: Reasoning?) = reasoning(MultipartField.of(reasoning))
+
+            /** Alias for calling [Builder.reasoning] with `reasoning.orElse(null)`. */
+            fun reasoning(reasoning: Optional<Reasoning>) = reasoning(reasoning.getOrNull())
+
+            /**
+             * Sets [Builder.reasoning] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.reasoning] with a well-typed [Reasoning] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun reasoning(reasoning: MultipartField<Reasoning>) = apply {
+                this.reasoning = reasoning
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Svg].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Svg = Svg(model, reasoning, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Svg = apply {
+            if (validated) {
+                return@apply
+            }
+
+            model()
+            reasoning().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Reasoning effort for SVG authoring. When omitted, uses the author model's default in both
+         * Images and Responses.
+         */
+        class Reasoning
+        private constructor(
+            private val effort: MultipartField<ReasoningEffortEnum>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            /**
+             * Controls how much effort the model should spend on reasoning for this request.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun effort(): Optional<ReasoningEffortEnum> = effort.value.getOptional("effort")
+
+            /**
+             * Returns the raw multipart value of [effort].
+             *
+             * Unlike [effort], this method doesn't throw if the multipart field has an unexpected
+             * type.
+             */
+            @JsonProperty("effort")
+            @ExcludeMissing
+            fun _effort(): MultipartField<ReasoningEffortEnum> = effort
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Reasoning]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Reasoning]. */
+            class Builder internal constructor() {
+
+                private var effort: MultipartField<ReasoningEffortEnum> = MultipartField.of(null)
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(reasoning: Reasoning) = apply {
+                    effort = reasoning.effort
+                    additionalProperties = reasoning.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * Controls how much effort the model should spend on reasoning for this request.
+                 */
+                fun effort(effort: ReasoningEffortEnum) = effort(MultipartField.of(effort))
+
+                /**
+                 * Sets [Builder.effort] to an arbitrary multipart value.
+                 *
+                 * You should usually call [Builder.effort] with a well-typed [ReasoningEffortEnum]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun effort(effort: MultipartField<ReasoningEffortEnum>) = apply {
+                    this.effort = effort
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Reasoning].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Reasoning = Reasoning(effort, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Reasoning = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                effort().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /** Controls how much effort the model should spend on reasoning for this request. */
+            class ReasoningEffortEnum
+            @JsonCreator
+            private constructor(private val value: JsonField<String>) : Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val NONE = of("none")
+
+                    @JvmField val MINIMAL = of("minimal")
+
+                    @JvmField val LOW = of("low")
+
+                    @JvmField val MEDIUM = of("medium")
+
+                    @JvmField val HIGH = of("high")
+
+                    @JvmField val XHIGH = of("xhigh")
+
+                    @JvmField val MAX = of("max")
+
+                    @JvmStatic fun of(value: String) = ReasoningEffortEnum(JsonField.of(value))
+                }
+
+                /** An enum containing [ReasoningEffortEnum]'s known values. */
+                enum class Known {
+                    NONE,
+                    MINIMAL,
+                    LOW,
+                    MEDIUM,
+                    HIGH,
+                    XHIGH,
+                    MAX,
+                }
+
+                /**
+                 * An enum containing [ReasoningEffortEnum]'s known values, as well as an [_UNKNOWN]
+                 * member.
+                 *
+                 * An instance of [ReasoningEffortEnum] can contain an unknown value in a couple of
+                 * cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    NONE,
+                    MINIMAL,
+                    LOW,
+                    MEDIUM,
+                    HIGH,
+                    XHIGH,
+                    MAX,
+                    /**
+                     * An enum member indicating that [ReasoningEffortEnum] was instantiated with an
+                     * unknown value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        NONE -> Value.NONE
+                        MINIMAL -> Value.MINIMAL
+                        LOW -> Value.LOW
+                        MEDIUM -> Value.MEDIUM
+                        HIGH -> Value.HIGH
+                        XHIGH -> Value.XHIGH
+                        MAX -> Value.MAX
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        NONE -> Known.NONE
+                        MINIMAL -> Known.MINIMAL
+                        LOW -> Known.LOW
+                        MEDIUM -> Known.MEDIUM
+                        HIGH -> Known.HIGH
+                        XHIGH -> Known.XHIGH
+                        MAX -> Known.MAX
+                        else ->
+                            throw OpenAIInvalidDataException("Unknown ReasoningEffortEnum: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): ReasoningEffortEnum = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is ReasoningEffortEnum && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Reasoning &&
+                    effort == other.effort &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(effort, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Reasoning{effort=$effort, additionalProperties=$additionalProperties}"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Svg &&
+                model == other.model &&
+                reasoning == other.reasoning &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(model, reasoning, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Svg{model=$model, reasoning=$reasoning, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

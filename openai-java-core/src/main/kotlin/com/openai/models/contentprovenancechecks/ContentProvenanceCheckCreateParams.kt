@@ -39,7 +39,8 @@ private constructor(
 ) : Params {
 
     /**
-     * The image or audio file to check for supported OpenAI provenance signals.
+     * The image or audio file to check for supported OpenAI provenance signals. Supported image
+     * formats are PNG, JPEG, WebP, and GIF (including animated GIFs).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -102,7 +103,10 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** The image or audio file to check for supported OpenAI provenance signals. */
+        /**
+         * The image or audio file to check for supported OpenAI provenance signals. Supported image
+         * formats are PNG, JPEG, WebP, and GIF (including animated GIFs).
+         */
         fun file(file: InputStream) = apply { body.file(file) }
 
         /**
@@ -114,10 +118,16 @@ private constructor(
          */
         fun file(file: MultipartField<InputStream>) = apply { body.file(file) }
 
-        /** The image or audio file to check for supported OpenAI provenance signals. */
+        /**
+         * The image or audio file to check for supported OpenAI provenance signals. Supported image
+         * formats are PNG, JPEG, WebP, and GIF (including animated GIFs).
+         */
         fun file(file: ByteArray) = apply { body.file(file) }
 
-        /** The image or audio file to check for supported OpenAI provenance signals. */
+        /**
+         * The image or audio file to check for supported OpenAI provenance signals. Supported image
+         * formats are PNG, JPEG, WebP, and GIF (including animated GIFs).
+         */
         fun file(path: Path) = apply { body.file(path) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
@@ -273,7 +283,8 @@ private constructor(
     ) {
 
         /**
-         * The image or audio file to check for supported OpenAI provenance signals.
+         * The image or audio file to check for supported OpenAI provenance signals. Supported image
+         * formats are PNG, JPEG, WebP, and GIF (including animated GIFs).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -324,7 +335,10 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** The image or audio file to check for supported OpenAI provenance signals. */
+            /**
+             * The image or audio file to check for supported OpenAI provenance signals. Supported
+             * image formats are PNG, JPEG, WebP, and GIF (including animated GIFs).
+             */
             fun file(file: InputStream) = file(MultipartField.of(file))
 
             /**
@@ -336,10 +350,16 @@ private constructor(
              */
             fun file(file: MultipartField<InputStream>) = apply { this.file = file }
 
-            /** The image or audio file to check for supported OpenAI provenance signals. */
+            /**
+             * The image or audio file to check for supported OpenAI provenance signals. Supported
+             * image formats are PNG, JPEG, WebP, and GIF (including animated GIFs).
+             */
             fun file(file: ByteArray) = file(file.inputStream())
 
-            /** The image or audio file to check for supported OpenAI provenance signals. */
+            /**
+             * The image or audio file to check for supported OpenAI provenance signals. Supported
+             * image formats are PNG, JPEG, WebP, and GIF (including animated GIFs).
+             */
             fun file(path: Path) =
                 file(
                     MultipartField.builder<InputStream>()

@@ -67,6 +67,7 @@ internal class AuditLogListResponseTest {
                         .id("id")
                         .changesRequested(
                             AuditLogListResponse.ApiKeyUpdated.ChangesRequested.builder()
+                                .expiresInSeconds(0L)
                                 .addScope("string")
                                 .build()
                         )
@@ -504,6 +505,7 @@ internal class AuditLogListResponseTest {
                     .id("id")
                     .changesRequested(
                         AuditLogListResponse.ApiKeyUpdated.ChangesRequested.builder()
+                            .expiresInSeconds(0L)
                             .addScope("string")
                             .build()
                     )

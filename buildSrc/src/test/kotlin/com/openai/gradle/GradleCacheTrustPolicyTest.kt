@@ -400,6 +400,16 @@ class GradleCacheTrustPolicyTest {
                     "",
                 ),
                 workflow.replaceFirst("            --no-parallel \\\n", ""),
+                workflow.replaceFirst(
+                    "      - name: Stop Gradle daemon before publishing\n" +
+                        "        run: ./gradlew --stop\n\n",
+                    "",
+                ),
+                workflow.replaceFirst("'16g' || '8g'", "'8g' || '8g'"),
+                workflow.replaceFirst(
+                    "-Dorg.gradle.jvmargs=-Xmx\${RELEASE_GRADLE_HEAP}",
+                    "-Dorg.gradle.jvmargs=-Xmx8g",
+                ),
             )
             .forEach { poisonedWorkflow ->
                 assertTrue(poisonedWorkflow != workflow)
@@ -523,6 +533,7 @@ class GradleCacheTrustPolicyTest {
                     .apply {
                         environment()["RUNNER_TEMP"] = runnerTemp.toString()
                         environment()["MAVEN_ARTIFACTS"] = artifacts.joinToString(" ")
+                        environment()["RELEASE_GRADLE_HEAP"] = "16g"
                     }
                     .start()
             val output = process.inputStream.bufferedReader().readText()
@@ -547,6 +558,7 @@ class GradleCacheTrustPolicyTest {
             assertEquals("attested-" + artifacts[index], subject.readText())
         }
         val arguments = runnerTemp.resolve("publication-arguments").readText().lines()
+        assertTrue(arguments.any { it.startsWith("-Dorg.gradle.jvmargs=-Xmx16g ") })
         artifacts.forEach { artifact ->
             val index = arguments.indexOf(":$artifact:jar")
             assertTrue(index > 0 && arguments[index - 1] == "--exclude-task")
@@ -1227,8 +1239,15 @@ class GradleCacheTrustPolicyTest {
         )
         assertEquals("./gradlew --stop", publishSteps[daemonStop].run)
 
-        val publication =
-            requireNotNull(publishSteps.single { it.name == "Publish to Maven Central" }.run)
+        val attestation =
+            publishSteps.indexOfFirst { it.name == "Attest Maven artifact provenance" }
+        val publish = publishSteps.indexOfFirst { it.name == "Publish to Maven Central" }
+        assertTrue(attestation >= 0 && publish > attestation + 1)
+        assertEquals("Stop Gradle daemon before publishing", publishSteps[publish - 1].name)
+        assertEquals("./gradlew --stop", publishSteps[publish - 1].run)
+
+        val publishStep = publishSteps[publish]
+        val publication = requireNotNull(publishStep.run)
         val serializedInvocation =
             "./gradlew publishAndReleaseToMavenCentral \\\n" +
                 "  \"\${publish_exclusions[@]}\" \\\n" +
@@ -1239,6 +1258,11 @@ class GradleCacheTrustPolicyTest {
             publication.contains(serializedInvocation),
             "Serialize Dokka publication tasks to keep the standard runner within memory limits.",
         )
+        assertEquals(
+            "\${{ vars.SDK_GHA_RUNNER == 'sdk-linux-x64-16core' && '16g' || '8g' }}",
+            publishStep.environment["RELEASE_GRADLE_HEAP"],
+        )
+        assertContains(publication, "\"-Dorg.gradle.jvmargs=-Xmx\${RELEASE_GRADLE_HEAP} ")
     }
 
     private fun assertPublishingProvenancePolicy(workflow: String) {

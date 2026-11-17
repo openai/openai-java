@@ -92,6 +92,7 @@ internal class OneTimeAutomationTest {
                         .addVaultId("string")
                         .build()
                 )
+                .pauseReason(OneTimeAutomation.PauseReason.TARGET_SESSION_FAILED)
                 .build()
 
         assertThat(oneTimeAutomation.id()).isEqualTo("id")
@@ -172,6 +173,8 @@ internal class OneTimeAutomationTest {
                         .build()
                 )
             )
+        assertThat(oneTimeAutomation.pauseReason())
+            .contains(OneTimeAutomation.PauseReason.TARGET_SESSION_FAILED)
 
         val jsonMapper = jsonMapper()
 

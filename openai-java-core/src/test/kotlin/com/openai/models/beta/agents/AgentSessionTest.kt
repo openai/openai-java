@@ -69,34 +69,13 @@ internal class AgentSessionTest {
                         .build()
                 )
                 .addRequiredAction(
-                    AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                    AgentSession.RequiredAction.McpApprovalRequest.builder()
                         .request(
-                            AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                .BrowserAuthentication
-                                .builder()
-                                .credentialOrigin("credential_origin")
-                                .addField(
-                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                        .BrowserAuthentication
-                                        .Field
-                                        .builder()
-                                        .id("id")
-                                        .label("label")
-                                        .required(true)
-                                        .type("type")
-                                        .build()
-                                )
-                                .addOption(
-                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                        .BrowserAuthentication
-                                        .Option
-                                        .builder()
-                                        .id("id")
-                                        .addFieldId("string")
-                                        .label("label")
-                                        .build()
-                                )
-                                .reason("reason")
+                            AgentSession.RequiredAction.McpApprovalRequest.Request.builder()
+                                .arguments(JsonValue.from(mapOf<String, Any>()))
+                                .message("message")
+                                .name("name")
+                                .serverLabel("server_label")
                                 .build()
                         )
                         .requestId("request_id")
@@ -118,6 +97,11 @@ internal class AgentSessionTest {
                         .build()
                 )
                 .addVaultId("string")
+                .promptCacheOptions(
+                    AgentSession.PromptCacheOptions.builder()
+                        .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                        .build()
+                )
                 .review(AgentSession.Review.NONE)
                 .spendControl(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
                 .build()
@@ -174,35 +158,14 @@ internal class AgentSessionTest {
             )
         assertThat(agentSession.requiredActions())
             .containsExactly(
-                AgentSession.RequiredAction.ofComputerUseApprovalRequest(
-                    AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                AgentSession.RequiredAction.ofMcpApprovalRequest(
+                    AgentSession.RequiredAction.McpApprovalRequest.builder()
                         .request(
-                            AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                .BrowserAuthentication
-                                .builder()
-                                .credentialOrigin("credential_origin")
-                                .addField(
-                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                        .BrowserAuthentication
-                                        .Field
-                                        .builder()
-                                        .id("id")
-                                        .label("label")
-                                        .required(true)
-                                        .type("type")
-                                        .build()
-                                )
-                                .addOption(
-                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                        .BrowserAuthentication
-                                        .Option
-                                        .builder()
-                                        .id("id")
-                                        .addFieldId("string")
-                                        .label("label")
-                                        .build()
-                                )
-                                .reason("reason")
+                            AgentSession.RequiredAction.McpApprovalRequest.Request.builder()
+                                .arguments(JsonValue.from(mapOf<String, Any>()))
+                                .message("message")
+                                .name("name")
+                                .serverLabel("server_label")
                                 .build()
                         )
                         .requestId("request_id")
@@ -226,6 +189,12 @@ internal class AgentSessionTest {
                     .build()
             )
         assertThat(agentSession.vaultIds()).containsExactly("string")
+        assertThat(agentSession.promptCacheOptions())
+            .contains(
+                AgentSession.PromptCacheOptions.builder()
+                    .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                    .build()
+            )
         assertThat(agentSession.review()).contains(AgentSession.Review.NONE)
         assertThat(agentSession.spendControl())
             .contains(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
