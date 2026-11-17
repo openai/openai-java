@@ -222,8 +222,9 @@ private constructor(
     fun review(): Optional<Review> = review.getOptional("review")
 
     /**
-     * Configured spending limit and best-effort consumption, in USD cents. Unlimited sessions omit
-     * this object.
+     * Spending limit and best-effort consumption, in USD cents. Present when spending-control
+     * visibility is enabled; limit is null without a cap. Older server responses may omit this
+     * object.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -718,8 +719,9 @@ private constructor(
         fun review(review: JsonField<Review>) = apply { this.review = review }
 
         /**
-         * Configured spending limit and best-effort consumption, in USD cents. Unlimited sessions
-         * omit this object.
+         * Spending limit and best-effort consumption, in USD cents. Present when spending-control
+         * visibility is enabled; limit is null without a cap. Older server responses may omit this
+         * object.
          */
         fun spendControl(spendControl: SpendControl) = spendControl(JsonField.of(spendControl))
 
@@ -5856,6 +5858,9 @@ private constructor(
             /** The session failed. */
             @JvmField val FAILED = of("failed")
 
+            /** The session is paused because its spending limit was reached. */
+            @JvmField val BUDGET_REACHED = of("budget_reached")
+
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }
 
@@ -5872,6 +5877,8 @@ private constructor(
             REQUIRES_ACTION,
             /** The session failed. */
             FAILED,
+            /** The session is paused because its spending limit was reached. */
+            BUDGET_REACHED,
         }
 
         /**
@@ -5895,6 +5902,8 @@ private constructor(
             REQUIRES_ACTION,
             /** The session failed. */
             FAILED,
+            /** The session is paused because its spending limit was reached. */
+            BUDGET_REACHED,
             /** An enum member indicating that [Status] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -5912,6 +5921,7 @@ private constructor(
                 IN_PROGRESS -> Value.IN_PROGRESS
                 REQUIRES_ACTION -> Value.REQUIRES_ACTION
                 FAILED -> Value.FAILED
+                BUDGET_REACHED -> Value.BUDGET_REACHED
                 else -> Value._UNKNOWN
             }
 
@@ -5930,6 +5940,7 @@ private constructor(
                 IN_PROGRESS -> Known.IN_PROGRESS
                 REQUIRES_ACTION -> Known.REQUIRES_ACTION
                 FAILED -> Known.FAILED
+                BUDGET_REACHED -> Known.BUDGET_REACHED
                 else -> throw OpenAIInvalidDataException("Unknown Status: $value")
             }
 
@@ -6451,8 +6462,9 @@ private constructor(
     }
 
     /**
-     * Configured spending limit and best-effort consumption, in USD cents. Unlimited sessions omit
-     * this object.
+     * Spending limit and best-effort consumption, in USD cents. Present when spending-control
+     * visibility is enabled; limit is null without a cap. Older server responses may omit this
+     * object.
      */
     class SpendControl
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -6477,12 +6489,12 @@ private constructor(
         fun consumed(): Optional<Long> = consumed.getOptional("consumed")
 
         /**
-         * The configured positive limit in USD cents.
+         * The configured positive limit in USD cents, or null when unlimited.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
-        fun limit(): Long = limit.getRequired("limit")
+        fun limit(): Optional<Long> = limit.getOptional("limit")
 
         /**
          * Returns the raw JSON value of [consumed].
@@ -6534,14 +6546,7 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of [SpendControl].
-             *
-             * The following fields are required:
-             * ```java
-             * .limit()
-             * ```
-             */
+            /** Returns a mutable builder for constructing an instance of [SpendControl]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -6549,7 +6554,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var consumed: JsonField<Long>? = JsonNull.of()
-            private var limit: JsonField<Long>? = null
+            private var limit: JsonField<Long>? = JsonNull.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -6581,8 +6586,18 @@ private constructor(
              */
             fun consumed(consumed: JsonField<Long>) = apply { this.consumed = consumed }
 
-            /** The configured positive limit in USD cents. */
-            fun limit(limit: Long) = limit(JsonField.of(limit))
+            /** The configured positive limit in USD cents, or null when unlimited. */
+            fun limit(limit: Long?) = limit(JsonField.ofNullable(limit))
+
+            /**
+             * Alias for [Builder.limit].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun limit(limit: Long) = limit(limit as Long?)
+
+            /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
+            fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
             /**
              * Sets [Builder.limit] to an arbitrary JSON value.
@@ -6616,13 +6631,6 @@ private constructor(
              * Returns an immutable instance of [SpendControl].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .limit()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
              */
             fun build(): SpendControl =
                 SpendControl(
@@ -6649,6 +6657,9 @@ private constructor(
             }
 
             consumed()
+            if (limit.isMissing()) {
+                throw OpenAIInvalidDataException("`limit` is not set")
+            }
             limit()
             validated = true
         }

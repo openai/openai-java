@@ -176,7 +176,11 @@ internal class AgentSessionStreamAsync(
                     notifyComplete(null)
                     return
                 }
-                if (!hasNext) throw support.unexpectedEnd()
+                if (!hasNext) {
+                    support.checkStreamEnd()
+                    finish(null)
+                    return
+                }
                 val event = iterator.next()
                 if (!support.accept(event)) continue
                 val terminal = support.terminal(event)
