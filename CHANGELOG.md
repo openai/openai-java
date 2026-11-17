@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.107.0](https://github.com/openai/openai-java/compare/v4.106.0...v4.107.0) (2026-11-17)
+
+
+### Features
+
+* **api:** add 2-hour and 8-hour Responses background windows ([2602a72](https://github.com/openai/openai-java/commit/2602a72b135c983a25912ee6e167482994973aa2))
+* **api:** add the GPT-6.2 Astra Law Responses model identifier ([2602a72](https://github.com/openai/openai-java/commit/2602a72b135c983a25912ee6e167482994973aa2))
+* **api:** add the GPT-6.2 Astra model identifier ([2602a72](https://github.com/openai/openai-java/commit/2602a72b135c983a25912ee6e167482994973aa2))
+* **api:** add the GPT-6.2 Sol model identifier ([2602a72](https://github.com/openai/openai-java/commit/2602a72b135c983a25912ee6e167482994973aa2))
+
 ## [4.106.0](https://github.com/openai/openai-java/compare/v4.105.0...v4.106.0) (2026-11-16)
 
 
