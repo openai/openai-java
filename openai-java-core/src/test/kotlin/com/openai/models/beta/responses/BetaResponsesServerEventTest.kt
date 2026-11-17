@@ -1276,6 +1276,14 @@ internal class BetaResponsesServerEventTest {
                                 .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
                                 .build()
                         )
+                        .addInputTransformation(
+                            BetaResponse.InputTransformation.builder()
+                                .id("id")
+                                .reason(
+                                    BetaResponse.InputTransformation.Reason.ORGANIZATION_MISMATCH
+                                )
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -1654,6 +1662,15 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponse.Image.builder()
                                     .contextCompression(
                                         BetaResponse.Image.ContextCompression.ENABLED
+                                    )
+                                    .build()
+                            )
+                            .addInputTransformation(
+                                BetaResponse.InputTransformation.builder()
+                                    .id("id")
+                                    .reason(
+                                        BetaResponse.InputTransformation.Reason
+                                            .ORGANIZATION_MISMATCH
                                     )
                                     .build()
                             )
@@ -2308,6 +2325,14 @@ internal class BetaResponsesServerEventTest {
                                 .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
                                 .build()
                         )
+                        .addInputTransformation(
+                            BetaResponse.InputTransformation.builder()
+                                .id("id")
+                                .reason(
+                                    BetaResponse.InputTransformation.Reason.ORGANIZATION_MISMATCH
+                                )
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -2685,6 +2710,15 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponse.Image.builder()
                                     .contextCompression(
                                         BetaResponse.Image.ContextCompression.ENABLED
+                                    )
+                                    .build()
+                            )
+                            .addInputTransformation(
+                                BetaResponse.InputTransformation.builder()
+                                    .id("id")
+                                    .reason(
+                                        BetaResponse.InputTransformation.Reason
+                                            .ORGANIZATION_MISMATCH
                                     )
                                     .build()
                             )
@@ -4169,6 +4203,14 @@ internal class BetaResponsesServerEventTest {
                                 .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
                                 .build()
                         )
+                        .addInputTransformation(
+                            BetaResponse.InputTransformation.builder()
+                                .id("id")
+                                .reason(
+                                    BetaResponse.InputTransformation.Reason.ORGANIZATION_MISMATCH
+                                )
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -4550,6 +4592,15 @@ internal class BetaResponsesServerEventTest {
                                     )
                                     .build()
                             )
+                            .addInputTransformation(
+                                BetaResponse.InputTransformation.builder()
+                                    .id("id")
+                                    .reason(
+                                        BetaResponse.InputTransformation.Reason
+                                            .ORGANIZATION_MISMATCH
+                                    )
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -4873,6 +4924,14 @@ internal class BetaResponsesServerEventTest {
                         .image(
                             BetaResponse.Image.builder()
                                 .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
+                        .addInputTransformation(
+                            BetaResponse.InputTransformation.builder()
+                                .id("id")
+                                .reason(
+                                    BetaResponse.InputTransformation.Reason.ORGANIZATION_MISMATCH
+                                )
                                 .build()
                         )
                         .maxOutputTokens(0L)
@@ -5255,6 +5314,15 @@ internal class BetaResponsesServerEventTest {
                                     )
                                     .build()
                             )
+                            .addInputTransformation(
+                                BetaResponse.InputTransformation.builder()
+                                    .id("id")
+                                    .reason(
+                                        BetaResponse.InputTransformation.Reason
+                                            .ORGANIZATION_MISMATCH
+                                    )
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -5576,6 +5644,14 @@ internal class BetaResponsesServerEventTest {
                         .image(
                             BetaResponse.Image.builder()
                                 .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
+                        .addInputTransformation(
+                            BetaResponse.InputTransformation.builder()
+                                .id("id")
+                                .reason(
+                                    BetaResponse.InputTransformation.Reason.ORGANIZATION_MISMATCH
+                                )
                                 .build()
                         )
                         .maxOutputTokens(0L)
@@ -5956,6 +6032,15 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponse.Image.builder()
                                     .contextCompression(
                                         BetaResponse.Image.ContextCompression.ENABLED
+                                    )
+                                    .build()
+                            )
+                            .addInputTransformation(
+                                BetaResponse.InputTransformation.builder()
+                                    .id("id")
+                                    .reason(
+                                        BetaResponse.InputTransformation.Reason
+                                            .ORGANIZATION_MISMATCH
                                     )
                                     .build()
                             )
@@ -9643,6 +9728,14 @@ internal class BetaResponsesServerEventTest {
                                 .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
                                 .build()
                         )
+                        .addInputTransformation(
+                            BetaResponse.InputTransformation.builder()
+                                .id("id")
+                                .reason(
+                                    BetaResponse.InputTransformation.Reason.ORGANIZATION_MISMATCH
+                                )
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -10020,6 +10113,15 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponse.Image.builder()
                                     .contextCompression(
                                         BetaResponse.Image.ContextCompression.ENABLED
+                                    )
+                                    .build()
+                            )
+                            .addInputTransformation(
+                                BetaResponse.InputTransformation.builder()
+                                    .id("id")
+                                    .reason(
+                                        BetaResponse.InputTransformation.Reason
+                                            .ORGANIZATION_MISMATCH
                                     )
                                     .build()
                             )

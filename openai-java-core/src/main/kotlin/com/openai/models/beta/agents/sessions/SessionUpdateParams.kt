@@ -26,8 +26,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Updates session tools, metadata, model, reasoning effort, or service tier. Model settings apply
- * to subsequent turns. Omitted fields are unchanged. See
+ * Updates session tools, metadata, model, reasoning effort, service tier, or the default prompt
+ * cache lifetime. Model settings apply to subsequent turns. Omitted fields are unchanged. See
  * [managing sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
  */
 class SessionUpdateParams
@@ -56,6 +56,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun metadata(): Optional<Metadata> = body.metadata()
+
+    /**
+     * Default prompt cache lifetime for future turns. Send null to clear the session default.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheOptions(): Optional<PromptCacheOptions> = body.promptCacheOptions()
 
     /**
      * Default action review for new root turns. Existing turns and their subagents keep their
@@ -87,6 +95,14 @@ private constructor(
      * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _metadata(): JsonField<Metadata> = body._metadata()
+
+    /**
+     * Returns the raw JSON value of [promptCacheOptions].
+     *
+     * Unlike [promptCacheOptions], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _promptCacheOptions(): JsonField<PromptCacheOptions> = body._promptCacheOptions()
 
     /**
      * Returns the raw JSON value of [review].
@@ -148,8 +164,10 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [agent]
          * - [metadata]
+         * - [promptCacheOptions]
          * - [review]
          * - [spendControl]
+         * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -181,6 +199,30 @@ private constructor(
          * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
+
+        /**
+         * Default prompt cache lifetime for future turns. Send null to clear the session default.
+         */
+        fun promptCacheOptions(promptCacheOptions: PromptCacheOptions?) = apply {
+            body.promptCacheOptions(promptCacheOptions)
+        }
+
+        /**
+         * Alias for calling [Builder.promptCacheOptions] with `promptCacheOptions.orElse(null)`.
+         */
+        fun promptCacheOptions(promptCacheOptions: Optional<PromptCacheOptions>) =
+            promptCacheOptions(promptCacheOptions.getOrNull())
+
+        /**
+         * Sets [Builder.promptCacheOptions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheOptions] with a well-typed
+         * [PromptCacheOptions] value instead. This method is primarily for setting the field to an
+         * undocumented or not yet supported value.
+         */
+        fun promptCacheOptions(promptCacheOptions: JsonField<PromptCacheOptions>) = apply {
+            body.promptCacheOptions(promptCacheOptions)
+        }
 
         /**
          * Default action review for new root turns. Existing turns and their subagents keep their
@@ -363,6 +405,7 @@ private constructor(
     private constructor(
         private val agent: JsonField<Agent>,
         private val metadata: JsonField<Metadata>,
+        private val promptCacheOptions: JsonField<PromptCacheOptions>,
         private val review: JsonField<Review>,
         private val spendControl: JsonField<SpendControl>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -374,11 +417,14 @@ private constructor(
             @JsonProperty("metadata")
             @ExcludeMissing
             metadata: JsonField<Metadata> = JsonMissing.of(),
+            @JsonProperty("prompt_cache_options")
+            @ExcludeMissing
+            promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of(),
             @JsonProperty("review") @ExcludeMissing review: JsonField<Review> = JsonMissing.of(),
             @JsonProperty("spend_control")
             @ExcludeMissing
             spendControl: JsonField<SpendControl> = JsonMissing.of(),
-        ) : this(agent, metadata, review, spendControl, mutableMapOf())
+        ) : this(agent, metadata, promptCacheOptions, review, spendControl, mutableMapOf())
 
         /**
          * Agent settings to update on this session. Omitted fields stay unchanged.
@@ -396,6 +442,15 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+
+        /**
+         * Default prompt cache lifetime for future turns. Send null to clear the session default.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun promptCacheOptions(): Optional<PromptCacheOptions> =
+            promptCacheOptions.getOptional("prompt_cache_options")
 
         /**
          * Default action review for new root turns. Existing turns and their subagents keep their
@@ -427,6 +482,16 @@ private constructor(
          * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
+        /**
+         * Returns the raw JSON value of [promptCacheOptions].
+         *
+         * Unlike [promptCacheOptions], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("prompt_cache_options")
+        @ExcludeMissing
+        fun _promptCacheOptions(): JsonField<PromptCacheOptions> = promptCacheOptions
 
         /**
          * Returns the raw JSON value of [review].
@@ -463,6 +528,7 @@ private constructor(
                 additionalProperties,
                 "agent" to this.agent,
                 "metadata" to this.metadata,
+                "prompt_cache_options" to this.promptCacheOptions,
                 "review" to this.review,
                 "spend_control" to this.spendControl,
             )
@@ -492,6 +558,7 @@ private constructor(
 
             private var agent: JsonField<Agent> = JsonMissing.of()
             private var metadata: JsonField<Metadata> = JsonMissing.of()
+            private var promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of()
             private var review: JsonField<Review> = JsonMissing.of()
             private var spendControl: JsonField<SpendControl> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -500,6 +567,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 agent = body.agent
                 metadata = body.metadata
+                promptCacheOptions = body.promptCacheOptions
                 review = body.review
                 spendControl = body.spendControl
                 additionalProperties = body.additionalProperties.toMutableMap()
@@ -534,6 +602,31 @@ private constructor(
              * supported value.
              */
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
+
+            /**
+             * Default prompt cache lifetime for future turns. Send null to clear the session
+             * default.
+             */
+            fun promptCacheOptions(promptCacheOptions: PromptCacheOptions?) =
+                promptCacheOptions(JsonField.ofNullable(promptCacheOptions))
+
+            /**
+             * Alias for calling [Builder.promptCacheOptions] with
+             * `promptCacheOptions.orElse(null)`.
+             */
+            fun promptCacheOptions(promptCacheOptions: Optional<PromptCacheOptions>) =
+                promptCacheOptions(promptCacheOptions.getOrNull())
+
+            /**
+             * Sets [Builder.promptCacheOptions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptCacheOptions] with a well-typed
+             * [PromptCacheOptions] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun promptCacheOptions(promptCacheOptions: JsonField<PromptCacheOptions>) = apply {
+                this.promptCacheOptions = promptCacheOptions
+            }
 
             /**
              * Default action review for new root turns. Existing turns and their subagents keep
@@ -596,7 +689,14 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): Body =
-                Body(agent, metadata, review, spendControl, additionalProperties.toMutableMap())
+                Body(
+                    agent,
+                    metadata,
+                    promptCacheOptions,
+                    review,
+                    spendControl,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -617,6 +717,7 @@ private constructor(
 
             agent().ifPresent { it.validate() }
             metadata().ifPresent { it.validate() }
+            promptCacheOptions().ifPresent { it.validate() }
             review().ifPresent { it.validate() }
             spendControl().ifPresent { it.validate() }
             validated = true
@@ -640,6 +741,7 @@ private constructor(
         internal fun validity(): Int =
             (agent.asKnown().getOrNull()?.validity() ?: 0) +
                 (metadata.asKnown().getOrNull()?.validity() ?: 0) +
+                (promptCacheOptions.asKnown().getOrNull()?.validity() ?: 0) +
                 (review.asKnown().getOrNull()?.validity() ?: 0) +
                 (spendControl.asKnown().getOrNull()?.validity() ?: 0)
 
@@ -651,19 +753,27 @@ private constructor(
             return other is Body &&
                 agent == other.agent &&
                 metadata == other.metadata &&
+                promptCacheOptions == other.promptCacheOptions &&
                 review == other.review &&
                 spendControl == other.spendControl &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(agent, metadata, review, spendControl, additionalProperties)
+            Objects.hash(
+                agent,
+                metadata,
+                promptCacheOptions,
+                review,
+                spendControl,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{agent=$agent, metadata=$metadata, review=$review, spendControl=$spendControl, additionalProperties=$additionalProperties}"
+            "Body{agent=$agent, metadata=$metadata, promptCacheOptions=$promptCacheOptions, review=$review, spendControl=$spendControl, additionalProperties=$additionalProperties}"
     }
 
     /** Agent settings to update on this session. Omitted fields stay unchanged. */
@@ -1689,6 +1799,314 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
+    }
+
+    /** Default prompt cache lifetime for future turns. Send null to clear the session default. */
+    class PromptCacheOptions
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val ttl: JsonField<Ttl>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of()
+        ) : this(ttl, mutableMapOf())
+
+        /**
+         * Minimum lifetime for new prompt cache entries. Defaults to 30 minutes.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun ttl(): Optional<Ttl> = ttl.getOptional("ttl")
+
+        /**
+         * Returns the raw JSON value of [ttl].
+         *
+         * Unlike [ttl], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("ttl") @ExcludeMissing fun _ttl(): JsonField<Ttl> = ttl
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "ttl" to this.ttl)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [PromptCacheOptions]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [PromptCacheOptions]. */
+        class Builder internal constructor() {
+
+            private var ttl: JsonField<Ttl> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
+                ttl = promptCacheOptions.ttl
+                additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
+            }
+
+            /** Minimum lifetime for new prompt cache entries. Defaults to 30 minutes. */
+            fun ttl(ttl: Ttl) = ttl(JsonField.of(ttl))
+
+            /**
+             * Sets [Builder.ttl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ttl] with a well-typed [Ttl] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun ttl(ttl: JsonField<Ttl>) = apply { this.ttl = ttl }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [PromptCacheOptions].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): PromptCacheOptions =
+                PromptCacheOptions(ttl, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): PromptCacheOptions = apply {
+            if (validated) {
+                return@apply
+            }
+
+            ttl().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (ttl.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** Minimum lifetime for new prompt cache entries. Defaults to 30 minutes. */
+        class Ttl @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val _30M = of("30m")
+
+                @JvmField val _12H = of("12h")
+
+                @JvmStatic fun of(value: String) = Ttl(JsonField.of(value))
+            }
+
+            /** An enum containing [Ttl]'s known values. */
+            enum class Known {
+                _30M,
+                _12H,
+            }
+
+            /**
+             * An enum containing [Ttl]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Ttl] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                _30M,
+                _12H,
+                /** An enum member indicating that [Ttl] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    _30M -> Value._30M
+                    _12H -> Value._12H
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    _30M -> Known._30M
+                    _12H -> Known._12H
+                    else -> throw OpenAIInvalidDataException("Unknown Ttl: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Ttl = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Ttl && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PromptCacheOptions &&
+                ttl == other.ttl &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(ttl, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "PromptCacheOptions{ttl=$ttl, additionalProperties=$additionalProperties}"
     }
 
     /**

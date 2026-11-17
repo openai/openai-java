@@ -44,7 +44,7 @@ private constructor(
     fun model(): String = body.model()
 
     /**
-     * Context compaction settings. Omission or null enables background compaction.
+     * Context compaction settings. Omission or null uses blocking compaction.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -266,7 +266,7 @@ private constructor(
          */
         fun model(model: JsonField<String>) = apply { body.model(model) }
 
-        /** Context compaction settings. Omission or null enables background compaction. */
+        /** Context compaction settings. Omission or null uses blocking compaction. */
         fun compaction(compaction: Compaction?) = apply { body.compaction(compaction) }
 
         /** Alias for calling [Builder.compaction] with `compaction.orElse(null)`. */
@@ -691,7 +691,7 @@ private constructor(
         fun model(): String = model.getRequired("model")
 
         /**
-         * Context compaction settings. Omission or null enables background compaction.
+         * Context compaction settings. Omission or null uses blocking compaction.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -967,7 +967,7 @@ private constructor(
              */
             fun model(model: JsonField<String>) = apply { this.model = model }
 
-            /** Context compaction settings. Omission or null enables background compaction. */
+            /** Context compaction settings. Omission or null uses blocking compaction. */
             fun compaction(compaction: Compaction?) = compaction(JsonField.ofNullable(compaction))
 
             /** Alias for calling [Builder.compaction] with `compaction.orElse(null)`. */
@@ -1345,7 +1345,7 @@ private constructor(
             "Body{model=$model, compaction=$compaction, experimental=$experimental, instructions=$instructions, metadata=$metadata, multiAgent=$multiAgent, name=$name, reasoning=$reasoning, serviceTier=$serviceTier, text=$text, tools=$tools, additionalProperties=$additionalProperties}"
     }
 
-    /** Context compaction settings. Omission or null enables background compaction. */
+    /** Context compaction settings. Omission or null uses blocking compaction. */
     class Compaction
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -1359,8 +1359,8 @@ private constructor(
         ) : this(async, mutableMapOf())
 
         /**
-         * Whether to compact context in the background. Omission or null defaults to true. Set to
-         * false to use blocking compaction. Background compaction may increase token usage.
+         * Whether to compact context in the background. Omission or null defaults to false. Set to
+         * true to enable background compaction. Background compaction may increase token usage.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1423,8 +1423,9 @@ private constructor(
             }
 
             /**
-             * Whether to compact context in the background. Omission or null defaults to true. Set
-             * to false to use blocking compaction. Background compaction may increase token usage.
+             * Whether to compact context in the background. Omission or null defaults to false. Set
+             * to true to enable background compaction. Background compaction may increase token
+             * usage.
              */
             fun async(async: Boolean?) = async(JsonField.ofNullable(async))
 

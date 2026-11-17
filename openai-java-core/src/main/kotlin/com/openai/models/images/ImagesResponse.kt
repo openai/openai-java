@@ -92,7 +92,7 @@ private constructor(
     fun data(): Optional<List<Image>> = data.getOptional("data")
 
     /**
-     * The output format of the generated image.
+     * The output format of the generated or edited image.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -126,7 +126,7 @@ private constructor(
     fun size(): Optional<Size> = size.getOptional("size")
 
     /**
-     * Token usage for the model that authored the SVG, separate from image rendering usage.
+     * Token usage for SVG authoring, separate from image rendering usage.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -134,7 +134,7 @@ private constructor(
     fun svgUsage(): Optional<SvgUsage> = svgUsage.getOptional("svg_usage")
 
     /**
-     * For `gpt-image-1` only, the token usage information for the image generation.
+     * Token usage information for image generation with GPT Image models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -344,7 +344,7 @@ private constructor(
                 }
         }
 
-        /** The output format of the generated image. */
+        /** The output format of the generated or edited image. */
         fun outputFormat(outputFormat: OutputFormat) = outputFormat(JsonField.of(outputFormat))
 
         /**
@@ -413,7 +413,7 @@ private constructor(
          */
         fun size(value: String) = size(Size.of(value))
 
-        /** Token usage for the model that authored the SVG, separate from image rendering usage. */
+        /** Token usage for SVG authoring, separate from image rendering usage. */
         fun svgUsage(svgUsage: SvgUsage) = svgUsage(JsonField.of(svgUsage))
 
         /**
@@ -425,7 +425,7 @@ private constructor(
          */
         fun svgUsage(svgUsage: JsonField<SvgUsage>) = apply { this.svgUsage = svgUsage }
 
-        /** For `gpt-image-1` only, the token usage information for the image generation. */
+        /** Token usage information for image generation with GPT Image models. */
         fun usage(usage: Usage) = usage(JsonField.of(usage))
 
         /**
@@ -671,7 +671,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The output format of the generated image. */
+    /** The output format of the generated or edited image. */
     class OutputFormat @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
 
@@ -1121,7 +1121,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** Token usage for the model that authored the SVG, separate from image rendering usage. */
+    /** Token usage for SVG authoring, separate from image rendering usage. */
     class SvgUsage
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -1482,7 +1482,7 @@ private constructor(
             "SvgUsage{inputTokens=$inputTokens, model=$model, outputTokens=$outputTokens, reasoningTokens=$reasoningTokens, totalTokens=$totalTokens, additionalProperties=$additionalProperties}"
     }
 
-    /** For `gpt-image-1` only, the token usage information for the image generation. */
+    /** Token usage information for image generation with GPT Image models. */
     class Usage
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(

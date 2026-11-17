@@ -30,6 +30,7 @@ internal class AgentSessionEnvironmentFailedEventTest {
                 .eventId("event_id")
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionEnvironmentFailedEvent.environment())
@@ -50,6 +51,7 @@ internal class AgentSessionEnvironmentFailedEventTest {
         assertThat(agentSessionEnvironmentFailedEvent.eventId()).isEqualTo("event_id")
         assertThat(agentSessionEnvironmentFailedEvent.sessionId()).isEqualTo("session_id")
         assertThat(agentSessionEnvironmentFailedEvent.turnId()).contains("turn_id")
+        assertThat(agentSessionEnvironmentFailedEvent.obfuscation()).contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 

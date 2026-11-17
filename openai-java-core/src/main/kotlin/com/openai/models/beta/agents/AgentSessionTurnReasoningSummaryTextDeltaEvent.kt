@@ -31,6 +31,7 @@ private constructor(
     private val summaryIndex: JsonField<Long>,
     private val turnId: JsonField<String>,
     private val type: JsonValue,
+    private val obfuscation: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -48,6 +49,9 @@ private constructor(
         summaryIndex: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("turn_id") @ExcludeMissing turnId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("obfuscation")
+        @ExcludeMissing
+        obfuscation: JsonField<String> = JsonMissing.of(),
     ) : this(
         delta,
         eventId,
@@ -57,6 +61,7 @@ private constructor(
         summaryIndex,
         turnId,
         type,
+        obfuscation,
         mutableMapOf(),
     )
 
@@ -130,6 +135,14 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * Random alphanumeric padding. Present when stream obfuscation is enabled.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun obfuscation(): Optional<String> = obfuscation.getOptional("obfuscation")
+
+    /**
      * Returns the raw JSON value of [delta].
      *
      * Unlike [delta], this method doesn't throw if the JSON field has an unexpected type.
@@ -180,6 +193,13 @@ private constructor(
      */
     @JsonProperty("turn_id") @ExcludeMissing fun _turnId(): JsonField<String> = turnId
 
+    /**
+     * Returns the raw JSON value of [obfuscation].
+     *
+     * Unlike [obfuscation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("obfuscation") @ExcludeMissing fun _obfuscation(): JsonField<String> = obfuscation
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -204,6 +224,7 @@ private constructor(
             "summary_index" to this.summaryIndex,
             "turn_id" to this.turnId,
             "type" to this.type,
+            "obfuscation" to this.obfuscation,
         )
 
     /**
@@ -251,6 +272,7 @@ private constructor(
         private var turnId: JsonField<String>? = JsonNull.of()
         private var type: JsonValue =
             JsonValue.from("agent.session.turn.reasoning_summary_text.delta")
+        private var obfuscation: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -266,6 +288,7 @@ private constructor(
             summaryIndex = agentSessionTurnReasoningSummaryTextDeltaEvent.summaryIndex
             turnId = agentSessionTurnReasoningSummaryTextDeltaEvent.turnId
             type = agentSessionTurnReasoningSummaryTextDeltaEvent.type
+            obfuscation = agentSessionTurnReasoningSummaryTextDeltaEvent.obfuscation
             additionalProperties =
                 agentSessionTurnReasoningSummaryTextDeltaEvent.additionalProperties.toMutableMap()
         }
@@ -367,6 +390,18 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        /** Random alphanumeric padding. Present when stream obfuscation is enabled. */
+        fun obfuscation(obfuscation: String) = obfuscation(JsonField.of(obfuscation))
+
+        /**
+         * Sets [Builder.obfuscation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.obfuscation] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun obfuscation(obfuscation: JsonField<String>) = apply { this.obfuscation = obfuscation }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -413,6 +448,7 @@ private constructor(
                 checkRequired("summaryIndex", summaryIndex),
                 checkRequired("turnId", turnId),
                 type,
+                obfuscation,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -444,6 +480,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        obfuscation()
         validated = true
     }
 
@@ -472,7 +509,8 @@ private constructor(
             type.let {
                 if (it == JsonValue.from("agent.session.turn.reasoning_summary_text.delta")) 1
                 else 0
-            }
+            } +
+            (if (obfuscation.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -488,6 +526,7 @@ private constructor(
             summaryIndex == other.summaryIndex &&
             turnId == other.turnId &&
             type == other.type &&
+            obfuscation == other.obfuscation &&
             additionalProperties == other.additionalProperties
     }
 
@@ -501,6 +540,7 @@ private constructor(
             summaryIndex,
             turnId,
             type,
+            obfuscation,
             additionalProperties,
         )
     }
@@ -508,5 +548,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AgentSessionTurnReasoningSummaryTextDeltaEvent{delta=$delta, eventId=$eventId, itemId=$itemId, outputIndex=$outputIndex, sessionId=$sessionId, summaryIndex=$summaryIndex, turnId=$turnId, type=$type, additionalProperties=$additionalProperties}"
+        "AgentSessionTurnReasoningSummaryTextDeltaEvent{delta=$delta, eventId=$eventId, itemId=$itemId, outputIndex=$outputIndex, sessionId=$sessionId, summaryIndex=$summaryIndex, turnId=$turnId, type=$type, obfuscation=$obfuscation, additionalProperties=$additionalProperties}"
 }

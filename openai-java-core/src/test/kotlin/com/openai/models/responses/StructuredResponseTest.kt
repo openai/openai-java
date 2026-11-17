@@ -44,6 +44,13 @@ internal class StructuredResponseTest {
             Response.Image.builder()
                 .contextCompression(Response.Image.ContextCompression.ENABLED)
                 .build()
+        private val INPUT_TRANSFORMATIONS =
+            listOf(
+                Response.InputTransformation.builder()
+                    .id("rs_removed")
+                    .reason(Response.InputTransformation.Reason.ORGANIZATION_MISMATCH)
+                    .build()
+            )
 
         private val TOOL_CHOICE =
             Response.ToolChoice.ofFunction(ToolChoiceFunction.builder().name(STRING).build())
@@ -135,6 +142,11 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("_conversation", JSON_FIELD),
                 DelegationReadTestCase("image", Optional.of(IMAGE)),
                 DelegationReadTestCase("_image", JsonField.of(IMAGE)),
+                DelegationReadTestCase("inputTransformations", Optional.of(INPUT_TRANSFORMATIONS)),
+                DelegationReadTestCase(
+                    "_inputTransformations",
+                    JsonField.of(INPUT_TRANSFORMATIONS),
+                ),
                 DelegationReadTestCase("_allProperties", MAP),
                 DelegationReadTestCase("_additionalProperties", MAP),
                 // `validate()` and `isValid()` (which calls `validate()`) are tested separately,

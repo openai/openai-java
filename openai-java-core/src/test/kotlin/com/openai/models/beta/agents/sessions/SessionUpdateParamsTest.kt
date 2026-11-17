@@ -42,6 +42,11 @@ internal class SessionUpdateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+            .promptCacheOptions(
+                SessionUpdateParams.PromptCacheOptions.builder()
+                    .ttl(SessionUpdateParams.PromptCacheOptions.Ttl._30M)
+                    .build()
+            )
             .review(SessionUpdateParams.Review.NONE)
             .spendControl(SessionUpdateParams.SpendControl.builder().limit(1L).build())
             .build()
@@ -90,6 +95,11 @@ internal class SessionUpdateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .promptCacheOptions(
+                    SessionUpdateParams.PromptCacheOptions.builder()
+                        .ttl(SessionUpdateParams.PromptCacheOptions.Ttl._30M)
+                        .build()
+                )
                 .review(SessionUpdateParams.Review.NONE)
                 .spendControl(SessionUpdateParams.SpendControl.builder().limit(1L).build())
                 .build()
@@ -125,6 +135,12 @@ internal class SessionUpdateParamsTest {
             .contains(
                 SessionUpdateParams.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
+            )
+        assertThat(body.promptCacheOptions())
+            .contains(
+                SessionUpdateParams.PromptCacheOptions.builder()
+                    .ttl(SessionUpdateParams.PromptCacheOptions.Ttl._30M)
                     .build()
             )
         assertThat(body.review()).contains(SessionUpdateParams.Review.NONE)

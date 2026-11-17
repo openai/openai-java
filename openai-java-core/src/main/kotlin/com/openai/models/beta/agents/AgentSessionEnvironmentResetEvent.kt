@@ -32,6 +32,7 @@ private constructor(
     private val sessionId: JsonField<String>,
     private val turnId: JsonField<String>,
     private val type: JsonValue,
+    private val obfuscation: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -45,7 +46,19 @@ private constructor(
         @JsonProperty("session_id") @ExcludeMissing sessionId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("turn_id") @ExcludeMissing turnId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(environmentId, eventId, resetCount, sessionId, turnId, type, mutableMapOf())
+        @JsonProperty("obfuscation")
+        @ExcludeMissing
+        obfuscation: JsonField<String> = JsonMissing.of(),
+    ) : this(
+        environmentId,
+        eventId,
+        resetCount,
+        sessionId,
+        turnId,
+        type,
+        obfuscation,
+        mutableMapOf(),
+    )
 
     /**
      * The stable environment ID, retained across sandbox replacements.
@@ -101,6 +114,14 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * Random alphanumeric padding. Present when stream obfuscation is enabled.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun obfuscation(): Optional<String> = obfuscation.getOptional("obfuscation")
+
+    /**
      * Returns the raw JSON value of [environmentId].
      *
      * Unlike [environmentId], this method doesn't throw if the JSON field has an unexpected type.
@@ -137,6 +158,13 @@ private constructor(
      */
     @JsonProperty("turn_id") @ExcludeMissing fun _turnId(): JsonField<String> = turnId
 
+    /**
+     * Returns the raw JSON value of [obfuscation].
+     *
+     * Unlike [obfuscation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("obfuscation") @ExcludeMissing fun _obfuscation(): JsonField<String> = obfuscation
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -159,6 +187,7 @@ private constructor(
             "session_id" to this.sessionId,
             "turn_id" to this.turnId,
             "type" to this.type,
+            "obfuscation" to this.obfuscation,
         )
 
     /**
@@ -201,6 +230,7 @@ private constructor(
         private var sessionId: JsonField<String>? = null
         private var turnId: JsonField<String>? = JsonNull.of()
         private var type: JsonValue = JsonValue.from("agent.session.environment.reset")
+        private var obfuscation: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -212,6 +242,7 @@ private constructor(
                 sessionId = agentSessionEnvironmentResetEvent.sessionId
                 turnId = agentSessionEnvironmentResetEvent.turnId
                 type = agentSessionEnvironmentResetEvent.type
+                obfuscation = agentSessionEnvironmentResetEvent.obfuscation
                 additionalProperties =
                     agentSessionEnvironmentResetEvent.additionalProperties.toMutableMap()
             }
@@ -292,6 +323,18 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        /** Random alphanumeric padding. Present when stream obfuscation is enabled. */
+        fun obfuscation(obfuscation: String) = obfuscation(JsonField.of(obfuscation))
+
+        /**
+         * Sets [Builder.obfuscation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.obfuscation] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun obfuscation(obfuscation: JsonField<String>) = apply { this.obfuscation = obfuscation }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -334,6 +377,7 @@ private constructor(
                 checkRequired("sessionId", sessionId),
                 checkRequired("turnId", turnId),
                 type,
+                obfuscation,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -363,6 +407,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        obfuscation()
         validated = true
     }
 
@@ -386,7 +431,8 @@ private constructor(
             (if (resetCount.asKnown().isPresent) 1 else 0) +
             (if (sessionId.asKnown().isPresent) 1 else 0) +
             (if (turnId.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("agent.session.environment.reset")) 1 else 0 }
+            type.let { if (it == JsonValue.from("agent.session.environment.reset")) 1 else 0 } +
+            (if (obfuscation.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -400,6 +446,7 @@ private constructor(
             sessionId == other.sessionId &&
             turnId == other.turnId &&
             type == other.type &&
+            obfuscation == other.obfuscation &&
             additionalProperties == other.additionalProperties
     }
 
@@ -411,6 +458,7 @@ private constructor(
             sessionId,
             turnId,
             type,
+            obfuscation,
             additionalProperties,
         )
     }
@@ -418,5 +466,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AgentSessionEnvironmentResetEvent{environmentId=$environmentId, eventId=$eventId, resetCount=$resetCount, sessionId=$sessionId, turnId=$turnId, type=$type, additionalProperties=$additionalProperties}"
+        "AgentSessionEnvironmentResetEvent{environmentId=$environmentId, eventId=$eventId, resetCount=$resetCount, sessionId=$sessionId, turnId=$turnId, type=$type, obfuscation=$obfuscation, additionalProperties=$additionalProperties}"
 }

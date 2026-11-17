@@ -49,6 +49,7 @@ internal class MediaSessionConfigTest {
                         .build()
                 )
                 .instructions("instructions")
+                .safetyIdentifier("safety_identifier")
                 .store(true)
                 .addTrigger(
                     DecisionTrigger.builder()
@@ -110,6 +111,7 @@ internal class MediaSessionConfigTest {
                 )
             )
         assertThat(mediaSessionConfig.instructions()).contains("instructions")
+        assertThat(mediaSessionConfig.safetyIdentifier()).contains("safety_identifier")
         assertThat(mediaSessionConfig.store()).contains(true)
         assertThat(mediaSessionConfig.triggers().getOrNull())
             .containsExactly(

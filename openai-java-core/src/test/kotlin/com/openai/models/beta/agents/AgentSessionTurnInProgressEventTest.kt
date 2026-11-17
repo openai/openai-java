@@ -48,9 +48,15 @@ internal class AgentSessionTurnInProgressEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .promptCacheOptions(
+                            Turn.PromptCacheOptions.builder()
+                                .ttl(Turn.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .build()
                 )
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionTurnInProgressEvent.eventId()).isEqualTo("event_id")
@@ -86,9 +92,15 @@ internal class AgentSessionTurnInProgressEventTest {
                             .totalTokens(0L)
                             .build()
                     )
+                    .promptCacheOptions(
+                        Turn.PromptCacheOptions.builder()
+                            .ttl(Turn.PromptCacheOptions.Ttl._30M)
+                            .build()
+                    )
                     .build()
             )
         assertThat(agentSessionTurnInProgressEvent.turnId()).isEqualTo("turn_id")
+        assertThat(agentSessionTurnInProgressEvent.obfuscation()).contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 

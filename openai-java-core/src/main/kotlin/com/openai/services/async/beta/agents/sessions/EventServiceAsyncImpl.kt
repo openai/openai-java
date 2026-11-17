@@ -112,7 +112,11 @@ class EventServiceAsyncImpl internal constructor(private val clientOptions: Clie
         }
 
         private val streamStreamingHandler: Handler<StreamResponse<AgentSessionEvent>> =
-            sseHandler(clientOptions.jsonMapper).mapJson<AgentSessionEvent>()
+            sseHandler(
+                    clientOptions.jsonMapper,
+                    com.openai.core.handlers.SseErrorDeliveryMode.EVENTS,
+                )
+                .mapJson<AgentSessionEvent>()
 
         override fun streamStreaming(
             params: EventStreamParams,
@@ -143,7 +147,14 @@ class EventServiceAsyncImpl internal constructor(private val clientOptions: Clie
                             .let { streamStreamingHandler.handle(it) }
                             .let { streamResponse ->
                                 if (requestOptions.responseValidation!!) {
-                                    streamResponse.map { it.validate() }
+                                    val headers = response.headers()
+                                    streamResponse.map {
+                                        try {
+                                            it.validate()
+                                        } catch (e: com.openai.errors.OpenAIInvalidDataException) {
+                                            throw e.withHeaders(headers)
+                                        }
+                                    }
                                 } else {
                                     streamResponse
                                 }

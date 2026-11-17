@@ -97,6 +97,7 @@ internal class AutomationTest {
                         .build()
                 )
                 .timezone("timezone")
+                .pauseReason(PeriodicAutomation.PauseReason.TARGET_SESSION_FAILED)
                 .build()
 
         val automation = Automation.ofPeriodic(periodic)
@@ -191,6 +192,7 @@ internal class AutomationTest {
                             .build()
                     )
                     .timezone("timezone")
+                    .pauseReason(PeriodicAutomation.PauseReason.TARGET_SESSION_FAILED)
                     .build()
             )
 
@@ -281,6 +283,7 @@ internal class AutomationTest {
                         .addVaultId("string")
                         .build()
                 )
+                .pauseReason(OneTimeAutomation.PauseReason.TARGET_SESSION_FAILED)
                 .build()
 
         val automation = Automation.ofOnce(once)
@@ -374,6 +377,7 @@ internal class AutomationTest {
                             .addVaultId("string")
                             .build()
                     )
+                    .pauseReason(OneTimeAutomation.PauseReason.TARGET_SESSION_FAILED)
                     .build()
             )
 

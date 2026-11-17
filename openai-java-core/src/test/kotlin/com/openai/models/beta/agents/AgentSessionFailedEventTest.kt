@@ -76,36 +76,13 @@ internal class AgentSessionFailedEventTest {
                                 .build()
                         )
                         .addRequiredAction(
-                            AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                            AgentSession.RequiredAction.McpApprovalRequest.builder()
                                 .request(
-                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                        .BrowserAuthentication
-                                        .builder()
-                                        .credentialOrigin("credential_origin")
-                                        .addField(
-                                            AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                                .Request
-                                                .BrowserAuthentication
-                                                .Field
-                                                .builder()
-                                                .id("id")
-                                                .label("label")
-                                                .required(true)
-                                                .type("type")
-                                                .build()
-                                        )
-                                        .addOption(
-                                            AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                                .Request
-                                                .BrowserAuthentication
-                                                .Option
-                                                .builder()
-                                                .id("id")
-                                                .addFieldId("string")
-                                                .label("label")
-                                                .build()
-                                        )
-                                        .reason("reason")
+                                    AgentSession.RequiredAction.McpApprovalRequest.Request.builder()
+                                        .arguments(JsonValue.from(mapOf<String, Any>()))
+                                        .message("message")
+                                        .name("name")
+                                        .serverLabel("server_label")
                                         .build()
                                 )
                                 .requestId("request_id")
@@ -129,12 +106,18 @@ internal class AgentSessionFailedEventTest {
                                 .build()
                         )
                         .addVaultId("string")
+                        .promptCacheOptions(
+                            AgentSession.PromptCacheOptions.builder()
+                                .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .review(AgentSession.Review.NONE)
                         .spendControl(
                             AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                         )
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionFailedEvent.eventId()).isEqualTo("event_id")
@@ -198,36 +181,13 @@ internal class AgentSessionFailedEventTest {
                             .build()
                     )
                     .addRequiredAction(
-                        AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                        AgentSession.RequiredAction.McpApprovalRequest.builder()
                             .request(
-                                AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                    .BrowserAuthentication
-                                    .builder()
-                                    .credentialOrigin("credential_origin")
-                                    .addField(
-                                        AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                            .Request
-                                            .BrowserAuthentication
-                                            .Field
-                                            .builder()
-                                            .id("id")
-                                            .label("label")
-                                            .required(true)
-                                            .type("type")
-                                            .build()
-                                    )
-                                    .addOption(
-                                        AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                            .Request
-                                            .BrowserAuthentication
-                                            .Option
-                                            .builder()
-                                            .id("id")
-                                            .addFieldId("string")
-                                            .label("label")
-                                            .build()
-                                    )
-                                    .reason("reason")
+                                AgentSession.RequiredAction.McpApprovalRequest.Request.builder()
+                                    .arguments(JsonValue.from(mapOf<String, Any>()))
+                                    .message("message")
+                                    .name("name")
+                                    .serverLabel("server_label")
                                     .build()
                             )
                             .requestId("request_id")
@@ -249,12 +209,18 @@ internal class AgentSessionFailedEventTest {
                             .build()
                     )
                     .addVaultId("string")
+                    .promptCacheOptions(
+                        AgentSession.PromptCacheOptions.builder()
+                            .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                            .build()
+                    )
                     .review(AgentSession.Review.NONE)
                     .spendControl(
                         AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                     )
                     .build()
             )
+        assertThat(agentSessionFailedEvent.obfuscation()).contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 

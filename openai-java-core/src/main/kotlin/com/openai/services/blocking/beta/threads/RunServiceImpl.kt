@@ -211,7 +211,14 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .let { createStreamingHandler.handle(it) }
                     .let { streamResponse ->
                         if (requestOptions.responseValidation!!) {
-                            streamResponse.map { it.validate() }
+                            val headers = response.headers()
+                            streamResponse.map {
+                                try {
+                                    it.validate()
+                                } catch (e: com.openai.errors.OpenAIInvalidDataException) {
+                                    throw e.withHeaders(headers)
+                                }
+                            }
                         } else {
                             streamResponse
                         }
@@ -467,7 +474,14 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .let { submitToolOutputsStreamingHandler.handle(it) }
                     .let { streamResponse ->
                         if (requestOptions.responseValidation!!) {
-                            streamResponse.map { it.validate() }
+                            val headers = response.headers()
+                            streamResponse.map {
+                                try {
+                                    it.validate()
+                                } catch (e: com.openai.errors.OpenAIInvalidDataException) {
+                                    throw e.withHeaders(headers)
+                                }
+                            }
                         } else {
                             streamResponse
                         }

@@ -93,6 +93,7 @@ internal class PeriodicAutomationTest {
                         .build()
                 )
                 .timezone("timezone")
+                .pauseReason(PeriodicAutomation.PauseReason.TARGET_SESSION_FAILED)
                 .build()
 
         assertThat(periodicAutomation.id()).isEqualTo("id")
@@ -174,6 +175,8 @@ internal class PeriodicAutomationTest {
                 )
             )
         assertThat(periodicAutomation.timezone()).isEqualTo("timezone")
+        assertThat(periodicAutomation.pauseReason())
+            .contains(PeriodicAutomation.PauseReason.TARGET_SESSION_FAILED)
 
         val jsonMapper = jsonMapper()
 

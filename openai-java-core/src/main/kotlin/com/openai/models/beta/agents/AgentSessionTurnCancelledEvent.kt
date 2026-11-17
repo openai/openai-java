@@ -30,6 +30,7 @@ private constructor(
     private val turnId: JsonField<String>,
     private val type: JsonValue,
     private val usage: JsonField<TokenUsage>,
+    private val obfuscation: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -41,7 +42,10 @@ private constructor(
         @JsonProperty("turn_id") @ExcludeMissing turnId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("usage") @ExcludeMissing usage: JsonField<TokenUsage> = JsonMissing.of(),
-    ) : this(eventId, sessionId, turn, turnId, type, usage, mutableMapOf())
+        @JsonProperty("obfuscation")
+        @ExcludeMissing
+        obfuscation: JsonField<String> = JsonMissing.of(),
+    ) : this(eventId, sessionId, turn, turnId, type, usage, obfuscation, mutableMapOf())
 
     /**
      * The unique ID of the event.
@@ -97,6 +101,14 @@ private constructor(
     fun usage(): Optional<TokenUsage> = usage.getOptional("usage")
 
     /**
+     * Random alphanumeric padding. Present when stream obfuscation is enabled.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun obfuscation(): Optional<String> = obfuscation.getOptional("obfuscation")
+
+    /**
      * Returns the raw JSON value of [eventId].
      *
      * Unlike [eventId], this method doesn't throw if the JSON field has an unexpected type.
@@ -131,6 +143,13 @@ private constructor(
      */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<TokenUsage> = usage
 
+    /**
+     * Returns the raw JSON value of [obfuscation].
+     *
+     * Unlike [obfuscation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("obfuscation") @ExcludeMissing fun _obfuscation(): JsonField<String> = obfuscation
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -153,6 +172,7 @@ private constructor(
             "turn_id" to this.turnId,
             "type" to this.type,
             "usage" to this.usage,
+            "obfuscation" to this.obfuscation,
         )
 
     /**
@@ -195,6 +215,7 @@ private constructor(
         private var turnId: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("agent.session.turn.cancelled")
         private var usage: JsonField<TokenUsage>? = JsonNull.of()
+        private var obfuscation: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -205,6 +226,7 @@ private constructor(
             turnId = agentSessionTurnCancelledEvent.turnId
             type = agentSessionTurnCancelledEvent.type
             usage = agentSessionTurnCancelledEvent.usage
+            obfuscation = agentSessionTurnCancelledEvent.obfuscation
             additionalProperties =
                 agentSessionTurnCancelledEvent.additionalProperties.toMutableMap()
         }
@@ -283,6 +305,18 @@ private constructor(
          */
         fun usage(usage: JsonField<TokenUsage>) = apply { this.usage = usage }
 
+        /** Random alphanumeric padding. Present when stream obfuscation is enabled. */
+        fun obfuscation(obfuscation: String) = obfuscation(JsonField.of(obfuscation))
+
+        /**
+         * Sets [Builder.obfuscation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.obfuscation] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun obfuscation(obfuscation: JsonField<String>) = apply { this.obfuscation = obfuscation }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -325,6 +359,7 @@ private constructor(
                 checkRequired("turnId", turnId),
                 type,
                 checkRequired("usage", usage),
+                obfuscation,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -354,6 +389,7 @@ private constructor(
             }
         }
         usage().ifPresent { it.validate() }
+        obfuscation()
         validated = true
     }
 
@@ -377,7 +413,8 @@ private constructor(
             (turn.asKnown().getOrNull()?.validity() ?: 0) +
             (if (turnId.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("agent.session.turn.cancelled")) 1 else 0 } +
-            (usage.asKnown().getOrNull()?.validity() ?: 0)
+            (usage.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (obfuscation.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -391,15 +428,25 @@ private constructor(
             turnId == other.turnId &&
             type == other.type &&
             usage == other.usage &&
+            obfuscation == other.obfuscation &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(eventId, sessionId, turn, turnId, type, usage, additionalProperties)
+        Objects.hash(
+            eventId,
+            sessionId,
+            turn,
+            turnId,
+            type,
+            usage,
+            obfuscation,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AgentSessionTurnCancelledEvent{eventId=$eventId, sessionId=$sessionId, turn=$turn, turnId=$turnId, type=$type, usage=$usage, additionalProperties=$additionalProperties}"
+        "AgentSessionTurnCancelledEvent{eventId=$eventId, sessionId=$sessionId, turn=$turn, turnId=$turnId, type=$type, usage=$usage, obfuscation=$obfuscation, additionalProperties=$additionalProperties}"
 }

@@ -765,7 +765,7 @@ private constructor(
         ) : this(async, mutableMapOf())
 
         /**
-         * Whether context is compacted in the background. Defaults to true.
+         * Whether context is compacted in the background. Defaults to false.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -834,7 +834,7 @@ private constructor(
                 additionalProperties = compaction.additionalProperties.toMutableMap()
             }
 
-            /** Whether context is compacted in the background. Defaults to true. */
+            /** Whether context is compacted in the background. Defaults to false. */
             fun async(async: Boolean) = async(JsonField.of(async))
 
             /**

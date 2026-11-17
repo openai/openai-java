@@ -251,6 +251,7 @@ com.openai.models.responses.StructuredResponse#_error ()Lcom/openai/core/JsonFie
 com.openai.models.responses.StructuredResponse#_id ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_image ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_incompleteDetails ()Lcom/openai/core/JsonField;
+com.openai.models.responses.StructuredResponse#_inputTransformations ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_instructions ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_maxOutputTokens ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_maxToolCalls ()Lcom/openai/core/JsonField;
@@ -289,6 +290,7 @@ com.openai.models.responses.StructuredResponse#error ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#id ()Ljava/lang/String;
 com.openai.models.responses.StructuredResponse#image ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#incompleteDetails ()Ljava/util/Optional;
+com.openai.models.responses.StructuredResponse#inputTransformations ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#instructions ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#isValid ()Z
 com.openai.models.responses.StructuredResponse#maxOutputTokens ()Ljava/util/Optional;

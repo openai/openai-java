@@ -4,8 +4,11 @@ import com.openai.core.http.Headers
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.SseMessage
 import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIInvalidDataException
 import com.openai.errors.SseException
 import com.openai.models.ErrorObject
+import com.openai.models.beta.agents.AgentSessionEvent
+import java.io.IOException
 import java.io.InputStream
 import java.util.stream.Collectors.toList
 import org.assertj.core.api.Assertions.assertThat
@@ -13,6 +16,7 @@ import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.ValueSource
 
 internal class SseHandlerTest {
 
@@ -163,6 +167,98 @@ internal class SseHandlerTest {
             assertThat(exception).isInstanceOf(testCase.expectedException.javaClass)
             assertThat(exception).hasMessage(testCase.expectedException.message)
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `events mode delivers typed errors and continues to the idle event`(named: Boolean) {
+        val error =
+            """{"type":"error","event_id":"error","session_id":"s","error":{"type":"server_error","message":"Session error."}}"""
+        val idle =
+            """{"type":"agent.session.idle","event_id":"idle","session":{"id":"s","status":"idle"}}"""
+        val body = buildString {
+            if (named) append("event: error\n")
+            append("data: $error\n\n")
+            if (named) append("event: agent.session.idle\n")
+            append("data: $idle\n\n")
+        }
+        val events =
+            sseHandler(jsonMapper(), SseErrorDeliveryMode.EVENTS)
+                .mapJson<AgentSessionEvent>()
+                .handle(httpResponse(body))
+                .use { it.stream().collect(toList()) }
+
+        assertThat(events).hasSize(2)
+        assertThat(events[0].isError()).isTrue()
+        assertThat(events[0].asError().error().message()).isEqualTo("Session error.")
+        assertThat(events[1].isIdle()).isTrue()
+    }
+
+    @Test
+    fun `explicit legacy mode still throws on an error envelope`() {
+        assertThat(
+                catchThrowable {
+                    sseHandler(jsonMapper(), SseErrorDeliveryMode.LEGACY)
+                        .handle(httpResponse(TestCase.ERROR_PROPERTY.body))
+                        .use { it.stream().collect(toList()) }
+                }
+            )
+            .isInstanceOf(SseException::class.java)
+            .hasMessage(TestCase.ERROR_PROPERTY.expectedException!!.message)
+    }
+
+    @ParameterizedTest
+    @EnumSource(SseErrorDeliveryMode::class)
+    fun `delivery mode retains malformed JSON failures`(mode: SseErrorDeliveryMode) {
+        assertThat(
+                catchThrowable {
+                    sseHandler(jsonMapper(), mode)
+                        .mapJson<AgentSessionEvent>()
+                        .handle(httpResponse("data: {invalid\n\n"))
+                        .use { it.stream().collect(toList()) }
+                }
+            )
+            .isInstanceOf(OpenAIInvalidDataException::class.java)
+    }
+
+    @ParameterizedTest
+    @EnumSource(SseErrorDeliveryMode::class)
+    fun `delivery mode retains transport failures`(mode: SseErrorDeliveryMode) {
+        val cause = IOException("synthetic disconnect")
+        val response =
+            object : HttpResponse {
+                override fun statusCode(): Int = 200
+
+                override fun headers(): Headers = Headers.builder().build()
+
+                override fun body(): InputStream =
+                    object : InputStream() {
+                        override fun read(): Int = throw cause
+                    }
+
+                override fun close() {}
+            }
+
+        assertThat(
+                catchThrowable {
+                    sseHandler(jsonMapper(), mode).handle(response).use {
+                        it.stream().collect(toList())
+                    }
+                }
+            )
+            .hasRootCause(cause)
+    }
+
+    @ParameterizedTest
+    @EnumSource(SseErrorDeliveryMode::class)
+    fun `delivery mode retains done boundary`(mode: SseErrorDeliveryMode) {
+        val messages =
+            sseHandler(jsonMapper(), mode)
+                .handle(httpResponse("data: {\"ok\":true}\n\ndata: [DONE]\n\ndata: ignored\n\n"))
+                .use { it.stream().collect(toList()) }
+
+        assertThat(messages).hasSize(1)
+        assertThat(messages[0].data).isEqualTo("{\"ok\":true}")
     }
 
     @Test

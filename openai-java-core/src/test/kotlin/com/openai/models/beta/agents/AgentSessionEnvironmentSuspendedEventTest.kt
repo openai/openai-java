@@ -30,6 +30,7 @@ internal class AgentSessionEnvironmentSuspendedEventTest {
                 .eventId("event_id")
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionEnvironmentSuspendedEvent.environment())
@@ -50,6 +51,7 @@ internal class AgentSessionEnvironmentSuspendedEventTest {
         assertThat(agentSessionEnvironmentSuspendedEvent.eventId()).isEqualTo("event_id")
         assertThat(agentSessionEnvironmentSuspendedEvent.sessionId()).isEqualTo("session_id")
         assertThat(agentSessionEnvironmentSuspendedEvent.turnId()).contains("turn_id")
+        assertThat(agentSessionEnvironmentSuspendedEvent.obfuscation()).contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 

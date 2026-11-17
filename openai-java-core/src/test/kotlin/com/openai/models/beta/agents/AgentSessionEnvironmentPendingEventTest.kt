@@ -30,6 +30,7 @@ internal class AgentSessionEnvironmentPendingEventTest {
                 .eventId("event_id")
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionEnvironmentPendingEvent.environment())
@@ -50,6 +51,7 @@ internal class AgentSessionEnvironmentPendingEventTest {
         assertThat(agentSessionEnvironmentPendingEvent.eventId()).isEqualTo("event_id")
         assertThat(agentSessionEnvironmentPendingEvent.sessionId()).isEqualTo("session_id")
         assertThat(agentSessionEnvironmentPendingEvent.turnId()).contains("turn_id")
+        assertThat(agentSessionEnvironmentPendingEvent.obfuscation()).contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 
