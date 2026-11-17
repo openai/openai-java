@@ -20,6 +20,14 @@ internal class ResponseCreateParamsTest {
                     .build()
             )
             .background(true)
+            .backgroundOptions(
+                ResponseCreateParams.BackgroundOptions.builder()
+                    .completionWindow(
+                        ResponseCreateParams.BackgroundOptions.CompletionWindow.SOONEST
+                    )
+                    .continuationId("continuation_id")
+                    .build()
+            )
             .addContextManagement(
                 ResponseCreateParams.ContextManagement.builder()
                     .type("type")
@@ -152,6 +160,14 @@ internal class ResponseCreateParamsTest {
                         .build()
                 )
                 .background(true)
+                .backgroundOptions(
+                    ResponseCreateParams.BackgroundOptions.builder()
+                        .completionWindow(
+                            ResponseCreateParams.BackgroundOptions.CompletionWindow.SOONEST
+                        )
+                        .continuationId("continuation_id")
+                        .build()
+                )
                 .addContextManagement(
                     ResponseCreateParams.ContextManagement.builder()
                         .type("type")
@@ -302,6 +318,14 @@ internal class ResponseCreateParamsTest {
                         .build()
                 )
                 .background(true)
+                .backgroundOptions(
+                    ResponseCreateParams.BackgroundOptions.builder()
+                        .completionWindow(
+                            ResponseCreateParams.BackgroundOptions.CompletionWindow.SOONEST
+                        )
+                        .continuationId("continuation_id")
+                        .build()
+                )
                 .addContextManagement(
                     ResponseCreateParams.ContextManagement.builder()
                         .type("type")
@@ -435,6 +459,15 @@ internal class ResponseCreateParamsTest {
                     .build()
             )
         assertThat(body.background()).contains(true)
+        assertThat(body.backgroundOptions())
+            .contains(
+                ResponseCreateParams.BackgroundOptions.builder()
+                    .completionWindow(
+                        ResponseCreateParams.BackgroundOptions.CompletionWindow.SOONEST
+                    )
+                    .continuationId("continuation_id")
+                    .build()
+            )
         assertThat(body.contextManagement().getOrNull())
             .containsExactly(
                 ResponseCreateParams.ContextManagement.builder()
