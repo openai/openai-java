@@ -49,7 +49,15 @@ tasks.named<KotlinCompile>("compileTestKotlin") {
 
 tasks.withType<Test>().configureEach {
     systemProperty("junit.jupiter.execution.parallel.enabled", true)
-    systemProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
+    // Keep methods in a class sequential: some fixtures change process-wide settings.
+    systemProperty("junit.jupiter.execution.parallel.mode.default", "same_thread")
+    systemProperty("junit.jupiter.execution.parallel.mode.classes.default", "concurrent")
+    systemProperty("junit.jupiter.execution.parallel.config.strategy", "fixed")
+    val testThreads = Runtime.getRuntime().availableProcessors().coerceIn(1, 16)
+    systemProperty("junit.jupiter.execution.parallel.config.fixed.parallelism", testThreads)
+    systemProperty("junit.jupiter.execution.parallel.config.fixed.max-pool-size", testThreads)
+    // Blocking tests may saturate the pool without spawning compensating workers.
+    systemProperty("junit.jupiter.execution.parallel.config.fixed.saturate", true)
 
     // `SKIP_MOCK_TESTS` affects which tests run so it must be added as input for proper cache invalidation.
     inputs.property("skipMockTests", System.getenv("SKIP_MOCK_TESTS")).optional(true)

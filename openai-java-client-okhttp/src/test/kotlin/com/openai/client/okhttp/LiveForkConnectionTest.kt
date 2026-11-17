@@ -345,6 +345,9 @@ class LiveForkConnectionTest {
     @Test
     fun asyncForkCallbackCanBlockOnReadAndAnotherForkWithSingleThreadExecutor() {
         val executor = Executors.newSingleThreadExecutor()
+        val releaseCallbacks = CountDownLatch(1)
+        // Register thenApply before completion so the callback runs on the configured executor.
+        executor.submit { releaseCallbacks.await() }
         try {
             MockWebServer().use { server ->
                 val first = Peer()
@@ -366,6 +369,7 @@ class LiveForkConnectionTest {
                                 event
                             }
                         }
+                    releaseCallbacks.countDown()
                     assertThat(
                             mapper
                                 .readTree(first.messages.poll(8, TimeUnit.SECONDS))
@@ -393,6 +397,7 @@ class LiveForkConnectionTest {
                 }
             }
         } finally {
+            releaseCallbacks.countDown()
             executor.shutdownNow()
         }
     }

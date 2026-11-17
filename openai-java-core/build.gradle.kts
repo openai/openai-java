@@ -255,6 +255,8 @@ dependencies {
 // WireMock-specific tests exercise HTTP plumbing and the mock server rather than Jackson
 // compatibility, and WireMock 3 requires newer Jackson APIs.
 val testJacksonCompatibility by tasks.registering(Test::class) {
+    // The full compatibility suite needs more heap when reusing one JVM.
+    maxHeapSize = "2g"
     group = "verification"
     description = "Runs core and model tests against the older supported Jackson version."
     testClassesDirs = sourceSets.test.get().output.classesDirs
