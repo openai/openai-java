@@ -41,6 +41,14 @@ internal class ResponseServiceAsyncTest {
                             .build()
                     )
                     .background(true)
+                    .backgroundOptions(
+                        ResponseCreateParams.BackgroundOptions.builder()
+                            .completionWindow(
+                                ResponseCreateParams.BackgroundOptions.CompletionWindow.SOONEST
+                            )
+                            .continuationId("continuation_id")
+                            .build()
+                    )
                     .addContextManagement(
                         ResponseCreateParams.ContextManagement.builder()
                             .type("type")

@@ -1346,7 +1346,11 @@ private constructor(
 
             @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
 
+            @JvmField val GPT_6_2_ASTRA = of("gpt-6.2-astra")
+
             @JvmField val GPT_6_1_SOL = of("gpt-6.1-sol")
+
+            @JvmField val GPT_6_2_SOL = of("gpt-6.2-sol")
 
             @JvmField val GPT_6_1_TERRA = of("gpt-6.1-terra")
 
@@ -1914,13 +1918,17 @@ private constructor(
 
             @JvmField val GPT_6_ROSALIND = of("gpt-6-rosalind")
 
+            @JvmField val GPT_6_2_ASTRA_LAW = of("gpt-6.2-astra-law")
+
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
             GPT_6_ASTRA,
+            GPT_6_2_ASTRA,
             GPT_6_1_SOL,
+            GPT_6_2_SOL,
             GPT_6_1_TERRA,
             GPT_6_SOL,
             GPT_6_LUNA,
@@ -2289,6 +2297,7 @@ private constructor(
             GPT_6_CYBER,
             GPT_ROSALIND_RESEARCH,
             GPT_6_ROSALIND,
+            GPT_6_2_ASTRA_LAW,
         }
 
         /**
@@ -2302,7 +2311,9 @@ private constructor(
          */
         enum class Value {
             GPT_6_ASTRA,
+            GPT_6_2_ASTRA,
             GPT_6_1_SOL,
+            GPT_6_2_SOL,
             GPT_6_1_TERRA,
             GPT_6_SOL,
             GPT_6_LUNA,
@@ -2671,6 +2682,7 @@ private constructor(
             GPT_6_CYBER,
             GPT_ROSALIND_RESEARCH,
             GPT_6_ROSALIND,
+            GPT_6_2_ASTRA_LAW,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -2685,7 +2697,9 @@ private constructor(
         fun value(): Value =
             when (this) {
                 GPT_6_ASTRA -> Value.GPT_6_ASTRA
+                GPT_6_2_ASTRA -> Value.GPT_6_2_ASTRA
                 GPT_6_1_SOL -> Value.GPT_6_1_SOL
+                GPT_6_2_SOL -> Value.GPT_6_2_SOL
                 GPT_6_1_TERRA -> Value.GPT_6_1_TERRA
                 GPT_6_SOL -> Value.GPT_6_SOL
                 GPT_6_LUNA -> Value.GPT_6_LUNA
@@ -2796,6 +2810,7 @@ private constructor(
                 GPT_6_CYBER -> Value.GPT_6_CYBER
                 GPT_ROSALIND_RESEARCH -> Value.GPT_ROSALIND_RESEARCH
                 GPT_6_ROSALIND -> Value.GPT_6_ROSALIND
+                GPT_6_2_ASTRA_LAW -> Value.GPT_6_2_ASTRA_LAW
                 else -> Value._UNKNOWN
             }
 
@@ -2811,7 +2826,9 @@ private constructor(
         fun known(): Known =
             when (this) {
                 GPT_6_ASTRA -> Known.GPT_6_ASTRA
+                GPT_6_2_ASTRA -> Known.GPT_6_2_ASTRA
                 GPT_6_1_SOL -> Known.GPT_6_1_SOL
+                GPT_6_2_SOL -> Known.GPT_6_2_SOL
                 GPT_6_1_TERRA -> Known.GPT_6_1_TERRA
                 GPT_6_SOL -> Known.GPT_6_SOL
                 GPT_6_LUNA -> Known.GPT_6_LUNA
@@ -2922,6 +2939,7 @@ private constructor(
                 GPT_6_CYBER -> Known.GPT_6_CYBER
                 GPT_ROSALIND_RESEARCH -> Known.GPT_ROSALIND_RESEARCH
                 GPT_6_ROSALIND -> Known.GPT_6_ROSALIND
+                GPT_6_2_ASTRA_LAW -> Known.GPT_6_2_ASTRA_LAW
                 else -> throw OpenAIInvalidDataException("Unknown Model: $value")
             }
 

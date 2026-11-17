@@ -28,6 +28,15 @@ internal class ResponsesClientEventTest {
                         .build()
                 )
                 .background(true)
+                .backgroundOptions(
+                    ResponsesClientEvent.ResponseCreate.BackgroundOptions.builder()
+                        .completionWindow(
+                            ResponsesClientEvent.ResponseCreate.BackgroundOptions.CompletionWindow
+                                .SOONEST
+                        )
+                        .continuationId("continuation_id")
+                        .build()
+                )
                 .addContextManagement(
                     ResponsesClientEvent.ResponseCreate.ContextManagement.builder()
                         .type("type")
@@ -183,6 +192,16 @@ internal class ResponsesClientEventTest {
                             .build()
                     )
                     .background(true)
+                    .backgroundOptions(
+                        ResponsesClientEvent.ResponseCreate.BackgroundOptions.builder()
+                            .completionWindow(
+                                ResponsesClientEvent.ResponseCreate.BackgroundOptions
+                                    .CompletionWindow
+                                    .SOONEST
+                            )
+                            .continuationId("continuation_id")
+                            .build()
+                    )
                     .addContextManagement(
                         ResponsesClientEvent.ResponseCreate.ContextManagement.builder()
                             .type("type")

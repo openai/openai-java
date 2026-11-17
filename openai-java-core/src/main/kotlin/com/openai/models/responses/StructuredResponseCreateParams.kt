@@ -127,6 +127,16 @@ class StructuredResponseCreateParams<T : Any>(
             paramsBuilder.background(background)
         }
 
+        /** @see ResponseCreateParams.Builder.backgroundOptions */
+        fun backgroundOptions(backgroundOptions: ResponseCreateParams.BackgroundOptions) = apply {
+            paramsBuilder.backgroundOptions(backgroundOptions)
+        }
+
+        /** @see ResponseCreateParams.Builder.backgroundOptions */
+        fun backgroundOptions(
+            backgroundOptions: JsonField<ResponseCreateParams.BackgroundOptions>
+        ) = apply { paramsBuilder.backgroundOptions(backgroundOptions) }
+
         /** @see ResponseCreateParams.Builder.contextManagement */
         fun contextManagement(contextManagement: List<ResponseCreateParams.ContextManagement>?) =
             apply {
