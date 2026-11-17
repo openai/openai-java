@@ -1739,11 +1739,15 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/agents/AgentSession.kt": {
       "mode": "100644",
-      "sha256": "a78699fdcbf369fb7a65d7ae2001e41e5b3ad647402f8f7e5356665d00246057"
+      "sha256": "de54e543c8e0ef1485a41939cf8de26a3b7370912186dfeba275a377409e198f"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/agents/AgentSessionAssistantMessage.kt": {
       "mode": "100644",
       "sha256": "fec2c0a7081b2d8e370509c1c8aac193c458eb7a7a89aeb08fbade04e4166192"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/beta/agents/AgentSessionBudgetReachedEvent.kt": {
+      "mode": "100644",
+      "sha256": "000e065ca0f1a1970db66c7c84bb64a51f80597ebd7e569ed48fb22b2b508180"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/agents/AgentSessionCreatedEvent.kt": {
       "mode": "100644",
@@ -1795,7 +1799,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/agents/AgentSessionEvent.kt": {
       "mode": "100644",
-      "sha256": "3d967de8d6cea1697dea4a3ee208d2b0685ddaf9f7ca16a4ffc17aaadf35546a"
+      "sha256": "70e4253d086a27990068d7c4eb85d1fe37c8a8abfc1dda58ce10945bb0f5d25a"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/agents/AgentSessionFailedEvent.kt": {
       "mode": "100644",
@@ -10417,6 +10421,10 @@
       "mode": "100644",
       "sha256": "449dd330e5f46fb35231db5ffc586980ad23fb098fec403a910c38cab9fa6628"
     },
+    "openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionBudgetReachedEventTest.kt": {
+      "mode": "100644",
+      "sha256": "65863a791849eadba13f0ff125e620e368cdce8a0fa749a86be0897e5747b08a"
+    },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionCreatedEventTest.kt": {
       "mode": "100644",
       "sha256": "e79c69377cdbaab6143677def885f1513aa46fe7b60ab35c9733fc84b7016536"
@@ -10467,7 +10475,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionEventTest.kt": {
       "mode": "100644",
-      "sha256": "e3224cdbb9869a8e2fa9f354425e79471a21b42cc8541a1d44daab8551551787"
+      "sha256": "1a58217c5c12fb0a13481f5f7a684461607be34c0627d31f4aa9356530f9a950"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/agents/AgentSessionFailedEventTest.kt": {
       "mode": "100644",
