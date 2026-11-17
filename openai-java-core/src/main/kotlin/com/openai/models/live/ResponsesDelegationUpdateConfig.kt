@@ -600,8 +600,8 @@ private constructor(
         /** Alias for calling [addTool] with `Tool.ofImageGeneration()`. */
         fun addToolImageGeneration() = addTool(Tool.ofImageGeneration())
 
-        /** Alias for calling [addTool] with `Tool.ofMcp()`. */
-        fun addToolMcp() = addTool(Tool.ofMcp())
+        /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
+        fun addTool(mcp: McpTool) = addTool(Tool.ofMcp(mcp))
 
         /** Alias for calling [addTool] with `Tool.ofCustom()`. */
         fun addToolCustom() = addTool(Tool.ofCustom())
@@ -620,6 +620,9 @@ private constructor(
 
         /** Alias for calling [addTool] with `Tool.ofApplyPatch()`. */
         fun addToolApplyPatch() = addTool(Tool.ofApplyPatch())
+
+        /** Alias for calling [addTool] with `Tool.ofMcp()`. */
+        fun addToolMcp() = addTool(Tool.ofMcp())
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -5640,7 +5643,7 @@ private constructor(
         private val codeInterpreter: JsonValue? = null,
         private val shell: Shell? = null,
         private val imageGeneration: JsonValue? = null,
-        private val mcp: JsonValue? = null,
+        private val mcp: McpTool? = null,
         private val custom: JsonValue? = null,
         private val namespace: JsonValue? = null,
         private val search: JsonValue? = null,
@@ -5670,7 +5673,10 @@ private constructor(
 
         fun imageGeneration(): Optional<JsonValue> = Optional.ofNullable(imageGeneration)
 
-        fun mcp(): Optional<JsonValue> = Optional.ofNullable(mcp)
+        @Deprecated("Use typedMcp()")
+        fun mcp(): Optional<JsonValue> = typedMcp().map { JsonValue.from(it) }
+
+        fun typedMcp(): Optional<McpTool> = Optional.ofNullable(mcp)
 
         fun custom(): Optional<JsonValue> = Optional.ofNullable(custom)
 
@@ -5731,7 +5737,9 @@ private constructor(
 
         fun asImageGeneration(): JsonValue = imageGeneration.getOrThrow("imageGeneration")
 
-        fun asMcp(): JsonValue = mcp.getOrThrow("mcp")
+        @Deprecated("Use asTypedMcp()") fun asMcp(): JsonValue = JsonValue.from(asTypedMcp())
+
+        fun asTypedMcp(): McpTool = mcp.getOrThrow("mcp")
 
         fun asCustom(): JsonValue = custom.getOrThrow("custom")
 
@@ -5827,7 +5835,12 @@ private constructor(
                         }
                     }
 
-                fun onMcp(callback: java.util.function.Function<in JsonValue, out T>) = apply {
+                @Deprecated("Use onTypedMcp")
+                fun onMcp(callback: java.util.function.Function<in JsonValue, out T>) = onTypedMcp {
+                    callback.apply(JsonValue.from(it))
+                }
+
+                fun onTypedMcp(callback: java.util.function.Function<in McpTool, out T>) = apply {
                     callbacks["mcp"] = { value -> callback.apply(value.mcp!!) }
                 }
 
@@ -5995,12 +6008,8 @@ private constructor(
                         }
                     }
 
-                    override fun visitMcp(mcp: JsonValue) {
-                        mcp.let {
-                            if (it != JsonValue.from(mapOf("type" to "mcp"))) {
-                                throw OpenAIInvalidDataException("'mcp' is invalid, received $it")
-                            }
-                        }
+                    override fun visitMcp(mcp: McpTool) {
+                        mcp.validate()
                     }
 
                     override fun visitCustom(custom: JsonValue) {
@@ -6111,8 +6120,7 @@ private constructor(
                             if (it == JsonValue.from(mapOf("type" to "image_generation"))) 1 else 0
                         }
 
-                    override fun visitMcp(mcp: JsonValue) =
-                        mcp.let { if (it == JsonValue.from(mapOf("type" to "mcp"))) 1 else 0 }
+                    override fun visitMcp(mcp: McpTool) = mcp.validity()
 
                     override fun visitCustom(custom: JsonValue) =
                         custom.let { if (it == JsonValue.from(mapOf("type" to "custom"))) 1 else 0 }
@@ -6266,7 +6274,11 @@ private constructor(
             fun ofImageGeneration() =
                 Tool(imageGeneration = JsonValue.from(mapOf("type" to "image_generation")))
 
-            @JvmStatic fun ofMcp() = Tool(mcp = JsonValue.from(mapOf("type" to "mcp")))
+            @Deprecated("Pass a typed McpTool")
+            @JvmStatic
+            fun ofMcp() = ofMcp(McpTool.builder().build())
+
+            @JvmStatic fun ofMcp(mcp: McpTool) = Tool(mcp = mcp)
 
             @JvmStatic fun ofCustom() = Tool(custom = JsonValue.from(mapOf("type" to "custom")))
 
@@ -6341,7 +6353,7 @@ private constructor(
 
             fun visitImageGeneration(imageGeneration: JsonValue): T
 
-            fun visitMcp(mcp: JsonValue): T
+            fun visitMcp(mcp: McpTool): T
 
             fun visitCustom(custom: JsonValue): T
 
@@ -6407,9 +6419,9 @@ private constructor(
                             ?.takeIf { it.isValid() } ?: Tool(_json = json)
                     }
                     "mcp" -> {
-                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                            ?.let { Tool(mcp = it, _json = json) }
-                            ?.takeIf { it.isValid() } ?: Tool(_json = json)
+                        return tryDeserialize(node, jacksonTypeRef<McpTool>())?.let {
+                            Tool(mcp = it, _json = json)
+                        } ?: Tool(_json = json)
                     }
                     "custom" -> {
                         return tryDeserialize(node, jacksonTypeRef<JsonValue>())
