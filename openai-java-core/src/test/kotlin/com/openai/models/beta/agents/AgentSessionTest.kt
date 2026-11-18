@@ -103,7 +103,6 @@ internal class AgentSessionTest {
                         .build()
                 )
                 .review(AgentSession.Review.NONE)
-                .spendControl(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
                 .build()
 
         assertThat(agentSession.id()).isEqualTo("id")
@@ -196,8 +195,6 @@ internal class AgentSessionTest {
                     .build()
             )
         assertThat(agentSession.review()).contains(AgentSession.Review.NONE)
-        assertThat(agentSession.spendControl())
-            .contains(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
 
         val jsonMapper = jsonMapper()
 

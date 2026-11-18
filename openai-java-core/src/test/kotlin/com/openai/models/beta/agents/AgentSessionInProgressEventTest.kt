@@ -112,9 +112,6 @@ internal class AgentSessionInProgressEventTest {
                                 .build()
                         )
                         .review(AgentSession.Review.NONE)
-                        .spendControl(
-                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
-                        )
                         .build()
                 )
                 .obfuscation("obfuscation")
@@ -215,9 +212,6 @@ internal class AgentSessionInProgressEventTest {
                             .build()
                     )
                     .review(AgentSession.Review.NONE)
-                    .spendControl(
-                        AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
-                    )
                     .build()
             )
         assertThat(agentSessionInProgressEvent.obfuscation()).contains("obfuscation")
