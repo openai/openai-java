@@ -41,9 +41,9 @@ tasks.named<Jar>("jar") {
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 
-    // Run tests in parallel to some degree.
-    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
-    forkEvery = 100
+    // Reuse one JVM per test task; JUnit provides concurrency within Kotlin suites.
+    maxParallelForks = 1
+    forkEvery = 0
 
     testLogging {
         exceptionFormat = TestExceptionFormat.FULL

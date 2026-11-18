@@ -1204,7 +1204,7 @@ private constructor(
         ) : this(async, mutableMapOf())
 
         /**
-         * Whether context is compacted in the background. Defaults to true. The schema requires
+         * Whether context is compacted in the background. Defaults to false. The schema requires
          * this property. Returns empty if the JSON property is missing or null.
          *
          * @throws OpenAIInvalidDataException if the value has an unexpected type.
@@ -1275,7 +1275,7 @@ private constructor(
                 additionalProperties = compaction.additionalProperties.toMutableMap()
             }
 
-            /** Whether context is compacted in the background. Defaults to true. */
+            /** Whether context is compacted in the background. Defaults to false. */
             fun async(async: Boolean) = async(JsonField.of(async))
 
             /**

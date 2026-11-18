@@ -235,7 +235,7 @@ private constructor(
 
         /**
          * Context compaction settings. Omit to keep the current settings. A supplied object
-         * replaces the settings; null or an empty object enables background compaction.
+         * replaces the settings; null or an empty object uses blocking compaction.
          */
         fun compaction(compaction: Compaction?) = apply { body.compaction(compaction) }
 
@@ -665,8 +665,8 @@ private constructor(
 
         /**
          * Context compaction settings. Omit to keep the current settings. A supplied object
-         * replaces the settings; null or an empty object enables background compaction. Returns
-         * empty if the JSON property is missing or null.
+         * replaces the settings; null or an empty object uses blocking compaction. Returns empty if
+         * the JSON property is missing or null.
          *
          * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
@@ -996,7 +996,7 @@ private constructor(
 
             /**
              * Context compaction settings. Omit to keep the current settings. A supplied object
-             * replaces the settings; null or an empty object enables background compaction.
+             * replaces the settings; null or an empty object uses blocking compaction.
              */
             fun compaction(compaction: Compaction?) = compaction(JsonField.ofNullable(compaction))
 
@@ -1382,7 +1382,7 @@ private constructor(
 
     /**
      * Context compaction settings. Omit to keep the current settings. A supplied object replaces
-     * the settings; null or an empty object enables background compaction.
+     * the settings; null or an empty object uses blocking compaction.
      */
     class Compaction
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -1397,9 +1397,9 @@ private constructor(
         ) : this(async, mutableMapOf())
 
         /**
-         * Whether to compact context in the background. Omission or null defaults to true. Set to
-         * false to use blocking compaction. Background compaction may increase token usage. Returns
-         * empty if the JSON property is missing or null.
+         * Whether to compact context in the background. Omission or null defaults to false. Set to
+         * true to enable background compaction. Background compaction may increase token usage.
+         * Returns empty if the JSON property is missing or null.
          *
          * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
@@ -1463,8 +1463,9 @@ private constructor(
             }
 
             /**
-             * Whether to compact context in the background. Omission or null defaults to true. Set
-             * to false to use blocking compaction. Background compaction may increase token usage.
+             * Whether to compact context in the background. Omission or null defaults to false. Set
+             * to true to enable background compaction. Background compaction may increase token
+             * usage.
              */
             fun async(async: Boolean?) = async(JsonField.ofNullable(async))
 

@@ -49,6 +49,11 @@ internal class TurnListPageResponseTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .promptCacheOptions(
+                            Turn.PromptCacheOptions.builder()
+                                .ttl(Turn.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .build()
                 )
                 .firstId("first_id")
@@ -85,6 +90,11 @@ internal class TurnListPageResponseTest {
                                 TokenUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                             )
                             .totalTokens(0L)
+                            .build()
+                    )
+                    .promptCacheOptions(
+                        Turn.PromptCacheOptions.builder()
+                            .ttl(Turn.PromptCacheOptions.Ttl._30M)
                             .build()
                     )
                     .build()

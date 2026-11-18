@@ -26,6 +26,16 @@ internal class BetaResponsesClientEventTest {
                         .build()
                 )
                 .background(true)
+                .backgroundOptions(
+                    BetaResponsesClientEvent.ResponseCreate.BackgroundOptions.builder()
+                        .completionWindow(
+                            BetaResponsesClientEvent.ResponseCreate.BackgroundOptions
+                                .CompletionWindow
+                                .SOONEST
+                        )
+                        .continuationId("continuation_id")
+                        .build()
+                )
                 .addContextManagement(
                     BetaResponsesClientEvent.ResponseCreate.ContextManagement.builder()
                         .type("type")
@@ -195,6 +205,16 @@ internal class BetaResponsesClientEventTest {
                             .build()
                     )
                     .background(true)
+                    .backgroundOptions(
+                        BetaResponsesClientEvent.ResponseCreate.BackgroundOptions.builder()
+                            .completionWindow(
+                                BetaResponsesClientEvent.ResponseCreate.BackgroundOptions
+                                    .CompletionWindow
+                                    .SOONEST
+                            )
+                            .continuationId("continuation_id")
+                            .build()
+                    )
                     .addContextManagement(
                         BetaResponsesClientEvent.ResponseCreate.ContextManagement.builder()
                             .type("type")

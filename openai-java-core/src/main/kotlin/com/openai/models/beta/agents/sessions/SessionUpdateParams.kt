@@ -13,7 +13,6 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkKnown
-import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -26,8 +25,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Updates session tools, metadata, model, reasoning effort, or service tier. Model settings apply
- * to subsequent turns. Omitted fields are unchanged. See
+ * Updates session tools, metadata, model, reasoning effort, service tier, or the default prompt
+ * cache lifetime. Model settings apply to subsequent turns. Omitted fields are unchanged. See
  * [managing sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
  */
 class SessionUpdateParams
@@ -52,17 +51,17 @@ private constructor(
     /** @see Body.metadataOrThrow */
     fun metadataOrThrow(): Metadata = body.metadataOrThrow()
 
+    /** @see Body.promptCacheOptions */
+    fun promptCacheOptions(): java.util.Optional<PromptCacheOptions> = body.promptCacheOptions()
+
+    /** @see Body.promptCacheOptionsOrThrow */
+    fun promptCacheOptionsOrThrow(): PromptCacheOptions = body.promptCacheOptionsOrThrow()
+
     /** @see Body.review */
     fun review(): java.util.Optional<Review> = body.review()
 
     /** @see Body.reviewOrThrow */
     fun reviewOrThrow(): Review = body.reviewOrThrow()
-
-    /** @see Body.spendControl */
-    fun spendControl(): java.util.Optional<SpendControl> = body.spendControl()
-
-    /** @see Body.spendControlOrThrow */
-    fun spendControlOrThrow(): SpendControl = body.spendControlOrThrow()
 
     /**
      * Returns the raw JSON value of [agent].
@@ -79,18 +78,19 @@ private constructor(
     fun _metadata(): JsonField<Metadata> = body._metadata()
 
     /**
+     * Returns the raw JSON value of [promptCacheOptions].
+     *
+     * Unlike [promptCacheOptions], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _promptCacheOptions(): JsonField<PromptCacheOptions> = body._promptCacheOptions()
+
+    /**
      * Returns the raw JSON value of [review].
      *
      * Unlike [review], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _review(): JsonField<Review> = body._review()
-
-    /**
-     * Returns the raw JSON value of [spendControl].
-     *
-     * Unlike [spendControl], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _spendControl(): JsonField<SpendControl> = body._spendControl()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -138,8 +138,8 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [agent]
          * - [metadata]
+         * - [promptCacheOptions]
          * - [review]
-         * - [spendControl]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -173,6 +173,30 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /**
+         * Default prompt cache lifetime for future turns. Send null to clear the session default.
+         */
+        fun promptCacheOptions(promptCacheOptions: PromptCacheOptions?) = apply {
+            body.promptCacheOptions(promptCacheOptions)
+        }
+
+        /**
+         * Alias for calling [Builder.promptCacheOptions] with `promptCacheOptions.orElse(null)`.
+         */
+        fun promptCacheOptions(promptCacheOptions: Optional<PromptCacheOptions>) =
+            promptCacheOptions(promptCacheOptions.getOrNull())
+
+        /**
+         * Sets [Builder.promptCacheOptions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheOptions] with a well-typed
+         * [PromptCacheOptions] value instead. This method is primarily for setting the field to an
+         * undocumented or not yet supported value.
+         */
+        fun promptCacheOptions(promptCacheOptions: JsonField<PromptCacheOptions>) = apply {
+            body.promptCacheOptions(promptCacheOptions)
+        }
+
+        /**
          * Default action review for new root turns. Existing turns and their subagents keep their
          * review mode.
          */
@@ -185,24 +209,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun review(review: JsonField<Review>) = apply { body.review(review) }
-
-        /** Omit to retain the limit; null or a null limit removes it without resetting spend. */
-        fun spendControl(spendControl: SpendControl?) = apply { body.spendControl(spendControl) }
-
-        /** Alias for calling [Builder.spendControl] with `spendControl.orElse(null)`. */
-        fun spendControl(spendControl: Optional<SpendControl>) =
-            spendControl(spendControl.getOrNull())
-
-        /**
-         * Sets [Builder.spendControl] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.spendControl] with a well-typed [SpendControl] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun spendControl(spendControl: JsonField<SpendControl>) = apply {
-            body.spendControl(spendControl)
-        }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -353,8 +359,8 @@ private constructor(
     private constructor(
         private val agent: JsonField<Agent>,
         private val metadata: JsonField<Metadata>,
+        private val promptCacheOptions: JsonField<PromptCacheOptions>,
         private val review: JsonField<Review>,
-        private val spendControl: JsonField<SpendControl>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -364,11 +370,11 @@ private constructor(
             @JsonProperty("metadata")
             @ExcludeMissing
             metadata: JsonField<Metadata> = JsonMissing.of(),
-            @JsonProperty("review") @ExcludeMissing review: JsonField<Review> = JsonMissing.of(),
-            @JsonProperty("spend_control")
+            @JsonProperty("prompt_cache_options")
             @ExcludeMissing
-            spendControl: JsonField<SpendControl> = JsonMissing.of(),
-        ) : this(agent, metadata, review, spendControl, mutableMapOf())
+            promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of(),
+            @JsonProperty("review") @ExcludeMissing review: JsonField<Review> = JsonMissing.of(),
+        ) : this(agent, metadata, promptCacheOptions, review, mutableMapOf())
 
         /**
          * Agent settings to update on this session. Omitted fields stay unchanged. Returns empty if
@@ -400,6 +406,22 @@ private constructor(
         fun metadataOrThrow(): Metadata = metadata.getRequired("metadata")
 
         /**
+         * Default prompt cache lifetime for future turns. Send null to clear the session default.
+         * Returns empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun promptCacheOptions(): java.util.Optional<PromptCacheOptions> =
+            promptCacheOptions.getOptional("prompt_cache_options")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun promptCacheOptionsOrThrow(): PromptCacheOptions =
+            promptCacheOptions.getRequired("prompt_cache_options")
+
+        /**
          * Default action review for new root turns. Existing turns and their subagents keep their
          * review mode. Returns empty if the JSON property is missing or null.
          *
@@ -412,21 +434,6 @@ private constructor(
          * invalid.
          */
         fun reviewOrThrow(): Review = review.getRequired("review")
-
-        /**
-         * Omit to retain the limit; null or a null limit removes it without resetting spend.
-         * Returns empty if the JSON property is missing or null.
-         *
-         * @throws OpenAIInvalidDataException if the value has an unexpected type.
-         */
-        fun spendControl(): java.util.Optional<SpendControl> =
-            spendControl.getOptional("spend_control")
-
-        /**
-         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
-         * invalid.
-         */
-        fun spendControlOrThrow(): SpendControl = spendControl.getRequired("spend_control")
 
         /**
          * Returns the raw JSON value of [agent].
@@ -443,21 +450,21 @@ private constructor(
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
         /**
+         * Returns the raw JSON value of [promptCacheOptions].
+         *
+         * Unlike [promptCacheOptions], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("prompt_cache_options")
+        @ExcludeMissing
+        fun _promptCacheOptions(): JsonField<PromptCacheOptions> = promptCacheOptions
+
+        /**
          * Returns the raw JSON value of [review].
          *
          * Unlike [review], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("review") @ExcludeMissing fun _review(): JsonField<Review> = review
-
-        /**
-         * Returns the raw JSON value of [spendControl].
-         *
-         * Unlike [spendControl], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("spend_control")
-        @ExcludeMissing
-        fun _spendControl(): JsonField<SpendControl> = spendControl
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -477,8 +484,8 @@ private constructor(
                 additionalProperties,
                 "agent" to this.agent,
                 "metadata" to this.metadata,
+                "prompt_cache_options" to this.promptCacheOptions,
                 "review" to this.review,
-                "spend_control" to this.spendControl,
             )
 
         @JvmSynthetic
@@ -502,16 +509,16 @@ private constructor(
 
             private var agent: JsonField<Agent> = JsonMissing.of()
             private var metadata: JsonField<Metadata> = JsonMissing.of()
+            private var promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of()
             private var review: JsonField<Review> = JsonMissing.of()
-            private var spendControl: JsonField<SpendControl> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 agent = body.agent
                 metadata = body.metadata
+                promptCacheOptions = body.promptCacheOptions
                 review = body.review
-                spendControl = body.spendControl
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -546,6 +553,31 @@ private constructor(
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /**
+             * Default prompt cache lifetime for future turns. Send null to clear the session
+             * default.
+             */
+            fun promptCacheOptions(promptCacheOptions: PromptCacheOptions?) =
+                promptCacheOptions(JsonField.ofNullable(promptCacheOptions))
+
+            /**
+             * Alias for calling [Builder.promptCacheOptions] with
+             * `promptCacheOptions.orElse(null)`.
+             */
+            fun promptCacheOptions(promptCacheOptions: Optional<PromptCacheOptions>) =
+                promptCacheOptions(promptCacheOptions.getOrNull())
+
+            /**
+             * Sets [Builder.promptCacheOptions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptCacheOptions] with a well-typed
+             * [PromptCacheOptions] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun promptCacheOptions(promptCacheOptions: JsonField<PromptCacheOptions>) = apply {
+                this.promptCacheOptions = promptCacheOptions
+            }
+
+            /**
              * Default action review for new root turns. Existing turns and their subagents keep
              * their review mode.
              */
@@ -559,27 +591,6 @@ private constructor(
              * supported value.
              */
             fun review(review: JsonField<Review>) = apply { this.review = review }
-
-            /**
-             * Omit to retain the limit; null or a null limit removes it without resetting spend.
-             */
-            fun spendControl(spendControl: SpendControl?) =
-                spendControl(JsonField.ofNullable(spendControl))
-
-            /** Alias for calling [Builder.spendControl] with `spendControl.orElse(null)`. */
-            fun spendControl(spendControl: Optional<SpendControl>) =
-                spendControl(spendControl.getOrNull())
-
-            /**
-             * Sets [Builder.spendControl] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.spendControl] with a well-typed [SpendControl] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun spendControl(spendControl: JsonField<SpendControl>) = apply {
-                this.spendControl = spendControl
-            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -606,7 +617,13 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): Body =
-                Body(agent, metadata, review, spendControl, additionalProperties.toMutableMap())
+                Body(
+                    agent,
+                    metadata,
+                    promptCacheOptions,
+                    review,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -627,8 +644,8 @@ private constructor(
 
             agent().ifPresent { it.validate() }
             metadata().ifPresent { it.validate() }
+            promptCacheOptions().ifPresent { it.validate() }
             review().ifPresent { it.validate() }
-            spendControl().ifPresent { it.validate() }
             validated = true
         }
 
@@ -650,8 +667,8 @@ private constructor(
         internal fun validity(): Int =
             (agent.asKnown().getOrNull()?.validity() ?: 0) +
                 (metadata.asKnown().getOrNull()?.validity() ?: 0) +
-                (review.asKnown().getOrNull()?.validity() ?: 0) +
-                (spendControl.asKnown().getOrNull()?.validity() ?: 0)
+                (promptCacheOptions.asKnown().getOrNull()?.validity() ?: 0) +
+                (review.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -661,19 +678,19 @@ private constructor(
             return other is Body &&
                 agent == other.agent &&
                 metadata == other.metadata &&
+                promptCacheOptions == other.promptCacheOptions &&
                 review == other.review &&
-                spendControl == other.spendControl &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(agent, metadata, review, spendControl, additionalProperties)
+            Objects.hash(agent, metadata, promptCacheOptions, review, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{agent=$agent, metadata=$metadata, review=$review, spendControl=$spendControl, additionalProperties=$additionalProperties}"
+            "Body{agent=$agent, metadata=$metadata, promptCacheOptions=$promptCacheOptions, review=$review, additionalProperties=$additionalProperties}"
     }
 
     /** Agent settings to update on this session. Omitted fields stay unchanged. */
@@ -1724,6 +1741,270 @@ private constructor(
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
     }
 
+    /** Default prompt cache lifetime for future turns. Send null to clear the session default. */
+    class PromptCacheOptions
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val ttl: JsonField<Ttl>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of()
+        ) : this(ttl, mutableMapOf())
+
+        /**
+         * Minimum lifetime for new prompt cache entries. Defaults to 30 minutes. Returns empty if
+         * the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun ttl(): java.util.Optional<Ttl> = ttl.getOptional("ttl")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun ttlOrThrow(): Ttl = ttl.getRequired("ttl")
+
+        /**
+         * Returns the raw JSON value of [ttl].
+         *
+         * Unlike [ttl], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("ttl") @ExcludeMissing fun _ttl(): JsonField<Ttl> = ttl
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "ttl" to this.ttl)
+
+        @JvmSynthetic
+        internal fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [PromptCacheOptions]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [PromptCacheOptions]. */
+        class Builder internal constructor() {
+
+            private var ttl: JsonField<Ttl> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
+                ttl = promptCacheOptions.ttl
+                additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
+            }
+
+            /** Minimum lifetime for new prompt cache entries. Defaults to 30 minutes. */
+            fun ttl(ttl: Ttl) = ttl(JsonField.of(ttl))
+
+            /**
+             * Sets [Builder.ttl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ttl] with a well-typed [Ttl] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun ttl(ttl: JsonField<Ttl>) = apply { this.ttl = ttl }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [PromptCacheOptions].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): PromptCacheOptions =
+                PromptCacheOptions(ttl, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): PromptCacheOptions = apply {
+            if (validated) {
+                return@apply
+            }
+
+            ttl().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (ttl.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** Minimum lifetime for new prompt cache entries. Defaults to 30 minutes. */
+        class Ttl @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val _30M = of("30m")
+
+                @JvmField val _12H = of("12h")
+
+                @JvmStatic fun of(value: String) = Ttl(JsonField.of(value))
+            }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Ttl = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                asString()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                when (this) {
+                    _30M -> 1
+                    _12H -> 1
+                    else -> 0
+                }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Ttl && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PromptCacheOptions &&
+                ttl == other.ttl &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(ttl, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "PromptCacheOptions{ttl=$ttl, additionalProperties=$additionalProperties}"
+    }
+
     /**
      * Default action review for new root turns. Existing turns and their subagents keep their
      * review mode.
@@ -1870,202 +2151,6 @@ private constructor(
         override fun hashCode() = value.hashCode()
 
         override fun toString() = value.toString()
-    }
-
-    /** Omit to retain the limit; null or a null limit removes it without resetting spend. */
-    class SpendControl
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val limit: JsonField<Long>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("limit") @ExcludeMissing limit: JsonField<Long> = JsonMissing.of()
-        ) : this(limit, mutableMapOf())
-
-        /**
-         * Positive USD cents, or null to remove the limit. The schema requires this property.
-         * Returns empty if the JSON property is missing or null.
-         *
-         * @throws OpenAIInvalidDataException if the value has an unexpected type.
-         */
-        fun limit(): java.util.Optional<Long> = limit.getOptional("limit")
-
-        /**
-         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
-         * invalid.
-         */
-        fun limitOrThrow(): Long = limit.getRequired("limit")
-
-        /**
-         * Returns the raw JSON value of [limit].
-         *
-         * Unlike [limit], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("limit") @ExcludeMissing fun _limit(): JsonField<Long> = limit
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(additionalProperties, "limit" to this.limit)
-
-        @JvmSynthetic
-        internal fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [SpendControl].
-             *
-             * The following fields are required:
-             * ```java
-             * .limit()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [SpendControl]. */
-        class Builder internal constructor() {
-
-            private var limit: JsonField<Long>? = null
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(spendControl: SpendControl) = apply {
-                limit = spendControl.limit
-                additionalProperties = spendControl.additionalProperties.toMutableMap()
-            }
-
-            /** Positive USD cents, or null to remove the limit. */
-            fun limit(limit: Long?) = limit(JsonField.ofNullable(limit))
-
-            /**
-             * Alias for [Builder.limit].
-             *
-             * This unboxed primitive overload exists for backwards compatibility.
-             */
-            fun limit(limit: Long) = limit(limit as Long?)
-
-            /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
-            fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
-
-            /**
-             * Sets [Builder.limit] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.limit] with a well-typed [Long] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun limit(limit: JsonField<Long>) = apply { this.limit = limit }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [SpendControl].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .limit()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): SpendControl =
-                SpendControl(checkRequired("limit", limit), additionalProperties.toMutableMap())
-        }
-
-        private var validated: Boolean = false
-
-        /**
-         * Validates that the types of all values in this object match their expected types
-         * recursively.
-         *
-         * This method is _not_ forwards compatible with new types from the API for existing fields.
-         *
-         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-         *   expected type.
-         */
-        fun validate(): SpendControl = apply {
-            if (validated) {
-                return@apply
-            }
-
-            limit()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = (if (limit.asKnown().isPresent) 1 else 0)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is SpendControl &&
-                limit == other.limit &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy { Objects.hash(limit, additionalProperties) }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "SpendControl{limit=$limit, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

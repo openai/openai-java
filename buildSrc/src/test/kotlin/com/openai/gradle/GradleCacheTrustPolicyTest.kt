@@ -66,7 +66,14 @@ class GradleCacheTrustPolicyTest {
                 "-x",
                 "compileTestKotlin",
             )
-        val shards = listOf("compileBetaModelTestKotlin", "compileAdminModelTestKotlin")
+        val shards =
+            listOf(
+                "compileBetaModelTestKotlin",
+                "compileAdminModelTestKotlin",
+                "compileSharedFixtureTestKotlin",
+            ) +
+                (0..7).map { "compileModelGroup${it}TestKotlin" } +
+                (0..1).map { "compileServiceGroup${it}TestKotlin" }
         val currentListing = shards.joinToString("\n") { "$it - Compiles the test sources." }
         // An old source or unrelated task prefix must not produce an unknown exclusion.
         val oldListing =

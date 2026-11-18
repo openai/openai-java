@@ -12,12 +12,12 @@ buildscript {
     dependencies {
         constraints {
             val dokkaJacksonVersion =
-                requireNotNull(classpath("com.fasterxml.jackson.core:jackson-databind:2.22.4"))
+                requireNotNull(classpath("com.fasterxml.jackson.core:jackson-databind:2.23.0"))
                     .versionConstraint
                     .requiredVersion
 
             // Jackson annotations uses a two-component version starting with 2.20.
-            classpath("com.fasterxml.jackson.core:jackson-annotations:2.22")
+            classpath("com.fasterxml.jackson.core:jackson-annotations:2.23")
 
             listOf(
                     "com.fasterxml.jackson.core:jackson-core",
@@ -50,7 +50,7 @@ repositories {
 
 allprojects {
     group = "com.openai"
-    version = "4.104.0" // x-release-please-version
+    version = "4.109.0" // x-release-please-version
 
     // Dokka 2.1.0 depends on Jackson 2.15.3 and jsoup 1.16.1. Keep its isolated build-tool
     // classpaths on secure versions without changing the SDK's published or compatibility-test
@@ -62,7 +62,7 @@ allprojects {
                     requested.group.startsWith("com.fasterxml.jackson.")
             ) {
                 useVersion(
-                    if (requested.name == "jackson-annotations") "2.22" else dokkaJacksonVersion
+                    if (requested.name == "jackson-annotations") "2.23" else dokkaJacksonVersion
                 )
                 because("Dokka's build-only Jackson classpath must use a secure aligned release")
             } else if (requested.group == "org.jsoup" && requested.name == "jsoup") {

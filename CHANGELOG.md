@@ -1,5 +1,57 @@
 # Changelog
 
+## [4.109.0](https://github.com/openai/openai-java/compare/v4.108.0...v4.109.0) (2026-11-18)
+
+
+### Features
+
+* **api:** add standalone CSAM moderation models ([#1415](https://github.com/openai/openai-java/issues/1415)) ([b12ad22](https://github.com/openai/openai-java/commit/b12ad22a0aafe5ba4c567ec9d0f6a0441dfc856d))
+
+
+### Build System
+
+* bump actions/setup-java from 6.1.0 to 6.2.0 ([#1405](https://github.com/openai/openai-java/issues/1405)) ([e271a7b](https://github.com/openai/openai-java/commit/e271a7bda6b7302c702e6e9347484178afd6f5cf))
+* bump com.fasterxml.jackson.core:jackson-databind in / ([#1404](https://github.com/openai/openai-java/issues/1404)) ([db61b4a](https://github.com/openai/openai-java/commit/db61b4a7ac1e2ca4c7305e15eace2b809895fccf))
+* bump graalvm/setup-graalvm from 1.6.7 to 1.6.8 ([#1349](https://github.com/openai/openai-java/issues/1349)) ([a7b1eb9](https://github.com/openai/openai-java/commit/a7b1eb9707c6a7dd2a7d5823a1c1fe9520c35db2))
+
+## [4.108.0](https://github.com/openai/openai-java/compare/v4.107.0...v4.108.0) (2026-11-18)
+
+
+### Features
+
+* **api:** add Live MCP server configuration ([#1407](https://github.com/openai/openai-java/issues/1407)) ([607fa34](https://github.com/openai/openai-java/commit/607fa340fc8cda2b7ce783419aba8e5263083789))
+* **api:** type Managed Agents budget events ([#1411](https://github.com/openai/openai-java/issues/1411)) ([c1abbf1](https://github.com/openai/openai-java/commit/c1abbf1e93cec04e68ce8d8c3f7bbdeb4dc1febf))
+
+## [4.107.0](https://github.com/openai/openai-java/compare/v4.106.0...v4.107.0) (2026-11-17)
+
+
+### Features
+
+* **api:** add 2-hour and 8-hour Responses background windows ([2602a72](https://github.com/openai/openai-java/commit/2602a72b135c983a25912ee6e167482994973aa2))
+* **api:** add the GPT-6.2 Astra Law Responses model identifier ([2602a72](https://github.com/openai/openai-java/commit/2602a72b135c983a25912ee6e167482994973aa2))
+* **api:** add the GPT-6.2 Astra model identifier ([2602a72](https://github.com/openai/openai-java/commit/2602a72b135c983a25912ee6e167482994973aa2))
+* **api:** add the GPT-6.2 Sol model identifier ([2602a72](https://github.com/openai/openai-java/commit/2602a72b135c983a25912ee6e167482994973aa2))
+
+## [4.106.0](https://github.com/openai/openai-java/compare/v4.105.0...v4.106.0) (2026-11-16)
+
+
+### Features
+
+* **api:** add schedule pause reasons ([#1406](https://github.com/openai/openai-java/issues/1406)) ([60b1855](https://github.com/openai/openai-java/commit/60b1855c3f1de29c500eb30bd247acd0fd119b41))
+* **api:** deliver beta Agents session errors as stream events ([#1408](https://github.com/openai/openai-java/issues/1408)) ([c765e29](https://github.com/openai/openai-java/commit/c765e29b02a085466c0d95106ccdc3ef0f9b97a0))
+
+
+### Bug Fixes
+
+* **ci:** give Maven Javadoc publishing more heap ([#1397](https://github.com/openai/openai-java/issues/1397)) ([6d20a83](https://github.com/openai/openai-java/commit/6d20a833c649cd30901b2720cc322d820cf49c06))
+
+## [4.105.0](https://github.com/openai/openai-java/compare/v4.104.0...v4.105.0) (2026-11-13)
+
+
+### Features
+
+* **api:** update Managed Agents, Live, and image APIs ([#1389](https://github.com/openai/openai-java/issues/1389)) ([b2325af](https://github.com/openai/openai-java/commit/b2325af67836dc2b80bd8f5730b940cd510386e5))
+
 ## [4.104.0](https://github.com/openai/openai-java/compare/v4.103.0...v4.104.0) (2026-11-12)
 
 

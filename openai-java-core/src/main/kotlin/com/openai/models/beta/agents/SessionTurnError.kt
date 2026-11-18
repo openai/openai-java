@@ -247,9 +247,6 @@ private constructor(
             /** The model reached its output token limit before finishing the response. */
             @JvmField val MAX_OUTPUT_TOKENS = of("max_output_tokens")
 
-            /** The session has reached its usage budget. */
-            @JvmField val SESSION_BUDGET_EXCEEDED = of("session_budget_exceeded")
-
             /** The organization has reached a usage, plan, or billing limit. */
             @JvmField val USAGE_LIMIT_EXCEEDED = of("usage_limit_exceeded")
 
@@ -325,8 +322,6 @@ private constructor(
             CONTEXT_LENGTH_EXCEEDED,
             /** The model reached its output token limit before finishing the response. */
             MAX_OUTPUT_TOKENS,
-            /** The session has reached its usage budget. */
-            SESSION_BUDGET_EXCEEDED,
             /** The organization has reached a usage, plan, or billing limit. */
             USAGE_LIMIT_EXCEEDED,
             /** The project has reached its enforced spend limit. */
@@ -386,8 +381,6 @@ private constructor(
             CONTEXT_LENGTH_EXCEEDED,
             /** The model reached its output token limit before finishing the response. */
             MAX_OUTPUT_TOKENS,
-            /** The session has reached its usage budget. */
-            SESSION_BUDGET_EXCEEDED,
             /** The organization has reached a usage, plan, or billing limit. */
             USAGE_LIMIT_EXCEEDED,
             /** The project has reached its enforced spend limit. */
@@ -446,7 +439,6 @@ private constructor(
             when (this) {
                 CONTEXT_LENGTH_EXCEEDED -> Value.CONTEXT_LENGTH_EXCEEDED
                 MAX_OUTPUT_TOKENS -> Value.MAX_OUTPUT_TOKENS
-                SESSION_BUDGET_EXCEEDED -> Value.SESSION_BUDGET_EXCEEDED
                 USAGE_LIMIT_EXCEEDED -> Value.USAGE_LIMIT_EXCEEDED
                 PROJECT_SPEND_LIMIT_EXCEEDED -> Value.PROJECT_SPEND_LIMIT_EXCEEDED
                 ORGANIZATION_SPEND_LIMIT_EXCEEDED -> Value.ORGANIZATION_SPEND_LIMIT_EXCEEDED
@@ -485,7 +477,6 @@ private constructor(
             when (this) {
                 CONTEXT_LENGTH_EXCEEDED -> Known.CONTEXT_LENGTH_EXCEEDED
                 MAX_OUTPUT_TOKENS -> Known.MAX_OUTPUT_TOKENS
-                SESSION_BUDGET_EXCEEDED -> Known.SESSION_BUDGET_EXCEEDED
                 USAGE_LIMIT_EXCEEDED -> Known.USAGE_LIMIT_EXCEEDED
                 PROJECT_SPEND_LIMIT_EXCEEDED -> Known.PROJECT_SPEND_LIMIT_EXCEEDED
                 ORGANIZATION_SPEND_LIMIT_EXCEEDED -> Known.ORGANIZATION_SPEND_LIMIT_EXCEEDED

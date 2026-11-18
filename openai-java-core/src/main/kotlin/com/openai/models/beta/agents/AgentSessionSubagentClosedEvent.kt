@@ -15,6 +15,7 @@ import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when a subagent is closed. */
@@ -24,6 +25,7 @@ private constructor(
     private val eventId: JsonField<String>,
     private val subagent: JsonField<Subagent>,
     private val type: JsonValue,
+    private val obfuscation: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -32,7 +34,10 @@ private constructor(
         @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("subagent") @ExcludeMissing subagent: JsonField<Subagent> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(eventId, subagent, type, mutableMapOf())
+        @JsonProperty("obfuscation")
+        @ExcludeMissing
+        obfuscation: JsonField<String> = JsonMissing.of(),
+    ) : this(eventId, subagent, type, obfuscation, mutableMapOf())
 
     /**
      * The unique ID of the event. The schema requires this property. Returns empty if the JSON
@@ -84,6 +89,19 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
+     * Random alphanumeric padding. Present when stream obfuscation is enabled. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun obfuscation(): java.util.Optional<String> = obfuscation.getOptional("obfuscation")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun obfuscationOrThrow(): String = obfuscation.getRequired("obfuscation")
+
+    /**
      * Returns the raw JSON value of [eventId].
      *
      * Unlike [eventId], this method doesn't throw if the JSON field has an unexpected type.
@@ -96,6 +114,13 @@ private constructor(
      * Unlike [subagent], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("subagent") @ExcludeMissing fun _subagent(): JsonField<Subagent> = subagent
+
+    /**
+     * Returns the raw JSON value of [obfuscation].
+     *
+     * Unlike [obfuscation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("obfuscation") @ExcludeMissing fun _obfuscation(): JsonField<String> = obfuscation
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -116,6 +141,7 @@ private constructor(
             "event_id" to this.eventId,
             "subagent" to this.subagent,
             "type" to this.type,
+            "obfuscation" to this.obfuscation,
         )
 
     @JvmSynthetic
@@ -149,6 +175,7 @@ private constructor(
         private var eventId: JsonField<String>? = null
         private var subagent: JsonField<Subagent>? = null
         private var type: JsonValue = JsonValue.from("agent.session.subagent.closed")
+        private var obfuscation: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -157,6 +184,7 @@ private constructor(
                 eventId = agentSessionSubagentClosedEvent.eventId
                 subagent = agentSessionSubagentClosedEvent.subagent
                 type = agentSessionSubagentClosedEvent.type
+                obfuscation = agentSessionSubagentClosedEvent.obfuscation
                 additionalProperties =
                     agentSessionSubagentClosedEvent.additionalProperties.toMutableMap()
             }
@@ -198,6 +226,18 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        /** Random alphanumeric padding. Present when stream obfuscation is enabled. */
+        fun obfuscation(obfuscation: String) = obfuscation(JsonField.of(obfuscation))
+
+        /**
+         * Sets [Builder.obfuscation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.obfuscation] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun obfuscation(obfuscation: JsonField<String>) = apply { this.obfuscation = obfuscation }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -235,6 +275,7 @@ private constructor(
                 checkRequired("eventId", eventId),
                 checkRequired("subagent", subagent),
                 type,
+                obfuscation,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -257,6 +298,7 @@ private constructor(
         eventIdOrThrow()
         subagentOrThrow().validate()
         typeOrThrow()
+        obfuscation()
         validated = true
     }
 
@@ -277,7 +319,8 @@ private constructor(
     internal fun validity(): Int =
         (if (eventId.asKnown().isPresent) 1 else 0) +
             (subagent.asKnown().getOrNull()?.validity() ?: 0) +
-            type.let { if (it == JsonValue.from("agent.session.subagent.closed")) 1 else 0 }
+            type.let { if (it == JsonValue.from("agent.session.subagent.closed")) 1 else 0 } +
+            (if (obfuscation.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -288,15 +331,16 @@ private constructor(
             eventId == other.eventId &&
             subagent == other.subagent &&
             type == other.type &&
+            obfuscation == other.obfuscation &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(eventId, subagent, type, additionalProperties)
+        Objects.hash(eventId, subagent, type, obfuscation, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AgentSessionSubagentClosedEvent{eventId=$eventId, subagent=$subagent, type=$type, additionalProperties=$additionalProperties}"
+        "AgentSessionSubagentClosedEvent{eventId=$eventId, subagent=$subagent, type=$type, obfuscation=$obfuscation, additionalProperties=$additionalProperties}"
 }

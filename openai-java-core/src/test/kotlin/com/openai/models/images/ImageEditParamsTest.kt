@@ -30,6 +30,16 @@ internal class ImageEditParamsTest {
             .responseFormat(ImageEditParams.ResponseFormat.URL)
             .safetyIdentifier("user-1234")
             .size(ImageEditParams.Size._1024X1024)
+            .svg(
+                ImageEditParams.Svg.builder()
+                    .model("x")
+                    .reasoning(
+                        ImageEditParams.Svg.Reasoning.builder()
+                            .effort(ImageEditParams.Svg.Reasoning.ReasoningEffortEnum.NONE)
+                            .build()
+                    )
+                    .build()
+            )
             .user("user-1234")
             .build()
     }
@@ -56,6 +66,16 @@ internal class ImageEditParamsTest {
                 .responseFormat(ImageEditParams.ResponseFormat.URL)
                 .safetyIdentifier("user-1234")
                 .size(ImageEditParams.Size._1024X1024)
+                .svg(
+                    ImageEditParams.Svg.builder()
+                        .model("x")
+                        .reasoning(
+                            ImageEditParams.Svg.Reasoning.builder()
+                                .effort(ImageEditParams.Svg.Reasoning.ReasoningEffortEnum.NONE)
+                                .build()
+                        )
+                        .build()
+                )
                 .user("user-1234")
                 .build()
 
@@ -97,6 +117,20 @@ internal class ImageEditParamsTest {
                         "response_format" to MultipartField.of(ImageEditParams.ResponseFormat.URL),
                         "safety_identifier" to MultipartField.of("user-1234"),
                         "size" to MultipartField.of(ImageEditParams.Size._1024X1024),
+                        "svg" to
+                            MultipartField.of(
+                                ImageEditParams.Svg.builder()
+                                    .model("x")
+                                    .reasoning(
+                                        ImageEditParams.Svg.Reasoning.builder()
+                                            .effort(
+                                                ImageEditParams.Svg.Reasoning.ReasoningEffortEnum
+                                                    .NONE
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            ),
                         "user" to MultipartField.of("user-1234"),
                     )
                     .mapValues { (_, field) ->

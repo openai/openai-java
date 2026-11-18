@@ -98,7 +98,11 @@ internal class AgentSessionStream(
                                         throw error
                                     }
                                 if (closed.get()) return false
-                                if (!hasNext) throw support.unexpectedEnd()
+                                if (!hasNext) {
+                                    support.checkStreamEnd()
+                                    close()
+                                    return false
+                                }
                                 val event = iterator.next()
                                 if (!support.accept(event)) continue
                                 val terminal = support.terminal(event)

@@ -31,6 +31,7 @@ private constructor(
     private val summaryIndex: JsonField<Long>,
     private val turnId: JsonField<String>,
     private val type: JsonValue,
+    private val obfuscation: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -48,6 +49,9 @@ private constructor(
         summaryIndex: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("turn_id") @ExcludeMissing turnId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("obfuscation")
+        @ExcludeMissing
+        obfuscation: JsonField<String> = JsonMissing.of(),
     ) : this(
         eventId,
         itemId,
@@ -57,6 +61,7 @@ private constructor(
         summaryIndex,
         turnId,
         type,
+        obfuscation,
         mutableMapOf(),
     )
 
@@ -175,6 +180,19 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
+     * Random alphanumeric padding. Present when stream obfuscation is enabled. Returns empty if the
+     * JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun obfuscation(): java.util.Optional<String> = obfuscation.getOptional("obfuscation")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun obfuscationOrThrow(): String = obfuscation.getRequired("obfuscation")
+
+    /**
      * Returns the raw JSON value of [eventId].
      *
      * Unlike [eventId], this method doesn't throw if the JSON field has an unexpected type.
@@ -225,6 +243,13 @@ private constructor(
      */
     @JsonProperty("turn_id") @ExcludeMissing fun _turnId(): JsonField<String> = turnId
 
+    /**
+     * Returns the raw JSON value of [obfuscation].
+     *
+     * Unlike [obfuscation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("obfuscation") @ExcludeMissing fun _obfuscation(): JsonField<String> = obfuscation
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -249,6 +274,7 @@ private constructor(
             "summary_index" to this.summaryIndex,
             "turn_id" to this.turnId,
             "type" to this.type,
+            "obfuscation" to this.obfuscation,
         )
 
     @JvmSynthetic
@@ -292,6 +318,7 @@ private constructor(
         private var turnId: JsonField<String>? = JsonNull.of()
         private var type: JsonValue =
             JsonValue.from("agent.session.turn.reasoning_summary_part.added")
+        private var obfuscation: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -307,6 +334,7 @@ private constructor(
             summaryIndex = agentSessionTurnReasoningSummaryPartAddedEvent.summaryIndex
             turnId = agentSessionTurnReasoningSummaryPartAddedEvent.turnId
             type = agentSessionTurnReasoningSummaryPartAddedEvent.type
+            obfuscation = agentSessionTurnReasoningSummaryPartAddedEvent.obfuscation
             additionalProperties =
                 agentSessionTurnReasoningSummaryPartAddedEvent.additionalProperties.toMutableMap()
         }
@@ -409,6 +437,18 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        /** Random alphanumeric padding. Present when stream obfuscation is enabled. */
+        fun obfuscation(obfuscation: String) = obfuscation(JsonField.of(obfuscation))
+
+        /**
+         * Sets [Builder.obfuscation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.obfuscation] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun obfuscation(obfuscation: JsonField<String>) = apply { this.obfuscation = obfuscation }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -455,6 +495,7 @@ private constructor(
                 checkRequired("summaryIndex", summaryIndex),
                 checkRequired("turnId", turnId),
                 type,
+                obfuscation,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -482,6 +523,7 @@ private constructor(
         summaryIndexOrThrow()
         turnId()
         typeOrThrow()
+        obfuscation()
         validated = true
     }
 
@@ -510,7 +552,8 @@ private constructor(
             type.let {
                 if (it == JsonValue.from("agent.session.turn.reasoning_summary_part.added")) 1
                 else 0
-            }
+            } +
+            (if (obfuscation.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -526,6 +569,7 @@ private constructor(
             summaryIndex == other.summaryIndex &&
             turnId == other.turnId &&
             type == other.type &&
+            obfuscation == other.obfuscation &&
             additionalProperties == other.additionalProperties
     }
 
@@ -539,6 +583,7 @@ private constructor(
             summaryIndex,
             turnId,
             type,
+            obfuscation,
             additionalProperties,
         )
     }
@@ -546,5 +591,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AgentSessionTurnReasoningSummaryPartAddedEvent{eventId=$eventId, itemId=$itemId, outputIndex=$outputIndex, part=$part, sessionId=$sessionId, summaryIndex=$summaryIndex, turnId=$turnId, type=$type, additionalProperties=$additionalProperties}"
+        "AgentSessionTurnReasoningSummaryPartAddedEvent{eventId=$eventId, itemId=$itemId, outputIndex=$outputIndex, part=$part, sessionId=$sessionId, summaryIndex=$summaryIndex, turnId=$turnId, type=$type, obfuscation=$obfuscation, additionalProperties=$additionalProperties}"
 }

@@ -229,7 +229,11 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
         }
 
         private val createStreamingHandler: Handler<StreamResponse<AgentSessionEvent>> =
-            sseHandler(clientOptions.jsonMapper).mapJson<AgentSessionEvent>()
+            sseHandler(
+                    clientOptions.jsonMapper,
+                    com.openai.core.handlers.SseErrorDeliveryMode.EVENTS,
+                )
+                .mapJson<AgentSessionEvent>()
 
         override fun createStreaming(
             params: SessionCreateParams,

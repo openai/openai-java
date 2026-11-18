@@ -101,6 +101,11 @@ String text = AgentSessionMessages.outputText(message);
 The raw `sessions().events().streamStreaming(...)` API remains available for
 following active sessions and advanced orchestration.
 
+Raw session creation and event subscriptions deliver domain `error` events as
+values. Handle these events in your loop to receive later lifecycle events. HTTP
+failures, connection failures, and malformed JSON still fail the stream.
+`AgentTurnResults.getFinalResult` still fails if it cannot collect a completed turn.
+
 ## Typed application tools (beta)
 
 Bind an argument class and application callback once. Jackson's `@JsonTypeName`

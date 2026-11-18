@@ -17,19 +17,31 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.errors.SseException
 import com.openai.models.ErrorObject
 
+internal enum class SseErrorDeliveryMode {
+    LEGACY,
+    EVENTS,
+}
+
 @JvmSynthetic
 internal fun sseHandler(jsonMapper: JsonMapper): Handler<StreamResponse<SseMessage>> =
-    streamHandler { response, lines ->
-        val state = SseState(jsonMapper)
-        for (line in lines) {
-            val message = state.decode(line) ?: continue
+    sseHandler(jsonMapper, SseErrorDeliveryMode.LEGACY)
 
-            if (message.data.startsWith("[DONE]")) {
-                response.markBodyComplete()
-                response.close()
-                break
-            }
+@JvmSynthetic
+internal fun sseHandler(
+    jsonMapper: JsonMapper,
+    errorDeliveryMode: SseErrorDeliveryMode,
+): Handler<StreamResponse<SseMessage>> = streamHandler { response, lines ->
+    val state = SseState(jsonMapper)
+    for (line in lines) {
+        val message = state.decode(line) ?: continue
 
+        if (message.data.startsWith("[DONE]")) {
+            response.markBodyComplete()
+            response.close()
+            break
+        }
+
+        if (errorDeliveryMode == SseErrorDeliveryMode.LEGACY) {
             val jsonNode =
                 try {
                     message.json<JsonNode?>() ?: jsonMapper.createObjectNode()
@@ -51,9 +63,10 @@ internal fun sseHandler(jsonMapper: JsonMapper): Handler<StreamResponse<SseMessa
                     )
                     .build()
             }
-            yield(message)
         }
+        yield(message)
     }
+}
 
 private class SseState(
     val jsonMapper: JsonMapper,

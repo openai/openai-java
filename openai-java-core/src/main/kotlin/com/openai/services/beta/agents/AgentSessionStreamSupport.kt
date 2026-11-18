@@ -45,6 +45,7 @@ private constructor(
     private val handledCalls = hashSetOf<Pair<String, String>>()
     private var turnId: String? = null
     private var turnEnded = false
+    private var budgetPaused = false
 
     fun retrieveParams() =
         SessionRetrieveParams.builder()
@@ -73,19 +74,35 @@ private constructor(
     }
 
     fun accept(event: AgentSessionEvent): Boolean {
-        event.created().getOrNull()?.let {
-            if (sessionId == null) sessionId = it.sessionOrThrow().idOrThrow()
+        val frame = mapper.valueToTree<JsonNode>(event)
+        val budgetReached = frame.path("type").textValue() == "agent.session.budget_reached"
+        val budgetSessionId =
+            if (budgetReached)
+                frame.path("session").path("id").textValue()?.takeIf { it.isNotEmpty() }
+            else null
+        if (sessionId == null) {
+            sessionId =
+                event.created().getOrNull()?.sessionOrThrow()?.idOrThrow() ?: budgetSessionId
         }
-        val id = mapper.valueToTree<JsonNode>(event).path("event_id").asText()
-        if (!eventIds.add(id)) return false
+        if (!eventIds.add(frame.path("event_id").asText())) return false
         if (eventIds.size > 1024)
             eventIds.iterator().let {
                 it.next()
                 it.remove()
             }
+        val snapshot = frame.path("session")
+        if (
+            sessionId != null &&
+                snapshot.path("id").textValue() == sessionId &&
+                (budgetReached || snapshot.hasNonNull("status"))
+        ) {
+            budgetPaused = budgetReached
+        }
         event.turnCreated().getOrNull()?.let {
-            if (turnId == null && !it.turnOrThrow().subagentId().isPresent)
+            if (turnId == null && !it.turnOrThrow().subagentId().isPresent) {
                 turnId = it.turnIdOrThrow()
+                sessionId = sessionId ?: frame.path("session_id").textValue()
+            }
         }
         val ended =
             event.turnCompleted().getOrNull()?.turnIdOrThrow()
@@ -96,7 +113,14 @@ private constructor(
     }
 
     fun terminal(event: AgentSessionEvent) =
-        event.isFailed() || (event.isIdle() && (!expectsTurn || turnEnded))
+        event.isFailed() ||
+            (sessionId?.isNotEmpty() == true &&
+                (turnId == null || turnEnded) &&
+                mapper.valueToTree<JsonNode>(event).let {
+                    it.path("type").textValue() == "agent.session.budget_reached" &&
+                        it.path("session").path("id").textValue() == sessionId
+                }) ||
+            (event.isIdle() && (!expectsTurn || turnEnded))
 
     fun result(event: AgentSessionEvent): CompletableFuture<EventCreateParams?> {
         val call =
@@ -199,8 +223,9 @@ private constructor(
                 "Unknown pending tool call: ${result.eventsOrThrow().single().asAgentSessionInputToolResult().callIdOrThrow()}"
     }
 
-    fun unexpectedEnd() =
-        IllegalStateException("Session event stream ended before the turn reached idle or failed")
+    fun checkStreamEnd() {
+        check(budgetPaused) { "Session event stream ended before the turn reached idle or failed" }
+    }
 }
 
 internal fun unwrap(error: Throwable): Throwable =

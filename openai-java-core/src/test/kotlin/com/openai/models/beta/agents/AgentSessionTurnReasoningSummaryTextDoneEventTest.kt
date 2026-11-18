@@ -20,6 +20,7 @@ internal class AgentSessionTurnReasoningSummaryTextDoneEventTest {
                 .summaryIndex(0L)
                 .text("text")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionTurnReasoningSummaryTextDoneEvent.eventId()).contains("event_id")
@@ -29,6 +30,8 @@ internal class AgentSessionTurnReasoningSummaryTextDoneEventTest {
         assertThat(agentSessionTurnReasoningSummaryTextDoneEvent.summaryIndex()).contains(0L)
         assertThat(agentSessionTurnReasoningSummaryTextDoneEvent.text()).contains("text")
         assertThat(agentSessionTurnReasoningSummaryTextDoneEvent.turnId()).contains("turn_id")
+        assertThat(agentSessionTurnReasoningSummaryTextDoneEvent.obfuscation())
+            .contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 
