@@ -38,7 +38,6 @@ private constructor(
     private val turnCancelled: AgentSessionTurnCancelledEvent? = null,
     private val turnItemAdded: AgentSessionTurnItemAddedEvent? = null,
     private val idle: AgentSessionIdleEvent? = null,
-    private val budgetReached: AgentSessionBudgetReachedEvent? = null,
     private val inProgress: AgentSessionInProgressEvent? = null,
     private val requiresAction: AgentSessionRequiresActionEvent? = null,
     private val failed: AgentSessionFailedEvent? = null,
@@ -116,10 +115,6 @@ private constructor(
 
     /** Emitted when a session becomes idle. */
     fun idle(): Optional<AgentSessionIdleEvent> = Optional.ofNullable(idle)
-
-    /** Emitted when a session pauses because its spending limit was reached. */
-    fun budgetReached(): Optional<AgentSessionBudgetReachedEvent> =
-        Optional.ofNullable(budgetReached)
 
     /** Emitted when a session starts processing a turn. */
     fun inProgress(): Optional<AgentSessionInProgressEvent> = Optional.ofNullable(inProgress)
@@ -222,8 +217,6 @@ private constructor(
 
     fun isIdle(): Boolean = idle != null
 
-    fun isBudgetReached(): Boolean = budgetReached != null
-
     fun isInProgress(): Boolean = inProgress != null
 
     fun isRequiresAction(): Boolean = requiresAction != null
@@ -315,10 +308,6 @@ private constructor(
 
     /** Emitted when a session becomes idle. */
     fun asIdle(): AgentSessionIdleEvent = idle.getOrThrow("idle")
-
-    /** Emitted when a session pauses because its spending limit was reached. */
-    fun asBudgetReached(): AgentSessionBudgetReachedEvent =
-        budgetReached.getOrThrow("budgetReached")
 
     /** Emitted when a session starts processing a turn. */
     fun asInProgress(): AgentSessionInProgressEvent = inProgress.getOrThrow("inProgress")
@@ -441,7 +430,6 @@ private constructor(
             turnCancelled != null -> visitor.visitTurnCancelled(turnCancelled)
             turnItemAdded != null -> visitor.visitTurnItemAdded(turnItemAdded)
             idle != null -> visitor.visitIdle(idle)
-            budgetReached != null -> visitor.visitBudgetReached(budgetReached)
             inProgress != null -> visitor.visitInProgress(inProgress)
             requiresAction != null -> visitor.visitRequiresAction(requiresAction)
             failed != null -> visitor.visitFailed(failed)
@@ -550,10 +538,6 @@ private constructor(
 
                 override fun visitIdle(idle: AgentSessionIdleEvent) {
                     idle.validate()
-                }
-
-                override fun visitBudgetReached(budgetReached: AgentSessionBudgetReachedEvent) {
-                    budgetReached.validate()
                 }
 
                 override fun visitInProgress(inProgress: AgentSessionInProgressEvent) {
@@ -723,9 +707,6 @@ private constructor(
 
                 override fun visitIdle(idle: AgentSessionIdleEvent) = idle.validity()
 
-                override fun visitBudgetReached(budgetReached: AgentSessionBudgetReachedEvent) =
-                    budgetReached.validity()
-
                 override fun visitInProgress(inProgress: AgentSessionInProgressEvent) =
                     inProgress.validity()
 
@@ -819,7 +800,6 @@ private constructor(
             turnCancelled == other.turnCancelled &&
             turnItemAdded == other.turnItemAdded &&
             idle == other.idle &&
-            budgetReached == other.budgetReached &&
             inProgress == other.inProgress &&
             requiresAction == other.requiresAction &&
             failed == other.failed &&
@@ -853,7 +833,6 @@ private constructor(
                 turnCancelled != null ||
                 turnItemAdded != null ||
                 idle != null ||
-                budgetReached != null ||
                 inProgress != null ||
                 requiresAction != null ||
                 failed != null ||
@@ -892,7 +871,6 @@ private constructor(
                 turnCancelled == null &&
                 turnItemAdded == null &&
                 idle == null &&
-                budgetReached == null &&
                 inProgress == null &&
                 requiresAction == null &&
                 failed == null &&
@@ -930,7 +908,6 @@ private constructor(
                 turnCancelled,
                 turnItemAdded,
                 idle,
-                budgetReached,
                 inProgress,
                 requiresAction,
                 failed,
@@ -971,7 +948,6 @@ private constructor(
             turnCancelled != null -> "AgentSessionEvent{turnCancelled=$turnCancelled}"
             turnItemAdded != null -> "AgentSessionEvent{turnItemAdded=$turnItemAdded}"
             idle != null -> "AgentSessionEvent{idle=$idle}"
-            budgetReached != null -> "AgentSessionEvent{budgetReached=$budgetReached}"
             inProgress != null -> "AgentSessionEvent{inProgress=$inProgress}"
             requiresAction != null -> "AgentSessionEvent{requiresAction=$requiresAction}"
             failed != null -> "AgentSessionEvent{failed=$failed}"
@@ -1076,11 +1052,6 @@ private constructor(
 
         /** Emitted when a session becomes idle. */
         @JvmStatic fun ofIdle(idle: AgentSessionIdleEvent) = AgentSessionEvent(idle = idle)
-
-        /** Emitted when a session pauses because its spending limit was reached. */
-        @JvmStatic
-        fun ofBudgetReached(budgetReached: AgentSessionBudgetReachedEvent) =
-            AgentSessionEvent(budgetReached = budgetReached)
 
         /** Emitted when a session starts processing a turn. */
         @JvmStatic
@@ -1245,10 +1216,6 @@ private constructor(
 
         /** Emitted when a session becomes idle. */
         fun visitIdle(idle: AgentSessionIdleEvent): T = unknown(JsonValue.from(idle))
-
-        /** Emitted when a session pauses because its spending limit was reached. */
-        fun visitBudgetReached(budgetReached: AgentSessionBudgetReachedEvent): T =
-            unknown(JsonValue.from(budgetReached))
 
         /** Emitted when a session starts processing a turn. */
         fun visitInProgress(inProgress: AgentSessionInProgressEvent): T =
@@ -1437,11 +1404,6 @@ private constructor(
                         AgentSessionEvent(idle = it, _json = json)
                     } ?: AgentSessionEvent(_json = json)
                 }
-                "agent.session.budget_reached" -> {
-                    return tryDeserialize(node, jacksonTypeRef<AgentSessionBudgetReachedEvent>())
-                        ?.let { AgentSessionEvent(budgetReached = it, _json = json) }
-                        ?: AgentSessionEvent(_json = json)
-                }
                 "agent.session.in_progress" -> {
                     return tryDeserialize(node, jacksonTypeRef<AgentSessionInProgressEvent>())
                         ?.let { AgentSessionEvent(inProgress = it, _json = json) }
@@ -1605,7 +1567,6 @@ private constructor(
                 value.turnCancelled != null -> generator.writeObject(value.turnCancelled)
                 value.turnItemAdded != null -> generator.writeObject(value.turnItemAdded)
                 value.idle != null -> generator.writeObject(value.idle)
-                value.budgetReached != null -> generator.writeObject(value.budgetReached)
                 value.inProgress != null -> generator.writeObject(value.inProgress)
                 value.requiresAction != null -> generator.writeObject(value.requiresAction)
                 value.failed != null -> generator.writeObject(value.failed)

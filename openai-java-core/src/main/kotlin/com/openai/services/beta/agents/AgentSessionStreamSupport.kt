@@ -74,12 +74,15 @@ private constructor(
     }
 
     fun accept(event: AgentSessionEvent): Boolean {
-        if (sessionId == null) {
-            sessionId =
-                event.created().getOrNull()?.session()?.id()
-                    ?: event.budgetReached().getOrNull()?.session()?.id()
-        }
         val frame = mapper.valueToTree<JsonNode>(event)
+        val budgetReached = frame.path("type").textValue() == "agent.session.budget_reached"
+        val budgetSessionId =
+            if (budgetReached)
+                frame.path("session").path("id").textValue()?.takeIf { it.isNotEmpty() }
+            else null
+        if (sessionId == null) {
+            sessionId = event.created().getOrNull()?.session()?.id() ?: budgetSessionId
+        }
         if (!eventIds.add(frame.path("event_id").asText())) return false
         if (eventIds.size > 1024)
             eventIds.iterator().let {
@@ -90,9 +93,9 @@ private constructor(
         if (
             sessionId != null &&
                 snapshot.path("id").textValue() == sessionId &&
-                (event.isBudgetReached() || snapshot.hasNonNull("status"))
+                (budgetReached || snapshot.hasNonNull("status"))
         ) {
-            budgetPaused = event.isBudgetReached()
+            budgetPaused = budgetReached
         }
         event.turnCreated().getOrNull()?.let {
             if (turnId == null && !it.turn().subagentId().isPresent) {
@@ -110,9 +113,12 @@ private constructor(
 
     fun terminal(event: AgentSessionEvent) =
         event.isFailed() ||
-            ((turnId == null || turnEnded) &&
-                event.budgetReached().getOrNull()?.let { it.session().id() == sessionId } ==
-                    true) ||
+            (sessionId?.isNotEmpty() == true &&
+                (turnId == null || turnEnded) &&
+                mapper.valueToTree<JsonNode>(event).let {
+                    it.path("type").textValue() == "agent.session.budget_reached" &&
+                        it.path("session").path("id").textValue() == sessionId
+                }) ||
             (event.isIdle() && (!expectsTurn || turnEnded))
 
     fun result(event: AgentSessionEvent): CompletableFuture<EventCreateParams?> {

@@ -48,7 +48,6 @@ internal class SessionUpdateParamsTest {
                     .build()
             )
             .review(SessionUpdateParams.Review.NONE)
-            .spendControl(SessionUpdateParams.SpendControl.builder().limit(1L).build())
             .build()
     }
 
@@ -101,7 +100,6 @@ internal class SessionUpdateParamsTest {
                         .build()
                 )
                 .review(SessionUpdateParams.Review.NONE)
-                .spendControl(SessionUpdateParams.SpendControl.builder().limit(1L).build())
                 .build()
 
         val body = params._body()
@@ -144,8 +142,6 @@ internal class SessionUpdateParamsTest {
                     .build()
             )
         assertThat(body.review()).contains(SessionUpdateParams.Review.NONE)
-        assertThat(body.spendControl())
-            .contains(SessionUpdateParams.SpendControl.builder().limit(1L).build())
     }
 
     @Test

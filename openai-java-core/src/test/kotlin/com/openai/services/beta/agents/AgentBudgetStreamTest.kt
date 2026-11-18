@@ -1,26 +1,23 @@
 package com.openai.services.beta.agents
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.openai.client.OpenAIClientImpl
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.*
 import com.openai.core.jsonMapper
-import com.openai.errors.OpenAIInvalidDataException
-import com.openai.models.beta.agents.AgentSession
 import com.openai.models.beta.agents.AgentSessionEvent
 import com.openai.models.beta.agents.AgentSessionStreamParams
 import com.openai.models.beta.agents.AgentToolHandlers
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.events.EventStreamParams
 import java.io.ByteArrayInputStream
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -28,7 +25,7 @@ import org.junit.jupiter.params.provider.ValueSource
 
 internal class AgentBudgetStreamTest {
     private val domainError =
-        """{"type":"error","event_id":"error","session_id":"s","error":{"type":"server_error","code":"session_error","message":"Session error."}}"""
+        """{"type":"error","event_id":"error","session_id":"s","error":{"type":"server_error","code":"session_budget_exceeded","message":"Session error."}}"""
     private val created =
         """{"type":"agent.session.created","event_id":"created","session":{"id":"s","status":"in_progress"}}"""
     private val idle =
@@ -50,23 +47,9 @@ internal class AgentBudgetStreamTest {
     private fun followUp() =
         AgentSessionStreamParams.builder().sessionId("s").input("Question").build()
 
-    @Test
-    fun `strict validation requires a limit key and accepts an explicit null`() {
-        fun spendControl(json: String) =
-            jsonMapper().readValue(json, AgentSession.SpendControl::class.java)
-
-        assertThat(spendControl("""{"consumed":7,"limit":null}""").validate().limit()).isEmpty()
-        assertThat(spendControl("""{"consumed":7,"limit":1234}""").validate().limit())
-            .contains(1234L)
-        assertThrows<OpenAIInvalidDataException> { spendControl("""{"consumed":7}""").validate() }
-        assertThrows<OpenAIInvalidDataException> {
-            spendControl("""{"consumed":7,"limit":"invalid"}""").validate()
-        }
-    }
-
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
-    fun `raw creation and event subscriptions expose typed budget events`(async: Boolean) {
+    fun `raw creation and event subscriptions preserve unknown budget payloads`(async: Boolean) {
         for ((creation, limit) in
             listOf(false to 1234L, true to 1234L, false to null, true to null)) {
             val transport = Transport(listOf(domainError, budget(limit = limit)))
@@ -93,16 +76,13 @@ internal class AgentBudgetStreamTest {
                 }
                 assertThat(events).hasSize(2)
                 assertThat(events.first().asError().error().message()).isEqualTo("Session error.")
-                val session = events.last().asBudgetReached().session()
-                assertThat(session.id()).isEqualTo("s")
-                assertThat(session.status()).isEqualTo(AgentSession.Status.BUDGET_REACHED)
-                assertThat(session.status().validate()).isSameAs(session.status())
-                val spendControl =
-                    session.spendControl().orElseThrow { AssertionError("Missing spend control") }
-                assertThat(spendControl.consumed()).contains(321L)
-                assertThat(spendControl.limit()).isEqualTo(Optional.ofNullable(limit))
-                assertThat(spendControl._limit().isNull()).isEqualTo(limit == null)
-                assertThat(spendControl.validate()).isSameAs(spendControl)
+                val frame = jsonMapper().valueToTree<JsonNode>(events.last())
+                assertThat(frame.path("type").asText()).isEqualTo("agent.session.budget_reached")
+                assertThat(frame.path("session").path("id").asText()).isEqualTo("s")
+                assertThat(frame.path("session").path("spend_control").path("consumed").asLong())
+                    .isEqualTo(321L)
+                assertThat(frame.path("session").path("spend_control").path("limit").isNull)
+                    .isEqualTo(limit == null)
                 assertThat(transport.awaitStreamClosed()).isTrue()
             }
         }
@@ -136,7 +116,8 @@ internal class AgentBudgetStreamTest {
                 }
                 assertThat(events).hasSize(if (active) 4 else 5)
                 assertThat(events.first().isError()).isTrue()
-                assertThat(events.last().isBudgetReached()).isTrue()
+                assertThat(jsonMapper().valueToTree<JsonNode>(events.last()).path("type").asText())
+                    .isEqualTo("agent.session.budget_reached")
                 assertThat(transport.awaitStreamClosed()).isTrue()
             }
         }
@@ -147,7 +128,11 @@ internal class AgentBudgetStreamTest {
     fun `creation helpers stop when budget is the first session snapshot`(async: Boolean) {
         val failed =
             """{"type":"agent.session.failed","event_id":"sentinel","session":{"id":"s","status":"failed"}}"""
-        val transport = Transport(listOf(domainError, budget(), failed))
+        val unknown =
+            """{"type":"agent.session.future","event_id":"unknown","session":{"id":"s"}}"""
+        val malformed = """{"type":"agent.session.budget_reached","event_id":"missing-session"}"""
+        val transport =
+            Transport(listOf(domainError, unknown, malformed, budget(""), budget(), failed))
         transport.client().useClient { client ->
             val events = mutableListOf<AgentSessionEvent>()
             val handlers = AgentToolHandlers.builder().build()
@@ -166,9 +151,10 @@ internal class AgentBudgetStreamTest {
                     it.stream().forEach { events.add(it) }
                 }
             }
-            assertThat(events).hasSize(2)
+            assertThat(events).hasSize(5)
             assertThat(events.first().isError()).isTrue()
-            assertThat(events.last().isBudgetReached()).isTrue()
+            assertThat(jsonMapper().valueToTree<JsonNode>(events.last()).path("type").asText())
+                .isEqualTo("agent.session.budget_reached")
             assertThat(transport.awaitStreamClosed()).isTrue()
         }
     }
@@ -254,8 +240,8 @@ internal class AgentBudgetStreamTest {
             """{"type":"agent.session.failed","event_id":"sentinel","session":{"id":"s","status":"failed"}}"""
         for (identified in listOf(false, true)) {
             val events =
-                if (identified) listOf(created, budget("other"), budget(), failed)
-                else listOf(domainError, budget(), failed)
+                if (identified) listOf(created, budget("other"), budget(""), budget(), failed)
+                else listOf(domainError, budget(""), budget(), failed)
             val transport = Transport(events)
             transport.client().useClient { client ->
                 val failure =

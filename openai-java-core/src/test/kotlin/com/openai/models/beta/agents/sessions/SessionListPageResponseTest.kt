@@ -117,9 +117,6 @@ internal class SessionListPageResponseTest {
                                 .build()
                         )
                         .review(AgentSession.Review.NONE)
-                        .spendControl(
-                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
-                        )
                         .build()
                 )
                 .firstId("first_id")
@@ -221,9 +218,6 @@ internal class SessionListPageResponseTest {
                             .build()
                     )
                     .review(AgentSession.Review.NONE)
-                    .spendControl(
-                        AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
-                    )
                     .build()
             )
         assertThat(sessionListPageResponse.firstId()).contains("first_id")
