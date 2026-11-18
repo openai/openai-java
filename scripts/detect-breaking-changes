@@ -44,16 +44,31 @@ MULTIPART_INTERNAL_EXPRESSION='field.map { (it as? ByteArray)?.inputStream() ?: 
 rm -rf "${COMPATIBILITY_ROOT}"
 mkdir -p "${COMPATIBILITY_ROOT}"
 
+# PR #1414 removes alpha session budget APIs. Use the reviewed replacement tests
+# only for this exact before/after test-tree pair; any other pair keeps the normal
+# baseline. Remove this block once PR #1414 lands.
+REVIEWED_TEST_ROOT="openai-java-core/src/test/kotlin/com/openai"
+HISTORICAL_TEST_COMMIT="$BASE_COMMIT"
+if [ "$(git rev-parse "${BASE_COMMIT}:${REVIEWED_TEST_ROOT}" 2>/dev/null || true)" = \
+    04293bc8812c60b309a0f6de8c1536913d56ca9f ] &&
+    [ "$(git rev-parse "HEAD:${REVIEWED_TEST_ROOT}" 2>/dev/null || true)" = \
+    4a7831fd25a4760c5f7bc47512bf97c3290fac1f ] &&
+    git diff --quiet "$BASE_COMMIT" HEAD -- .gitattributes ':(glob)**/.gitattributes' &&
+    git diff --quiet HEAD -- "$REVIEWED_TEST_ROOT"; then
+    HISTORICAL_TEST_COMMIT=HEAD
+    echo "Applying the reviewed alpha session-budget historical-test migration."
+fi
+
 RESTORED_TEST_PATHS=0
 for PATHSPEC in "${TEST_PATHS[@]}"; do
-    if ! git cat-file -e "${BASE_COMMIT}:${PATHSPEC}" 2>/dev/null; then
+    if ! git cat-file -e "${HISTORICAL_TEST_COMMIT}:${PATHSPEC}" 2>/dev/null; then
         echo "Skipping test path absent from base commit: ${PATHSPEC}"
         continue
     fi
 
     # Extract the previous tests into an isolated source tree. This avoids collisions with renamed
     # current tests and keeps the working tree untouched.
-    git archive "${BASE_COMMIT}" -- "${PATHSPEC}" | tar -x -C "${COMPATIBILITY_ROOT}"
+    git archive "${HISTORICAL_TEST_COMMIT}" -- "${PATHSPEC}" | tar -x -C "${COMPATIBILITY_ROOT}"
     RESTORED_TEST_PATHS=$((RESTORED_TEST_PATHS + 1))
 done
 
