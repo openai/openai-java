@@ -5093,6 +5093,14 @@
       "mode": "100644",
       "sha256": "4e4d7bbf5819678a245a935fa0e59fc44482656a0116490255c719b6bdb1b298"
     },
+    "openai-java-core/src/main/kotlin/com/openai/models/moderations/CsamModeration.kt": {
+      "mode": "100644",
+      "sha256": "b69739e2ae7bb8a91122ba84b2e5ab3645bcc0450cce5f2d6d28dc4db5e7deb9"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/moderations/CsamModerationResponse.kt": {
+      "mode": "100644",
+      "sha256": "22c114562f1bf78c16dfa697a6c63b3733186c13f618bb98db8183043d2853a7"
+    },
     "openai-java-core/src/main/kotlin/com/openai/models/moderations/Moderation.kt": {
       "mode": "100644",
       "sha256": "7a198388a027edf8c08c7918d17bc5111e61b2a43ba5e098aedfff4c1756493e"
@@ -13384,6 +13392,14 @@
     "openai-java-core/src/test/kotlin/com/openai/models/models/ModelTest.kt": {
       "mode": "100644",
       "sha256": "d5e0a8cb11f679fd2cf4fd3130b1d9e278120557822a5c7f059dfc6096514812"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/moderations/CsamModerationResponseTest.kt": {
+      "mode": "100644",
+      "sha256": "18557e7b3238c1fc435232df39956c48a60ed34db54610c9a2d9a0bdfd998309"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/moderations/CsamModerationTest.kt": {
+      "mode": "100644",
+      "sha256": "a65f25c9380d806a9e611348fe14f1a40751d47653a2f7119207548de163197e"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/moderations/ModerationCreateParamsTest.kt": {
       "mode": "100644",
