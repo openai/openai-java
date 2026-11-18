@@ -2031,7 +2031,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/agents/SessionTurnError.kt": {
       "mode": "100644",
-      "sha256": "e51af3cb50601ba2b23019f32ea6865d25267b4eedc18504f4a2170b12392b9d"
+      "sha256": "d023ae26aaf2c215a3fe75ea2ebbea10e86e9460fa4883bb5284738c6e2ea85b"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/agents/SetupCommandParam.kt": {
       "mode": "100644",
