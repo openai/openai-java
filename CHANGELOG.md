@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.109.0](https://github.com/openai/openai-java/compare/v4.108.0...v4.109.0) (2026-11-18)
+
+
+### Features
+
+* **api:** add standalone CSAM moderation models ([#1415](https://github.com/openai/openai-java/issues/1415)) ([b12ad22](https://github.com/openai/openai-java/commit/b12ad22a0aafe5ba4c567ec9d0f6a0441dfc856d))
+
+
+### Build System
+
+* bump actions/setup-java from 6.1.0 to 6.2.0 ([#1405](https://github.com/openai/openai-java/issues/1405)) ([e271a7b](https://github.com/openai/openai-java/commit/e271a7bda6b7302c702e6e9347484178afd6f5cf))
+* bump com.fasterxml.jackson.core:jackson-databind in / ([#1404](https://github.com/openai/openai-java/issues/1404)) ([db61b4a](https://github.com/openai/openai-java/commit/db61b4a7ac1e2ca4c7305e15eace2b809895fccf))
+* bump graalvm/setup-graalvm from 1.6.7 to 1.6.8 ([#1349](https://github.com/openai/openai-java/issues/1349)) ([a7b1eb9](https://github.com/openai/openai-java/commit/a7b1eb9707c6a7dd2a7d5823a1c1fe9520c35db2))
+
 ## [4.108.0](https://github.com/openai/openai-java/compare/v4.107.0...v4.108.0) (2026-11-18)
 
 
