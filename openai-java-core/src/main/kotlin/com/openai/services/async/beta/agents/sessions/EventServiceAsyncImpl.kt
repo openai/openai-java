@@ -112,7 +112,11 @@ class EventServiceAsyncImpl internal constructor(private val clientOptions: Clie
         }
 
         private val streamStreamingHandler: Handler<StreamResponse<AgentSessionEvent>> =
-            sseHandler(clientOptions.jsonMapper).mapJson<AgentSessionEvent>()
+            sseHandler(
+                    clientOptions.jsonMapper,
+                    com.openai.core.handlers.SseErrorDeliveryMode.EVENTS,
+                )
+                .mapJson<AgentSessionEvent>()
 
         override fun streamStreaming(
             params: EventStreamParams,

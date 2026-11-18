@@ -23,6 +23,7 @@ internal class AgentSessionErrorEventTest {
                 )
                 .eventId("event_id")
                 .sessionId("session_id")
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionErrorEvent.error())
@@ -36,6 +37,7 @@ internal class AgentSessionErrorEventTest {
             )
         assertThat(agentSessionErrorEvent.eventId()).contains("event_id")
         assertThat(agentSessionErrorEvent.sessionId()).contains("session_id")
+        assertThat(agentSessionErrorEvent.obfuscation()).contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 

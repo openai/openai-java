@@ -71,6 +71,12 @@ private constructor(
     /** @see Body.backgroundOrThrow */
     fun backgroundOrThrow(): Boolean = body.backgroundOrThrow()
 
+    /** @see Body.backgroundOptions */
+    fun backgroundOptions(): java.util.Optional<BackgroundOptions> = body.backgroundOptions()
+
+    /** @see Body.backgroundOptionsOrThrow */
+    fun backgroundOptionsOrThrow(): BackgroundOptions = body.backgroundOptionsOrThrow()
+
     /** @see Body.contextManagement */
     fun contextManagement(): java.util.Optional<List<ContextManagement>> = body.contextManagement()
 
@@ -267,6 +273,14 @@ private constructor(
      * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _background(): JsonField<Boolean> = body._background()
+
+    /**
+     * Returns the raw JSON value of [backgroundOptions].
+     *
+     * Unlike [backgroundOptions], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _backgroundOptions(): JsonField<BackgroundOptions> = body._backgroundOptions()
 
     /**
      * Returns the raw JSON value of [contextManagement].
@@ -524,9 +538,9 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [accessPrograms]
          * - [background]
+         * - [backgroundOptions]
          * - [contextManagement]
          * - [conversation]
-         * - [image]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -571,6 +585,25 @@ private constructor(
          * value.
          */
         fun background(background: JsonField<Boolean>) = apply { body.background(background) }
+
+        /**
+         * Options for background execution on HTTP requests. The `2h` and `8h` completion windows
+         * require `background: true`, Standard processing, and `stream: false` or omitted.
+         */
+        fun backgroundOptions(backgroundOptions: BackgroundOptions) = apply {
+            body.backgroundOptions(backgroundOptions)
+        }
+
+        /**
+         * Sets [Builder.backgroundOptions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.backgroundOptions] with a well-typed [BackgroundOptions]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun backgroundOptions(backgroundOptions: JsonField<BackgroundOptions>) = apply {
+            body.backgroundOptions(backgroundOptions)
+        }
 
         /** Context management configuration for this request. */
         fun contextManagement(contextManagement: List<ContextManagement>?) = apply {
@@ -1509,7 +1542,9 @@ private constructor(
          * The truncation strategy to use for the model response.
          * - `auto`: If the input to this Response exceeds the model's context window size, the
          *   model will truncate the response to fit the context window by dropping items from the
-         *   beginning of the conversation.
+         *   beginning of the conversation. On some models, trimming can begin earlier because the
+         *   API subtracts the model's maximum output allowance from its input limit, even if you
+         *   set a lower `max_output_tokens`.
          * - `disabled` (default): If the input size will exceed the context window size for a
          *   model, the request will fail with a 400 error.
          */
@@ -1688,6 +1723,7 @@ private constructor(
     private constructor(
         private val accessPrograms: JsonField<AccessPrograms>,
         private val background: JsonField<Boolean>,
+        private val backgroundOptions: JsonField<BackgroundOptions>,
         private val contextManagement: JsonField<List<ContextManagement>>,
         private val conversation: JsonField<Conversation>,
         private val image: JsonField<Image>,
@@ -1729,6 +1765,9 @@ private constructor(
             @JsonProperty("background")
             @ExcludeMissing
             background: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("background_options")
+            @ExcludeMissing
+            backgroundOptions: JsonField<BackgroundOptions> = JsonMissing.of(),
             @JsonProperty("context_management")
             @ExcludeMissing
             contextManagement: JsonField<List<ContextManagement>> = JsonMissing.of(),
@@ -1810,6 +1849,7 @@ private constructor(
         ) : this(
             accessPrograms,
             background,
+            backgroundOptions,
             contextManagement,
             conversation,
             image,
@@ -1872,6 +1912,23 @@ private constructor(
          * invalid.
          */
         fun backgroundOrThrow(): Boolean = background.getRequired("background")
+
+        /**
+         * Options for background execution on HTTP requests. The `2h` and `8h` completion windows
+         * require `background: true`, Standard processing, and `stream: false` or omitted. Returns
+         * empty if the JSON property is missing or null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun backgroundOptions(): java.util.Optional<BackgroundOptions> =
+            backgroundOptions.getOptional("background_options")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun backgroundOptionsOrThrow(): BackgroundOptions =
+            backgroundOptions.getRequired("background_options")
 
         /**
          * Context management configuration for this request. Returns empty if the JSON property is
@@ -2399,7 +2456,9 @@ private constructor(
          * The truncation strategy to use for the model response.
          * - `auto`: If the input to this Response exceeds the model's context window size, the
          *   model will truncate the response to fit the context window by dropping items from the
-         *   beginning of the conversation.
+         *   beginning of the conversation. On some models, trimming can begin earlier because the
+         *   API subtracts the model's maximum output allowance from its input limit, even if you
+         *   set a lower `max_output_tokens`.
          * - `disabled` (default): If the input size will exceed the context window size for a
          *   model, the request will fail with a 400 error. Returns empty if the JSON property is
          *   missing or null.
@@ -2452,6 +2511,16 @@ private constructor(
         @JsonProperty("background")
         @ExcludeMissing
         fun _background(): JsonField<Boolean> = background
+
+        /**
+         * Returns the raw JSON value of [backgroundOptions].
+         *
+         * Unlike [backgroundOptions], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("background_options")
+        @ExcludeMissing
+        fun _backgroundOptions(): JsonField<BackgroundOptions> = backgroundOptions
 
         /**
          * Returns the raw JSON value of [contextManagement].
@@ -2738,6 +2807,7 @@ private constructor(
                 additionalProperties,
                 "access_programs" to this.accessPrograms,
                 "background" to this.background,
+                "background_options" to this.backgroundOptions,
                 "context_management" to this.contextManagement,
                 "conversation" to this.conversation,
                 "image" to this.image,
@@ -2791,6 +2861,7 @@ private constructor(
 
             private var accessPrograms: JsonField<AccessPrograms> = JsonMissing.of()
             private var background: JsonField<Boolean> = JsonMissing.of()
+            private var backgroundOptions: JsonField<BackgroundOptions> = JsonMissing.of()
             private var contextManagement: JsonField<MutableList<ContextManagement>>? = null
             private var conversation: JsonField<Conversation> = JsonMissing.of()
             private var image: JsonField<Image> = JsonMissing.of()
@@ -2827,6 +2898,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 accessPrograms = body.accessPrograms
                 background = body.background
+                backgroundOptions = body.backgroundOptions
                 contextManagement = body.contextManagement.map { it.toMutableList() }
                 conversation = body.conversation
                 image = body.image
@@ -2899,6 +2971,25 @@ private constructor(
              * supported value.
              */
             fun background(background: JsonField<Boolean>) = apply { this.background = background }
+
+            /**
+             * Options for background execution on HTTP requests. The `2h` and `8h` completion
+             * windows require `background: true`, Standard processing, and `stream: false` or
+             * omitted.
+             */
+            fun backgroundOptions(backgroundOptions: BackgroundOptions) =
+                backgroundOptions(JsonField.of(backgroundOptions))
+
+            /**
+             * Sets [Builder.backgroundOptions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.backgroundOptions] with a well-typed
+             * [BackgroundOptions] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun backgroundOptions(backgroundOptions: JsonField<BackgroundOptions>) = apply {
+                this.backgroundOptions = backgroundOptions
+            }
 
             /** Context management configuration for this request. */
             fun contextManagement(contextManagement: List<ContextManagement>?) =
@@ -3812,7 +3903,9 @@ private constructor(
              * The truncation strategy to use for the model response.
              * - `auto`: If the input to this Response exceeds the model's context window size, the
              *   model will truncate the response to fit the context window by dropping items from
-             *   the beginning of the conversation.
+             *   the beginning of the conversation. On some models, trimming can begin earlier
+             *   because the API subtracts the model's maximum output allowance from its input
+             *   limit, even if you set a lower `max_output_tokens`.
              * - `disabled` (default): If the input size will exceed the context window size for a
              *   model, the request will fail with a 400 error.
              */
@@ -3881,6 +3974,7 @@ private constructor(
                 Body(
                     accessPrograms,
                     background,
+                    backgroundOptions,
                     (contextManagement ?: JsonMissing.of()).map { it.toImmutable() },
                     conversation,
                     image,
@@ -3933,6 +4027,7 @@ private constructor(
 
             accessPrograms().ifPresent { it.validate() }
             background()
+            backgroundOptions().ifPresent { it.validate() }
             contextManagement().ifPresent { it.forEach { it.validate() } }
             conversation().ifPresent { it.validate() }
             image().ifPresent { it.validate() }
@@ -3984,6 +4079,7 @@ private constructor(
         internal fun validity(): Int =
             (accessPrograms.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (background.asKnown().isPresent) 1 else 0) +
+                (backgroundOptions.asKnown().getOrNull()?.validity() ?: 0) +
                 (contextManagement.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (conversation.asKnown().getOrNull()?.validity() ?: 0) +
                 (image.asKnown().getOrNull()?.validity() ?: 0) +
@@ -4023,6 +4119,7 @@ private constructor(
             return other is Body &&
                 accessPrograms == other.accessPrograms &&
                 background == other.background &&
+                backgroundOptions == other.backgroundOptions &&
                 contextManagement == other.contextManagement &&
                 conversation == other.conversation &&
                 image == other.image &&
@@ -4060,6 +4157,7 @@ private constructor(
             Objects.hash(
                 accessPrograms,
                 background,
+                backgroundOptions,
                 contextManagement,
                 conversation,
                 image,
@@ -4097,7 +4195,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{accessPrograms=$accessPrograms, background=$background, contextManagement=$contextManagement, conversation=$conversation, image=$image, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "Body{accessPrograms=$accessPrograms, background=$background, backgroundOptions=$backgroundOptions, contextManagement=$contextManagement, conversation=$conversation, image=$image, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /** Domain-specific access programs to use for this request. */
@@ -4447,6 +4545,360 @@ private constructor(
 
         override fun toString() =
             "AccessPrograms{cyber=$cyber, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Options for background execution on HTTP requests. The `2h` and `8h` completion windows
+     * require `background: true`, Standard processing, and `stream: false` or omitted.
+     */
+    class BackgroundOptions
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val completionWindow: JsonField<CompletionWindow>,
+        private val continuationId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("completion_window")
+            @ExcludeMissing
+            completionWindow: JsonField<CompletionWindow> = JsonMissing.of(),
+            @JsonProperty("continuation_id")
+            @ExcludeMissing
+            continuationId: JsonField<String> = JsonMissing.of(),
+        ) : this(completionWindow, continuationId, mutableMapOf())
+
+        /**
+         * The completion window for background execution. Defaults to `soonest`; `2h` and `8h`
+         * select discounted background execution. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun completionWindow(): java.util.Optional<CompletionWindow> =
+            completionWindow.getOptional("completion_window")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun completionWindowOrThrow(): CompletionWindow =
+            completionWindow.getRequired("completion_window")
+
+        /**
+         * A customer-provided opaque identifier used to prioritize related background requests. It
+         * does not add prior history to the input. Returns empty if the JSON property is missing or
+         * null.
+         *
+         * @throws OpenAIInvalidDataException if the value has an unexpected type.
+         */
+        fun continuationId(): java.util.Optional<String> =
+            continuationId.getOptional("continuation_id")
+
+        /**
+         * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or
+         * invalid.
+         */
+        fun continuationIdOrThrow(): String = continuationId.getRequired("continuation_id")
+
+        /**
+         * Returns the raw JSON value of [completionWindow].
+         *
+         * Unlike [completionWindow], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("completion_window")
+        @ExcludeMissing
+        fun _completionWindow(): JsonField<CompletionWindow> = completionWindow
+
+        /**
+         * Returns the raw JSON value of [continuationId].
+         *
+         * Unlike [continuationId], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("continuation_id")
+        @ExcludeMissing
+        fun _continuationId(): JsonField<String> = continuationId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "completion_window" to this.completionWindow,
+                "continuation_id" to this.continuationId,
+            )
+
+        @JvmSynthetic
+        internal fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        private fun additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [BackgroundOptions]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [BackgroundOptions]. */
+        class Builder internal constructor() {
+
+            private var completionWindow: JsonField<CompletionWindow> = JsonMissing.of()
+            private var continuationId: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(backgroundOptions: BackgroundOptions) = apply {
+                completionWindow = backgroundOptions.completionWindow
+                continuationId = backgroundOptions.continuationId
+                additionalProperties = backgroundOptions.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The completion window for background execution. Defaults to `soonest`; `2h` and `8h`
+             * select discounted background execution.
+             */
+            fun completionWindow(completionWindow: CompletionWindow) =
+                completionWindow(JsonField.of(completionWindow))
+
+            /**
+             * Sets [Builder.completionWindow] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.completionWindow] with a well-typed
+             * [CompletionWindow] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun completionWindow(completionWindow: JsonField<CompletionWindow>) = apply {
+                this.completionWindow = completionWindow
+            }
+
+            /**
+             * A customer-provided opaque identifier used to prioritize related background requests.
+             * It does not add prior history to the input.
+             */
+            fun continuationId(continuationId: String) =
+                continuationId(JsonField.of(continuationId))
+
+            /**
+             * Sets [Builder.continuationId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.continuationId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun continuationId(continuationId: JsonField<String>) = apply {
+                this.continuationId = continuationId
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [BackgroundOptions].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): BackgroundOptions =
+                BackgroundOptions(
+                    completionWindow,
+                    continuationId,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): BackgroundOptions = apply {
+            if (validated) {
+                return@apply
+            }
+
+            completionWindow().ifPresent { it.validate() }
+            continuationId()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (completionWindow.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (continuationId.asKnown().isPresent) 1 else 0)
+
+        /**
+         * The completion window for background execution. Defaults to `soonest`; `2h` and `8h`
+         * select discounted background execution.
+         */
+        class CompletionWindow
+        @JsonCreator
+        private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val SOONEST = of("soonest")
+
+                @JvmField val _2H = of("2h")
+
+                @JvmField val _8H = of("8h")
+
+                @JvmStatic fun of(value: String) = CompletionWindow(JsonField.of(value))
+            }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): CompletionWindow = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                asString()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                when (this) {
+                    SOONEST -> 1
+                    _2H -> 1
+                    _8H -> 1
+                    else -> 0
+                }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is CompletionWindow && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is BackgroundOptions &&
+                completionWindow == other.completionWindow &&
+                continuationId == other.continuationId &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(completionWindow, continuationId, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "BackgroundOptions{completionWindow=$completionWindow, continuationId=$continuationId, additionalProperties=$additionalProperties}"
     }
 
     class ContextManagement
@@ -8573,7 +9025,9 @@ private constructor(
      * The truncation strategy to use for the model response.
      * - `auto`: If the input to this Response exceeds the model's context window size, the model
      *   will truncate the response to fit the context window by dropping items from the beginning
-     *   of the conversation.
+     *   of the conversation. On some models, trimming can begin earlier because the API subtracts
+     *   the model's maximum output allowance from its input limit, even if you set a lower
+     *   `max_output_tokens`.
      * - `disabled` (default): If the input size will exceed the context window size for a model,
      *   the request will fail with a 400 error.
      */

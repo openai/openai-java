@@ -735,11 +735,14 @@ private constructor(
         fun addTool(applyPatch: BetaApplyPatchTool) = apply { body.addTool(applyPatch) }
 
         /**
-         * The truncation strategy to use for the model response. - `auto`: If the input to this
-         * Response exceeds the model's context window size, the model will truncate the response to
-         * fit the context window by dropping items from the beginning of the conversation. -
-         * `disabled` (default): If the input size will exceed the context window size for a model,
-         * the request will fail with a 400 error.
+         * The truncation strategy to use for the model response.
+         * - `auto`: If the input to this Response exceeds the model's context window size, the
+         *   model will truncate the response to fit the context window by dropping items from the
+         *   beginning of the conversation. On some models, trimming can begin earlier because the
+         *   API subtracts the model's maximum output allowance from its input limit before counting
+         *   tokens.
+         * - `disabled` (default): If the input size will exceed the context window size for a
+         *   model, the request will fail with a 400 error.
          */
         @Deprecated("deprecated")
         fun truncation(truncation: Truncation) = apply { body.truncation(truncation) }
@@ -1138,12 +1141,15 @@ private constructor(
         fun toolsOrThrow(): List<BetaTool> = tools.getRequired("tools")
 
         /**
-         * The truncation strategy to use for the model response. - `auto`: If the input to this
-         * Response exceeds the model's context window size, the model will truncate the response to
-         * fit the context window by dropping items from the beginning of the conversation. -
-         * `disabled` (default): If the input size will exceed the context window size for a model,
-         * the request will fail with a 400 error. Returns empty if the JSON property is missing or
-         * null.
+         * The truncation strategy to use for the model response.
+         * - `auto`: If the input to this Response exceeds the model's context window size, the
+         *   model will truncate the response to fit the context window by dropping items from the
+         *   beginning of the conversation. On some models, trimming can begin earlier because the
+         *   API subtracts the model's maximum output allowance from its input limit before counting
+         *   tokens.
+         * - `disabled` (default): If the input size will exceed the context window size for a
+         *   model, the request will fail with a 400 error. Returns empty if the JSON property is
+         *   missing or null.
          *
          * @throws OpenAIInvalidDataException if the value has an unexpected type.
          */
@@ -1799,11 +1805,14 @@ private constructor(
             fun addTool(applyPatch: BetaApplyPatchTool) = addTool(BetaTool.ofApplyPatch(applyPatch))
 
             /**
-             * The truncation strategy to use for the model response. - `auto`: If the input to this
-             * Response exceeds the model's context window size, the model will truncate the
-             * response to fit the context window by dropping items from the beginning of the
-             * conversation. - `disabled` (default): If the input size will exceed the context
-             * window size for a model, the request will fail with a 400 error.
+             * The truncation strategy to use for the model response.
+             * - `auto`: If the input to this Response exceeds the model's context window size, the
+             *   model will truncate the response to fit the context window by dropping items from
+             *   the beginning of the conversation. On some models, trimming can begin earlier
+             *   because the API subtracts the model's maximum output allowance from its input limit
+             *   before counting tokens.
+             * - `disabled` (default): If the input size will exceed the context window size for a
+             *   model, the request will fail with a 400 error.
              */
             @Deprecated("deprecated")
             fun truncation(truncation: Truncation) = truncation(JsonField.of(truncation))
@@ -4903,11 +4912,13 @@ private constructor(
     }
 
     /**
-     * The truncation strategy to use for the model response. - `auto`: If the input to this
-     * Response exceeds the model's context window size, the model will truncate the response to fit
-     * the context window by dropping items from the beginning of the conversation. - `disabled`
-     * (default): If the input size will exceed the context window size for a model, the request
-     * will fail with a 400 error.
+     * The truncation strategy to use for the model response.
+     * - `auto`: If the input to this Response exceeds the model's context window size, the model
+     *   will truncate the response to fit the context window by dropping items from the beginning
+     *   of the conversation. On some models, trimming can begin earlier because the API subtracts
+     *   the model's maximum output allowance from its input limit before counting tokens.
+     * - `disabled` (default): If the input size will exceed the context window size for a model,
+     *   the request will fail with a 400 error.
      */
     @Deprecated("deprecated")
     class Truncation @JsonCreator private constructor(private val value: JsonField<String>) : Enum {

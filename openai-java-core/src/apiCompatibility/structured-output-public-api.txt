@@ -425,6 +425,8 @@ com.openai.models.responses.StructuredResponseCreateParams$Builder#background (L
 com.openai.models.responses.StructuredResponseCreateParams$Builder#background (Ljava/lang/Boolean;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#background (Ljava/util/Optional;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#background (Z)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
+com.openai.models.responses.StructuredResponseCreateParams$Builder#backgroundOptions (Lcom/openai/core/JsonField;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
+com.openai.models.responses.StructuredResponseCreateParams$Builder#backgroundOptions (Lcom/openai/models/responses/ResponseCreateParams$BackgroundOptions;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#build ()Lcom/openai/models/responses/StructuredResponseCreateParams;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#contextManagement (Lcom/openai/core/JsonField;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#contextManagement (Ljava/util/List;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;

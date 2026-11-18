@@ -51,6 +51,7 @@ internal class SessionResourceTest {
                         .build()
                 )
                 .instructions("instructions")
+                .safetyIdentifier("safety_identifier")
                 .store(true)
                 .addTrigger(
                     DecisionTrigger.builder()
@@ -121,6 +122,7 @@ internal class SessionResourceTest {
                 )
             )
         assertThat(sessionResource.instructions()).contains("instructions")
+        assertThat(sessionResource.safetyIdentifier()).contains("safety_identifier")
         assertThat(sessionResource.store()).contains(true)
         assertThat(sessionResource.triggers().getOrNull())
             .containsExactly(

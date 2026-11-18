@@ -29,6 +29,7 @@ internal class AgentSessionEventTest {
                 )
                 .eventId("event_id")
                 .sessionId("session_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofError(error)
@@ -84,6 +85,7 @@ internal class AgentSessionEventTest {
                     )
                     .eventId("event_id")
                     .sessionId("session_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -117,6 +119,7 @@ internal class AgentSessionEventTest {
                 .eventId("event_id")
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofEnvironmentReady(environmentReady)
@@ -179,6 +182,7 @@ internal class AgentSessionEventTest {
                     .eventId("event_id")
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -212,6 +216,7 @@ internal class AgentSessionEventTest {
                 .eventId("event_id")
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofEnvironmentSuspended(environmentSuspended)
@@ -274,6 +279,7 @@ internal class AgentSessionEventTest {
                     .eventId("event_id")
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -307,6 +313,7 @@ internal class AgentSessionEventTest {
                 .eventId("event_id")
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofEnvironmentExpired(environmentExpired)
@@ -369,6 +376,7 @@ internal class AgentSessionEventTest {
                     .eventId("event_id")
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -390,6 +398,7 @@ internal class AgentSessionEventTest {
                 .resetCount(0L)
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofEnvironmentReset(environmentReset)
@@ -440,6 +449,7 @@ internal class AgentSessionEventTest {
                     .resetCount(0L)
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -462,6 +472,7 @@ internal class AgentSessionEventTest {
                 .outputIndex(0L)
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent =
@@ -515,6 +526,7 @@ internal class AgentSessionEventTest {
                     .outputIndex(0L)
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -593,36 +605,13 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addRequiredAction(
-                            AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                            AgentSession.RequiredAction.McpApprovalRequest.builder()
                                 .request(
-                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                        .BrowserAuthentication
-                                        .builder()
-                                        .credentialOrigin("credential_origin")
-                                        .addField(
-                                            AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                                .Request
-                                                .BrowserAuthentication
-                                                .Field
-                                                .builder()
-                                                .id("id")
-                                                .label("label")
-                                                .required(true)
-                                                .type("type")
-                                                .build()
-                                        )
-                                        .addOption(
-                                            AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                                .Request
-                                                .BrowserAuthentication
-                                                .Option
-                                                .builder()
-                                                .id("id")
-                                                .addFieldId("string")
-                                                .label("label")
-                                                .build()
-                                        )
-                                        .reason("reason")
+                                    AgentSession.RequiredAction.McpApprovalRequest.Request.builder()
+                                        .arguments(JsonValue.from(mapOf<String, Any>()))
+                                        .message("message")
+                                        .name("name")
+                                        .serverLabel("server_label")
                                         .build()
                                 )
                                 .requestId("request_id")
@@ -646,12 +635,15 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addVaultId("string")
-                        .review(AgentSession.Review.NONE)
-                        .spendControl(
-                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        .promptCacheOptions(
+                            AgentSession.PromptCacheOptions.builder()
+                                .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                                .build()
                         )
+                        .review(AgentSession.Review.NONE)
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofCreated(created)
@@ -762,39 +754,14 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addRequiredAction(
-                                AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                                AgentSession.RequiredAction.McpApprovalRequest.builder()
                                     .request(
-                                        AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                            .Request
-                                            .BrowserAuthentication
+                                        AgentSession.RequiredAction.McpApprovalRequest.Request
                                             .builder()
-                                            .credentialOrigin("credential_origin")
-                                            .addField(
-                                                AgentSession.RequiredAction
-                                                    .ComputerUseApprovalRequest
-                                                    .Request
-                                                    .BrowserAuthentication
-                                                    .Field
-                                                    .builder()
-                                                    .id("id")
-                                                    .label("label")
-                                                    .required(true)
-                                                    .type("type")
-                                                    .build()
-                                            )
-                                            .addOption(
-                                                AgentSession.RequiredAction
-                                                    .ComputerUseApprovalRequest
-                                                    .Request
-                                                    .BrowserAuthentication
-                                                    .Option
-                                                    .builder()
-                                                    .id("id")
-                                                    .addFieldId("string")
-                                                    .label("label")
-                                                    .build()
-                                            )
-                                            .reason("reason")
+                                            .arguments(JsonValue.from(mapOf<String, Any>()))
+                                            .message("message")
+                                            .name("name")
+                                            .serverLabel("server_label")
                                             .build()
                                     )
                                     .requestId("request_id")
@@ -820,12 +787,15 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addVaultId("string")
-                            .review(AgentSession.Review.NONE)
-                            .spendControl(
-                                AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                            .promptCacheOptions(
+                                AgentSession.PromptCacheOptions.builder()
+                                    .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                                    .build()
                             )
+                            .review(AgentSession.Review.NONE)
                             .build()
                     )
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -876,9 +846,15 @@ internal class AgentSessionEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .promptCacheOptions(
+                            Turn.PromptCacheOptions.builder()
+                                .ttl(Turn.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .build()
                 )
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofTurnCreated(turnCreated)
@@ -960,9 +936,15 @@ internal class AgentSessionEventTest {
                                     .totalTokens(0L)
                                     .build()
                             )
+                            .promptCacheOptions(
+                                Turn.PromptCacheOptions.builder()
+                                    .ttl(Turn.PromptCacheOptions.Ttl._30M)
+                                    .build()
+                            )
                             .build()
                     )
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -1013,9 +995,15 @@ internal class AgentSessionEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .promptCacheOptions(
+                            Turn.PromptCacheOptions.builder()
+                                .ttl(Turn.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .build()
                 )
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofTurnInProgress(turnInProgress)
@@ -1097,9 +1085,15 @@ internal class AgentSessionEventTest {
                                     .totalTokens(0L)
                                     .build()
                             )
+                            .promptCacheOptions(
+                                Turn.PromptCacheOptions.builder()
+                                    .ttl(Turn.PromptCacheOptions.Ttl._30M)
+                                    .build()
+                            )
                             .build()
                     )
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -1150,6 +1144,11 @@ internal class AgentSessionEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .promptCacheOptions(
+                            Turn.PromptCacheOptions.builder()
+                                .ttl(Turn.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .build()
                 )
                 .turnId("turn_id")
@@ -1166,6 +1165,7 @@ internal class AgentSessionEventTest {
                         .totalTokens(0L)
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofTurnCompleted(turnCompleted)
@@ -1247,6 +1247,11 @@ internal class AgentSessionEventTest {
                                     .totalTokens(0L)
                                     .build()
                             )
+                            .promptCacheOptions(
+                                Turn.PromptCacheOptions.builder()
+                                    .ttl(Turn.PromptCacheOptions.Ttl._30M)
+                                    .build()
+                            )
                             .build()
                     )
                     .turnId("turn_id")
@@ -1263,6 +1268,7 @@ internal class AgentSessionEventTest {
                             .totalTokens(0L)
                             .build()
                     )
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -1313,6 +1319,11 @@ internal class AgentSessionEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .promptCacheOptions(
+                            Turn.PromptCacheOptions.builder()
+                                .ttl(Turn.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .build()
                 )
                 .turnId("turn_id")
@@ -1329,6 +1340,7 @@ internal class AgentSessionEventTest {
                         .totalTokens(0L)
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofTurnFailed(turnFailed)
@@ -1410,6 +1422,11 @@ internal class AgentSessionEventTest {
                                     .totalTokens(0L)
                                     .build()
                             )
+                            .promptCacheOptions(
+                                Turn.PromptCacheOptions.builder()
+                                    .ttl(Turn.PromptCacheOptions.Ttl._30M)
+                                    .build()
+                            )
                             .build()
                     )
                     .turnId("turn_id")
@@ -1426,6 +1443,7 @@ internal class AgentSessionEventTest {
                             .totalTokens(0L)
                             .build()
                     )
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -1476,6 +1494,11 @@ internal class AgentSessionEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .promptCacheOptions(
+                            Turn.PromptCacheOptions.builder()
+                                .ttl(Turn.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
                         .build()
                 )
                 .turnId("turn_id")
@@ -1492,6 +1515,7 @@ internal class AgentSessionEventTest {
                         .totalTokens(0L)
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofTurnCancelled(turnCancelled)
@@ -1573,6 +1597,11 @@ internal class AgentSessionEventTest {
                                     .totalTokens(0L)
                                     .build()
                             )
+                            .promptCacheOptions(
+                                Turn.PromptCacheOptions.builder()
+                                    .ttl(Turn.PromptCacheOptions.Ttl._30M)
+                                    .build()
+                            )
                             .build()
                     )
                     .turnId("turn_id")
@@ -1589,6 +1618,7 @@ internal class AgentSessionEventTest {
                             .totalTokens(0L)
                             .build()
                     )
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -1619,6 +1649,7 @@ internal class AgentSessionEventTest {
                 .outputIndex(0L)
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofTurnItemAdded(turnItemAdded)
@@ -1678,6 +1709,7 @@ internal class AgentSessionEventTest {
                     .outputIndex(0L)
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -1756,36 +1788,13 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addRequiredAction(
-                            AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                            AgentSession.RequiredAction.McpApprovalRequest.builder()
                                 .request(
-                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                        .BrowserAuthentication
-                                        .builder()
-                                        .credentialOrigin("credential_origin")
-                                        .addField(
-                                            AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                                .Request
-                                                .BrowserAuthentication
-                                                .Field
-                                                .builder()
-                                                .id("id")
-                                                .label("label")
-                                                .required(true)
-                                                .type("type")
-                                                .build()
-                                        )
-                                        .addOption(
-                                            AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                                .Request
-                                                .BrowserAuthentication
-                                                .Option
-                                                .builder()
-                                                .id("id")
-                                                .addFieldId("string")
-                                                .label("label")
-                                                .build()
-                                        )
-                                        .reason("reason")
+                                    AgentSession.RequiredAction.McpApprovalRequest.Request.builder()
+                                        .arguments(JsonValue.from(mapOf<String, Any>()))
+                                        .message("message")
+                                        .name("name")
+                                        .serverLabel("server_label")
                                         .build()
                                 )
                                 .requestId("request_id")
@@ -1809,12 +1818,15 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addVaultId("string")
-                        .review(AgentSession.Review.NONE)
-                        .spendControl(
-                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        .promptCacheOptions(
+                            AgentSession.PromptCacheOptions.builder()
+                                .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                                .build()
                         )
+                        .review(AgentSession.Review.NONE)
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofIdle(idle)
@@ -1925,39 +1937,14 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addRequiredAction(
-                                AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                                AgentSession.RequiredAction.McpApprovalRequest.builder()
                                     .request(
-                                        AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                            .Request
-                                            .BrowserAuthentication
+                                        AgentSession.RequiredAction.McpApprovalRequest.Request
                                             .builder()
-                                            .credentialOrigin("credential_origin")
-                                            .addField(
-                                                AgentSession.RequiredAction
-                                                    .ComputerUseApprovalRequest
-                                                    .Request
-                                                    .BrowserAuthentication
-                                                    .Field
-                                                    .builder()
-                                                    .id("id")
-                                                    .label("label")
-                                                    .required(true)
-                                                    .type("type")
-                                                    .build()
-                                            )
-                                            .addOption(
-                                                AgentSession.RequiredAction
-                                                    .ComputerUseApprovalRequest
-                                                    .Request
-                                                    .BrowserAuthentication
-                                                    .Option
-                                                    .builder()
-                                                    .id("id")
-                                                    .addFieldId("string")
-                                                    .label("label")
-                                                    .build()
-                                            )
-                                            .reason("reason")
+                                            .arguments(JsonValue.from(mapOf<String, Any>()))
+                                            .message("message")
+                                            .name("name")
+                                            .serverLabel("server_label")
                                             .build()
                                     )
                                     .requestId("request_id")
@@ -1983,12 +1970,15 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addVaultId("string")
-                            .review(AgentSession.Review.NONE)
-                            .spendControl(
-                                AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                            .promptCacheOptions(
+                                AgentSession.PromptCacheOptions.builder()
+                                    .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                                    .build()
                             )
+                            .review(AgentSession.Review.NONE)
                             .build()
                     )
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -2067,36 +2057,13 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addRequiredAction(
-                            AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                            AgentSession.RequiredAction.McpApprovalRequest.builder()
                                 .request(
-                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                        .BrowserAuthentication
-                                        .builder()
-                                        .credentialOrigin("credential_origin")
-                                        .addField(
-                                            AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                                .Request
-                                                .BrowserAuthentication
-                                                .Field
-                                                .builder()
-                                                .id("id")
-                                                .label("label")
-                                                .required(true)
-                                                .type("type")
-                                                .build()
-                                        )
-                                        .addOption(
-                                            AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                                .Request
-                                                .BrowserAuthentication
-                                                .Option
-                                                .builder()
-                                                .id("id")
-                                                .addFieldId("string")
-                                                .label("label")
-                                                .build()
-                                        )
-                                        .reason("reason")
+                                    AgentSession.RequiredAction.McpApprovalRequest.Request.builder()
+                                        .arguments(JsonValue.from(mapOf<String, Any>()))
+                                        .message("message")
+                                        .name("name")
+                                        .serverLabel("server_label")
                                         .build()
                                 )
                                 .requestId("request_id")
@@ -2120,12 +2087,15 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addVaultId("string")
-                        .review(AgentSession.Review.NONE)
-                        .spendControl(
-                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        .promptCacheOptions(
+                            AgentSession.PromptCacheOptions.builder()
+                                .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                                .build()
                         )
+                        .review(AgentSession.Review.NONE)
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofInProgress(inProgress)
@@ -2236,39 +2206,14 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addRequiredAction(
-                                AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                                AgentSession.RequiredAction.McpApprovalRequest.builder()
                                     .request(
-                                        AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                            .Request
-                                            .BrowserAuthentication
+                                        AgentSession.RequiredAction.McpApprovalRequest.Request
                                             .builder()
-                                            .credentialOrigin("credential_origin")
-                                            .addField(
-                                                AgentSession.RequiredAction
-                                                    .ComputerUseApprovalRequest
-                                                    .Request
-                                                    .BrowserAuthentication
-                                                    .Field
-                                                    .builder()
-                                                    .id("id")
-                                                    .label("label")
-                                                    .required(true)
-                                                    .type("type")
-                                                    .build()
-                                            )
-                                            .addOption(
-                                                AgentSession.RequiredAction
-                                                    .ComputerUseApprovalRequest
-                                                    .Request
-                                                    .BrowserAuthentication
-                                                    .Option
-                                                    .builder()
-                                                    .id("id")
-                                                    .addFieldId("string")
-                                                    .label("label")
-                                                    .build()
-                                            )
-                                            .reason("reason")
+                                            .arguments(JsonValue.from(mapOf<String, Any>()))
+                                            .message("message")
+                                            .name("name")
+                                            .serverLabel("server_label")
                                             .build()
                                     )
                                     .requestId("request_id")
@@ -2294,12 +2239,15 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addVaultId("string")
-                            .review(AgentSession.Review.NONE)
-                            .spendControl(
-                                AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                            .promptCacheOptions(
+                                AgentSession.PromptCacheOptions.builder()
+                                    .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                                    .build()
                             )
+                            .review(AgentSession.Review.NONE)
                             .build()
                     )
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -2378,36 +2326,13 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addRequiredAction(
-                            AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                            AgentSession.RequiredAction.McpApprovalRequest.builder()
                                 .request(
-                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                        .BrowserAuthentication
-                                        .builder()
-                                        .credentialOrigin("credential_origin")
-                                        .addField(
-                                            AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                                .Request
-                                                .BrowserAuthentication
-                                                .Field
-                                                .builder()
-                                                .id("id")
-                                                .label("label")
-                                                .required(true)
-                                                .type("type")
-                                                .build()
-                                        )
-                                        .addOption(
-                                            AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                                .Request
-                                                .BrowserAuthentication
-                                                .Option
-                                                .builder()
-                                                .id("id")
-                                                .addFieldId("string")
-                                                .label("label")
-                                                .build()
-                                        )
-                                        .reason("reason")
+                                    AgentSession.RequiredAction.McpApprovalRequest.Request.builder()
+                                        .arguments(JsonValue.from(mapOf<String, Any>()))
+                                        .message("message")
+                                        .name("name")
+                                        .serverLabel("server_label")
                                         .build()
                                 )
                                 .requestId("request_id")
@@ -2431,12 +2356,15 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addVaultId("string")
-                        .review(AgentSession.Review.NONE)
-                        .spendControl(
-                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        .promptCacheOptions(
+                            AgentSession.PromptCacheOptions.builder()
+                                .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                                .build()
                         )
+                        .review(AgentSession.Review.NONE)
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofRequiresAction(requiresAction)
@@ -2547,39 +2475,14 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addRequiredAction(
-                                AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                                AgentSession.RequiredAction.McpApprovalRequest.builder()
                                     .request(
-                                        AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                            .Request
-                                            .BrowserAuthentication
+                                        AgentSession.RequiredAction.McpApprovalRequest.Request
                                             .builder()
-                                            .credentialOrigin("credential_origin")
-                                            .addField(
-                                                AgentSession.RequiredAction
-                                                    .ComputerUseApprovalRequest
-                                                    .Request
-                                                    .BrowserAuthentication
-                                                    .Field
-                                                    .builder()
-                                                    .id("id")
-                                                    .label("label")
-                                                    .required(true)
-                                                    .type("type")
-                                                    .build()
-                                            )
-                                            .addOption(
-                                                AgentSession.RequiredAction
-                                                    .ComputerUseApprovalRequest
-                                                    .Request
-                                                    .BrowserAuthentication
-                                                    .Option
-                                                    .builder()
-                                                    .id("id")
-                                                    .addFieldId("string")
-                                                    .label("label")
-                                                    .build()
-                                            )
-                                            .reason("reason")
+                                            .arguments(JsonValue.from(mapOf<String, Any>()))
+                                            .message("message")
+                                            .name("name")
+                                            .serverLabel("server_label")
                                             .build()
                                     )
                                     .requestId("request_id")
@@ -2605,12 +2508,15 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addVaultId("string")
-                            .review(AgentSession.Review.NONE)
-                            .spendControl(
-                                AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                            .promptCacheOptions(
+                                AgentSession.PromptCacheOptions.builder()
+                                    .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                                    .build()
                             )
+                            .review(AgentSession.Review.NONE)
                             .build()
                     )
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -2689,36 +2595,13 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addRequiredAction(
-                            AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                            AgentSession.RequiredAction.McpApprovalRequest.builder()
                                 .request(
-                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                        .BrowserAuthentication
-                                        .builder()
-                                        .credentialOrigin("credential_origin")
-                                        .addField(
-                                            AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                                .Request
-                                                .BrowserAuthentication
-                                                .Field
-                                                .builder()
-                                                .id("id")
-                                                .label("label")
-                                                .required(true)
-                                                .type("type")
-                                                .build()
-                                        )
-                                        .addOption(
-                                            AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                                .Request
-                                                .BrowserAuthentication
-                                                .Option
-                                                .builder()
-                                                .id("id")
-                                                .addFieldId("string")
-                                                .label("label")
-                                                .build()
-                                        )
-                                        .reason("reason")
+                                    AgentSession.RequiredAction.McpApprovalRequest.Request.builder()
+                                        .arguments(JsonValue.from(mapOf<String, Any>()))
+                                        .message("message")
+                                        .name("name")
+                                        .serverLabel("server_label")
                                         .build()
                                 )
                                 .requestId("request_id")
@@ -2742,12 +2625,15 @@ internal class AgentSessionEventTest {
                                 .build()
                         )
                         .addVaultId("string")
-                        .review(AgentSession.Review.NONE)
-                        .spendControl(
-                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        .promptCacheOptions(
+                            AgentSession.PromptCacheOptions.builder()
+                                .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                                .build()
                         )
+                        .review(AgentSession.Review.NONE)
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofFailed(failed)
@@ -2858,39 +2744,14 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addRequiredAction(
-                                AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                                AgentSession.RequiredAction.McpApprovalRequest.builder()
                                     .request(
-                                        AgentSession.RequiredAction.ComputerUseApprovalRequest
-                                            .Request
-                                            .BrowserAuthentication
+                                        AgentSession.RequiredAction.McpApprovalRequest.Request
                                             .builder()
-                                            .credentialOrigin("credential_origin")
-                                            .addField(
-                                                AgentSession.RequiredAction
-                                                    .ComputerUseApprovalRequest
-                                                    .Request
-                                                    .BrowserAuthentication
-                                                    .Field
-                                                    .builder()
-                                                    .id("id")
-                                                    .label("label")
-                                                    .required(true)
-                                                    .type("type")
-                                                    .build()
-                                            )
-                                            .addOption(
-                                                AgentSession.RequiredAction
-                                                    .ComputerUseApprovalRequest
-                                                    .Request
-                                                    .BrowserAuthentication
-                                                    .Option
-                                                    .builder()
-                                                    .id("id")
-                                                    .addFieldId("string")
-                                                    .label("label")
-                                                    .build()
-                                            )
-                                            .reason("reason")
+                                            .arguments(JsonValue.from(mapOf<String, Any>()))
+                                            .message("message")
+                                            .name("name")
+                                            .serverLabel("server_label")
                                             .build()
                                     )
                                     .requestId("request_id")
@@ -2916,12 +2777,15 @@ internal class AgentSessionEventTest {
                                     .build()
                             )
                             .addVaultId("string")
-                            .review(AgentSession.Review.NONE)
-                            .spendControl(
-                                AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                            .promptCacheOptions(
+                                AgentSession.PromptCacheOptions.builder()
+                                    .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                                    .build()
                             )
+                            .review(AgentSession.Review.NONE)
                             .build()
                     )
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -2955,6 +2819,7 @@ internal class AgentSessionEventTest {
                 .eventId("event_id")
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofEnvironmentPending(environmentPending)
@@ -3017,6 +2882,7 @@ internal class AgentSessionEventTest {
                     .eventId("event_id")
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -3050,6 +2916,7 @@ internal class AgentSessionEventTest {
                 .eventId("event_id")
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofEnvironmentConnected(environmentConnected)
@@ -3112,6 +2979,7 @@ internal class AgentSessionEventTest {
                     .eventId("event_id")
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -3145,6 +3013,7 @@ internal class AgentSessionEventTest {
                 .eventId("event_id")
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofEnvironmentDisconnected(environmentDisconnected)
@@ -3207,6 +3076,7 @@ internal class AgentSessionEventTest {
                     .eventId("event_id")
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -3240,6 +3110,7 @@ internal class AgentSessionEventTest {
                 .eventId("event_id")
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofEnvironmentFailed(environmentFailed)
@@ -3302,6 +3173,7 @@ internal class AgentSessionEventTest {
                     .eventId("event_id")
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -3332,6 +3204,7 @@ internal class AgentSessionEventTest {
                         .status(Subagent.Status.ACTIVE)
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofSubagentCreated(subagentCreated)
@@ -3391,6 +3264,7 @@ internal class AgentSessionEventTest {
                             .status(Subagent.Status.ACTIVE)
                             .build()
                     )
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -3421,6 +3295,7 @@ internal class AgentSessionEventTest {
                         .status(Subagent.Status.ACTIVE)
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofSubagentActive(subagentActive)
@@ -3480,6 +3355,7 @@ internal class AgentSessionEventTest {
                             .status(Subagent.Status.ACTIVE)
                             .build()
                     )
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -3510,6 +3386,7 @@ internal class AgentSessionEventTest {
                         .status(Subagent.Status.ACTIVE)
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofSubagentClosed(subagentClosed)
@@ -3569,6 +3446,7 @@ internal class AgentSessionEventTest {
                             .status(Subagent.Status.ACTIVE)
                             .build()
                     )
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -3598,6 +3476,7 @@ internal class AgentSessionEventTest {
                 .outputIndex(0L)
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofTurnItemDone(turnItemDone)
@@ -3656,6 +3535,7 @@ internal class AgentSessionEventTest {
                     .outputIndex(0L)
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -3679,6 +3559,7 @@ internal class AgentSessionEventTest {
                 .part(OutputText.builder().text("text").build())
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofTurnContentPartAdded(turnContentPartAdded)
@@ -3731,6 +3612,7 @@ internal class AgentSessionEventTest {
                     .part(OutputText.builder().text("text").build())
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -3754,6 +3636,7 @@ internal class AgentSessionEventTest {
                 .part(OutputText.builder().text("text").build())
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofTurnContentPartDone(turnContentPartDone)
@@ -3806,6 +3689,7 @@ internal class AgentSessionEventTest {
                     .part(OutputText.builder().text("text").build())
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -3829,6 +3713,7 @@ internal class AgentSessionEventTest {
                 .outputIndex(0L)
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofTurnOutputTextDelta(turnOutputTextDelta)
@@ -3881,6 +3766,7 @@ internal class AgentSessionEventTest {
                     .outputIndex(0L)
                     .sessionId("session_id")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -3904,6 +3790,7 @@ internal class AgentSessionEventTest {
                 .sessionId("session_id")
                 .text("text")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent = AgentSessionEvent.ofTurnOutputTextDone(turnOutputTextDone)
@@ -3956,6 +3843,7 @@ internal class AgentSessionEventTest {
                     .sessionId("session_id")
                     .text("text")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -3979,6 +3867,7 @@ internal class AgentSessionEventTest {
                 .sessionId("session_id")
                 .summaryIndex(0L)
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent =
@@ -4033,6 +3922,7 @@ internal class AgentSessionEventTest {
                     .sessionId("session_id")
                     .summaryIndex(0L)
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -4057,6 +3947,7 @@ internal class AgentSessionEventTest {
                 .status(AgentSessionTurnReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
                 .summaryIndex(0L)
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent =
@@ -4112,6 +4003,7 @@ internal class AgentSessionEventTest {
                     .status(AgentSessionTurnReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
                     .summaryIndex(0L)
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -4135,6 +4027,7 @@ internal class AgentSessionEventTest {
                 .sessionId("session_id")
                 .summaryIndex(0L)
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent =
@@ -4189,6 +4082,7 @@ internal class AgentSessionEventTest {
                     .sessionId("session_id")
                     .summaryIndex(0L)
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 
@@ -4212,6 +4106,7 @@ internal class AgentSessionEventTest {
                 .summaryIndex(0L)
                 .text("text")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         val agentSessionEvent =
@@ -4266,6 +4161,7 @@ internal class AgentSessionEventTest {
                     .summaryIndex(0L)
                     .text("text")
                     .turnId("turn_id")
+                    .obfuscation("obfuscation")
                     .build()
             )
 

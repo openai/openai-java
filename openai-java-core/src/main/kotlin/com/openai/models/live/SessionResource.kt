@@ -45,6 +45,7 @@ private constructor(
     private val delegation: JsonField<Delegation>,
     private val input: JsonField<List<InitialItem>>,
     private val instructions: JsonField<String>,
+    private val safetyIdentifier: JsonField<String>,
     private val store: JsonField<Boolean>,
     private val triggers: JsonField<List<DecisionTrigger>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -67,6 +68,9 @@ private constructor(
         @JsonProperty("instructions")
         @ExcludeMissing
         instructions: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("safety_identifier")
+        @ExcludeMissing
+        safetyIdentifier: JsonField<String> = JsonMissing.of(),
         @JsonProperty("store") @ExcludeMissing store: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("triggers")
         @ExcludeMissing
@@ -81,6 +85,7 @@ private constructor(
         delegation,
         input,
         instructions,
+        safetyIdentifier,
         store,
         triggers,
         mutableMapOf(),
@@ -226,6 +231,20 @@ private constructor(
     fun instructionsOrThrow(): String = instructions.getRequired("instructions")
 
     /**
+     * A stable identifier for your end user, used for safety monitoring and abuse detection.
+     * Returns empty if the JSON property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun safetyIdentifier(): java.util.Optional<String> =
+        safetyIdentifier.getOptional("safety_identifier")
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun safetyIdentifierOrThrow(): String = safetyIdentifier.getRequired("safety_identifier")
+
+    /**
      * Whether to store the session for later forking and recording download. Defaults to false for
      * new sessions. Returns empty if the JSON property is missing or null.
      *
@@ -314,6 +333,16 @@ private constructor(
     fun _instructions(): JsonField<String> = instructions
 
     /**
+     * Returns the raw JSON value of [safetyIdentifier].
+     *
+     * Unlike [safetyIdentifier], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("safety_identifier")
+    @ExcludeMissing
+    fun _safetyIdentifier(): JsonField<String> = safetyIdentifier
+
+    /**
      * Returns the raw JSON value of [store].
      *
      * Unlike [store], this method doesn't throw if the JSON field has an unexpected type.
@@ -354,6 +383,7 @@ private constructor(
             "delegation" to this.delegation,
             "input" to this.input,
             "instructions" to this.instructions,
+            "safety_identifier" to this.safetyIdentifier,
             "store" to this.store,
             "triggers" to this.triggers,
         )
@@ -395,6 +425,7 @@ private constructor(
         private var delegation: JsonField<Delegation> = JsonMissing.of()
         private var input: JsonField<MutableList<InitialItem>>? = null
         private var instructions: JsonField<String> = JsonMissing.of()
+        private var safetyIdentifier: JsonField<String> = JsonMissing.of()
         private var store: JsonField<Boolean> = JsonMissing.of()
         private var triggers: JsonField<MutableList<DecisionTrigger>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -410,6 +441,7 @@ private constructor(
             delegation = sessionResource.delegation
             input = sessionResource.input.map { it.toMutableList() }
             instructions = sessionResource.instructions
+            safetyIdentifier = sessionResource.safetyIdentifier
             store = sessionResource.store
             triggers = sessionResource.triggers.map { it.toMutableList() }
             additionalProperties = sessionResource.additionalProperties.toMutableMap()
@@ -656,6 +688,27 @@ private constructor(
         }
 
         /**
+         * A stable identifier for your end user, used for safety monitoring and abuse detection.
+         */
+        fun safetyIdentifier(safetyIdentifier: String?) =
+            safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
+
+        /**
+         * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+            this.safetyIdentifier = safetyIdentifier
+        }
+
+        /**
          * Whether to store the session for later forking and recording download. Defaults to false
          * for new sessions.
          */
@@ -743,6 +796,7 @@ private constructor(
                 delegation,
                 (input ?: JsonMissing.of()).map { it.toImmutable() },
                 instructions,
+                safetyIdentifier,
                 store,
                 (triggers ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toMutableMap(),
@@ -773,6 +827,7 @@ private constructor(
         delegation().ifPresent { it.validate() }
         input().ifPresent { it.forEach { it.validate() } }
         instructions()
+        safetyIdentifier()
         store()
         triggers().ifPresent { it.forEach { it.validate() } }
         validated = true
@@ -802,6 +857,7 @@ private constructor(
             (delegation.asKnown().getOrNull()?.validity() ?: 0) +
             (input.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (instructions.asKnown().isPresent) 1 else 0) +
+            (if (safetyIdentifier.asKnown().isPresent) 1 else 0) +
             (if (store.asKnown().isPresent) 1 else 0) +
             (triggers.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
@@ -2570,6 +2626,7 @@ private constructor(
             delegation == other.delegation &&
             input == other.input &&
             instructions == other.instructions &&
+            safetyIdentifier == other.safetyIdentifier &&
             store == other.store &&
             triggers == other.triggers &&
             additionalProperties == other.additionalProperties
@@ -2586,6 +2643,7 @@ private constructor(
             delegation,
             input,
             instructions,
+            safetyIdentifier,
             store,
             triggers,
             additionalProperties,
@@ -2595,5 +2653,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "SessionResource{id=$id, expiresAt=$expiresAt, model=$model, status=$status, audio=$audio, client=$client, delegation=$delegation, input=$input, instructions=$instructions, store=$store, triggers=$triggers, additionalProperties=$additionalProperties}"
+        "SessionResource{id=$id, expiresAt=$expiresAt, model=$model, status=$status, audio=$audio, client=$client, delegation=$delegation, input=$input, instructions=$instructions, safetyIdentifier=$safetyIdentifier, store=$store, triggers=$triggers, additionalProperties=$additionalProperties}"
 }

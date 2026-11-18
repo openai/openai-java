@@ -27,6 +27,7 @@ internal class AgentSessionSubagentCreatedEventTest {
                         .status(Subagent.Status.ACTIVE)
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionSubagentCreatedEvent.eventId()).contains("event_id")
@@ -44,6 +45,7 @@ internal class AgentSessionSubagentCreatedEventTest {
                     .status(Subagent.Status.ACTIVE)
                     .build()
             )
+        assertThat(agentSessionSubagentCreatedEvent.obfuscation()).contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 

@@ -20,6 +20,7 @@ internal class AgentSessionTurnReasoningSummaryPartAddedEventTest {
                 .sessionId("session_id")
                 .summaryIndex(0L)
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionTurnReasoningSummaryPartAddedEvent.eventId()).contains("event_id")
@@ -31,6 +32,8 @@ internal class AgentSessionTurnReasoningSummaryPartAddedEventTest {
             .contains("session_id")
         assertThat(agentSessionTurnReasoningSummaryPartAddedEvent.summaryIndex()).contains(0L)
         assertThat(agentSessionTurnReasoningSummaryPartAddedEvent.turnId()).contains("turn_id")
+        assertThat(agentSessionTurnReasoningSummaryPartAddedEvent.obfuscation())
+            .contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 

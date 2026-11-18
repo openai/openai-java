@@ -322,6 +322,8 @@ private constructor(
 
             @JvmField val GPT_6_ROSALIND = of("gpt-6-rosalind")
 
+            @JvmField val GPT_6_2_ASTRA_LAW = of("gpt-6.2-astra-law")
+
             @JvmStatic fun of(value: String) = ResponsesOnlyModel(JsonField.of(value))
         }
 
@@ -350,6 +352,7 @@ private constructor(
             GPT_6_CYBER,
             GPT_ROSALIND_RESEARCH,
             GPT_6_ROSALIND,
+            GPT_6_2_ASTRA_LAW,
         }
 
         /**
@@ -385,6 +388,7 @@ private constructor(
             GPT_6_CYBER,
             GPT_ROSALIND_RESEARCH,
             GPT_6_ROSALIND,
+            GPT_6_2_ASTRA_LAW,
             /**
              * An enum member indicating that [ResponsesOnlyModel] was instantiated with an unknown
              * value.
@@ -424,6 +428,7 @@ private constructor(
                 GPT_6_CYBER -> Value.GPT_6_CYBER
                 GPT_ROSALIND_RESEARCH -> Value.GPT_ROSALIND_RESEARCH
                 GPT_6_ROSALIND -> Value.GPT_6_ROSALIND
+                GPT_6_2_ASTRA_LAW -> Value.GPT_6_2_ASTRA_LAW
                 else -> Value._UNKNOWN
             }
 
@@ -461,6 +466,7 @@ private constructor(
                 GPT_6_CYBER -> Known.GPT_6_CYBER
                 GPT_ROSALIND_RESEARCH -> Known.GPT_ROSALIND_RESEARCH
                 GPT_6_ROSALIND -> Known.GPT_6_ROSALIND
+                GPT_6_2_ASTRA_LAW -> Known.GPT_6_2_ASTRA_LAW
                 else -> throw OpenAIInvalidDataException("Unknown ResponsesOnlyModel: $value")
             }
 

@@ -49,6 +49,7 @@ internal class SessionConfigTest {
                         .build()
                 )
                 .instructions("instructions")
+                .safetyIdentifier("safety_identifier")
                 .store(true)
                 .addTrigger(
                     DecisionTrigger.builder()
@@ -115,6 +116,7 @@ internal class SessionConfigTest {
                 )
             )
         assertThat(sessionConfig.instructions()).contains("instructions")
+        assertThat(sessionConfig.safetyIdentifier()).contains("safety_identifier")
         assertThat(sessionConfig.store()).contains(true)
         assertThat(sessionConfig.triggers().getOrNull())
             .containsExactly(

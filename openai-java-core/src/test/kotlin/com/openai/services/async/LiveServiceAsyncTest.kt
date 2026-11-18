@@ -72,6 +72,7 @@ internal class LiveServiceAsyncTest {
                                     .build()
                             )
                             .instructions("instructions")
+                            .safetyIdentifier("safety_identifier")
                             .store(true)
                             .addTrigger(
                                 DecisionTrigger.builder()

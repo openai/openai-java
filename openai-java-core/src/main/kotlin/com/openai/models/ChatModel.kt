@@ -22,7 +22,11 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
 
+        @JvmField val GPT_6_2_ASTRA = of("gpt-6.2-astra")
+
         @JvmField val GPT_6_1_SOL = of("gpt-6.1-sol")
+
+        @JvmField val GPT_6_2_SOL = of("gpt-6.2-sol")
 
         @JvmField val GPT_6_1_TERRA = of("gpt-6.1-terra")
 
@@ -479,7 +483,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
     @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Known {
         GPT_6_ASTRA,
+        GPT_6_2_ASTRA,
         GPT_6_1_SOL,
+        GPT_6_2_SOL,
         GPT_6_1_TERRA,
         GPT_6_SOL,
         GPT_6_LUNA,
@@ -786,7 +792,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
     @Deprecated("Use asString() for string values or _value() for raw JSON.")
     enum class Value {
         GPT_6_ASTRA,
+        GPT_6_2_ASTRA,
         GPT_6_1_SOL,
+        GPT_6_2_SOL,
         GPT_6_1_TERRA,
         GPT_6_SOL,
         GPT_6_LUNA,
@@ -1094,7 +1102,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
     fun value(): Value =
         when (this) {
             GPT_6_ASTRA -> Value.GPT_6_ASTRA
+            GPT_6_2_ASTRA -> Value.GPT_6_2_ASTRA
             GPT_6_1_SOL -> Value.GPT_6_1_SOL
+            GPT_6_2_SOL -> Value.GPT_6_2_SOL
             GPT_6_1_TERRA -> Value.GPT_6_1_TERRA
             GPT_6_SOL -> Value.GPT_6_SOL
             GPT_6_LUNA -> Value.GPT_6_LUNA
@@ -1195,7 +1205,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
     fun known(): Known =
         when (this) {
             GPT_6_ASTRA -> Known.GPT_6_ASTRA
+            GPT_6_2_ASTRA -> Known.GPT_6_2_ASTRA
             GPT_6_1_SOL -> Known.GPT_6_1_SOL
+            GPT_6_2_SOL -> Known.GPT_6_2_SOL
             GPT_6_1_TERRA -> Known.GPT_6_1_TERRA
             GPT_6_SOL -> Known.GPT_6_SOL
             GPT_6_LUNA -> Known.GPT_6_LUNA

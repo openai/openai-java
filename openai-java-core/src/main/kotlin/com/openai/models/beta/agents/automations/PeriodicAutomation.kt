@@ -17,6 +17,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Fields shared by periodic and one-time automations. */
@@ -34,6 +35,7 @@ private constructor(
     private val target: JsonField<AutomationTarget>,
     private val timezone: JsonField<String>,
     private val type: JsonValue,
+    private val pauseReason: JsonField<PauseReason>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -56,6 +58,9 @@ private constructor(
         target: JsonField<AutomationTarget> = JsonMissing.of(),
         @JsonProperty("timezone") @ExcludeMissing timezone: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("pause_reason")
+        @ExcludeMissing
+        pauseReason: JsonField<PauseReason> = JsonMissing.of(),
     ) : this(
         id,
         createdAt,
@@ -68,6 +73,7 @@ private constructor(
         target,
         timezone,
         type,
+        pauseReason,
         mutableMapOf(),
     )
 
@@ -235,6 +241,32 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<JsonValue> = type
 
     /**
+     * Why the service paused this schedule, or null for other schedules. Returns empty if the JSON
+     * property is missing or null.
+     *
+     * @throws OpenAIInvalidDataException if the value has an unexpected type.
+     */
+    fun pauseReason(): java.util.Optional<JsonValue> {
+        val raw = JsonValue.from(pauseReason)
+        return when {
+            raw.isMissing() || raw.isNull() -> java.util.Optional.empty()
+            !(raw == JsonValue.from("target_session_failed")) ->
+                throw OpenAIInvalidDataException("`pause_reason` is invalid")
+            else -> java.util.Optional.of(raw)
+        }
+    }
+
+    /**
+     * Returns the value or throws [OpenAIInvalidDataException] if it is missing, null, or invalid.
+     */
+    fun pauseReasonOrThrow(): JsonValue =
+        pauseReason().orElseGet { JsonValue.from(pauseReason).getRequired("pause_reason") }
+
+    @JsonProperty("pause_reason")
+    @ExcludeMissing
+    fun _pauseReason(): JsonField<JsonValue> = JsonValue.from(pauseReason)
+
+    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -326,6 +358,7 @@ private constructor(
             "target" to this.target,
             "timezone" to this.timezone,
             "type" to this.type,
+            "pause_reason" to this.pauseReason,
         )
 
     @JvmSynthetic
@@ -373,6 +406,7 @@ private constructor(
         private var target: JsonField<AutomationTarget>? = null
         private var timezone: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("periodic")
+        private var pauseReason: JsonField<PauseReason> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -388,6 +422,7 @@ private constructor(
             target = periodicAutomation.target
             timezone = periodicAutomation.timezone
             type = periodicAutomation.type
+            pauseReason = periodicAutomation.pauseReason
             additionalProperties = periodicAutomation.additionalProperties.toMutableMap()
         }
 
@@ -541,6 +576,23 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        /** Why the service paused this schedule, or null for other schedules. */
+        fun pauseReason(pauseReason: PauseReason?) = pauseReason(JsonField.ofNullable(pauseReason))
+
+        /** Alias for calling [Builder.pauseReason] with `pauseReason.orElse(null)`. */
+        fun pauseReason(pauseReason: Optional<PauseReason>) = pauseReason(pauseReason.getOrNull())
+
+        /**
+         * Sets [Builder.pauseReason] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.pauseReason] with a well-typed [PauseReason] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun pauseReason(pauseReason: JsonField<PauseReason>) = apply {
+            this.pauseReason = pauseReason
+        }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -593,6 +645,7 @@ private constructor(
                 checkRequired("target", target),
                 checkRequired("timezone", timezone),
                 type,
+                pauseReason,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -623,6 +676,7 @@ private constructor(
         targetOrThrow().validate()
         timezoneOrThrow()
         typeOrThrow()
+        pauseReason()
         validated = true
     }
 
@@ -651,7 +705,8 @@ private constructor(
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (target.asKnown().getOrNull()?.validity() ?: 0) +
             (if (timezone.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("periodic")) 1 else 0 }
+            type.let { if (it == JsonValue.from("periodic")) 1 else 0 } +
+            (pauseReason.asKnown().getOrNull()?.validity() ?: 0)
 
     /** Custom string key-value pairs attached to the automation. */
     class Metadata
@@ -919,6 +974,93 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /** Why the service paused this schedule, or null for other schedules. */
+    class PauseReason @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val TARGET_SESSION_FAILED = of("target_session_failed")
+
+            @JvmStatic fun of(value: String) = PauseReason(JsonField.of(value))
+        }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): PauseReason = apply {
+            if (validated) {
+                return@apply
+            }
+
+            asString()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            when (this) {
+                TARGET_SESSION_FAILED -> 1
+                else -> 0
+            }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PauseReason && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -936,6 +1078,7 @@ private constructor(
             target == other.target &&
             timezone == other.timezone &&
             type == other.type &&
+            pauseReason == other.pauseReason &&
             additionalProperties == other.additionalProperties
     }
 
@@ -952,6 +1095,7 @@ private constructor(
             target,
             timezone,
             type,
+            pauseReason,
             additionalProperties,
         )
     }
@@ -959,5 +1103,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "PeriodicAutomation{id=$id, createdAt=$createdAt, createdBy=$createdBy, expression=$expression, metadata=$metadata, name=$name, object_=$object_, status=$status, target=$target, timezone=$timezone, type=$type, additionalProperties=$additionalProperties}"
+        "PeriodicAutomation{id=$id, createdAt=$createdAt, createdBy=$createdBy, expression=$expression, metadata=$metadata, name=$name, object_=$object_, status=$status, target=$target, timezone=$timezone, type=$type, pauseReason=$pauseReason, additionalProperties=$additionalProperties}"
 }

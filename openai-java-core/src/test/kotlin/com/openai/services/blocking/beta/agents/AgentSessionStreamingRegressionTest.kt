@@ -87,7 +87,6 @@ internal class AgentSessionStreamingRegressionTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .spendControl(SessionCreateParams.SpendControl.builder().limit(1L).build())
                     .addVaultId("string")
                     .build()
             )

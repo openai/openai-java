@@ -44,6 +44,7 @@ internal class SessionAcceptParamsTest {
                             .build()
                     )
                     .instructions("instructions")
+                    .safetyIdentifier("safety_identifier")
                     .store(true)
                     .addTrigger(
                         DecisionTrigger.builder()
@@ -120,6 +121,7 @@ internal class SessionAcceptParamsTest {
                                 .build()
                         )
                         .instructions("instructions")
+                        .safetyIdentifier("safety_identifier")
                         .store(true)
                         .addTrigger(
                             DecisionTrigger.builder()
@@ -176,6 +178,7 @@ internal class SessionAcceptParamsTest {
                             .build()
                     )
                     .instructions("instructions")
+                    .safetyIdentifier("safety_identifier")
                     .store(true)
                     .addTrigger(
                         DecisionTrigger.builder()

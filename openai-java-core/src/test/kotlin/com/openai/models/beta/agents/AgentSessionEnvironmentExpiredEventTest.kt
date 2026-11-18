@@ -30,6 +30,7 @@ internal class AgentSessionEnvironmentExpiredEventTest {
                 .eventId("event_id")
                 .sessionId("session_id")
                 .turnId("turn_id")
+                .obfuscation("obfuscation")
                 .build()
 
         assertThat(agentSessionEnvironmentExpiredEvent.environment())
@@ -50,6 +51,7 @@ internal class AgentSessionEnvironmentExpiredEventTest {
         assertThat(agentSessionEnvironmentExpiredEvent.eventId()).contains("event_id")
         assertThat(agentSessionEnvironmentExpiredEvent.sessionId()).contains("session_id")
         assertThat(agentSessionEnvironmentExpiredEvent.turnId()).contains("turn_id")
+        assertThat(agentSessionEnvironmentExpiredEvent.obfuscation()).contains("obfuscation")
 
         val jsonMapper = jsonMapper()
 

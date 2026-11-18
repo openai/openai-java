@@ -97,6 +97,24 @@ internal class AgentTurnCollector(
                     failure = error(Reason.TURN_FAILED)
             }
             if (event.isError()) failure = error(Reason.STREAM_ERROR)
+            val raw = event._json().getOrNull()?.asObject()?.getOrNull()
+            val budgetSessionId =
+                if (raw?.get("type")?.asString()?.getOrNull() == "agent.session.budget_reached")
+                    raw["session"]
+                        ?.asObject()
+                        ?.getOrNull()
+                        ?.get("id")
+                        ?.asString()
+                        ?.getOrNull()
+                        ?.takeIf { it.isNotEmpty() }
+                else null
+            if (budgetSessionId != null && (sessionId == null || budgetSessionId == sessionId)) {
+                if (turn == null) {
+                    sessionId = budgetSessionId
+                    failure = error(Reason.INCOMPLETE_STREAM)
+                }
+                if (completed) idle = true
+            }
             event.idle().getOrNull()?.sessionOrThrow()?.let {
                 if (completed && it.idOrThrow() == sessionId) idle = true
             }

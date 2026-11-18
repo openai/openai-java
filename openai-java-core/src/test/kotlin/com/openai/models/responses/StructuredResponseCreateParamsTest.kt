@@ -57,6 +57,12 @@ internal class StructuredResponseCreateParamsTest {
         private val RESPONSES_MODEL = ResponsesModel.ofChat(CHAT_MODEL)
         private val RESPONSES_ONLY_MODEL = ResponsesModel.ResponsesOnlyModel.O1_PRO
         private val PARAMS_INPUT = ResponseCreateParams.Input.ofText(STRING)
+
+        private val BACKGROUND_OPTIONS =
+            ResponseCreateParams.BackgroundOptions.builder()
+                .completionWindow(ResponseCreateParams.BackgroundOptions.CompletionWindow._2H)
+                .continuationId(STRING)
+                .build()
         private val IMAGE =
             ResponseCreateParams.Image.builder()
                 .contextCompression(ResponseCreateParams.Image.ContextCompression.ENABLED)
@@ -156,6 +162,8 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("background", BOOLEAN),
                 DelegationWriteTestCase("background", OPTIONAL),
                 DelegationWriteTestCase("background", JSON_FIELD),
+                DelegationWriteTestCase("backgroundOptions", BACKGROUND_OPTIONS),
+                DelegationWriteTestCase("backgroundOptions", JsonField.of(BACKGROUND_OPTIONS)),
                 DelegationWriteTestCase("contextManagement", LIST),
                 DelegationWriteTestCase("contextManagement", OPTIONAL),
                 DelegationWriteTestCase("contextManagement", JSON_FIELD),

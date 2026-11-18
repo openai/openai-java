@@ -93,6 +93,7 @@ internal class PeriodicAutomationTest {
                         .build()
                 )
                 .timezone("timezone")
+                .pauseReason(PeriodicAutomation.PauseReason.TARGET_SESSION_FAILED)
                 .build()
 
         assertThat(periodicAutomation.id()).contains("id")
@@ -174,6 +175,8 @@ internal class PeriodicAutomationTest {
                 )
             )
         assertThat(periodicAutomation.timezone()).contains("timezone")
+        assertThat(periodicAutomation.pauseReason())
+            .contains(JsonValue.from("target_session_failed"))
 
         val jsonMapper = jsonMapper()
 
