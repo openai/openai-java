@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.108.0](https://github.com/openai/openai-java/compare/v4.107.0...v4.108.0) (2026-11-18)
+
+
+### Features
+
+* **api:** add Live MCP server configuration ([#1407](https://github.com/openai/openai-java/issues/1407)) ([607fa34](https://github.com/openai/openai-java/commit/607fa340fc8cda2b7ce783419aba8e5263083789))
+* **api:** type Managed Agents budget events ([#1411](https://github.com/openai/openai-java/issues/1411)) ([c1abbf1](https://github.com/openai/openai-java/commit/c1abbf1e93cec04e68ce8d8c3f7bbdeb4dc1febf))
+
 ## [4.107.0](https://github.com/openai/openai-java/compare/v4.106.0...v4.107.0) (2026-11-17)
 
 
