@@ -107,6 +107,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).contains(sessionStarted)
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -308,6 +310,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).contains(sessionUpdated)
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -449,6 +453,130 @@ internal class SidebandServerEventTest {
     }
 
     @Test
+    fun ofSessionResumed() {
+        val sessionResumed =
+            SidebandServerEvent.SessionResumed.builder()
+                .eventId("event_id")
+                .clientEventId("client_event_id")
+                .build()
+
+        val sidebandServerEvent = SidebandServerEvent.ofSessionResumed(sessionResumed)
+
+        assertThat(sidebandServerEvent.sessionStarted()).isEmpty
+        assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).contains(sessionResumed)
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(sidebandServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(sidebandServerEvent.responseEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionClosed()).isEmpty
+        assertThat(sidebandServerEvent.errorEvent()).isEmpty
+        assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSent()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofSessionResumedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val sidebandServerEvent =
+            SidebandServerEvent.ofSessionResumed(
+                SidebandServerEvent.SessionResumed.builder()
+                    .eventId("event_id")
+                    .clientEventId("client_event_id")
+                    .build()
+            )
+
+        val roundtrippedSidebandServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(sidebandServerEvent),
+                jacksonTypeRef<SidebandServerEvent>(),
+            )
+
+        assertThat(roundtrippedSidebandServerEvent).isEqualTo(sidebandServerEvent)
+    }
+
+    @Test
+    fun ofSessionPaused() {
+        val sessionPaused =
+            SidebandServerEvent.SessionPaused.builder()
+                .eventId("event_id")
+                .clientEventId("client_event_id")
+                .build()
+
+        val sidebandServerEvent = SidebandServerEvent.ofSessionPaused(sessionPaused)
+
+        assertThat(sidebandServerEvent.sessionStarted()).isEmpty
+        assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).contains(sessionPaused)
+        assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(sidebandServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(sidebandServerEvent.responseEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionClosed()).isEmpty
+        assertThat(sidebandServerEvent.errorEvent()).isEmpty
+        assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSent()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofSessionPausedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val sidebandServerEvent =
+            SidebandServerEvent.ofSessionPaused(
+                SidebandServerEvent.SessionPaused.builder()
+                    .eventId("event_id")
+                    .clientEventId("client_event_id")
+                    .build()
+            )
+
+        val roundtrippedSidebandServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(sidebandServerEvent),
+                jacksonTypeRef<SidebandServerEvent>(),
+            )
+
+        assertThat(roundtrippedSidebandServerEvent).isEqualTo(sidebandServerEvent)
+    }
+
+    @Test
     fun ofSessionInputAudioMuted() {
         val sessionInputAudioMuted =
             InputAudioMutedEvent.builder()
@@ -461,6 +589,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).contains(sessionInputAudioMuted)
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -522,6 +652,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted())
             .contains(sessionInputAudioUnmuted)
@@ -584,6 +716,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying())
@@ -646,6 +780,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -710,6 +846,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -776,6 +914,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -841,6 +981,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -908,6 +1050,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -976,6 +1120,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1049,6 +1195,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1154,6 +1302,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1257,6 +1407,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1325,6 +1477,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1401,6 +1555,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1472,7 +1628,9 @@ internal class SidebandServerEventTest {
         val sessionUsageUpdated =
             SessionUsageUpdatedEvent.builder()
                 .eventId("evt_usage_001")
-                .usage(SessionUsage.builder().seconds(32.5).build())
+                .usage(
+                    SessionUsage.builder().seconds(32.0).activeSeconds(0L).pausedSeconds(0L).build()
+                )
                 .clientEventId("client_event_id")
                 .contextWindow(
                     SessionUsageUpdatedEvent.ContextWindow.builder().usageRatio(0.12).build()
@@ -1483,6 +1641,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1518,7 +1678,13 @@ internal class SidebandServerEventTest {
             SidebandServerEvent.ofSessionUsageUpdated(
                 SessionUsageUpdatedEvent.builder()
                     .eventId("evt_usage_001")
-                    .usage(SessionUsage.builder().seconds(32.5).build())
+                    .usage(
+                        SessionUsage.builder()
+                            .seconds(32.0)
+                            .activeSeconds(0L)
+                            .pausedSeconds(0L)
+                            .build()
+                    )
                     .clientEventId("client_event_id")
                     .contextWindow(
                         SessionUsageUpdatedEvent.ContextWindow.builder().usageRatio(0.12).build()
@@ -1590,7 +1756,9 @@ internal class SidebandServerEventTest {
                         )
                         .build()
                 )
-                .usage(SessionUsage.builder().seconds(45.8).build())
+                .usage(
+                    SessionUsage.builder().seconds(45.0).activeSeconds(0L).pausedSeconds(0L).build()
+                )
                 .clientEventId("evt_close_001")
                 .build()
 
@@ -1598,6 +1766,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1688,7 +1858,13 @@ internal class SidebandServerEventTest {
                             )
                             .build()
                     )
-                    .usage(SessionUsage.builder().seconds(45.8).build())
+                    .usage(
+                        SessionUsage.builder()
+                            .seconds(45.0)
+                            .activeSeconds(0L)
+                            .pausedSeconds(0L)
+                            .build()
+                    )
                     .clientEventId("evt_close_001")
                     .build()
             )
@@ -1723,6 +1899,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1796,6 +1974,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1858,6 +2038,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1917,6 +2099,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1978,6 +2162,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -2039,6 +2225,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -2101,6 +2289,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -2162,6 +2352,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -2222,6 +2414,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -2289,6 +2483,8 @@ internal class SidebandServerEventTest {
 
         assertThat(sidebandServerEvent.sessionStarted()).isEmpty
         assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionResumed()).isEmpty
+        assertThat(sidebandServerEvent.sessionPaused()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty

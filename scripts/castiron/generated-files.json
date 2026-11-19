@@ -4899,7 +4899,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/MediaSessionConfig.kt": {
       "mode": "100644",
-      "sha256": "a026854c3d7380d19530e905680e065eb7b6e868fff65bf1271a74b39a2992ab"
+      "sha256": "dd6bf1562f081b88f74db302bfb62b5580fd6ecebf2949d7cca657527ad38bf3"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/MediaSessionForkConfig.kt": {
       "mode": "100644",
@@ -4947,7 +4947,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/ServerEvent.kt": {
       "mode": "100644",
-      "sha256": "696a4721fd32f5893bd6b4ae467119817e362d899fbe29e8b1c08a1fb22c58a9"
+      "sha256": "27575a24551ddfe87c140c0c1b8e2bd8cb8e61f32f9f5f45c0fa1de477baf791"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/ServerEventSelector.kt": {
       "mode": "100644",
@@ -4991,7 +4991,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/SessionUsage.kt": {
       "mode": "100644",
-      "sha256": "7d9d6ee6093a269f4337a5e1d2b8c4310dc960df2327013cb5dfcc24c1f07181"
+      "sha256": "97d866a771c905e5e3dabf0e6522a6d03932f62666951d1a96fb098a7a7db230"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/SessionUsageUpdatedEvent.kt": {
       "mode": "100644",
@@ -5011,7 +5011,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/forks/ForkServerEvent.kt": {
       "mode": "100644",
-      "sha256": "5227b946659805239365c232a5d0f045d7520a89d99607489a92a7d15e41d92b"
+      "sha256": "007583ec9d5130ec9c35801e13e2f533bb0bf666a0e15bf42e802ea76a63aac3"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/forks/ForkWebSocketBinding.kt": {
       "mode": "100644",
@@ -5051,7 +5051,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/sideband/SidebandServerEvent.kt": {
       "mode": "100644",
-      "sha256": "89056af97288c3afcdc06c0ed11b469c5449da10dd7f634ba52ebd1890024d2e"
+      "sha256": "df5b672739b13b939c5fa6b2fe00e2a0f033462af9407930ce8058a2d60f8714"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/sideband/SidebandWebSocketBinding.kt": {
       "mode": "100644",
@@ -13191,7 +13191,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/LiveCreateParamsTest.kt": {
       "mode": "100644",
-      "sha256": "6f658448df25fc111f3f65b0e0ece20f87843c410ae24170b12faa38e8a6756f"
+      "sha256": "837652dc1b0625db8ee92b72b18c1c1111229ac8ae2d920ed414ec7995dd112f"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/LiveCreateResponseTest.kt": {
       "mode": "100644",
@@ -13211,7 +13211,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/MediaSessionConfigTest.kt": {
       "mode": "100644",
-      "sha256": "38207d54db3a3cfeb4fec075f925aea2011259fa38adbbc85ec470a6edd68eee"
+      "sha256": "6580f626877c0ac456ea0e24e2883f9afd92683b0238ca0f58b1555e2e4a3c2c"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/MediaSessionForkConfigTest.kt": {
       "mode": "100644",
@@ -13263,7 +13263,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/ServerEventTest.kt": {
       "mode": "100644",
-      "sha256": "cb63065a8b75c44f7bdc50972d826c0efc9f549ce7c02657ec7ace0cbfe8ade8"
+      "sha256": "ecbf82bd2a39a553c0adc9021132082ca136a40ed1c35763f83651c0b16983b6"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/SessionCloseEventTest.kt": {
       "mode": "100644",
@@ -13271,7 +13271,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/SessionClosedEventTest.kt": {
       "mode": "100644",
-      "sha256": "6ddf4e6c6384941e110a8a0eb254c0a9dbca6f37b7da3546ce795fb337d037be"
+      "sha256": "947f45fd32225f86b5a97a1b80829d1629aa3a0e919714bcd5e9d5f7e574b02e"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/SessionConfigTest.kt": {
       "mode": "100644",
@@ -13303,11 +13303,11 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/SessionUsageTest.kt": {
       "mode": "100644",
-      "sha256": "acff31d7abf26869fdb624a49832ff34cf053753363651cbe88c8d47f09ee59a"
+      "sha256": "b790d1ab07531eaa1f3fddc38447c5ba2db8e6e1ae9d8ffd8195b420ec20341b"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/SessionUsageUpdatedEventTest.kt": {
       "mode": "100644",
-      "sha256": "3455becf5324209a42abd5b136d63727e5beba7f335b64e7322c1685578641e7"
+      "sha256": "821d778739a8bd9e2f86af618e3923b23798745920ed667fc5c21462af264a40"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/ThinkingAppendEventTest.kt": {
       "mode": "100644",
@@ -13323,7 +13323,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/forks/ForkServerEventTest.kt": {
       "mode": "100644",
-      "sha256": "332b814efc6377d95e12c8c75b6903db969e22e33aa1f46d014dcc17c59a8e6a"
+      "sha256": "8c014345e86b3050b99bd1940ed8e776f6246598b533fa78e76c15a64579302b"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/sessions/SessionAcceptParamsTest.kt": {
       "mode": "100644",
@@ -13359,7 +13359,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/sideband/SidebandServerEventTest.kt": {
       "mode": "100644",
-      "sha256": "45450041df2f70623f677cf007d22beab1595618f6d88673a078e1663555a811"
+      "sha256": "4dda225eddd4bda6c00912a2920ce56e4cda57455489ff88ecde48baff2f6c0c"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/models/ModelDeleteParamsTest.kt": {
       "mode": "100644",
@@ -15159,7 +15159,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/services/async/LiveServiceAsyncTest.kt": {
       "mode": "100644",
-      "sha256": "03792f973f8e5f3aa8a4885d49112636f48c9a6dd71fc507ee0dc36d372301ca"
+      "sha256": "f3f0c15fa636c639327004828c5cd182b89d90b19b2e0b72086206ddae026b45"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/async/ModelServiceAsyncTest.kt": {
       "mode": "100644",
@@ -15935,7 +15935,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/LiveServiceTest.kt": {
       "mode": "100644",
-      "sha256": "8a8291662ee68d1f97ed17b8e12433a410085fee2961c102ea5601d5bcafb8d6"
+      "sha256": "4d8f395406c5aa41bd26f8453214b613a4e88124526e024ac519e800b92fca50"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/ModelServiceTest.kt": {
       "mode": "100644",

@@ -107,6 +107,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).contains(sessionStarted)
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -308,6 +310,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).contains(sessionUpdated)
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -449,6 +453,130 @@ internal class ForkServerEventTest {
     }
 
     @Test
+    fun ofSessionResumed() {
+        val sessionResumed =
+            ForkServerEvent.SessionResumed.builder()
+                .eventId("event_id")
+                .clientEventId("client_event_id")
+                .build()
+
+        val forkServerEvent = ForkServerEvent.ofSessionResumed(sessionResumed)
+
+        assertThat(forkServerEvent.sessionStarted()).isEmpty
+        assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).contains(sessionResumed)
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
+        assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(forkServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(forkServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(forkServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(forkServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(forkServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(forkServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(forkServerEvent.decisionEvent()).isEmpty
+        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
+        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(forkServerEvent.responseEvent()).isEmpty
+        assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionClosed()).isEmpty
+        assertThat(forkServerEvent.errorEvent()).isEmpty
+        assertThat(forkServerEvent.infoEvent()).isEmpty
+        assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
+        assertThat(forkServerEvent.transportRinging()).isEmpty
+        assertThat(forkServerEvent.transportAnswered()).isEmpty
+        assertThat(forkServerEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofSessionResumedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val forkServerEvent =
+            ForkServerEvent.ofSessionResumed(
+                ForkServerEvent.SessionResumed.builder()
+                    .eventId("event_id")
+                    .clientEventId("client_event_id")
+                    .build()
+            )
+
+        val roundtrippedForkServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(forkServerEvent),
+                jacksonTypeRef<ForkServerEvent>(),
+            )
+
+        assertThat(roundtrippedForkServerEvent).isEqualTo(forkServerEvent)
+    }
+
+    @Test
+    fun ofSessionPaused() {
+        val sessionPaused =
+            ForkServerEvent.SessionPaused.builder()
+                .eventId("event_id")
+                .clientEventId("client_event_id")
+                .build()
+
+        val forkServerEvent = ForkServerEvent.ofSessionPaused(sessionPaused)
+
+        assertThat(forkServerEvent.sessionStarted()).isEmpty
+        assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).contains(sessionPaused)
+        assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(forkServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(forkServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(forkServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(forkServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(forkServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(forkServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(forkServerEvent.decisionEvent()).isEmpty
+        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
+        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(forkServerEvent.responseEvent()).isEmpty
+        assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionClosed()).isEmpty
+        assertThat(forkServerEvent.errorEvent()).isEmpty
+        assertThat(forkServerEvent.infoEvent()).isEmpty
+        assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSend()).isEmpty
+        assertThat(forkServerEvent.transportDtmfSent()).isEmpty
+        assertThat(forkServerEvent.transportRinging()).isEmpty
+        assertThat(forkServerEvent.transportAnswered()).isEmpty
+        assertThat(forkServerEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofSessionPausedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val forkServerEvent =
+            ForkServerEvent.ofSessionPaused(
+                ForkServerEvent.SessionPaused.builder()
+                    .eventId("event_id")
+                    .clientEventId("client_event_id")
+                    .build()
+            )
+
+        val roundtrippedForkServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(forkServerEvent),
+                jacksonTypeRef<ForkServerEvent>(),
+            )
+
+        assertThat(roundtrippedForkServerEvent).isEqualTo(forkServerEvent)
+    }
+
+    @Test
     fun ofSessionInputAudioMuted() {
         val sessionInputAudioMuted =
             InputAudioMutedEvent.builder()
@@ -460,6 +588,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).contains(sessionInputAudioMuted)
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -520,6 +650,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).contains(sessionInputAudioUnmuted)
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -581,6 +713,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying())
@@ -643,6 +777,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -707,6 +843,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -772,6 +910,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -836,6 +976,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -895,6 +1037,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -953,6 +1097,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1018,6 +1164,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1086,6 +1234,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1158,6 +1308,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1262,6 +1414,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1365,6 +1519,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1433,6 +1589,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1509,6 +1667,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1580,7 +1740,9 @@ internal class ForkServerEventTest {
         val sessionUsageUpdated =
             SessionUsageUpdatedEvent.builder()
                 .eventId("evt_usage_001")
-                .usage(SessionUsage.builder().seconds(32.5).build())
+                .usage(
+                    SessionUsage.builder().seconds(32.0).activeSeconds(0L).pausedSeconds(0L).build()
+                )
                 .clientEventId("client_event_id")
                 .contextWindow(
                     SessionUsageUpdatedEvent.ContextWindow.builder().usageRatio(0.12).build()
@@ -1591,6 +1753,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1626,7 +1790,13 @@ internal class ForkServerEventTest {
             ForkServerEvent.ofSessionUsageUpdated(
                 SessionUsageUpdatedEvent.builder()
                     .eventId("evt_usage_001")
-                    .usage(SessionUsage.builder().seconds(32.5).build())
+                    .usage(
+                        SessionUsage.builder()
+                            .seconds(32.0)
+                            .activeSeconds(0L)
+                            .pausedSeconds(0L)
+                            .build()
+                    )
                     .clientEventId("client_event_id")
                     .contextWindow(
                         SessionUsageUpdatedEvent.ContextWindow.builder().usageRatio(0.12).build()
@@ -1698,7 +1868,9 @@ internal class ForkServerEventTest {
                         )
                         .build()
                 )
-                .usage(SessionUsage.builder().seconds(45.8).build())
+                .usage(
+                    SessionUsage.builder().seconds(45.0).activeSeconds(0L).pausedSeconds(0L).build()
+                )
                 .clientEventId("evt_close_001")
                 .build()
 
@@ -1706,6 +1878,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1796,7 +1970,13 @@ internal class ForkServerEventTest {
                             )
                             .build()
                     )
-                    .usage(SessionUsage.builder().seconds(45.8).build())
+                    .usage(
+                        SessionUsage.builder()
+                            .seconds(45.0)
+                            .activeSeconds(0L)
+                            .pausedSeconds(0L)
+                            .build()
+                    )
                     .clientEventId("evt_close_001")
                     .build()
             )
@@ -1831,6 +2011,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1904,6 +2086,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -1965,6 +2149,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -2026,6 +2212,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -2088,6 +2276,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -2149,6 +2339,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -2209,6 +2401,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
@@ -2276,6 +2470,8 @@ internal class ForkServerEventTest {
 
         assertThat(forkServerEvent.sessionStarted()).isEmpty
         assertThat(forkServerEvent.sessionUpdated()).isEmpty
+        assertThat(forkServerEvent.sessionResumed()).isEmpty
+        assertThat(forkServerEvent.sessionPaused()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
         assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
         assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty

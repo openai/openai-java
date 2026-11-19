@@ -14,7 +14,9 @@ internal class SessionUsageUpdatedEventTest {
         val sessionUsageUpdatedEvent =
             SessionUsageUpdatedEvent.builder()
                 .eventId("evt_usage_001")
-                .usage(SessionUsage.builder().seconds(32.5).build())
+                .usage(
+                    SessionUsage.builder().seconds(32.0).activeSeconds(0L).pausedSeconds(0L).build()
+                )
                 .clientEventId("client_event_id")
                 .contextWindow(
                     SessionUsageUpdatedEvent.ContextWindow.builder().usageRatio(0.12).build()
@@ -23,7 +25,9 @@ internal class SessionUsageUpdatedEventTest {
 
         assertThat(sessionUsageUpdatedEvent.eventId()).isEqualTo("evt_usage_001")
         assertThat(sessionUsageUpdatedEvent.usage())
-            .isEqualTo(SessionUsage.builder().seconds(32.5).build())
+            .isEqualTo(
+                SessionUsage.builder().seconds(32.0).activeSeconds(0L).pausedSeconds(0L).build()
+            )
         assertThat(sessionUsageUpdatedEvent.clientEventId()).contains("client_event_id")
         assertThat(sessionUsageUpdatedEvent.contextWindow())
             .contains(SessionUsageUpdatedEvent.ContextWindow.builder().usageRatio(0.12).build())

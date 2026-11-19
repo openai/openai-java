@@ -44,11 +44,13 @@ private constructor(
     private val audio: JsonField<Audio>,
     private val client: JsonField<ClientConfig>,
     private val delegation: JsonField<Delegation>,
+    private val idleTimeoutS: JsonField<Long>,
     private val input: JsonField<List<InitialItem>>,
     private val instructions: JsonField<String>,
     private val safetyIdentifier: JsonField<String>,
     private val store: JsonField<Boolean>,
     private val triggers: JsonField<List<DecisionTrigger>>,
+    private val wakePolicy: JsonField<WakePolicy>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -60,6 +62,9 @@ private constructor(
         @JsonProperty("delegation")
         @ExcludeMissing
         delegation: JsonField<Delegation> = JsonMissing.of(),
+        @JsonProperty("idle_timeout_s")
+        @ExcludeMissing
+        idleTimeoutS: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("input")
         @ExcludeMissing
         input: JsonField<List<InitialItem>> = JsonMissing.of(),
@@ -73,16 +78,21 @@ private constructor(
         @JsonProperty("triggers")
         @ExcludeMissing
         triggers: JsonField<List<DecisionTrigger>> = JsonMissing.of(),
+        @JsonProperty("wake_policy")
+        @ExcludeMissing
+        wakePolicy: JsonField<WakePolicy> = JsonMissing.of(),
     ) : this(
         model,
         audio,
         client,
         delegation,
+        idleTimeoutS,
         input,
         instructions,
         safetyIdentifier,
         store,
         triggers,
+        wakePolicy,
         mutableMapOf(),
     )
 
@@ -121,6 +131,16 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun delegation(): Optional<Delegation> = delegation.getOptional("delegation")
+
+    /**
+     * Whole seconds of inactivity after which a Live WebRTC session with a speech wake policy
+     * pauses inference. The connection and conversation history are retained. Omit to keep
+     * inference active until the session ends.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun idleTimeoutS(): Optional<Long> = idleTimeoutS.getOptional("idle_timeout_s")
 
     /**
      * Ordered text-only history supplied before startup. Supports developer, user, and assistant
@@ -174,6 +194,15 @@ private constructor(
     fun triggers(): Optional<List<DecisionTrigger>> = triggers.getOptional("triggers")
 
     /**
+     * Inference starts when the Live WebRTC session connects. After an idle pause, microphone
+     * speech resumes inference.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun wakePolicy(): Optional<WakePolicy> = wakePolicy.getOptional("wake_policy")
+
+    /**
      * Returns the raw JSON value of [model].
      *
      * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
@@ -202,6 +231,15 @@ private constructor(
     @JsonProperty("delegation")
     @ExcludeMissing
     fun _delegation(): JsonField<Delegation> = delegation
+
+    /**
+     * Returns the raw JSON value of [idleTimeoutS].
+     *
+     * Unlike [idleTimeoutS], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("idle_timeout_s")
+    @ExcludeMissing
+    fun _idleTimeoutS(): JsonField<Long> = idleTimeoutS
 
     /**
      * Returns the raw JSON value of [input].
@@ -245,6 +283,15 @@ private constructor(
     @ExcludeMissing
     fun _triggers(): JsonField<List<DecisionTrigger>> = triggers
 
+    /**
+     * Returns the raw JSON value of [wakePolicy].
+     *
+     * Unlike [wakePolicy], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("wake_policy")
+    @ExcludeMissing
+    fun _wakePolicy(): JsonField<WakePolicy> = wakePolicy
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -265,11 +312,13 @@ private constructor(
             "audio" to this.audio,
             "client" to this.client,
             "delegation" to this.delegation,
+            "idle_timeout_s" to this.idleTimeoutS,
             "input" to this.input,
             "instructions" to this.instructions,
             "safety_identifier" to this.safetyIdentifier,
             "store" to this.store,
             "triggers" to this.triggers,
+            "wake_policy" to this.wakePolicy,
         )
 
     /**
@@ -306,11 +355,13 @@ private constructor(
         private var audio: JsonField<Audio> = JsonMissing.of()
         private var client: JsonField<ClientConfig> = JsonMissing.of()
         private var delegation: JsonField<Delegation> = JsonMissing.of()
+        private var idleTimeoutS: JsonField<Long> = JsonMissing.of()
         private var input: JsonField<MutableList<InitialItem>>? = null
         private var instructions: JsonField<String> = JsonMissing.of()
         private var safetyIdentifier: JsonField<String> = JsonMissing.of()
         private var store: JsonField<Boolean> = JsonMissing.of()
         private var triggers: JsonField<MutableList<DecisionTrigger>>? = null
+        private var wakePolicy: JsonField<WakePolicy> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -319,11 +370,13 @@ private constructor(
             audio = mediaSessionConfig.audio
             client = mediaSessionConfig.client
             delegation = mediaSessionConfig.delegation
+            idleTimeoutS = mediaSessionConfig.idleTimeoutS
             input = mediaSessionConfig.input.map { it.toMutableList() }
             instructions = mediaSessionConfig.instructions
             safetyIdentifier = mediaSessionConfig.safetyIdentifier
             store = mediaSessionConfig.store
             triggers = mediaSessionConfig.triggers.map { it.toMutableList() }
+            wakePolicy = mediaSessionConfig.wakePolicy
             additionalProperties = mediaSessionConfig.additionalProperties.toMutableMap()
         }
 
@@ -428,6 +481,22 @@ private constructor(
          */
         fun decisionsDelegation(decisions: DecisionsDelegationConfig) =
             delegation(Delegation.Decisions.builder().decisions(decisions).build())
+
+        /**
+         * Whole seconds of inactivity after which a Live WebRTC session with a speech wake policy
+         * pauses inference. The connection and conversation history are retained. Omit to keep
+         * inference active until the session ends.
+         */
+        fun idleTimeoutS(idleTimeoutS: Long) = idleTimeoutS(JsonField.of(idleTimeoutS))
+
+        /**
+         * Sets [Builder.idleTimeoutS] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.idleTimeoutS] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun idleTimeoutS(idleTimeoutS: JsonField<Long>) = apply { this.idleTimeoutS = idleTimeoutS }
 
         /**
          * Ordered text-only history supplied before startup. Supports developer, user, and
@@ -593,6 +662,21 @@ private constructor(
                 }
         }
 
+        /**
+         * Inference starts when the Live WebRTC session connects. After an idle pause, microphone
+         * speech resumes inference.
+         */
+        fun wakePolicy(wakePolicy: WakePolicy) = wakePolicy(JsonField.of(wakePolicy))
+
+        /**
+         * Sets [Builder.wakePolicy] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.wakePolicy] with a well-typed [WakePolicy] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun wakePolicy(wakePolicy: JsonField<WakePolicy>) = apply { this.wakePolicy = wakePolicy }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -630,11 +714,13 @@ private constructor(
                 audio,
                 client,
                 delegation,
+                idleTimeoutS,
                 (input ?: JsonMissing.of()).map { it.toImmutable() },
                 instructions,
                 safetyIdentifier,
                 store,
                 (triggers ?: JsonMissing.of()).map { it.toImmutable() },
+                wakePolicy,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -658,11 +744,13 @@ private constructor(
         audio().ifPresent { it.validate() }
         client().ifPresent { it.validate() }
         delegation().ifPresent { it.validate() }
+        idleTimeoutS()
         input().ifPresent { it.forEach { it.validate() } }
         instructions()
         safetyIdentifier()
         store()
         triggers().ifPresent { it.forEach { it.validate() } }
+        wakePolicy().ifPresent { it.validate() }
         validated = true
     }
 
@@ -685,11 +773,13 @@ private constructor(
             (audio.asKnown().getOrNull()?.validity() ?: 0) +
             (client.asKnown().getOrNull()?.validity() ?: 0) +
             (delegation.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (idleTimeoutS.asKnown().isPresent) 1 else 0) +
             (input.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (instructions.asKnown().isPresent) 1 else 0) +
             (if (safetyIdentifier.asKnown().isPresent) 1 else 0) +
             (if (store.asKnown().isPresent) 1 else 0) +
-            (triggers.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+            (triggers.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (wakePolicy.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
      * The Live model. Required in the session configuration for every transport; do not pass it as
@@ -2316,6 +2406,236 @@ private constructor(
         }
     }
 
+    /**
+     * Inference starts when the Live WebRTC session connects. After an idle pause, microphone
+     * speech resumes inference.
+     */
+    class WakePolicy
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val type: JsonValue,
+        private val vadThreshold: JsonField<Double>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("vad_threshold")
+            @ExcludeMissing
+            vadThreshold: JsonField<Double> = JsonMissing.of(),
+        ) : this(type, vadThreshold, mutableMapOf())
+
+        /**
+         * The wake policy type, always `speech`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("speech")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * The speech detection threshold for resuming paused inference, from 0 to 1 inclusive.
+         * Defaults to 0.5. Higher values require stronger evidence of speech. This setting is
+         * independent of active turn detection.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun vadThreshold(): Optional<Double> = vadThreshold.getOptional("vad_threshold")
+
+        /**
+         * Returns the raw JSON value of [vadThreshold].
+         *
+         * Unlike [vadThreshold], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("vad_threshold")
+        @ExcludeMissing
+        fun _vadThreshold(): JsonField<Double> = vadThreshold
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "type" to this.type,
+                "vad_threshold" to this.vadThreshold,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [WakePolicy]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WakePolicy]. */
+        class Builder internal constructor() {
+
+            private var type: JsonValue = JsonValue.from("speech")
+            private var vadThreshold: JsonField<Double> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(wakePolicy: WakePolicy) = apply {
+                type = wakePolicy.type
+                vadThreshold = wakePolicy.vadThreshold
+                additionalProperties = wakePolicy.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("speech")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /**
+             * The speech detection threshold for resuming paused inference, from 0 to 1 inclusive.
+             * Defaults to 0.5. Higher values require stronger evidence of speech. This setting is
+             * independent of active turn detection.
+             */
+            fun vadThreshold(vadThreshold: Double) = vadThreshold(JsonField.of(vadThreshold))
+
+            /**
+             * Sets [Builder.vadThreshold] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.vadThreshold] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun vadThreshold(vadThreshold: JsonField<Double>) = apply {
+                this.vadThreshold = vadThreshold
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [WakePolicy].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): WakePolicy =
+                WakePolicy(type, vadThreshold, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): WakePolicy = apply {
+            if (validated) {
+                return@apply
+            }
+
+            _type().let {
+                if (it != JsonValue.from("speech")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            vadThreshold()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            type.let { if (it == JsonValue.from("speech")) 1 else 0 } +
+                (if (vadThreshold.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is WakePolicy &&
+                type == other.type &&
+                vadThreshold == other.vadThreshold &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(type, vadThreshold, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WakePolicy{type=$type, vadThreshold=$vadThreshold, additionalProperties=$additionalProperties}"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -2326,11 +2646,13 @@ private constructor(
             audio == other.audio &&
             client == other.client &&
             delegation == other.delegation &&
+            idleTimeoutS == other.idleTimeoutS &&
             input == other.input &&
             instructions == other.instructions &&
             safetyIdentifier == other.safetyIdentifier &&
             store == other.store &&
             triggers == other.triggers &&
+            wakePolicy == other.wakePolicy &&
             additionalProperties == other.additionalProperties
     }
 
@@ -2340,11 +2662,13 @@ private constructor(
             audio,
             client,
             delegation,
+            idleTimeoutS,
             input,
             instructions,
             safetyIdentifier,
             store,
             triggers,
+            wakePolicy,
             additionalProperties,
         )
     }
@@ -2352,5 +2676,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "MediaSessionConfig{model=$model, audio=$audio, client=$client, delegation=$delegation, input=$input, instructions=$instructions, safetyIdentifier=$safetyIdentifier, store=$store, triggers=$triggers, additionalProperties=$additionalProperties}"
+        "MediaSessionConfig{model=$model, audio=$audio, client=$client, delegation=$delegation, idleTimeoutS=$idleTimeoutS, input=$input, instructions=$instructions, safetyIdentifier=$safetyIdentifier, store=$store, triggers=$triggers, wakePolicy=$wakePolicy, additionalProperties=$additionalProperties}"
 }
