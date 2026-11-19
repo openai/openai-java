@@ -12,7 +12,7 @@ internal class LiveCreateParamsTest {
         LiveCreateParams.builder()
             .session(
                 MediaSessionConfig.builder()
-                    .model(MediaSessionConfig.Model.GPT_LIVE_1)
+                    .model(MediaSessionConfig.Model.GPT_LIVE_1_1)
                     .audio(
                         MediaSessionConfig.Audio.builder()
                             .output(
@@ -76,7 +76,7 @@ internal class LiveCreateParamsTest {
             LiveCreateParams.builder()
                 .session(
                     MediaSessionConfig.builder()
-                        .model(MediaSessionConfig.Model.GPT_LIVE_1)
+                        .model(MediaSessionConfig.Model.GPT_LIVE_1_1)
                         .audio(
                             MediaSessionConfig.Audio.builder()
                                 .output(
@@ -138,7 +138,7 @@ internal class LiveCreateParamsTest {
         assertThat(body.session())
             .isEqualTo(
                 MediaSessionConfig.builder()
-                    .model(MediaSessionConfig.Model.GPT_LIVE_1)
+                    .model(MediaSessionConfig.Model.GPT_LIVE_1_1)
                     .audio(
                         MediaSessionConfig.Audio.builder()
                             .output(
@@ -201,7 +201,9 @@ internal class LiveCreateParamsTest {
         val params =
             LiveCreateParams.builder()
                 .session(
-                    MediaSessionConfig.builder().model(MediaSessionConfig.Model.GPT_LIVE_1).build()
+                    MediaSessionConfig.builder()
+                        .model(MediaSessionConfig.Model.GPT_LIVE_1_1)
+                        .build()
                 )
                 .transport(LiveCreateParams.Transport.builder().sdp("x").build())
                 .build()
@@ -210,7 +212,7 @@ internal class LiveCreateParamsTest {
 
         assertThat(body.session())
             .isEqualTo(
-                MediaSessionConfig.builder().model(MediaSessionConfig.Model.GPT_LIVE_1).build()
+                MediaSessionConfig.builder().model(MediaSessionConfig.Model.GPT_LIVE_1_1).build()
             )
         assertThat(body.transport())
             .isEqualTo(LiveCreateParams.Transport.builder().sdp("x").build())

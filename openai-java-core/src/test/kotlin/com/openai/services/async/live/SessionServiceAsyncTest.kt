@@ -50,7 +50,7 @@ internal class SessionServiceAsyncTest {
                     .sessionId("session_id")
                     .session(
                         SessionAcceptParams.Session.builder()
-                            .model(SessionAcceptParams.Session.Model.GPT_LIVE_1)
+                            .model(SessionAcceptParams.Session.Model.GPT_LIVE_1_1)
                             .audio(
                                 SessionAcceptParams.Session.Audio.builder()
                                     .output(

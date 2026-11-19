@@ -1136,12 +1136,15 @@ private constructor(
 
                 @JvmField val GPT_LIVE_1 = of("gpt-live-1")
 
+                @JvmField val GPT_LIVE_1_1 = of("gpt-live-1.1")
+
                 @JvmStatic fun of(value: String) = Model(JsonField.of(value))
             }
 
             /** An enum containing [Model]'s known values. */
             enum class Known {
-                GPT_LIVE_1
+                GPT_LIVE_1,
+                GPT_LIVE_1_1,
             }
 
             /**
@@ -1155,6 +1158,7 @@ private constructor(
              */
             enum class Value {
                 GPT_LIVE_1,
+                GPT_LIVE_1_1,
                 /**
                  * An enum member indicating that [Model] was instantiated with an unknown value.
                  */
@@ -1171,6 +1175,7 @@ private constructor(
             fun value(): Value =
                 when (this) {
                     GPT_LIVE_1 -> Value.GPT_LIVE_1
+                    GPT_LIVE_1_1 -> Value.GPT_LIVE_1_1
                     else -> Value._UNKNOWN
                 }
 
@@ -1186,6 +1191,7 @@ private constructor(
             fun known(): Known =
                 when (this) {
                     GPT_LIVE_1 -> Known.GPT_LIVE_1
+                    GPT_LIVE_1_1 -> Known.GPT_LIVE_1_1
                     else -> throw OpenAIInvalidDataException("Unknown Model: $value")
                 }
 

@@ -33,7 +33,7 @@ internal class LiveServiceTest {
                 LiveCreateParams.builder()
                     .session(
                         MediaSessionConfig.builder()
-                            .model(MediaSessionConfig.Model.GPT_LIVE_1)
+                            .model(MediaSessionConfig.Model.GPT_LIVE_1_1)
                             .audio(
                                 MediaSessionConfig.Audio.builder()
                                     .output(
