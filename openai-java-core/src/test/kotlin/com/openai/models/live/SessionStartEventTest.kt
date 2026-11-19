@@ -15,7 +15,7 @@ internal class SessionStartEventTest {
             SessionStartEvent.builder()
                 .session(
                     SessionConfig.builder()
-                        .model(SessionConfig.Model.GPT_LIVE_1)
+                        .model(SessionConfig.Model.GPT_LIVE_1_1)
                         .audio(
                             SessionConfig.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
@@ -78,7 +78,7 @@ internal class SessionStartEventTest {
         assertThat(sessionStartEvent.session())
             .isEqualTo(
                 SessionConfig.builder()
-                    .model(SessionConfig.Model.GPT_LIVE_1)
+                    .model(SessionConfig.Model.GPT_LIVE_1_1)
                     .audio(
                         SessionConfig.Audio.builder()
                             .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)

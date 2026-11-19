@@ -14,7 +14,7 @@ internal class MediaSessionConfigTest {
     fun createAndRoundtrip() {
         val mediaSessionConfig =
             MediaSessionConfig.builder()
-                .model(MediaSessionConfig.Model.GPT_LIVE_1)
+                .model(MediaSessionConfig.Model.GPT_LIVE_1_1)
                 .audio(
                     MediaSessionConfig.Audio.builder()
                         .output(
@@ -68,7 +68,7 @@ internal class MediaSessionConfigTest {
                 )
                 .build()
 
-        assertThat(mediaSessionConfig.model()).isEqualTo(MediaSessionConfig.Model.GPT_LIVE_1)
+        assertThat(mediaSessionConfig.model()).isEqualTo(MediaSessionConfig.Model.GPT_LIVE_1_1)
         assertThat(mediaSessionConfig.audio())
             .contains(
                 MediaSessionConfig.Audio.builder()

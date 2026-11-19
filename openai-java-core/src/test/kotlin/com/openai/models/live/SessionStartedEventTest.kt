@@ -18,7 +18,7 @@ internal class SessionStartedEventTest {
                     SessionResource.builder()
                         .id("live_abc123")
                         .expiresAt(1788555600L)
-                        .model(SessionResource.Model.GPT_LIVE_1)
+                        .model(SessionResource.Model.GPT_LIVE_1_1)
                         .audio(
                             SessionResource.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
@@ -72,7 +72,7 @@ internal class SessionStartedEventTest {
                 SessionResource.builder()
                     .id("live_abc123")
                     .expiresAt(1788555600L)
-                    .model(SessionResource.Model.GPT_LIVE_1)
+                    .model(SessionResource.Model.GPT_LIVE_1_1)
                     .audio(
                         SessionResource.Audio.builder()
                             .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)

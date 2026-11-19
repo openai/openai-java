@@ -16,7 +16,7 @@ internal class SessionResourceTest {
             SessionResource.builder()
                 .id("id")
                 .expiresAt(0L)
-                .model(SessionResource.Model.GPT_LIVE_1)
+                .model(SessionResource.Model.GPT_LIVE_1_1)
                 .audio(
                     SessionResource.Audio.builder()
                         .audioPcmFormat(AudioFormat.AudioPcm.Rate._16000)
@@ -71,7 +71,7 @@ internal class SessionResourceTest {
 
         assertThat(sessionResource.id()).isEqualTo("id")
         assertThat(sessionResource.expiresAt()).isEqualTo(0L)
-        assertThat(sessionResource.model()).isEqualTo(SessionResource.Model.GPT_LIVE_1)
+        assertThat(sessionResource.model()).isEqualTo(SessionResource.Model.GPT_LIVE_1_1)
         assertThat(sessionResource.audio())
             .contains(
                 SessionResource.Audio.builder()
