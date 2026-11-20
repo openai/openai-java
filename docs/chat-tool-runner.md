@@ -12,6 +12,7 @@ public static class LookupPrice {
 ChatCompletionToolRunner runner = ChatCompletionToolRunner.builder()
         .client(client)
         .maxTurns(8)
+        .maxToolCalls(32)
         .addTool(LookupPrice.class, args -> catalog.lookupPrice(args.product))
         .build();
 
@@ -33,7 +34,12 @@ Register tools on the runner, not in request params. The request must use one ch
 Other settings, including `toolChoice`, headers, model, and temperature, are preserved
 on every request. A forced tool choice may prevent a final answer and exhaust the
 limit. `maxTurns` counts model requests, including the final answer request; at the
-limit, pending callbacks are not executed. `requestOptions` and client configuration
+limit, pending callbacks are not executed. `maxToolCalls` independently limits cumulative
+callback invocations per run (default 32). If a turn requests more calls than remain,
+the entire turn fails before any of its callbacks execute; earlier results remain in
+the exception history. Zero allows final answers but no callbacks. The budget resets
+for each run. Choose a limit appropriate to the cost and side effects of your tools.
+This is an execution budget, not a limit on JSON or result size. `requestOptions` and client configuration
 control HTTP timeouts and retries. There is no overall wall-clock deadline, and a
 callback can block; interruption is checked between requests and callbacks.
 

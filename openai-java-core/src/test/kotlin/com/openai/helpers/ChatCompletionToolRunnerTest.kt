@@ -460,4 +460,112 @@ class ChatCompletionToolRunnerTest {
             .run(params)
         assertThat(calls).isEqualTo(1)
     }
+
+    @Test
+    fun defaultCallbackBudgetRejectsLargeTurnBeforeAnyCallbacks() {
+        whenever(service.create(any<ChatCompletionCreateParams>(), any()))
+            .thenReturn(completion(*(1..33).map { call("call-$it") }.toTypedArray()))
+        var calls = 0
+        val failure = failure {
+            runner {
+                    calls++
+                    null
+                }
+                .run(params)
+        }
+        assertThat(calls).isZero()
+        assertThat(failure.messages()).hasSize(2)
+        assertThat(failure.toolCallId()).isEmpty
+    }
+
+    @Test
+    fun callbackBudgetIsCumulativeAndRejectsWholeOverBudgetTurn() {
+        whenever(service.create(any<ChatCompletionCreateParams>(), any()))
+            .thenReturn(
+                completion(call("one"), call("two")),
+                completion(call("three"), call("four")),
+            )
+        var calls = 0
+        val helper =
+            ChatCompletionToolRunner.builder()
+                .client(client)
+                .maxToolCalls(3)
+                .addTool(Lookup::class.java) {
+                    calls++
+                    "ok"
+                }
+                .build()
+        val failure = failure { helper.run(params) }
+        assertThat(calls).isEqualTo(2)
+        assertThat(
+                failure.messages().filter { it.tool().isPresent }.map { it.asTool().toolCallId() }
+            )
+            .containsExactly("one", "two")
+        assertThat(failure.toolCallId()).isEmpty
+        verify(service, times(2)).create(any<ChatCompletionCreateParams>(), any())
+    }
+
+    @Test
+    fun exactCallbackBudgetAllowsFinalAnswerAndResetsForNextRun() {
+        whenever(service.create(any<ChatCompletionCreateParams>(), any()))
+            .thenReturn(
+                completion(call("one")),
+                completion(call("two")),
+                completion(),
+                completion(call("one")),
+                completion(),
+            )
+        var calls = 0
+        val helper =
+            ChatCompletionToolRunner.builder()
+                .client(client)
+                .maxToolCalls(2)
+                .addTool(Lookup::class.java) {
+                    calls++
+                    null
+                }
+                .build()
+        assertThat(helper.run(params).messages()).hasSize(6)
+        assertThat(helper.run(params).messages()).hasSize(4)
+        assertThat(calls).isEqualTo(3)
+    }
+
+    @Test
+    fun zeroCallbackBudgetAllowsFinalAnswerButRejectsTools() {
+        whenever(service.create(any<ChatCompletionCreateParams>(), any()))
+            .thenReturn(completion(), completion(call()))
+        var calls = 0
+        val helper =
+            ChatCompletionToolRunner.builder()
+                .client(client)
+                .maxToolCalls(0)
+                .addTool(Lookup::class.java) {
+                    calls++
+                    null
+                }
+                .build()
+        assertThat(helper.run(params).messages()).hasSize(2)
+        failure { helper.run(params) }
+        assertThat(calls).isZero()
+    }
+
+    @Test
+    fun validatesAndSnapshotsCallbackBudget() {
+        assertThatThrownBy { ChatCompletionToolRunner.builder().maxToolCalls(-1) }
+            .isInstanceOf(IllegalArgumentException::class.java)
+        whenever(service.create(any<ChatCompletionCreateParams>(), any()))
+            .thenReturn(completion(call()))
+        var calls = 0
+        val builder =
+            ChatCompletionToolRunner.builder().client(client).maxToolCalls(0).addTool(
+                Lookup::class.java
+            ) {
+                calls++
+                null
+            }
+        val helper = builder.build()
+        builder.maxToolCalls(Int.MAX_VALUE)
+        failure { helper.run(params) }
+        assertThat(calls).isZero()
+    }
 }

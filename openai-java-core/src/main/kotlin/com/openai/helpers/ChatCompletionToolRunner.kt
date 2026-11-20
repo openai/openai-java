@@ -26,6 +26,7 @@ import java.util.function.Function
 class ChatCompletionToolRunner private constructor(builder: Builder) {
     private val client = checkNotNull(builder.client) { "client is required" }
     private val maxTurns = builder.maxTurns
+    private val maxToolCalls = builder.maxToolCalls
     private val options = builder.options
     private val tools = builder.tools.toMap()
 
@@ -39,6 +40,7 @@ class ChatCompletionToolRunner private constructor(builder: Builder) {
     class Builder internal constructor() {
         internal var client: OpenAIClient? = null
         internal var maxTurns = 8
+        internal var maxToolCalls = 32
         internal var options = RequestOptions.none()
         internal val tools = linkedMapOf<String, Binding>()
 
@@ -48,6 +50,16 @@ class ChatCompletionToolRunner private constructor(builder: Builder) {
         fun maxTurns(maxTurns: Int) = apply {
             require(maxTurns > 0) { "maxTurns must be positive" }
             this.maxTurns = maxTurns
+        }
+
+        /**
+         * Maximum callback invocations across one run. Defaults to 32. A turn exceeding the
+         * remaining budget fails before any of its callbacks execute. Zero permits final answers
+         * only. This budget is independent of [maxTurns].
+         */
+        fun maxToolCalls(maxToolCalls: Int) = apply {
+            require(maxToolCalls >= 0) { "maxToolCalls must be nonnegative" }
+            this.maxToolCalls = maxToolCalls
         }
 
         fun requestOptions(options: RequestOptions) = apply { this.options = options }
@@ -141,6 +153,7 @@ class ChatCompletionToolRunner private constructor(builder: Builder) {
         }
         val messages = params.messages().toMutableList()
         val seenIds = mutableSetOf<String>()
+        var remainingToolCalls = maxToolCalls
         var completion: ChatCompletion? = null
         var currentId: String? = null
         try {
@@ -178,6 +191,8 @@ class ChatCompletionToolRunner private constructor(builder: Builder) {
                     "Completion ended with incomplete tool calls"
                 }
                 check(turn + 1 < maxTurns) { "Tool runner reached its turn limit" }
+                check(calls.size <= remainingToolCalls) { "Tool runner reached its callback limit" }
+                remainingToolCalls -= calls.size
                 // Validate and parse the whole turn before executing any callback.
                 val pending =
                     calls.map { call ->
