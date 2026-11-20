@@ -1382,7 +1382,24 @@ HttpResponseFor<ChatCompletion> chatCompletion = client.chat().completions().wit
 Optional<String> requestId = chatCompletion.requestId();
 ```
 
-This can be used to quickly log failing requests and report them back to OpenAI.
+HTTP errors and SSE errors thrown as `OpenAIServiceException` expose the same server ID:
+
+```java
+import com.openai.errors.OpenAIServiceException;
+
+try {
+    client.chat().completions().create(params);
+} catch (OpenAIServiceException error) {
+    Optional<String> requestId = error.requestId();
+    // Include the request ID when reporting the failure to OpenAI.
+    throw error;
+}
+```
+
+`requestId()` returns an empty `Optional` when the response has no `x-request-id` header.
+It does not substitute your `X-Client-Request-Id`, which you can send through additional request
+headers. SSE event IDs are separate from HTTP request IDs; typed error events delivered as data
+are not exceptions and are not covered by this accessor.
 
 ## Error handling
 
