@@ -428,4 +428,36 @@ class ChatCompletionToolRunnerTest {
         verify(service).create(captor.capture(), any())
         assertThat(captor.firstValue.tools().get()).hasSize(1)
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["{}", "null", "true", "[]", "42", "\"extra\"", "garbage", "{"])
+    fun rejectsTrailingJsonBeforeAnyCallbacks(trailing: String) {
+        whenever(service.create(any<ChatCompletionCreateParams>(), any()))
+            .thenReturn(completion(call(), call("two", arguments = """{"key":"a"}""" + trailing)))
+        var calls = 0
+        val failure = failure {
+            runner {
+                    calls++
+                    null
+                }
+                .run(params)
+        }
+        assertThat(calls).isZero()
+        assertThat(failure.toolCallId()).contains("two")
+        assertThat(failure.messages()).hasSize(2)
+        verify(service).create(any<ChatCompletionCreateParams>(), any())
+    }
+
+    @Test
+    fun acceptsTrailingWhitespace() {
+        whenever(service.create(any<ChatCompletionCreateParams>(), any()))
+            .thenReturn(completion(call(arguments = "{\"key\":\"a\"} \n\t\r")), completion())
+        var calls = 0
+        runner {
+                calls++
+                it.key
+            }
+            .run(params)
+        assertThat(calls).isEqualTo(1)
+    }
 }

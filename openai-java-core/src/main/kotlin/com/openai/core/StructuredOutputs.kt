@@ -1,6 +1,7 @@
 package com.openai.core
 
 import com.fasterxml.jackson.annotation.JsonTypeName
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
@@ -234,6 +235,17 @@ internal fun <T> responseTypeFromJson(json: String, responseType: Class<T>): T =
         // It is the responsibility of the SDK user to ensure that exceptions that may contain
         // sensitive data are not exposed in logs.
         throw OpenAIInvalidDataException("Error parsing JSON: $json", e)
+    }
+
+/** Typed conversion for callback dispatch, requiring the entire input to be one JSON value. */
+@JvmSynthetic
+internal fun <T> strictResponseTypeFromJson(json: String, responseType: Class<T>): T =
+    try {
+        MAPPER.readerFor(responseType)
+            .with(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+            .readValue<T>(json)
+    } catch (e: Exception) {
+        throw OpenAIInvalidDataException("Error parsing tool arguments", e)
     }
 
 /**

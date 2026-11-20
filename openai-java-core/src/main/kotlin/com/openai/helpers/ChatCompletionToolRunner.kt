@@ -3,6 +3,7 @@ package com.openai.helpers
 import com.openai.client.OpenAIClient
 import com.openai.core.RequestOptions
 import com.openai.core.functionToolFromClass
+import com.openai.core.strictResponseTypeFromJson
 import com.openai.core.toJsonString
 import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionCreateParams
@@ -59,7 +60,9 @@ class ChatCompletionToolRunner private constructor(builder: Builder) {
             tools[name] =
                 Binding(definition) { call ->
                     val arguments =
-                        checkNotNull(call.function().arguments(argumentsType)) {
+                        checkNotNull(
+                            strictResponseTypeFromJson(call.function().arguments(), argumentsType)
+                        ) {
                             "Tool arguments must not be null"
                         }
                     val invoke: () -> Any? = { callback.apply(arguments) }
