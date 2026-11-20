@@ -1,14 +1,12 @@
 package com.openai.example;
 
-import static java.util.stream.Collectors.toList;
-
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.helpers.ResponseInputItems;
 import com.openai.models.ChatModel;
 import com.openai.models.responses.EasyInputMessage;
 import com.openai.models.responses.ResponseCreateParams;
 import com.openai.models.responses.ResponseInputItem;
-import com.openai.models.responses.ResponseOutputMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,18 +31,17 @@ public final class ResponsesConversationExample {
                 .build();
 
         for (int i = 0; i < 4; i++) {
-            List<ResponseOutputMessage> messages = client.responses().create(createParams).output().stream()
+            var response = client.responses().create(createParams);
+            response.output().stream()
                     .flatMap(item -> item.message().stream())
-                    .collect(toList());
-
-            messages.stream()
                     .flatMap(message -> message.content().stream())
                     .flatMap(content -> content.outputText().stream())
                     .forEach(outputText -> System.out.println(outputText.text()));
 
             System.out.println("\n-----------------------------------\n");
 
-            messages.forEach(message -> inputItems.add(ResponseInputItem.ofResponseOutputMessage(message)));
+            // Retain reasoning and tool-call items alongside assistant messages.
+            inputItems.addAll(ResponseInputItems.toInputItems(response.output()));
             inputItems.add(ResponseInputItem.ofEasyInputMessage(EasyInputMessage.builder()
                     .role(EasyInputMessage.Role.USER)
                     .content("But why?" + "?".repeat(i))
