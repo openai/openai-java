@@ -2053,6 +2053,10 @@ To use a completely custom HTTP client:
 
 ## Undocumented API functionality
 
+For endpoints without a generated service method, use the handwritten
+[`CustomRequests`](docs/custom-requests.md) helper to send a relative-path request through
+your existing client configuration and receive a raw response.
+
 The SDK is typed for convenient usage of the documented API. However, it also supports working with undocumented or not yet supported parts of the API.
 
 ### Parameters
