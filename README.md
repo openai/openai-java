@@ -473,6 +473,9 @@ history.addAll(ResponseInputItems.toInputItems(response.output()));
 
 ### Streaming helpers
 
+See [streaming accumulation and final results](docs/streaming-accumulation.md) for
+finality, snapshots, cancellation, and error handling.
+
 The SDK provides conveniences for streamed chat completions. A
 [`ChatCompletionAccumulator`](openai-java-core/src/main/kotlin/com/openai/helpers/ChatCompletionAccumulator.kt)
 can record the stream of chat completion chunks in the response as they are processed and accumulate

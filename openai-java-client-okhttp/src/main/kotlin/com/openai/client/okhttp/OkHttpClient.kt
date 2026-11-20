@@ -10,6 +10,7 @@ import com.openai.core.http.HttpRequestBody
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.ProxyAuthenticator
 import com.openai.errors.OpenAIIoException
+import java.io.FilterInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -19,9 +20,11 @@ import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.ReentrantLock
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
+import kotlin.concurrent.withLock
 import kotlin.jvm.optionals.getOrNull
 import okhttp3.Call
 import okhttp3.Callback
@@ -113,9 +116,8 @@ private constructor(
         try {
             return request.body.use {
                 try {
-                    newCall(request, requestOptions).execute().toHttpResponse().also {
-                        response = it
-                    }
+                    val call = newCall(request, requestOptions)
+                    call.execute().toHttpResponse(call).also { response = it }
                 } catch (e: IOException) {
                     throw OpenAIIoException("Request failed", e)
                 }
@@ -138,7 +140,7 @@ private constructor(
             call.enqueue(
                 object : Callback {
                     override fun onResponse(call: Call, response: Response) {
-                        val httpResponse = response.toHttpResponse()
+                        val httpResponse = response.toHttpResponse(call)
                         if (!future.complete(httpResponse)) {
                             httpResponse.close()
                         }
@@ -584,17 +586,46 @@ private fun RequestBody.toHttpRequestBody(): HttpRequestBody {
     }
 }
 
-private fun Response.toHttpResponse(): HttpResponse {
+private fun Response.toHttpResponse(call: Call? = null): HttpResponse {
     val headers = headers.toHeaders()
+    // Proxy CONNECT authentication responses can be bodyless; headers must remain accessible.
+    val input by lazy {
+        object : FilterInputStream(body!!.byteStream()) {
+            private val lock = ReentrantLock()
+
+            override fun read(): Int = lock.withLock { super.read() }
+
+            override fun read(b: ByteArray, off: Int, len: Int): Int =
+                lock.withLock { super.read(b, off, len) }
+
+            override fun skip(n: Long): Long = lock.withLock { super.skip(n) }
+
+            override fun available(): Int = lock.withLock { super.available() }
+
+            override fun close() {
+                if (!lock.tryLock()) {
+                    // Cancel before waiting for the read lock to unblock a socket read. Otherwise
+                    // preserve normal body draining and connection reuse, including after [DONE].
+                    call?.cancel()
+                    lock.lock()
+                }
+                try {
+                    body!!.close()
+                } finally {
+                    lock.unlock()
+                }
+            }
+        }
+    }
 
     return object : HttpResponse {
         override fun statusCode(): Int = code
 
         override fun headers(): Headers = headers
 
-        override fun body(): InputStream = body!!.byteStream()
+        override fun body(): InputStream = input
 
-        override fun close() = body!!.close()
+        override fun close() = input.close()
     }
 }
 
