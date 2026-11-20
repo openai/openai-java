@@ -908,6 +908,10 @@ class MyObject {
 
 ## Function calling with JSON schemas
 
+For an automatic callback-and-follow-up loop, use the handwritten
+[`ChatCompletionToolRunner`](docs/chat-tool-runner.md). It registers typed callbacks,
+preserves tool-call IDs, and bounds the number of model requests.
+
 OpenAI [Function Calling](https://platform.openai.com/docs/guides/function-calling?api-mode=chat)
 lets you integrate external functions directly into the language model's responses. Instead of
 producing plain text, the model can output instructions (with parameters) for calling a function
