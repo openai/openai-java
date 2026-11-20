@@ -461,6 +461,16 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .build();
 ```
 
+### Responses history normalization
+
+Use [`ResponseInputItems`](docs/response-history.md) to convert previous response output into
+typed input items for a locally managed conversation. It preserves reasoning and tool-call
+relationships, removes known replay-only metadata, and leaves the source history unchanged.
+
+```java
+history.addAll(ResponseInputItems.toInputItems(response.output()));
+```
+
 ### Streaming helpers
 
 The SDK provides conveniences for streamed chat completions. A
