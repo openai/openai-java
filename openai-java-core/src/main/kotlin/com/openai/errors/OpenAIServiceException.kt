@@ -11,6 +11,13 @@ protected constructor(message: String, cause: Throwable? = null) : OpenAIExcepti
 
     abstract fun headers(): Headers
 
+    /**
+     * Returns the first `x-request-id` response header, or an empty [Optional] if absent. This is
+     * the server request ID, not the caller's `X-Client-Request-Id`.
+     */
+    fun requestId(): Optional<String> =
+        Optional.ofNullable(headers().values("x-request-id").firstOrNull())
+
     abstract fun body(): JsonValue
 
     abstract fun code(): Optional<String>
