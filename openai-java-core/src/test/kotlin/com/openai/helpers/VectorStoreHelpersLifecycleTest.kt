@@ -339,6 +339,65 @@ internal class VectorStoreHelpersLifecycleTest {
         verify(response).close()
     }
 
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(booleans = [false, true])
+    fun queuedUploadResultsSurviveTimeoutOrInterruption(interrupt: Boolean, @TempDir dir: Path) {
+        val client = mock<OpenAIClient>(defaultAnswer = RETURNS_DEEP_STUBS)
+        val first = file("first")
+        val second = file("second")
+        whenever(
+                client
+                    .files()
+                    .create(any<com.openai.models.files.FileCreateParams>(), any<RequestOptions>())
+            )
+            .thenReturn(first, second)
+        val paths = (1..2).map { Files.write(dir.resolve("$it.txt"), byteArrayOf(1)) }
+        val pool = mock<java.util.concurrent.ExecutorService>()
+        var submitted = 0
+        org.mockito.kotlin
+            .doAnswer {
+                // Finish and enqueue both uploads before allowing the coordinator to poll.
+                it.getArgument<Runnable>(0).run()
+                if (++submitted == 2) {
+                    if (interrupt) Thread.currentThread().interrupt()
+                    else TimeUnit.MILLISECONDS.sleep(2100)
+                }
+                null
+            }
+            .whenever(pool)
+            .execute(any())
+        org.mockito.Mockito.mockStatic(Executors::class.java) { invocation ->
+                if (invocation.method.name == "newFixedThreadPool") pool
+                else invocation.callRealMethod()
+            }
+            .use {
+                try {
+                    val error = catchThrowable {
+                        VectorStoreHelpers.builder()
+                            .client(client)
+                            .maxConcurrency(2)
+                            .timeout(java.time.Duration.ofSeconds(2))
+                            .build()
+                            .uploadAndPoll(batch(), paths)
+                    }
+                    assertThat(error).isInstanceOf(VectorStoreHelpers.UploadException::class.java)
+                    assertThat((error as VectorStoreHelpers.UploadException).uploadedFileIds())
+                        .containsExactly("first", "second")
+                    assertThat(error.cause)
+                        .isInstanceOf(
+                            if (interrupt) InterruptedException::class.java
+                            else java.util.concurrent.TimeoutException::class.java
+                        )
+                    assertThat(Thread.currentThread().isInterrupted).isEqualTo(interrupt)
+                    verify(pool).shutdownNow()
+                    verify(client.vectorStores().fileBatches(), org.mockito.kotlin.never())
+                        .create(any<FileBatchCreateParams>(), any<RequestOptions>())
+                } finally {
+                    Thread.interrupted()
+                }
+            }
+    }
+
     @Test
     fun rejectedExecutorAndQueuedCancellationMakeNoRequests() {
         val client = mock<OpenAIClient>(defaultAnswer = RETURNS_DEEP_STUBS)

@@ -234,6 +234,21 @@ class VectorStoreHelpers private constructor(builder: Builder) {
         var next = 0
         var active = 0
         var failure: Throwable? = null
+        fun acknowledgedIds(): List<String> {
+            // Results may already be queued when the coordinator's budget expires or it is
+            // interrupted. Read only completed futures; recovery must never wait for uploads.
+            for (future in pending) {
+                if (future.isDone && !future.isCancelled) {
+                    try {
+                        val (index, id) = future.get()
+                        uploaded[index] = id
+                    } catch (_: ExecutionException) {
+                        // Preserve the workflow's original failure, not another upload's error.
+                    }
+                }
+            }
+            return uploaded.filterNotNull()
+        }
         fun launch() {
             budget.remaining()
             val index = next++
@@ -273,9 +288,9 @@ class VectorStoreHelpers private constructor(builder: Builder) {
             failure?.let { throw UploadException(uploaded.filterNotNull(), it) }
         } catch (e: InterruptedException) {
             Thread.currentThread().interrupt()
-            throw UploadException(uploaded.filterNotNull(), e)
+            throw UploadException(acknowledgedIds(), e)
         } catch (e: TimeoutException) {
-            throw UploadException(uploaded.filterNotNull(), e)
+            throw UploadException(acknowledgedIds(), e)
         } finally {
             pending.forEach { if (!it.isDone) it.cancel(true) }
             pool.shutdownNow()
