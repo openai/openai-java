@@ -56,6 +56,11 @@ class ChatCompletionAccumulator private constructor() {
      */
     private val messageRefusals = mutableMapOf<Long, StringBuilder>()
 
+    private val legacyFunctionBuilders =
+        mutableMapOf<Long, ChatCompletionMessage.FunctionCall.Builder>()
+    private val legacyFunctionNames = mutableMapOf<Long, StringBuilder>()
+    private val legacyFunctionArgs = mutableMapOf<Long, StringBuilder>()
+
     private val messageAudio = mutableMapOf<Long, AudioState>()
 
     private class AudioState {
@@ -264,6 +269,9 @@ class ChatCompletionAccumulator private constructor() {
             messageContents.clear()
             messageRefusals.clear()
             messageAudio.clear()
+            legacyFunctionBuilders.clear()
+            legacyFunctionNames.clear()
+            legacyFunctionArgs.clear()
         }
 
         return chunk
@@ -321,7 +329,17 @@ class ChatCompletionAccumulator private constructor() {
         // The `role` defaults to "assistant", so if no other `role` is set on the delta, there is
         // no need to set it explicitly to anything else.
         delta.role().ifPresent { messageBuilder.role(JsonValue.from(it.asString())) }
-        delta.functionCall().ifPresent { messageBuilder.functionCall(convertFunctionCall(it)) }
+        delta.functionCall().ifPresent { function ->
+            legacyFunctionBuilders
+                .getOrPut(index) { ChatCompletionMessage.FunctionCall.builder() }
+                .putAllAdditionalProperties(function._additionalProperties())
+            function.name().ifPresent {
+                legacyFunctionNames.getOrPut(index) { StringBuilder() }.append(it)
+            }
+            function.arguments().ifPresent {
+                legacyFunctionArgs.getOrPut(index) { StringBuilder() }.append(it)
+            }
+        }
 
         delta.toolCalls().ifPresent {
             it.map { deltaToolCall ->
@@ -392,7 +410,14 @@ class ChatCompletionAccumulator private constructor() {
             .content(messageContents[index]?.toString())
             .refusal(messageRefusals[index]?.toString())
             .toolCalls(buildToolCalls(index))
-            .apply { messageAudio[index]?.let { audio(it.build()) } }
+            .apply {
+                messageAudio[index]?.let { audio(it.build()) }
+                legacyFunctionBuilders[index]?.let { function ->
+                    legacyFunctionNames[index]?.let { function.name(it.toString()) }
+                    legacyFunctionArgs[index]?.let { function.arguments(it.toString()) }
+                    functionCall(function.build())
+                }
+            }
             .build()
 
     private fun buildToolCalls(index: Long): List<ChatCompletionMessageToolCall> =

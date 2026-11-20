@@ -13,9 +13,8 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 // WireMock tests already require Java 17. Keep the SDK's Java 8 target unchanged.
-tasks.named<JavaCompile>("compileTestJava") {
-    options.release.set(17)
-}
+tasks.named<JavaCompile>("compileTestJava") { options.release.set(17) }
+
 tasks.named<KotlinCompile>("compileTestKotlin") {
     compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
     compilerOptions.freeCompilerArgs.set(
@@ -47,6 +46,7 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:4.12.0")
 
     testImplementation(kotlin("test"))
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation(platform(libs.jackson.bom))
