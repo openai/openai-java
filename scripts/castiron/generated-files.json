@@ -3895,7 +3895,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/chat/completions/ChatCompletionCreateParams.kt": {
       "mode": "100644",
-      "sha256": "306cfb869f3caab6d9e699746692eef2e44ee6bfdc7f18956faed2a06f9816a9"
+      "sha256": "5661fc1347fe6e50d14651a68292a368614927641071f6c25049455029e7c242"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/chat/completions/ChatCompletionCustomTool.kt": {
       "mode": "100644",
@@ -4047,7 +4047,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/completions/CompletionCreateParams.kt": {
       "mode": "100644",
-      "sha256": "a5fd0193913ce53bb61b74394fa22c72299f9b3b5722f391753259cddbb56407"
+      "sha256": "179fae3b3f0b19f9f7e04af27ed38c12007b1850598ea4b9d5a65019517755be"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/completions/CompletionUsage.kt": {
       "mode": "100644",

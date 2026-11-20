@@ -153,7 +153,8 @@ private constructor(
     fun maxTokens(): Optional<Long> = body.maxTokens()
 
     /**
-     * How many completions to generate for each prompt.
+     * How many completions to generate for each prompt. Omit `n` to generate one completion per
+     * prompt.
      *
      * **Note:** Because this parameter generates many completions, it can quickly consume your
      * token quota. Use carefully and ensure that you have reasonable settings for `max_tokens` and
@@ -658,7 +659,8 @@ private constructor(
         fun maxTokens(maxTokens: JsonField<Long>) = apply { body.maxTokens(maxTokens) }
 
         /**
-         * How many completions to generate for each prompt.
+         * How many completions to generate for each prompt. Omit `n` to generate one completion per
+         * prompt.
          *
          * **Note:** Because this parameter generates many completions, it can quickly consume your
          * token quota. Use carefully and ensure that you have reasonable settings for `max_tokens`
@@ -1204,7 +1206,8 @@ private constructor(
         fun maxTokens(): Optional<Long> = maxTokens.getOptional("max_tokens")
 
         /**
-         * How many completions to generate for each prompt.
+         * How many completions to generate for each prompt. Omit `n` to generate one completion per
+         * prompt.
          *
          * **Note:** Because this parameter generates many completions, it can quickly consume your
          * token quota. Use carefully and ensure that you have reasonable settings for `max_tokens`
@@ -1786,7 +1789,8 @@ private constructor(
             fun maxTokens(maxTokens: JsonField<Long>) = apply { this.maxTokens = maxTokens }
 
             /**
-             * How many completions to generate for each prompt.
+             * How many completions to generate for each prompt. Omit `n` to generate one completion
+             * per prompt.
              *
              * **Note:** Because this parameter generates many completions, it can quickly consume
              * your token quota. Use carefully and ensure that you have reasonable settings for
