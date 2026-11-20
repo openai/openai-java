@@ -1196,6 +1196,15 @@ If serializing a multipart upload fails, the SDK attempts to close all of its in
 including files it has not read yet. Rebuild the upload parameters with fresh streams before
 retrying after a serialization failure.
 
+### Vector-store polling and bulk uploads
+
+Use [`VectorStoreHelpers`](docs/vector-store-helpers.md) to poll existing vector-store files or
+batches, attach files and wait for ingestion, or upload local files with bounded concurrency before
+creating and polling a batch. The helper preserves failed/cancelled terminal states for inspection
+and never deletes remote files automatically. Async methods use a caller-owned worker executor.
+See [VectorStorePollingExample](openai-java-example/src/main/java/com/openai/example/VectorStorePollingExample.java)
+for a complete bulk-upload example.
+
 ## Webhook Verification
 
 Verifying webhook signatures is _optional but encouraged_.

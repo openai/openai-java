@@ -266,6 +266,7 @@ val testJacksonCompatibility by tasks.registering(Test::class) {
     exclude("**/services/**")
     exclude("**/RetryingHttpClientTest*")
     exclude("**/WireMockHandlebarsCompatibilityTest*")
+    exclude("**/VectorStoreHelpersTest*")
     systemProperty("junit.jupiter.execution.parallel.enabled", false)
     systemProperty("expected.jackson.version", jacksonCompatibilityVersion)
 }
