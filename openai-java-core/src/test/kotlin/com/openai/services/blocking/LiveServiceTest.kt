@@ -56,6 +56,7 @@ internal class LiveServiceTest {
                             .delegation(
                                 ClientDelegation.builder().acknowledgementDelayMs(0L).build()
                             )
+                            .idleTimeoutS(5L)
                             .addInput(
                                 InitialItem.Developer.builder()
                                     .addContent(
@@ -89,6 +90,9 @@ internal class LiveServiceTest {
                                         DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA
                                     )
                                     .build()
+                            )
+                            .wakePolicy(
+                                MediaSessionConfig.WakePolicy.builder().vadThreshold(0.0).build()
                             )
                             .build()
                     )

@@ -61,6 +61,8 @@ class ForkServerEvent
 private constructor(
     private val sessionStarted: SessionStartedEvent? = null,
     private val sessionUpdated: SessionUpdatedEvent? = null,
+    private val sessionResumed: SessionResumed? = null,
+    private val sessionPaused: SessionPaused? = null,
     private val sessionInputAudioMuted: InputAudioMutedEvent? = null,
     private val sessionInputAudioUnmuted: InputAudioUnmutedEvent? = null,
     private val sessionOutputAudioFixturePlaying: OutputAudioFixturePlayingEvent? = null,
@@ -101,6 +103,19 @@ private constructor(
      * after the update.
      */
     fun sessionUpdated(): Optional<SessionUpdatedEvent> = Optional.ofNullable(sessionUpdated)
+
+    /**
+     * Sent when speech resumes paused inference and it is ready for audio in a Live WebRTC session.
+     * Delivered to the sideband and, when permitted by its event settings, the data channel.
+     */
+    fun sessionResumed(): Optional<SessionResumed> = Optional.ofNullable(sessionResumed)
+
+    /**
+     * Sent when the idle timeout pauses inference in a Live WebRTC session. The WebRTC connection,
+     * sideband, and session ID persist. Delivered to the sideband and, when permitted by its event
+     * settings, the data channel.
+     */
+    fun sessionPaused(): Optional<SessionPaused> = Optional.ofNullable(sessionPaused)
 
     /**
      * Acknowledges a session.input_audio.mute command. An independent input mute sends silence to
@@ -276,6 +291,10 @@ private constructor(
 
     fun isSessionUpdated(): Boolean = sessionUpdated != null
 
+    fun isSessionResumed(): Boolean = sessionResumed != null
+
+    fun isSessionPaused(): Boolean = sessionPaused != null
+
     fun isSessionInputAudioMuted(): Boolean = sessionInputAudioMuted != null
 
     fun isSessionInputAudioUnmuted(): Boolean = sessionInputAudioUnmuted != null
@@ -339,6 +358,19 @@ private constructor(
      * after the update.
      */
     fun asSessionUpdated(): SessionUpdatedEvent = sessionUpdated.getOrThrow("sessionUpdated")
+
+    /**
+     * Sent when speech resumes paused inference and it is ready for audio in a Live WebRTC session.
+     * Delivered to the sideband and, when permitted by its event settings, the data channel.
+     */
+    fun asSessionResumed(): SessionResumed = sessionResumed.getOrThrow("sessionResumed")
+
+    /**
+     * Sent when the idle timeout pauses inference in a Live WebRTC session. The WebRTC connection,
+     * sideband, and session ID persist. Delivered to the sideband and, when permitted by its event
+     * settings, the data channel.
+     */
+    fun asSessionPaused(): SessionPaused = sessionPaused.getOrThrow("sessionPaused")
 
     /**
      * Acknowledges a session.input_audio.mute command. An independent input mute sends silence to
@@ -545,6 +577,8 @@ private constructor(
         when {
             sessionStarted != null -> visitor.visitSessionStarted(sessionStarted)
             sessionUpdated != null -> visitor.visitSessionUpdated(sessionUpdated)
+            sessionResumed != null -> visitor.visitSessionResumed(sessionResumed)
+            sessionPaused != null -> visitor.visitSessionPaused(sessionPaused)
             sessionInputAudioMuted != null ->
                 visitor.visitSessionInputAudioMuted(sessionInputAudioMuted)
             sessionInputAudioUnmuted != null ->
@@ -610,6 +644,14 @@ private constructor(
 
                 override fun visitSessionUpdated(sessionUpdated: SessionUpdatedEvent) {
                     sessionUpdated.validate()
+                }
+
+                override fun visitSessionResumed(sessionResumed: SessionResumed) {
+                    sessionResumed.validate()
+                }
+
+                override fun visitSessionPaused(sessionPaused: SessionPaused) {
+                    sessionPaused.validate()
                 }
 
                 override fun visitSessionInputAudioMuted(
@@ -775,6 +817,12 @@ private constructor(
                 override fun visitSessionUpdated(sessionUpdated: SessionUpdatedEvent) =
                     sessionUpdated.validity()
 
+                override fun visitSessionResumed(sessionResumed: SessionResumed) =
+                    sessionResumed.validity()
+
+                override fun visitSessionPaused(sessionPaused: SessionPaused) =
+                    sessionPaused.validity()
+
                 override fun visitSessionInputAudioMuted(
                     sessionInputAudioMuted: InputAudioMutedEvent
                 ) = sessionInputAudioMuted.validity()
@@ -879,6 +927,8 @@ private constructor(
         return other is ForkServerEvent &&
             sessionStarted == other.sessionStarted &&
             sessionUpdated == other.sessionUpdated &&
+            sessionResumed == other.sessionResumed &&
+            sessionPaused == other.sessionPaused &&
             sessionInputAudioMuted == other.sessionInputAudioMuted &&
             sessionInputAudioUnmuted == other.sessionInputAudioUnmuted &&
             sessionOutputAudioFixturePlaying == other.sessionOutputAudioFixturePlaying &&
@@ -907,6 +957,8 @@ private constructor(
             transportFailed == other.transportFailed &&
             (sessionStarted != null ||
                 sessionUpdated != null ||
+                sessionResumed != null ||
+                sessionPaused != null ||
                 sessionInputAudioMuted != null ||
                 sessionInputAudioUnmuted != null ||
                 sessionOutputAudioFixturePlaying != null ||
@@ -940,6 +992,8 @@ private constructor(
         if (
             sessionStarted == null &&
                 sessionUpdated == null &&
+                sessionResumed == null &&
+                sessionPaused == null &&
                 sessionInputAudioMuted == null &&
                 sessionInputAudioUnmuted == null &&
                 sessionOutputAudioFixturePlaying == null &&
@@ -972,6 +1026,8 @@ private constructor(
             Objects.hash(
                 sessionStarted,
                 sessionUpdated,
+                sessionResumed,
+                sessionPaused,
                 sessionInputAudioMuted,
                 sessionInputAudioUnmuted,
                 sessionOutputAudioFixturePlaying,
@@ -1004,6 +1060,8 @@ private constructor(
         when {
             sessionStarted != null -> "ForkServerEvent{sessionStarted=$sessionStarted}"
             sessionUpdated != null -> "ForkServerEvent{sessionUpdated=$sessionUpdated}"
+            sessionResumed != null -> "ForkServerEvent{sessionResumed=$sessionResumed}"
+            sessionPaused != null -> "ForkServerEvent{sessionPaused=$sessionPaused}"
             sessionInputAudioMuted != null ->
                 "ForkServerEvent{sessionInputAudioMuted=$sessionInputAudioMuted}"
             sessionInputAudioUnmuted != null ->
@@ -1067,6 +1125,24 @@ private constructor(
         @JvmStatic
         fun ofSessionUpdated(sessionUpdated: SessionUpdatedEvent) =
             ForkServerEvent(sessionUpdated = sessionUpdated)
+
+        /**
+         * Sent when speech resumes paused inference and it is ready for audio in a Live WebRTC
+         * session. Delivered to the sideband and, when permitted by its event settings, the data
+         * channel.
+         */
+        @JvmStatic
+        fun ofSessionResumed(sessionResumed: SessionResumed) =
+            ForkServerEvent(sessionResumed = sessionResumed)
+
+        /**
+         * Sent when the idle timeout pauses inference in a Live WebRTC session. The WebRTC
+         * connection, sideband, and session ID persist. Delivered to the sideband and, when
+         * permitted by its event settings, the data channel.
+         */
+        @JvmStatic
+        fun ofSessionPaused(sessionPaused: SessionPaused) =
+            ForkServerEvent(sessionPaused = sessionPaused)
 
         /**
          * Acknowledges a session.input_audio.mute command. An independent input mute sends silence
@@ -1300,6 +1376,22 @@ private constructor(
             unknown(JsonValue.from(sessionUpdated))
 
         /**
+         * Sent when speech resumes paused inference and it is ready for audio in a Live WebRTC
+         * session. Delivered to the sideband and, when permitted by its event settings, the data
+         * channel.
+         */
+        fun visitSessionResumed(sessionResumed: SessionResumed): T =
+            unknown(JsonValue.from(sessionResumed))
+
+        /**
+         * Sent when the idle timeout pauses inference in a Live WebRTC session. The WebRTC
+         * connection, sideband, and session ID persist. Delivered to the sideband and, when
+         * permitted by its event settings, the data channel.
+         */
+        fun visitSessionPaused(sessionPaused: SessionPaused): T =
+            unknown(JsonValue.from(sessionPaused))
+
+        /**
          * Acknowledges a session.input_audio.mute command. An independent input mute sends silence
          * to the model and preserves sideband audio reflection. Fixture playback does not emit this
          * event.
@@ -1521,6 +1613,16 @@ private constructor(
                         ForkServerEvent(sessionUpdated = it, _json = json)
                     } ?: ForkServerEvent(_json = json)
                 }
+                "session.resumed" -> {
+                    return tryDeserialize(node, jacksonTypeRef<SessionResumed>())?.let {
+                        ForkServerEvent(sessionResumed = it, _json = json)
+                    } ?: ForkServerEvent(_json = json)
+                }
+                "session.paused" -> {
+                    return tryDeserialize(node, jacksonTypeRef<SessionPaused>())?.let {
+                        ForkServerEvent(sessionPaused = it, _json = json)
+                    } ?: ForkServerEvent(_json = json)
+                }
                 "session.input_audio.muted" -> {
                     return tryDeserialize(node, jacksonTypeRef<InputAudioMutedEvent>())?.let {
                         ForkServerEvent(sessionInputAudioMuted = it, _json = json)
@@ -1669,6 +1771,8 @@ private constructor(
             when {
                 value.sessionStarted != null -> generator.writeObject(value.sessionStarted)
                 value.sessionUpdated != null -> generator.writeObject(value.sessionUpdated)
+                value.sessionResumed != null -> generator.writeObject(value.sessionResumed)
+                value.sessionPaused != null -> generator.writeObject(value.sessionPaused)
                 value.sessionInputAudioMuted != null ->
                     generator.writeObject(value.sessionInputAudioMuted)
                 value.sessionInputAudioUnmuted != null ->
@@ -1715,6 +1819,567 @@ private constructor(
                 else -> throw IllegalStateException("Invalid ForkServerEvent")
             }
         }
+    }
+
+    /**
+     * Sent when speech resumes paused inference and it is ready for audio in a Live WebRTC session.
+     * Delivered to the sideband and, when permitted by its event settings, the data channel.
+     */
+    class SessionResumed
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val eventId: JsonField<String>,
+        private val type: JsonValue,
+        private val clientEventId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("client_event_id")
+            @ExcludeMissing
+            clientEventId: JsonField<String> = JsonMissing.of(),
+        ) : this(eventId, type, clientEventId, mutableMapOf())
+
+        /**
+         * The unique ID of the Live server event.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun eventId(): String = eventId.getRequired("event_id")
+
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("session.resumed")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * The event_id of the client command associated with this server event, when supplied.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun clientEventId(): Optional<String> = clientEventId.getOptional("client_event_id")
+
+        /**
+         * Returns the raw JSON value of [eventId].
+         *
+         * Unlike [eventId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("event_id") @ExcludeMissing fun _eventId(): JsonField<String> = eventId
+
+        /**
+         * Returns the raw JSON value of [clientEventId].
+         *
+         * Unlike [clientEventId], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("client_event_id")
+        @ExcludeMissing
+        fun _clientEventId(): JsonField<String> = clientEventId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "event_id" to this.eventId,
+                "type" to this.type,
+                "client_event_id" to this.clientEventId,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [SessionResumed].
+             *
+             * The following fields are required:
+             * ```java
+             * .eventId()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [SessionResumed]. */
+        class Builder internal constructor() {
+
+            private var eventId: JsonField<String>? = null
+            private var type: JsonValue = JsonValue.from("session.resumed")
+            private var clientEventId: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(sessionResumed: SessionResumed) = apply {
+                eventId = sessionResumed.eventId
+                type = sessionResumed.type
+                clientEventId = sessionResumed.clientEventId
+                additionalProperties = sessionResumed.additionalProperties.toMutableMap()
+            }
+
+            /** The unique ID of the Live server event. */
+            fun eventId(eventId: String) = eventId(JsonField.of(eventId))
+
+            /**
+             * Sets [Builder.eventId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.eventId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun eventId(eventId: JsonField<String>) = apply { this.eventId = eventId }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("session.resumed")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /**
+             * The event_id of the client command associated with this server event, when supplied.
+             */
+            fun clientEventId(clientEventId: String) = clientEventId(JsonField.of(clientEventId))
+
+            /**
+             * Sets [Builder.clientEventId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.clientEventId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun clientEventId(clientEventId: JsonField<String>) = apply {
+                this.clientEventId = clientEventId
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [SessionResumed].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .eventId()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): SessionResumed =
+                SessionResumed(
+                    checkRequired("eventId", eventId),
+                    type,
+                    clientEventId,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): SessionResumed = apply {
+            if (validated) {
+                return@apply
+            }
+
+            eventId()
+            _type().let {
+                if (it != JsonValue.from("session.resumed")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            clientEventId()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (eventId.asKnown().isPresent) 1 else 0) +
+                type.let { if (it == JsonValue.from("session.resumed")) 1 else 0 } +
+                (if (clientEventId.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is SessionResumed &&
+                eventId == other.eventId &&
+                type == other.type &&
+                clientEventId == other.clientEventId &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(eventId, type, clientEventId, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "SessionResumed{eventId=$eventId, type=$type, clientEventId=$clientEventId, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Sent when the idle timeout pauses inference in a Live WebRTC session. The WebRTC connection,
+     * sideband, and session ID persist. Delivered to the sideband and, when permitted by its event
+     * settings, the data channel.
+     */
+    class SessionPaused
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val eventId: JsonField<String>,
+        private val type: JsonValue,
+        private val clientEventId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("client_event_id")
+            @ExcludeMissing
+            clientEventId: JsonField<String> = JsonMissing.of(),
+        ) : this(eventId, type, clientEventId, mutableMapOf())
+
+        /**
+         * The unique ID of the Live server event.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun eventId(): String = eventId.getRequired("event_id")
+
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("session.paused")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * The event_id of the client command associated with this server event, when supplied.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun clientEventId(): Optional<String> = clientEventId.getOptional("client_event_id")
+
+        /**
+         * Returns the raw JSON value of [eventId].
+         *
+         * Unlike [eventId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("event_id") @ExcludeMissing fun _eventId(): JsonField<String> = eventId
+
+        /**
+         * Returns the raw JSON value of [clientEventId].
+         *
+         * Unlike [clientEventId], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("client_event_id")
+        @ExcludeMissing
+        fun _clientEventId(): JsonField<String> = clientEventId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "event_id" to this.eventId,
+                "type" to this.type,
+                "client_event_id" to this.clientEventId,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [SessionPaused].
+             *
+             * The following fields are required:
+             * ```java
+             * .eventId()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [SessionPaused]. */
+        class Builder internal constructor() {
+
+            private var eventId: JsonField<String>? = null
+            private var type: JsonValue = JsonValue.from("session.paused")
+            private var clientEventId: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(sessionPaused: SessionPaused) = apply {
+                eventId = sessionPaused.eventId
+                type = sessionPaused.type
+                clientEventId = sessionPaused.clientEventId
+                additionalProperties = sessionPaused.additionalProperties.toMutableMap()
+            }
+
+            /** The unique ID of the Live server event. */
+            fun eventId(eventId: String) = eventId(JsonField.of(eventId))
+
+            /**
+             * Sets [Builder.eventId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.eventId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun eventId(eventId: JsonField<String>) = apply { this.eventId = eventId }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("session.paused")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /**
+             * The event_id of the client command associated with this server event, when supplied.
+             */
+            fun clientEventId(clientEventId: String) = clientEventId(JsonField.of(clientEventId))
+
+            /**
+             * Sets [Builder.clientEventId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.clientEventId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun clientEventId(clientEventId: JsonField<String>) = apply {
+                this.clientEventId = clientEventId
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [SessionPaused].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .eventId()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): SessionPaused =
+                SessionPaused(
+                    checkRequired("eventId", eventId),
+                    type,
+                    clientEventId,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): SessionPaused = apply {
+            if (validated) {
+                return@apply
+            }
+
+            eventId()
+            _type().let {
+                if (it != JsonValue.from("session.paused")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            clientEventId()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (eventId.asKnown().isPresent) 1 else 0) +
+                type.let { if (it == JsonValue.from("session.paused")) 1 else 0 } +
+                (if (clientEventId.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is SessionPaused &&
+                eventId == other.eventId &&
+                type == other.type &&
+                clientEventId == other.clientEventId &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(eventId, type, clientEventId, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "SessionPaused{eventId=$eventId, type=$type, clientEventId=$clientEventId, additionalProperties=$additionalProperties}"
     }
 
     /**

@@ -15,25 +15,35 @@ import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 
 /**
- * Cumulative audio duration for a Live session. Values are totals for the session, not increments
- * to sum across usage events.
+ * Cumulative billable duration for a Live session. Eligible WebRTC sessions also report the active
+ * and paused breakdown. Do not sum values across usage events.
  */
 class SessionUsage
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val seconds: JsonField<Double>,
+    private val activeSeconds: JsonField<Long>,
+    private val pausedSeconds: JsonField<Long>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
-        @JsonProperty("seconds") @ExcludeMissing seconds: JsonField<Double> = JsonMissing.of()
-    ) : this(seconds, mutableMapOf())
+        @JsonProperty("seconds") @ExcludeMissing seconds: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("active_seconds")
+        @ExcludeMissing
+        activeSeconds: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("paused_seconds")
+        @ExcludeMissing
+        pausedSeconds: JsonField<Long> = JsonMissing.of(),
+    ) : this(seconds, activeSeconds, pausedSeconds, mutableMapOf())
 
     /**
-     * The cumulative Live audio duration in seconds. Do not sum this value across usage events.
+     * The cumulative billable duration in whole seconds. When present, the active and paused
+     * breakdown adds up to this total.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -41,11 +51,46 @@ private constructor(
     fun seconds(): Double = seconds.getRequired("seconds")
 
     /**
+     * The remaining billable seconds attributed to active audio and any unused prepaid duration.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun activeSeconds(): Optional<Long> = activeSeconds.getOptional("active_seconds")
+
+    /**
+     * Billable time attributed to paused inference at the configured rate, rounded down to whole
+     * seconds.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun pausedSeconds(): Optional<Long> = pausedSeconds.getOptional("paused_seconds")
+
+    /**
      * Returns the raw JSON value of [seconds].
      *
      * Unlike [seconds], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("seconds") @ExcludeMissing fun _seconds(): JsonField<Double> = seconds
+
+    /**
+     * Returns the raw JSON value of [activeSeconds].
+     *
+     * Unlike [activeSeconds], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("active_seconds")
+    @ExcludeMissing
+    fun _activeSeconds(): JsonField<Long> = activeSeconds
+
+    /**
+     * Returns the raw JSON value of [pausedSeconds].
+     *
+     * Unlike [pausedSeconds], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("paused_seconds")
+    @ExcludeMissing
+    fun _pausedSeconds(): JsonField<Long> = pausedSeconds
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -61,7 +106,12 @@ private constructor(
      * values are preserved.
      */
     fun _allProperties(): Map<String, JsonValue> =
-        collectAllProperties(additionalProperties, "seconds" to this.seconds)
+        collectAllProperties(
+            additionalProperties,
+            "seconds" to this.seconds,
+            "active_seconds" to this.activeSeconds,
+            "paused_seconds" to this.pausedSeconds,
+        )
 
     /**
      * Returns the legacy additional-properties view.
@@ -94,16 +144,21 @@ private constructor(
     class Builder internal constructor() {
 
         private var seconds: JsonField<Double>? = null
+        private var activeSeconds: JsonField<Long> = JsonMissing.of()
+        private var pausedSeconds: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(sessionUsage: SessionUsage) = apply {
             seconds = sessionUsage.seconds
+            activeSeconds = sessionUsage.activeSeconds
+            pausedSeconds = sessionUsage.pausedSeconds
             additionalProperties = sessionUsage.additionalProperties.toMutableMap()
         }
 
         /**
-         * The cumulative Live audio duration in seconds. Do not sum this value across usage events.
+         * The cumulative billable duration in whole seconds. When present, the active and paused
+         * breakdown adds up to this total.
          */
         fun seconds(seconds: Double) = seconds(JsonField.of(seconds))
 
@@ -114,6 +169,40 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun seconds(seconds: JsonField<Double>) = apply { this.seconds = seconds }
+
+        /**
+         * The remaining billable seconds attributed to active audio and any unused prepaid
+         * duration.
+         */
+        fun activeSeconds(activeSeconds: Long) = activeSeconds(JsonField.of(activeSeconds))
+
+        /**
+         * Sets [Builder.activeSeconds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.activeSeconds] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun activeSeconds(activeSeconds: JsonField<Long>) = apply {
+            this.activeSeconds = activeSeconds
+        }
+
+        /**
+         * Billable time attributed to paused inference at the configured rate, rounded down to
+         * whole seconds.
+         */
+        fun pausedSeconds(pausedSeconds: Long) = pausedSeconds(JsonField.of(pausedSeconds))
+
+        /**
+         * Sets [Builder.pausedSeconds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.pausedSeconds] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun pausedSeconds(pausedSeconds: JsonField<Long>) = apply {
+            this.pausedSeconds = pausedSeconds
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -147,7 +236,12 @@ private constructor(
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): SessionUsage =
-            SessionUsage(checkRequired("seconds", seconds), additionalProperties.toMutableMap())
+            SessionUsage(
+                checkRequired("seconds", seconds),
+                activeSeconds,
+                pausedSeconds,
+                additionalProperties.toMutableMap(),
+            )
     }
 
     private var validated: Boolean = false
@@ -166,6 +260,8 @@ private constructor(
         }
 
         seconds()
+        activeSeconds()
+        pausedSeconds()
         validated = true
     }
 
@@ -182,7 +278,11 @@ private constructor(
      *
      * Used for best match union deserialization.
      */
-    @JvmSynthetic internal fun validity(): Int = (if (seconds.asKnown().isPresent) 1 else 0)
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (seconds.asKnown().isPresent) 1 else 0) +
+            (if (activeSeconds.asKnown().isPresent) 1 else 0) +
+            (if (pausedSeconds.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -191,13 +291,17 @@ private constructor(
 
         return other is SessionUsage &&
             seconds == other.seconds &&
+            activeSeconds == other.activeSeconds &&
+            pausedSeconds == other.pausedSeconds &&
             additionalProperties == other.additionalProperties
     }
 
-    private val hashCode: Int by lazy { Objects.hash(seconds, additionalProperties) }
+    private val hashCode: Int by lazy {
+        Objects.hash(seconds, activeSeconds, pausedSeconds, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "SessionUsage{seconds=$seconds, additionalProperties=$additionalProperties}"
+        "SessionUsage{seconds=$seconds, activeSeconds=$activeSeconds, pausedSeconds=$pausedSeconds, additionalProperties=$additionalProperties}"
 }
