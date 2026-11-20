@@ -48,7 +48,9 @@ waits are bounded by the remaining budget. Use
 
 Uploads open streams only for active workers and close each when its request exits. On an upload
 failure, no batch is created; already-started uploads are drained within the remaining budget.
-`UploadException.uploadedFileIds()` reports acknowledged files collected before the failure.
+`UploadException.uploadedFileIds()` reports acknowledged new files after upload, batch creation,
+or polling failures; its cause preserves the original error. Existing IDs supplied by the caller
+are not included in this list.
 Successful remote files are retained, never deleted automatically. Timeout or interruption may
 leave additional server-side uploads whose responses were not received; the ID list is not proof
 of rollback. A failure during subsequent batch creation/polling can also leave a remote batch.

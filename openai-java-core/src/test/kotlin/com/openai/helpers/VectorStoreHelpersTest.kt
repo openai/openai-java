@@ -7,6 +7,7 @@ import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import com.openai.client.OpenAIClient
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
+import com.openai.errors.NotFoundException
 import com.openai.models.vectorstores.filebatches.FileBatchCreateParams
 import com.openai.models.vectorstores.filebatches.FileBatchRetrieveParams
 import com.openai.models.vectorstores.files.FileCreateParams
@@ -268,6 +269,54 @@ internal class VectorStoreHelpersTest {
         }
         verify(1, postRequestedFor(urlEqualTo("/files")))
         verify(0, postRequestedFor(urlEqualTo("/vector_stores/vs_test/file_batches")))
+        verify(0, deleteRequestedFor(urlMatching(".*")))
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun batchFailureRetainsUploadedIdsAndCause(
+        failDuringPolling: Boolean,
+        server: WireMockRuntimeInfo,
+        @TempDir dir: Path,
+    ) {
+        val paths =
+            listOf("first", "second").map { name ->
+                stubFor(
+                    post(urlEqualTo("/files"))
+                        .withRequestBody(containing("filename=\"$name.txt\""))
+                        .willReturn(okJson("""{"id":"file_$name"}"""))
+                )
+                Files.write(dir.resolve("$name.txt"), byteArrayOf(1))
+            }
+        val rejection =
+            aResponse()
+                .withStatus(404)
+                .withHeader("Content-Type", "application/json")
+                .withBody(
+                    """{"error":{"message":"Store deleted","type":"invalid_request_error"}}"""
+                )
+        stubFor(
+            post(urlEqualTo("/vector_stores/vs_test/file_batches"))
+                .willReturn(if (failDuringPolling) okJson(batch("in_progress")) else rejection)
+        )
+        stubFor(get(urlEqualTo(batchPath)).willReturn(rejection))
+        client(server).use { client ->
+            val error = catchThrowable {
+                VectorStoreHelpers.builder()
+                    .client(client)
+                    .build()
+                    .uploadAndPoll(createBatch(), paths)
+            }
+            assertThat(error).isInstanceOf(VectorStoreHelpers.UploadException::class.java)
+            assertThat((error as VectorStoreHelpers.UploadException).uploadedFileIds())
+                .containsExactly("file_first", "file_second")
+            assertThat(error.cause).isInstanceOf(NotFoundException::class.java)
+            assertThat((error.cause as NotFoundException).statusCode()).isEqualTo(404)
+            assertThat(error.cause).hasMessageContaining("Store deleted")
+        }
+        verify(2, postRequestedFor(urlEqualTo("/files")))
+        verify(1, postRequestedFor(urlEqualTo("/vector_stores/vs_test/file_batches")))
+        verify(if (failDuringPolling) 1 else 0, getRequestedFor(urlEqualTo(batchPath)))
         verify(0, deleteRequestedFor(urlMatching(".*")))
     }
 

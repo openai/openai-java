@@ -200,9 +200,9 @@ class VectorStoreHelpers private constructor(builder: Builder) {
      *
      * Streams opened by this helper are closed when their upload call exits, including errors.
      * Successful remote uploads are never deleted automatically. [UploadException.uploadedFileIds]
-     * exposes acknowledged uploads after an upload failure; timed-out/interrupted HTTP writes may
-     * also have created unacknowledged remote files. On failure no batch is created. On polling
-     * failure the batch may already exist.
+     * exposes acknowledged uploads after upload, batch creation, or polling failures;
+     * timed-out/interrupted HTTP writes may also have created unacknowledged remote files. Upload
+     * failure prevents batch creation. Batch creation or polling failure may leave a remote batch.
      */
     @Throws(InterruptedException::class, TimeoutException::class)
     fun uploadAndPoll(params: FileBatchCreateParams, paths: List<Path>): VectorStoreFileBatch {
@@ -280,14 +280,22 @@ class VectorStoreHelpers private constructor(builder: Builder) {
             pending.forEach { if (!it.isDone) it.cancel(true) }
             pool.shutdownNow()
         }
-        return createBatchAndPoll(
-            params.toBuilder().fileIds(existingIds + uploaded.filterNotNull()).build(),
-            budget,
-        )
+        try {
+            return createBatchAndPoll(
+                params.toBuilder().fileIds(existingIds + uploaded.filterNotNull()).build(),
+                budget,
+            )
+        } catch (e: Exception) {
+            if (e is InterruptedException) Thread.currentThread().interrupt()
+            throw UploadException(uploaded.filterNotNull(), e)
+        }
     }
 
     class UploadException internal constructor(ids: List<String>, cause: Throwable) :
-        RuntimeException("Vector-store upload failed; acknowledged files were retained", cause) {
+        RuntimeException(
+            "Vector-store upload workflow failed; acknowledged files were retained",
+            cause,
+        ) {
         private val ids = Collections.unmodifiableList(ArrayList(ids))
 
         fun uploadedFileIds(): List<String> = ids
