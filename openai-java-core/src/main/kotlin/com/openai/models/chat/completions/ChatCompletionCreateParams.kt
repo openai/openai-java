@@ -229,9 +229,9 @@ private constructor(
     fun moderation(): Optional<Moderation> = body.moderation()
 
     /**
-     * How many chat completion choices to generate for each input message. Note that you will be
-     * charged based on the number of generated tokens across all of the choices. Keep `n` as `1` to
-     * minimize costs.
+     * How many chat completion choices to generate for each input message. Omit `n` to generate one
+     * choice. Newer models reject an explicit `n`, even `n=1`. When requesting multiple choices,
+     * you are billed for generated tokens across all choices.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -1324,9 +1324,9 @@ private constructor(
         fun moderation(moderation: JsonField<Moderation>) = apply { body.moderation(moderation) }
 
         /**
-         * How many chat completion choices to generate for each input message. Note that you will
-         * be charged based on the number of generated tokens across all of the choices. Keep `n` as
-         * `1` to minimize costs.
+         * How many chat completion choices to generate for each input message. Omit `n` to generate
+         * one choice. Newer models reject an explicit `n`, even `n=1`. When requesting multiple
+         * choices, you are billed for generated tokens across all choices.
          */
         fun n(n: Long?) = apply { body.n(n) }
 
@@ -2511,9 +2511,9 @@ private constructor(
         fun moderation(): Optional<Moderation> = moderation.getOptional("moderation")
 
         /**
-         * How many chat completion choices to generate for each input message. Note that you will
-         * be charged based on the number of generated tokens across all of the choices. Keep `n` as
-         * `1` to minimize costs.
+         * How many chat completion choices to generate for each input message. Omit `n` to generate
+         * one choice. Newer models reject an explicit `n`, even `n=1`. When requesting multiple
+         * choices, you are billed for generated tokens across all choices.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -3851,9 +3851,9 @@ private constructor(
             }
 
             /**
-             * How many chat completion choices to generate for each input message. Note that you
-             * will be charged based on the number of generated tokens across all of the choices.
-             * Keep `n` as `1` to minimize costs.
+             * How many chat completion choices to generate for each input message. Omit `n` to
+             * generate one choice. Newer models reject an explicit `n`, even `n=1`. When requesting
+             * multiple choices, you are billed for generated tokens across all choices.
              */
             fun n(n: Long?) = n(JsonField.ofNullable(n))
 
