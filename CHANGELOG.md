@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.112.0](https://github.com/openai/openai-java/compare/v4.111.0...v4.112.0) (2026-11-21)
+
+
+### Features
+
+* add automatic Chat Completions tool runner ([#1430](https://github.com/openai/openai-java/issues/1430)) ([889ce00](https://github.com/openai/openai-java/commit/889ce00e3115a32c18ae96c57fbe4d95280f5ff3))
+* add custom request helper ([#1431](https://github.com/openai/openai-java/issues/1431)) ([4bd4b3c](https://github.com/openai/openai-java/commit/4bd4b3cbdf4b63f413f369c099f493b0a9effc8c))
+* add vector-store polling and bulk upload helpers ([#1427](https://github.com/openai/openai-java/issues/1427)) ([a9c8024](https://github.com/openai/openai-java/commit/a9c8024d104e35b6017f98229252858bdc738637))
+* expose request IDs on service errors ([#1429](https://github.com/openai/openai-java/issues/1429)) ([55c164c](https://github.com/openai/openai-java/commit/55c164c878c3375032e137bb0d91035ff9dd1d9a))
+* normalize Responses history for replay ([#1428](https://github.com/openai/openai-java/issues/1428)) ([4f1ad88](https://github.com/openai/openai-java/commit/4f1ad88c841ef10042c6bd5bf4fbec52e03a0057))
+
+
+### Bug Fixes
+
+* **api:** clarify when to omit completion choice count ([#1424](https://github.com/openai/openai-java/issues/1424)) ([2c2e249](https://github.com/openai/openai-java/commit/2c2e249a2a3c18b45ebcbeaee7cf5f8e602220ab))
+* preserve streamed function calls and unblock stream close ([#1432](https://github.com/openai/openai-java/issues/1432)) ([adc9184](https://github.com/openai/openai-java/commit/adc9184ba91b18a08865dcef3abad1bcd0389532))
+
 ## [4.111.0](https://github.com/openai/openai-java/compare/v4.110.0...v4.111.0) (2026-11-20)
 
 
