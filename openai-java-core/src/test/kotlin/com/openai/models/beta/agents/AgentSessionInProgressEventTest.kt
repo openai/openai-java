@@ -89,6 +89,9 @@ internal class AgentSessionInProgressEventTest {
                                 .turnId("turn_id")
                                 .build()
                         )
+                        .spendControl(
+                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        )
                         .status(AgentSession.Status.IDLE)
                         .usage(
                             TokenUsage.builder()
@@ -190,6 +193,9 @@ internal class AgentSessionInProgressEventTest {
                             .requestId("request_id")
                             .turnId("turn_id")
                             .build()
+                    )
+                    .spendControl(
+                        AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                     )
                     .status(AgentSession.Status.IDLE)
                     .usage(

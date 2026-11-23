@@ -45,6 +45,7 @@ private constructor(
     private val metadata: JsonField<Metadata>,
     private val object_: JsonValue,
     private val requiredActions: JsonField<List<RequiredAction>>,
+    private val spendControl: JsonField<SpendControl>,
     private val status: JsonField<Status>,
     private val usage: JsonField<TokenUsage>,
     private val vaultIds: JsonField<List<String>>,
@@ -70,6 +71,9 @@ private constructor(
         @JsonProperty("required_actions")
         @ExcludeMissing
         requiredActions: JsonField<List<RequiredAction>> = JsonMissing.of(),
+        @JsonProperty("spend_control")
+        @ExcludeMissing
+        spendControl: JsonField<SpendControl> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         @JsonProperty("usage") @ExcludeMissing usage: JsonField<TokenUsage> = JsonMissing.of(),
         @JsonProperty("vault_ids")
@@ -89,6 +93,7 @@ private constructor(
         metadata,
         object_,
         requiredActions,
+        spendControl,
         status,
         usage,
         vaultIds,
@@ -173,6 +178,15 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun requiredActions(): List<RequiredAction> = requiredActions.getRequired("required_actions")
+
+    /**
+     * Spending limit and best-effort consumption, in USD cents. The limit is null for an unlimited
+     * session. Consumption is null when unavailable.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun spendControl(): SpendControl = spendControl.getRequired("spend_control")
 
     /**
      * The current status of the session.
@@ -279,6 +293,15 @@ private constructor(
     fun _requiredActions(): JsonField<List<RequiredAction>> = requiredActions
 
     /**
+     * Returns the raw JSON value of [spendControl].
+     *
+     * Unlike [spendControl], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("spend_control")
+    @ExcludeMissing
+    fun _spendControl(): JsonField<SpendControl> = spendControl
+
+    /**
      * Returns the raw JSON value of [status].
      *
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
@@ -341,6 +364,7 @@ private constructor(
             "metadata" to this.metadata,
             "object" to this.object_,
             "required_actions" to this.requiredActions,
+            "spend_control" to this.spendControl,
             "status" to this.status,
             "usage" to this.usage,
             "vault_ids" to this.vaultIds,
@@ -395,6 +419,8 @@ private constructor(
         private var metadata: JsonField<Metadata>? = null
         private var object_: JsonValue = JsonValue.from("agent.session")
         private var requiredActions: JsonField<MutableList<RequiredAction>>? = null
+        private var spendControl: JsonField<SpendControl>? =
+            JsonField.of(SpendControl.builder().build())
         private var status: JsonField<Status>? = null
         private var usage: JsonField<TokenUsage>? = JsonNull.of()
         private var vaultIds: JsonField<MutableList<String>>? = null
@@ -413,6 +439,7 @@ private constructor(
             metadata = agentSession.metadata
             object_ = agentSession.object_
             requiredActions = agentSession.requiredActions.map { it.toMutableList() }
+            spendControl = agentSession.spendControl
             status = agentSession.status
             usage = agentSession.usage
             vaultIds = agentSession.vaultIds.map { it.toMutableList() }
@@ -602,6 +629,23 @@ private constructor(
                 RequiredAction.EnvironmentConnection.builder().environmentId(environmentId).build()
             )
 
+        /**
+         * Spending limit and best-effort consumption, in USD cents. The limit is null for an
+         * unlimited session. Consumption is null when unavailable.
+         */
+        fun spendControl(spendControl: SpendControl) = spendControl(JsonField.of(spendControl))
+
+        /**
+         * Sets [Builder.spendControl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.spendControl] with a well-typed [SpendControl] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun spendControl(spendControl: JsonField<SpendControl>) = apply {
+            this.spendControl = spendControl
+        }
+
         /** The current status of the session. */
         fun status(status: Status) = status(JsonField.of(status))
 
@@ -741,6 +785,7 @@ private constructor(
                 checkRequired("metadata", metadata),
                 object_,
                 checkRequired("requiredActions", requiredActions).map { it.toImmutable() },
+                checkRequired("spendControl", spendControl),
                 checkRequired("status", status),
                 checkRequired("usage", usage),
                 checkRequired("vaultIds", vaultIds).map { it.toImmutable() },
@@ -778,6 +823,7 @@ private constructor(
             }
         }
         requiredActions().forEach { it.validate() }
+        spendControl().validate()
         status().validate()
         usage().ifPresent { it.validate() }
         vaultIds()
@@ -810,6 +856,7 @@ private constructor(
             (metadata.asKnown().getOrNull()?.validity() ?: 0) +
             object_.let { if (it == JsonValue.from("agent.session")) 1 else 0 } +
             (requiredActions.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (spendControl.asKnown().getOrNull()?.validity() ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0) +
             (vaultIds.asKnown().getOrNull()?.size ?: 0) +
@@ -5780,6 +5827,248 @@ private constructor(
         }
     }
 
+    /**
+     * Spending limit and best-effort consumption, in USD cents. The limit is null for an unlimited
+     * session. Consumption is null when unavailable.
+     */
+    class SpendControl
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val consumed: JsonField<Long>,
+        private val limit: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("consumed") @ExcludeMissing consumed: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("limit") @ExcludeMissing limit: JsonField<Long> = JsonMissing.of(),
+        ) : this(consumed, limit, mutableMapOf())
+
+        /**
+         * Best-effort recorded spend floored to whole USD cents, or null when unavailable.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun consumed(): Optional<Long> = consumed.getOptional("consumed")
+
+        /**
+         * The configured positive limit in USD cents, or null when unlimited.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun limit(): Optional<Long> = limit.getOptional("limit")
+
+        /**
+         * Returns the raw JSON value of [consumed].
+         *
+         * Unlike [consumed], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("consumed") @ExcludeMissing fun _consumed(): JsonField<Long> = consumed
+
+        /**
+         * Returns the raw JSON value of [limit].
+         *
+         * Unlike [limit], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("limit") @ExcludeMissing fun _limit(): JsonField<Long> = limit
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "consumed" to this.consumed,
+                "limit" to this.limit,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [SpendControl]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [SpendControl]. */
+        class Builder internal constructor() {
+
+            private var consumed: JsonField<Long>? = JsonNull.of()
+            private var limit: JsonField<Long>? = JsonNull.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(spendControl: SpendControl) = apply {
+                consumed = spendControl.consumed
+                limit = spendControl.limit
+                additionalProperties = spendControl.additionalProperties.toMutableMap()
+            }
+
+            /** Best-effort recorded spend floored to whole USD cents, or null when unavailable. */
+            fun consumed(consumed: Long?) = consumed(JsonField.ofNullable(consumed))
+
+            /**
+             * Alias for [Builder.consumed].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun consumed(consumed: Long) = consumed(consumed as Long?)
+
+            /** Alias for calling [Builder.consumed] with `consumed.orElse(null)`. */
+            fun consumed(consumed: Optional<Long>) = consumed(consumed.getOrNull())
+
+            /**
+             * Sets [Builder.consumed] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.consumed] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun consumed(consumed: JsonField<Long>) = apply { this.consumed = consumed }
+
+            /** The configured positive limit in USD cents, or null when unlimited. */
+            fun limit(limit: Long?) = limit(JsonField.ofNullable(limit))
+
+            /**
+             * Alias for [Builder.limit].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun limit(limit: Long) = limit(limit as Long?)
+
+            /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
+            fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
+
+            /**
+             * Sets [Builder.limit] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.limit] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun limit(limit: JsonField<Long>) = apply { this.limit = limit }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [SpendControl].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): SpendControl =
+                SpendControl(
+                    checkRequired("consumed", consumed),
+                    checkRequired("limit", limit),
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): SpendControl = apply {
+            if (validated) {
+                return@apply
+            }
+
+            if (consumed.isMissing()) {
+                throw OpenAIInvalidDataException("`consumed` is not set")
+            }
+            consumed()
+            if (limit.isMissing()) {
+                throw OpenAIInvalidDataException("`limit` is not set")
+            }
+            limit()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (consumed.asKnown().isPresent) 1 else 0) + (if (limit.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is SpendControl &&
+                consumed == other.consumed &&
+                limit == other.limit &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(consumed, limit, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "SpendControl{consumed=$consumed, limit=$limit, additionalProperties=$additionalProperties}"
+    }
+
     /** The current status of the session. */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -5810,6 +6099,9 @@ private constructor(
             /** The session failed. */
             @JvmField val FAILED = of("failed")
 
+            /** The session is paused because its spending limit was reached. */
+            @JvmField val BUDGET_REACHED = of("budget_reached")
+
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }
 
@@ -5826,6 +6118,8 @@ private constructor(
             REQUIRES_ACTION,
             /** The session failed. */
             FAILED,
+            /** The session is paused because its spending limit was reached. */
+            BUDGET_REACHED,
         }
 
         /**
@@ -5849,6 +6143,8 @@ private constructor(
             REQUIRES_ACTION,
             /** The session failed. */
             FAILED,
+            /** The session is paused because its spending limit was reached. */
+            BUDGET_REACHED,
             /** An enum member indicating that [Status] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -5866,6 +6162,7 @@ private constructor(
                 IN_PROGRESS -> Value.IN_PROGRESS
                 REQUIRES_ACTION -> Value.REQUIRES_ACTION
                 FAILED -> Value.FAILED
+                BUDGET_REACHED -> Value.BUDGET_REACHED
                 else -> Value._UNKNOWN
             }
 
@@ -5884,6 +6181,7 @@ private constructor(
                 IN_PROGRESS -> Known.IN_PROGRESS
                 REQUIRES_ACTION -> Known.REQUIRES_ACTION
                 FAILED -> Known.FAILED
+                BUDGET_REACHED -> Known.BUDGET_REACHED
                 else -> throw OpenAIInvalidDataException("Unknown Status: $value")
             }
 
@@ -6419,6 +6717,7 @@ private constructor(
             metadata == other.metadata &&
             object_ == other.object_ &&
             requiredActions == other.requiredActions &&
+            spendControl == other.spendControl &&
             status == other.status &&
             usage == other.usage &&
             vaultIds == other.vaultIds &&
@@ -6438,6 +6737,7 @@ private constructor(
             metadata,
             object_,
             requiredActions,
+            spendControl,
             status,
             usage,
             vaultIds,
@@ -6450,5 +6750,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "AgentSession{id=$id, agent=$agent, createdAt=$createdAt, environment=$environment, error=$error, lastActiveAt=$lastActiveAt, metadata=$metadata, object_=$object_, requiredActions=$requiredActions, status=$status, usage=$usage, vaultIds=$vaultIds, promptCacheOptions=$promptCacheOptions, review=$review, additionalProperties=$additionalProperties}"
+        "AgentSession{id=$id, agent=$agent, createdAt=$createdAt, environment=$environment, error=$error, lastActiveAt=$lastActiveAt, metadata=$metadata, object_=$object_, requiredActions=$requiredActions, spendControl=$spendControl, status=$status, usage=$usage, vaultIds=$vaultIds, promptCacheOptions=$promptCacheOptions, review=$review, additionalProperties=$additionalProperties}"
 }

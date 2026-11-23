@@ -48,6 +48,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -138,6 +139,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -235,6 +237,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -332,6 +335,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -417,6 +421,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -493,6 +498,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -618,6 +624,9 @@ internal class AgentSessionEventTest {
                                 .turnId("turn_id")
                                 .build()
                         )
+                        .spendControl(
+                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        )
                         .status(AgentSession.Status.IDLE)
                         .usage(
                             TokenUsage.builder()
@@ -662,6 +671,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -768,6 +778,9 @@ internal class AgentSessionEventTest {
                                     .turnId("turn_id")
                                     .build()
                             )
+                            .spendControl(
+                                AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                            )
                             .status(AgentSession.Status.IDLE)
                             .usage(
                                 TokenUsage.builder()
@@ -873,6 +886,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -1022,6 +1036,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -1184,6 +1199,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -1359,6 +1375,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -1534,6 +1551,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).contains(turnCancelled)
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -1668,6 +1686,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).contains(turnItemAdded)
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -1801,6 +1820,9 @@ internal class AgentSessionEventTest {
                                 .turnId("turn_id")
                                 .build()
                         )
+                        .spendControl(
+                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        )
                         .status(AgentSession.Status.IDLE)
                         .usage(
                             TokenUsage.builder()
@@ -1845,6 +1867,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).contains(idle)
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -1950,6 +1973,285 @@ internal class AgentSessionEventTest {
                                     .requestId("request_id")
                                     .turnId("turn_id")
                                     .build()
+                            )
+                            .spendControl(
+                                AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                            )
+                            .status(AgentSession.Status.IDLE)
+                            .usage(
+                                TokenUsage.builder()
+                                    .inputTokens(0L)
+                                    .inputTokensDetails(
+                                        TokenUsage.InputTokensDetails.builder()
+                                            .cachedTokens(0L)
+                                            .build()
+                                    )
+                                    .outputTokens(0L)
+                                    .outputTokensDetails(
+                                        TokenUsage.OutputTokensDetails.builder()
+                                            .reasoningTokens(0L)
+                                            .build()
+                                    )
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .addVaultId("string")
+                            .promptCacheOptions(
+                                AgentSession.PromptCacheOptions.builder()
+                                    .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                                    .build()
+                            )
+                            .review(AgentSession.Review.NONE)
+                            .build()
+                    )
+                    .obfuscation("obfuscation")
+                    .build()
+            )
+
+        val roundtrippedAgentSessionEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(agentSessionEvent),
+                jacksonTypeRef<AgentSessionEvent>(),
+            )
+
+        assertThat(roundtrippedAgentSessionEvent).isEqualTo(agentSessionEvent)
+    }
+
+    @Test
+    fun ofBudgetReached() {
+        val budgetReached =
+            AgentSessionBudgetReachedEvent.builder()
+                .eventId("event_id")
+                .session(
+                    AgentSession.builder()
+                        .id("id")
+                        .agent(
+                            AgentSession.Agent.builder()
+                                .id("id")
+                                .instructions("instructions")
+                                .model("model")
+                                .multiAgent(
+                                    MultiAgentConfig.builder()
+                                        .enabled(true)
+                                        .maxConcurrentSubagents(1L)
+                                        .build()
+                                )
+                                .name("name")
+                                .reasoning(
+                                    AgentReasoning.builder()
+                                        .effort(AgentReasoning.Effort.NONE)
+                                        .summary(AgentReasoning.Summary.CONCISE)
+                                        .build()
+                                )
+                                .serviceTier(AgentSession.Agent.ServiceTier.AUTO)
+                                .text(
+                                    AgentText.builder()
+                                        .formatText()
+                                        .verbosity(AgentText.Verbosity.LOW)
+                                        .build()
+                                )
+                                .addTool(
+                                    AgentTool.Function.builder()
+                                        .deferLoading(true)
+                                        .description("description")
+                                        .name("name")
+                                        .parameters(
+                                            AgentTool.Function.Parameters.builder()
+                                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                                .build()
+                                        )
+                                        .async(true)
+                                        .build()
+                                )
+                                .compaction(
+                                    AgentSession.Agent.Compaction.builder().async(true).build()
+                                )
+                                .experimental(
+                                    AgentSession.Agent.Experimental.builder()
+                                        .timeAwareness(true)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .createdAt(0L)
+                        .environmentNone()
+                        .error("error")
+                        .lastActiveAt(0L)
+                        .metadata(
+                            AgentSession.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .addRequiredAction(
+                            AgentSession.RequiredAction.McpApprovalRequest.builder()
+                                .request(
+                                    AgentSession.RequiredAction.McpApprovalRequest.Request.builder()
+                                        .arguments(JsonValue.from(mapOf<String, Any>()))
+                                        .message("message")
+                                        .name("name")
+                                        .serverLabel("server_label")
+                                        .build()
+                                )
+                                .requestId("request_id")
+                                .turnId("turn_id")
+                                .build()
+                        )
+                        .spendControl(
+                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        )
+                        .status(AgentSession.Status.IDLE)
+                        .usage(
+                            TokenUsage.builder()
+                                .inputTokens(0L)
+                                .inputTokensDetails(
+                                    TokenUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                                )
+                                .outputTokens(0L)
+                                .outputTokensDetails(
+                                    TokenUsage.OutputTokensDetails.builder()
+                                        .reasoningTokens(0L)
+                                        .build()
+                                )
+                                .totalTokens(0L)
+                                .build()
+                        )
+                        .addVaultId("string")
+                        .promptCacheOptions(
+                            AgentSession.PromptCacheOptions.builder()
+                                .ttl(AgentSession.PromptCacheOptions.Ttl._30M)
+                                .build()
+                        )
+                        .review(AgentSession.Review.NONE)
+                        .build()
+                )
+                .obfuscation("obfuscation")
+                .build()
+
+        val agentSessionEvent = AgentSessionEvent.ofBudgetReached(budgetReached)
+
+        assertThat(agentSessionEvent.error()).isEmpty
+        assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentSuspended()).isEmpty
+        assertThat(agentSessionEvent.environmentExpired()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
+        assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
+        assertThat(agentSessionEvent.created()).isEmpty
+        assertThat(agentSessionEvent.turnCreated()).isEmpty
+        assertThat(agentSessionEvent.turnInProgress()).isEmpty
+        assertThat(agentSessionEvent.turnCompleted()).isEmpty
+        assertThat(agentSessionEvent.turnFailed()).isEmpty
+        assertThat(agentSessionEvent.turnCancelled()).isEmpty
+        assertThat(agentSessionEvent.turnItemAdded()).isEmpty
+        assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).contains(budgetReached)
+        assertThat(agentSessionEvent.inProgress()).isEmpty
+        assertThat(agentSessionEvent.requiresAction()).isEmpty
+        assertThat(agentSessionEvent.failed()).isEmpty
+        assertThat(agentSessionEvent.environmentPending()).isEmpty
+        assertThat(agentSessionEvent.environmentConnected()).isEmpty
+        assertThat(agentSessionEvent.environmentDisconnected()).isEmpty
+        assertThat(agentSessionEvent.environmentFailed()).isEmpty
+        assertThat(agentSessionEvent.subagentCreated()).isEmpty
+        assertThat(agentSessionEvent.subagentActive()).isEmpty
+        assertThat(agentSessionEvent.subagentClosed()).isEmpty
+        assertThat(agentSessionEvent.turnItemDone()).isEmpty
+        assertThat(agentSessionEvent.turnContentPartAdded()).isEmpty
+        assertThat(agentSessionEvent.turnContentPartDone()).isEmpty
+        assertThat(agentSessionEvent.turnOutputTextDelta()).isEmpty
+        assertThat(agentSessionEvent.turnOutputTextDone()).isEmpty
+        assertThat(agentSessionEvent.turnReasoningSummaryPartAdded()).isEmpty
+        assertThat(agentSessionEvent.turnReasoningSummaryPartDone()).isEmpty
+        assertThat(agentSessionEvent.turnReasoningSummaryTextDelta()).isEmpty
+        assertThat(agentSessionEvent.turnReasoningSummaryTextDone()).isEmpty
+    }
+
+    @Test
+    fun ofBudgetReachedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val agentSessionEvent =
+            AgentSessionEvent.ofBudgetReached(
+                AgentSessionBudgetReachedEvent.builder()
+                    .eventId("event_id")
+                    .session(
+                        AgentSession.builder()
+                            .id("id")
+                            .agent(
+                                AgentSession.Agent.builder()
+                                    .id("id")
+                                    .instructions("instructions")
+                                    .model("model")
+                                    .multiAgent(
+                                        MultiAgentConfig.builder()
+                                            .enabled(true)
+                                            .maxConcurrentSubagents(1L)
+                                            .build()
+                                    )
+                                    .name("name")
+                                    .reasoning(
+                                        AgentReasoning.builder()
+                                            .effort(AgentReasoning.Effort.NONE)
+                                            .summary(AgentReasoning.Summary.CONCISE)
+                                            .build()
+                                    )
+                                    .serviceTier(AgentSession.Agent.ServiceTier.AUTO)
+                                    .text(
+                                        AgentText.builder()
+                                            .formatText()
+                                            .verbosity(AgentText.Verbosity.LOW)
+                                            .build()
+                                    )
+                                    .addTool(
+                                        AgentTool.Function.builder()
+                                            .deferLoading(true)
+                                            .description("description")
+                                            .name("name")
+                                            .parameters(
+                                                AgentTool.Function.Parameters.builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from("bar"),
+                                                    )
+                                                    .build()
+                                            )
+                                            .async(true)
+                                            .build()
+                                    )
+                                    .compaction(
+                                        AgentSession.Agent.Compaction.builder().async(true).build()
+                                    )
+                                    .experimental(
+                                        AgentSession.Agent.Experimental.builder()
+                                            .timeAwareness(true)
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .createdAt(0L)
+                            .environmentNone()
+                            .error("error")
+                            .lastActiveAt(0L)
+                            .metadata(
+                                AgentSession.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .addRequiredAction(
+                                AgentSession.RequiredAction.McpApprovalRequest.builder()
+                                    .request(
+                                        AgentSession.RequiredAction.McpApprovalRequest.Request
+                                            .builder()
+                                            .arguments(JsonValue.from(mapOf<String, Any>()))
+                                            .message("message")
+                                            .name("name")
+                                            .serverLabel("server_label")
+                                            .build()
+                                    )
+                                    .requestId("request_id")
+                                    .turnId("turn_id")
+                                    .build()
+                            )
+                            .spendControl(
+                                AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                             )
                             .status(AgentSession.Status.IDLE)
                             .usage(
@@ -2070,6 +2372,9 @@ internal class AgentSessionEventTest {
                                 .turnId("turn_id")
                                 .build()
                         )
+                        .spendControl(
+                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        )
                         .status(AgentSession.Status.IDLE)
                         .usage(
                             TokenUsage.builder()
@@ -2114,6 +2419,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).contains(inProgress)
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -2219,6 +2525,9 @@ internal class AgentSessionEventTest {
                                     .requestId("request_id")
                                     .turnId("turn_id")
                                     .build()
+                            )
+                            .spendControl(
+                                AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                             )
                             .status(AgentSession.Status.IDLE)
                             .usage(
@@ -2339,6 +2648,9 @@ internal class AgentSessionEventTest {
                                 .turnId("turn_id")
                                 .build()
                         )
+                        .spendControl(
+                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        )
                         .status(AgentSession.Status.IDLE)
                         .usage(
                             TokenUsage.builder()
@@ -2383,6 +2695,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).contains(requiresAction)
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -2488,6 +2801,9 @@ internal class AgentSessionEventTest {
                                     .requestId("request_id")
                                     .turnId("turn_id")
                                     .build()
+                            )
+                            .spendControl(
+                                AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                             )
                             .status(AgentSession.Status.IDLE)
                             .usage(
@@ -2608,6 +2924,9 @@ internal class AgentSessionEventTest {
                                 .turnId("turn_id")
                                 .build()
                         )
+                        .spendControl(
+                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        )
                         .status(AgentSession.Status.IDLE)
                         .usage(
                             TokenUsage.builder()
@@ -2652,6 +2971,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).contains(failed)
@@ -2758,6 +3078,9 @@ internal class AgentSessionEventTest {
                                     .turnId("turn_id")
                                     .build()
                             )
+                            .spendControl(
+                                AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                            )
                             .status(AgentSession.Status.IDLE)
                             .usage(
                                 TokenUsage.builder()
@@ -2838,6 +3161,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -2935,6 +3259,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -3032,6 +3357,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -3129,6 +3455,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -3223,6 +3550,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -3314,6 +3642,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -3405,6 +3734,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -3495,6 +3825,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -3578,6 +3909,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -3655,6 +3987,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -3732,6 +4065,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -3809,6 +4143,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -3887,6 +4222,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -3967,6 +4303,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -4047,6 +4384,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty
@@ -4126,6 +4464,7 @@ internal class AgentSessionEventTest {
         assertThat(agentSessionEvent.turnCancelled()).isEmpty
         assertThat(agentSessionEvent.turnItemAdded()).isEmpty
         assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.budgetReached()).isEmpty
         assertThat(agentSessionEvent.inProgress()).isEmpty
         assertThat(agentSessionEvent.requiresAction()).isEmpty
         assertThat(agentSessionEvent.failed()).isEmpty

@@ -90,6 +90,7 @@ internal class SessionServiceAsyncTest {
                             .build()
                     )
                     .review(SessionCreateParams.Review.NONE)
+                    .spendControl(SessionCreateParams.SpendControl.builder().limit(1L).build())
                     .streamOptions(
                         SessionCreateParams.StreamOptions.builder().includeObfuscation(true).build()
                     )
@@ -175,6 +176,7 @@ internal class SessionServiceAsyncTest {
                             .build()
                     )
                     .review(SessionUpdateParams.Review.NONE)
+                    .spendControl(SessionUpdateParams.SpendControl.builder().limit(1L).build())
                     .build()
             )
 

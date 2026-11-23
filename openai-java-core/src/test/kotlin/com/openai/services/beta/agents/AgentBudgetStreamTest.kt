@@ -12,6 +12,7 @@ import com.openai.models.beta.agents.AgentToolHandlers
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.events.EventStreamParams
 import java.io.ByteArrayInputStream
+import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutionException
@@ -49,7 +50,7 @@ internal class AgentBudgetStreamTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
-    fun `raw creation and event subscriptions preserve unknown budget payloads`(async: Boolean) {
+    fun `raw creation and event subscriptions decode typed budget payloads`(async: Boolean) {
         for ((creation, limit) in
             listOf(false to 1234L, true to 1234L, false to null, true to null)) {
             val transport = Transport(listOf(domainError, budget(limit = limit)))
@@ -76,13 +77,12 @@ internal class AgentBudgetStreamTest {
                 }
                 assertThat(events).hasSize(2)
                 assertThat(events.first().asError().error().message()).isEqualTo("Session error.")
-                val frame = jsonMapper().valueToTree<JsonNode>(events.last())
-                assertThat(frame.path("type").asText()).isEqualTo("agent.session.budget_reached")
-                assertThat(frame.path("session").path("id").asText()).isEqualTo("s")
-                assertThat(frame.path("session").path("spend_control").path("consumed").asLong())
-                    .isEqualTo(321L)
-                assertThat(frame.path("session").path("spend_control").path("limit").isNull)
-                    .isEqualTo(limit == null)
+                val event = events.last().asBudgetReached()
+                assertThat(event.session().id()).isEqualTo("s")
+                assertThat(event.session().status().toString()).isEqualTo("budget_reached")
+                assertThat(event.session().spendControl().consumed()).contains(321L)
+                assertThat(event.session().spendControl().limit())
+                    .isEqualTo(Optional.ofNullable(limit))
                 assertThat(transport.awaitStreamClosed()).isTrue()
             }
         }
