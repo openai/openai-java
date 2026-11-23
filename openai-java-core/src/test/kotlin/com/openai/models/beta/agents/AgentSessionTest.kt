@@ -82,6 +82,7 @@ internal class AgentSessionTest {
                         .turnId("turn_id")
                         .build()
                 )
+                .spendControl(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
                 .status(AgentSession.Status.IDLE)
                 .usage(
                     TokenUsage.builder()
@@ -172,6 +173,8 @@ internal class AgentSessionTest {
                         .build()
                 )
             )
+        assertThat(agentSession.spendControl())
+            .isEqualTo(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
         assertThat(agentSession.status()).isEqualTo(AgentSession.Status.IDLE)
         assertThat(agentSession.usage())
             .contains(

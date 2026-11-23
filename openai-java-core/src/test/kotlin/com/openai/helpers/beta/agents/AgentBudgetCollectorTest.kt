@@ -35,6 +35,16 @@ internal class AgentBudgetCollectorTest {
         assertThat(collector.isReady()).isTrue()
     }
 
+    @Test
+    fun `typed budget without raw JSON completes an authoritative completed turn`() {
+        val collector = collect(listOf(turn("created"), turn("completed")))
+        val event = mapper.readValue(budget(), AgentSessionEvent::class.java).asBudgetReached()
+        collector.accept(AgentSessionEvent.ofBudgetReached(event))
+
+        assertThat(collector.finalResult().turnId()).isEqualTo("root")
+        assertThat(collector.isReady()).isTrue()
+    }
+
     @ParameterizedTest
     @ValueSource(strings = ["failed", "cancelled"])
     fun `budget does not erase a failed or cancelled turn`(status: String) {

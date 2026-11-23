@@ -89,15 +89,27 @@ internal class AgentTurnCollector(
             }
             val raw = event._json().getOrNull()?.asObject()?.getOrNull()
             val budgetSessionId =
-                if (raw?.get("type")?.asString()?.getOrNull() == "agent.session.budget_reached")
-                    raw["session"]
-                        ?.asObject()
-                        ?.getOrNull()
-                        ?.get("id")
-                        ?.asString()
-                        ?.getOrNull()
-                        ?.takeIf { it.isNotEmpty() }
-                else null
+                event
+                    .budgetReached()
+                    .getOrNull()
+                    ?._session()
+                    ?.asKnown()
+                    ?.getOrNull()
+                    ?._id()
+                    ?.asKnown()
+                    ?.getOrNull()
+                    ?.takeIf { it.isNotEmpty() }
+                    ?: if (
+                        raw?.get("type")?.asString()?.getOrNull() == "agent.session.budget_reached"
+                    )
+                        raw["session"]
+                            ?.asObject()
+                            ?.getOrNull()
+                            ?.get("id")
+                            ?.asString()
+                            ?.getOrNull()
+                            ?.takeIf { it.isNotEmpty() }
+                    else null
             if (budgetSessionId != null && (sessionId == null || budgetSessionId == sessionId)) {
                 if (turn == null) {
                     sessionId = budgetSessionId
