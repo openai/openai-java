@@ -41,7 +41,7 @@ val dokkaJacksonVersion =
         }
         .versionConstraint
         .requiredVersion
-val dokkaJsoupVersion = "1.23.1"
+val dokkaJsoupVersion = "1.23.2"
 
 repositories {
     mavenCentral()
