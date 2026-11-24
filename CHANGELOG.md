@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.113.0](https://github.com/openai/openai-java/compare/v4.112.0...v4.113.0) (2026-11-24)
+
+
+### Features
+
+* **api:** add healthcare model IDs for Responses ([#1437](https://github.com/openai/openai-java/issues/1437)) ([da73828](https://github.com/openai/openai-java/commit/da73828f8014e7068eac9d5ef796a8cf64c36109))
+
 ## [4.112.0](https://github.com/openai/openai-java/compare/v4.111.0...v4.112.0) (2026-11-23)
 
 
