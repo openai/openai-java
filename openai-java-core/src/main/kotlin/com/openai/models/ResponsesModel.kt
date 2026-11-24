@@ -317,6 +317,14 @@ private constructor(
 
             @JvmField val GPT_6_2_ASTRA_LAW = of("gpt-6.2-astra-law")
 
+            @JvmField val GPT_6_ASTRA_HEALTHCARE = of("gpt-6-astra-healthcare")
+
+            @JvmField val GPT_6_1_SOL_HEALTHCARE = of("gpt-6.1-sol-healthcare")
+
+            @JvmField val GPT_6_2_ASTRA_HEALTHCARE = of("gpt-6.2-astra-healthcare")
+
+            @JvmField val GPT_6_2_SOL_HEALTHCARE = of("gpt-6.2-sol-healthcare")
+
             @JvmStatic fun of(value: String) = ResponsesOnlyModel(JsonField.of(value))
         }
 
@@ -345,6 +353,10 @@ private constructor(
             GPT_ROSALIND_RESEARCH,
             GPT_6_ROSALIND,
             GPT_6_2_ASTRA_LAW,
+            GPT_6_ASTRA_HEALTHCARE,
+            GPT_6_1_SOL_HEALTHCARE,
+            GPT_6_2_ASTRA_HEALTHCARE,
+            GPT_6_2_SOL_HEALTHCARE,
         }
 
         /**
@@ -380,6 +392,10 @@ private constructor(
             GPT_ROSALIND_RESEARCH,
             GPT_6_ROSALIND,
             GPT_6_2_ASTRA_LAW,
+            GPT_6_ASTRA_HEALTHCARE,
+            GPT_6_1_SOL_HEALTHCARE,
+            GPT_6_2_ASTRA_HEALTHCARE,
+            GPT_6_2_SOL_HEALTHCARE,
             /**
              * An enum member indicating that [ResponsesOnlyModel] was instantiated with an unknown
              * value.
@@ -419,6 +435,10 @@ private constructor(
                 GPT_ROSALIND_RESEARCH -> Value.GPT_ROSALIND_RESEARCH
                 GPT_6_ROSALIND -> Value.GPT_6_ROSALIND
                 GPT_6_2_ASTRA_LAW -> Value.GPT_6_2_ASTRA_LAW
+                GPT_6_ASTRA_HEALTHCARE -> Value.GPT_6_ASTRA_HEALTHCARE
+                GPT_6_1_SOL_HEALTHCARE -> Value.GPT_6_1_SOL_HEALTHCARE
+                GPT_6_2_ASTRA_HEALTHCARE -> Value.GPT_6_2_ASTRA_HEALTHCARE
+                GPT_6_2_SOL_HEALTHCARE -> Value.GPT_6_2_SOL_HEALTHCARE
                 else -> Value._UNKNOWN
             }
 
@@ -456,6 +476,10 @@ private constructor(
                 GPT_ROSALIND_RESEARCH -> Known.GPT_ROSALIND_RESEARCH
                 GPT_6_ROSALIND -> Known.GPT_6_ROSALIND
                 GPT_6_2_ASTRA_LAW -> Known.GPT_6_2_ASTRA_LAW
+                GPT_6_ASTRA_HEALTHCARE -> Known.GPT_6_ASTRA_HEALTHCARE
+                GPT_6_1_SOL_HEALTHCARE -> Known.GPT_6_1_SOL_HEALTHCARE
+                GPT_6_2_ASTRA_HEALTHCARE -> Known.GPT_6_2_ASTRA_HEALTHCARE
+                GPT_6_2_SOL_HEALTHCARE -> Known.GPT_6_2_SOL_HEALTHCARE
                 else -> throw OpenAIInvalidDataException("Unknown ResponsesOnlyModel: $value")
             }
 
