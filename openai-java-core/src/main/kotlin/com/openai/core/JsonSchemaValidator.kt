@@ -390,6 +390,12 @@ internal class JsonSchemaValidator private constructor() {
                 return
             }
 
+        // Optional enums can generate an anyOf with an explicit null alternative.
+        if (typeName == TYPE_NULL && depth != ROOT_DEPTH) {
+            validateSimpleSchema(schema, typeName, path, depth)
+            return
+        }
+
         when (typeName) {
             TYPE_ARRAY -> validateArraySchema(schema, path, depth)
             TYPE_OBJECT -> validateObjectSchema(schema, path, depth)
