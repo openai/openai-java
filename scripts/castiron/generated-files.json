@@ -5267,7 +5267,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/realtime/RealtimeAudioConfigInput.kt": {
       "mode": "100644",
-      "sha256": "bf403ae69b8c861f8ceb26ae86abc83650a861335e074c45bd96a1002e9577fe"
+      "sha256": "ef461cb44fb63dc688594943b61337294980336272b997633cefbb44dc0be954"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/realtime/RealtimeAudioConfigOutput.kt": {
       "mode": "100644",
