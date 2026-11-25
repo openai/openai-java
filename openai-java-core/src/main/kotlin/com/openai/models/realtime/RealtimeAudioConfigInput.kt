@@ -52,7 +52,8 @@ private constructor(
     fun format(): Optional<RealtimeAudioFormats> = format.getOptional("format")
 
     /**
-     * Configuration for input audio noise reduction. This can be set to `null` to turn off. Noise
+     * When you supply a `noise_reduction` object, you must set `type` to `near_field` or
+     * `far_field`. Set `noise_reduction` to `null` to turn off input audio noise reduction. Noise
      * reduction filters audio added to the input audio buffer before it is sent to VAD and the
      * model. Filtering the audio can improve VAD and turn detection accuracy (reducing false
      * positives) and model performance by improving perception of the input audio.
@@ -217,7 +218,8 @@ private constructor(
             format(RealtimeAudioFormats.ofAudioPcma(audioPcma))
 
         /**
-         * Configuration for input audio noise reduction. This can be set to `null` to turn off.
+         * When you supply a `noise_reduction` object, you must set `type` to `near_field` or
+         * `far_field`. Set `noise_reduction` to `null` to turn off input audio noise reduction.
          * Noise reduction filters audio added to the input audio buffer before it is sent to VAD
          * and the model. Filtering the audio can improve VAD and turn detection accuracy (reducing
          * false positives) and model performance by improving perception of the input audio.
@@ -385,7 +387,8 @@ private constructor(
             (turnDetection.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
-     * Configuration for input audio noise reduction. This can be set to `null` to turn off. Noise
+     * When you supply a `noise_reduction` object, you must set `type` to `near_field` or
+     * `far_field`. Set `noise_reduction` to `null` to turn off input audio noise reduction. Noise
      * reduction filters audio added to the input audio buffer before it is sent to VAD and the
      * model. Filtering the audio can improve VAD and turn detection accuracy (reducing false
      * positives) and model performance by improving perception of the input audio.
