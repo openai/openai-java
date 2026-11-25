@@ -94,7 +94,10 @@ private constructor(
     fun networkPolicy(): Optional<NetworkPolicy> = networkPolicy.getOptional("network_policy")
 
     /**
-     * An optional list of skills referenced by id or inline data.
+     * An optional list of skills referenced by id or inline data. Across all inline skills in this
+     * list, decoded ZIP data must total at most 50 MiB and Base64 text must total at most
+     * 70,254,592 characters, including line breaks. Skill references do not count toward these
+     * limits.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -288,7 +291,12 @@ private constructor(
                 ContainerNetworkPolicyAllowlist.builder().allowedDomains(allowedDomains).build()
             )
 
-        /** An optional list of skills referenced by id or inline data. */
+        /**
+         * An optional list of skills referenced by id or inline data. Across all inline skills in
+         * this list, decoded ZIP data must total at most 50 MiB and Base64 text must total at most
+         * 70,254,592 characters, including line breaks. Skill references do not count toward these
+         * limits.
+         */
         fun skills(skills: List<Skill>) = skills(JsonField.of(skills))
 
         /**
