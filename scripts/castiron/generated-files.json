@@ -1583,7 +1583,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/batches/BatchCreateParams.kt": {
       "mode": "100644",
-      "sha256": "47480f42dce6fc44a4f7b372de8bb3e52e58ed90244a42ba0ce0d135a68bc52b"
+      "sha256": "7e2a90c384693d75ec673f08c06507d192185309e13bdaf5fc1efcd4b903163b"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/batches/BatchError.kt": {
       "mode": "100644",
