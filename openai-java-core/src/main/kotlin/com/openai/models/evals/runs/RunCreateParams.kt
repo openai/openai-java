@@ -1058,7 +1058,7 @@ private constructor(
                 inputMessages.getOptional("input_messages")
 
             /**
-             * The name of the model to use for generating completions (e.g. "o3-mini").
+             * The model to use to sample outputs with the Responses API.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -1300,7 +1300,7 @@ private constructor(
                         InputMessages.ItemReference.builder().itemReference(itemReference).build()
                     )
 
-                /** The name of the model to use for generating completions (e.g. "o3-mini"). */
+                /** The model to use to sample outputs with the Responses API. */
                 fun model(model: String) = model(JsonField.of(model))
 
                 /**

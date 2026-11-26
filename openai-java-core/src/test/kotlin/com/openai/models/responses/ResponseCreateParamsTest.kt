@@ -44,7 +44,7 @@ internal class ResponseCreateParamsTest {
                     .build()
             )
             .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
-            .input("string")
+            .input("Write a one-sentence bedtime story about a unicorn.")
             .instructions("instructions")
             .maxOutputTokens(16L)
             .maxToolCalls(0L)
@@ -53,7 +53,7 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-            .model(ChatModel.GPT_6_ASTRA)
+            .model(ChatModel.GPT_6_2_ASTRA)
             .moderation(
                 ResponseCreateParams.Moderation.builder()
                     .model("model")
@@ -177,7 +177,7 @@ internal class ResponseCreateParamsTest {
                         .build()
                 )
                 .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
-                .input("string")
+                .input("Write a one-sentence bedtime story about a unicorn.")
                 .instructions("instructions")
                 .maxOutputTokens(16L)
                 .maxToolCalls(0L)
@@ -186,7 +186,7 @@ internal class ResponseCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_6_ASTRA)
+                .model(ChatModel.GPT_6_2_ASTRA)
                 .moderation(
                     ResponseCreateParams.Moderation.builder()
                         .model("model")
@@ -316,7 +316,12 @@ internal class ResponseCreateParamsTest {
             )
         assertThat(body.include().getOrNull())
             .containsExactly(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
-        assertThat(body.input()).contains(ResponseCreateParams.Input.ofText("string"))
+        assertThat(body.input())
+            .contains(
+                ResponseCreateParams.Input.ofText(
+                    "Write a one-sentence bedtime story about a unicorn."
+                )
+            )
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.maxOutputTokens()).contains(16L)
         assertThat(body.maxToolCalls()).contains(0L)
@@ -326,7 +331,7 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(body.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_6_ASTRA))
+        assertThat(body.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_6_2_ASTRA))
         assertThat(body.moderation())
             .contains(
                 ResponseCreateParams.Moderation.builder()

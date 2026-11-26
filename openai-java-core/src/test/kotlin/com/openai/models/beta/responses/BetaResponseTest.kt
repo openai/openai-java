@@ -56,7 +56,7 @@ internal class BetaResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(BetaResponse.Model.GPT_6_ASTRA)
+                .model(BetaResponse.Model.GPT_6_2_ASTRA)
                 .addOutput(
                     BetaResponseOutputMessage.builder()
                         .id("id")
@@ -350,7 +350,7 @@ internal class BetaResponseTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(betaResponse.model()).isEqualTo(BetaResponse.Model.GPT_6_ASTRA)
+        assertThat(betaResponse.model()).isEqualTo(BetaResponse.Model.GPT_6_2_ASTRA)
         assertThat(betaResponse.output())
             .containsExactly(
                 BetaResponseOutputItem.ofMessage(

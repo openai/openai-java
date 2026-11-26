@@ -10,7 +10,7 @@ internal class PermissionCreateParamsTest {
     @Test
     fun create() {
         PermissionCreateParams.builder()
-            .fineTunedModelCheckpoint("ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd")
+            .fineTunedModelCheckpoint("ft:gpt-4.1-mini-2025-04-14:org:weather:B7R9VjQd")
             .addProjectId("string")
             .build()
     }
@@ -19,11 +19,12 @@ internal class PermissionCreateParamsTest {
     fun pathParams() {
         val params =
             PermissionCreateParams.builder()
-                .fineTunedModelCheckpoint("ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd")
+                .fineTunedModelCheckpoint("ft:gpt-4.1-mini-2025-04-14:org:weather:B7R9VjQd")
                 .addProjectId("string")
                 .build()
 
-        assertThat(params._pathParam(0)).isEqualTo("ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd")
+        assertThat(params._pathParam(0))
+            .isEqualTo("ft:gpt-4.1-mini-2025-04-14:org:weather:B7R9VjQd")
         // out-of-bound path param
         assertThat(params._pathParam(1)).isEqualTo("")
     }
@@ -32,7 +33,7 @@ internal class PermissionCreateParamsTest {
     fun body() {
         val params =
             PermissionCreateParams.builder()
-                .fineTunedModelCheckpoint("ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd")
+                .fineTunedModelCheckpoint("ft:gpt-4.1-mini-2025-04-14:org:weather:B7R9VjQd")
                 .addProjectId("string")
                 .build()
 

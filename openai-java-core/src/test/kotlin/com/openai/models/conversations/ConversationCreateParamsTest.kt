@@ -27,6 +27,7 @@ internal class ConversationCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+            .safetyIdentifier("safety_identifier")
             .build()
     }
 
@@ -47,6 +48,7 @@ internal class ConversationCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .safetyIdentifier("safety_identifier")
                 .build()
 
         val body = params._body()
@@ -68,6 +70,7 @@ internal class ConversationCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+        assertThat(body.safetyIdentifier()).contains("safety_identifier")
     }
 
     @Test

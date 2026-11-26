@@ -1204,7 +1204,7 @@ internal class BetaResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_6_ASTRA)
+                        .model(BetaResponse.Model.GPT_6_2_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -1590,7 +1590,7 @@ internal class BetaResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_6_ASTRA)
+                            .model(BetaResponse.Model.GPT_6_2_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -2253,7 +2253,7 @@ internal class BetaResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_6_ASTRA)
+                        .model(BetaResponse.Model.GPT_6_2_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -2638,7 +2638,7 @@ internal class BetaResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_6_ASTRA)
+                            .model(BetaResponse.Model.GPT_6_2_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -4131,7 +4131,7 @@ internal class BetaResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_6_ASTRA)
+                        .model(BetaResponse.Model.GPT_6_2_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -4517,7 +4517,7 @@ internal class BetaResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_6_ASTRA)
+                            .model(BetaResponse.Model.GPT_6_2_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -4854,7 +4854,7 @@ internal class BetaResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_6_ASTRA)
+                        .model(BetaResponse.Model.GPT_6_2_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -5239,7 +5239,7 @@ internal class BetaResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_6_ASTRA)
+                            .model(BetaResponse.Model.GPT_6_2_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -5574,7 +5574,7 @@ internal class BetaResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_6_ASTRA)
+                        .model(BetaResponse.Model.GPT_6_2_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -5960,7 +5960,7 @@ internal class BetaResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_6_ASTRA)
+                            .model(BetaResponse.Model.GPT_6_2_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")
@@ -9656,7 +9656,7 @@ internal class BetaResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(BetaResponse.Model.GPT_6_ASTRA)
+                        .model(BetaResponse.Model.GPT_6_2_ASTRA)
                         .addOutput(
                             BetaResponseOutputMessage.builder()
                                 .id("id")
@@ -10041,7 +10041,7 @@ internal class BetaResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(BetaResponse.Model.GPT_6_ASTRA)
+                            .model(BetaResponse.Model.GPT_6_2_ASTRA)
                             .addOutput(
                                 BetaResponseOutputMessage.builder()
                                     .id("id")

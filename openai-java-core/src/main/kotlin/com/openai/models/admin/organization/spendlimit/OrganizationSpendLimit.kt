@@ -11,11 +11,14 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Represents a hard spend limit configured at the organization level. */
@@ -27,6 +30,7 @@ private constructor(
     private val interval: JsonField<Interval>,
     private val object_: JsonValue,
     private val thresholdAmount: JsonField<Long>,
+    private val notificationChannel: JsonField<NotificationChannel>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -41,7 +45,18 @@ private constructor(
         @JsonProperty("threshold_amount")
         @ExcludeMissing
         thresholdAmount: JsonField<Long> = JsonMissing.of(),
-    ) : this(currency, enforcement, interval, object_, thresholdAmount, mutableMapOf())
+        @JsonProperty("notification_channel")
+        @ExcludeMissing
+        notificationChannel: JsonField<NotificationChannel> = JsonMissing.of(),
+    ) : this(
+        currency,
+        enforcement,
+        interval,
+        object_,
+        thresholdAmount,
+        notificationChannel,
+        mutableMapOf(),
+    )
 
     /**
      * The currency for the threshold amount. Currently, only `USD` is supported.
@@ -90,6 +105,15 @@ private constructor(
     fun thresholdAmount(): Long = thresholdAmount.getRequired("threshold_amount")
 
     /**
+     * Email notifications sent when the hard spend limit is reached.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun notificationChannel(): Optional<NotificationChannel> =
+        notificationChannel.getOptional("notification_channel")
+
+    /**
      * Returns the raw JSON value of [currency].
      *
      * Unlike [currency], this method doesn't throw if the JSON field has an unexpected type.
@@ -121,6 +145,16 @@ private constructor(
     @ExcludeMissing
     fun _thresholdAmount(): JsonField<Long> = thresholdAmount
 
+    /**
+     * Returns the raw JSON value of [notificationChannel].
+     *
+     * Unlike [notificationChannel], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("notification_channel")
+    @ExcludeMissing
+    fun _notificationChannel(): JsonField<NotificationChannel> = notificationChannel
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -142,6 +176,7 @@ private constructor(
             "interval" to this.interval,
             "object" to this.object_,
             "threshold_amount" to this.thresholdAmount,
+            "notification_channel" to this.notificationChannel,
         )
 
     /**
@@ -182,6 +217,7 @@ private constructor(
         private var interval: JsonField<Interval>? = null
         private var object_: JsonValue = JsonValue.from("organization.spend_limit")
         private var thresholdAmount: JsonField<Long>? = null
+        private var notificationChannel: JsonField<NotificationChannel> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -191,6 +227,7 @@ private constructor(
             interval = organizationSpendLimit.interval
             object_ = organizationSpendLimit.object_
             thresholdAmount = organizationSpendLimit.thresholdAmount
+            notificationChannel = organizationSpendLimit.notificationChannel
             additionalProperties = organizationSpendLimit.additionalProperties.toMutableMap()
         }
 
@@ -279,6 +316,21 @@ private constructor(
             this.thresholdAmount = thresholdAmount
         }
 
+        /** Email notifications sent when the hard spend limit is reached. */
+        fun notificationChannel(notificationChannel: NotificationChannel) =
+            notificationChannel(JsonField.of(notificationChannel))
+
+        /**
+         * Sets [Builder.notificationChannel] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.notificationChannel] with a well-typed
+         * [NotificationChannel] value instead. This method is primarily for setting the field to an
+         * undocumented or not yet supported value.
+         */
+        fun notificationChannel(notificationChannel: JsonField<NotificationChannel>) = apply {
+            this.notificationChannel = notificationChannel
+        }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -320,6 +372,7 @@ private constructor(
                 checkRequired("interval", interval),
                 object_,
                 checkRequired("thresholdAmount", thresholdAmount),
+                notificationChannel,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -348,6 +401,7 @@ private constructor(
             }
         }
         thresholdAmount()
+        notificationChannel().ifPresent { it.validate() }
         validated = true
     }
 
@@ -370,7 +424,8 @@ private constructor(
             (enforcement.asKnown().getOrNull()?.validity() ?: 0) +
             (if (interval.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("organization.spend_limit")) 1 else 0 } +
-            (if (thresholdAmount.asKnown().isPresent) 1 else 0)
+            (if (thresholdAmount.asKnown().isPresent) 1 else 0) +
+            (notificationChannel.asKnown().getOrNull()?.validity() ?: 0)
 
     /** The currency for the threshold amount. Currently, only `USD` is supported. */
     class Currency @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -966,6 +1021,298 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /** Email notifications sent when the hard spend limit is reached. */
+    class NotificationChannel
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val recipients: JsonField<List<String>>,
+        private val type: JsonValue,
+        private val subjectPrefix: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("recipients")
+            @ExcludeMissing
+            recipients: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("subject_prefix")
+            @ExcludeMissing
+            subjectPrefix: JsonField<String> = JsonMissing.of(),
+        ) : this(recipients, type, subjectPrefix, mutableMapOf())
+
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun recipients(): List<String> = recipients.getRequired("recipients")
+
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("email")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun subjectPrefix(): Optional<String> = subjectPrefix.getOptional("subject_prefix")
+
+        /**
+         * Returns the raw JSON value of [recipients].
+         *
+         * Unlike [recipients], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("recipients")
+        @ExcludeMissing
+        fun _recipients(): JsonField<List<String>> = recipients
+
+        /**
+         * Returns the raw JSON value of [subjectPrefix].
+         *
+         * Unlike [subjectPrefix], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("subject_prefix")
+        @ExcludeMissing
+        fun _subjectPrefix(): JsonField<String> = subjectPrefix
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "recipients" to this.recipients,
+                "type" to this.type,
+                "subject_prefix" to this.subjectPrefix,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [NotificationChannel].
+             *
+             * The following fields are required:
+             * ```java
+             * .recipients()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [NotificationChannel]. */
+        class Builder internal constructor() {
+
+            private var recipients: JsonField<MutableList<String>>? = null
+            private var type: JsonValue = JsonValue.from("email")
+            private var subjectPrefix: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(notificationChannel: NotificationChannel) = apply {
+                recipients = notificationChannel.recipients.map { it.toMutableList() }
+                type = notificationChannel.type
+                subjectPrefix = notificationChannel.subjectPrefix
+                additionalProperties = notificationChannel.additionalProperties.toMutableMap()
+            }
+
+            fun recipients(recipients: List<String>) = recipients(JsonField.of(recipients))
+
+            /**
+             * Sets [Builder.recipients] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.recipients] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun recipients(recipients: JsonField<List<String>>) = apply {
+                this.recipients = recipients.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [recipients].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addRecipient(recipient: String) = apply {
+                recipients =
+                    (recipients ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("recipients", it).add(recipient)
+                    }
+            }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("email")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            fun subjectPrefix(subjectPrefix: String?) =
+                subjectPrefix(JsonField.ofNullable(subjectPrefix))
+
+            /** Alias for calling [Builder.subjectPrefix] with `subjectPrefix.orElse(null)`. */
+            fun subjectPrefix(subjectPrefix: Optional<String>) =
+                subjectPrefix(subjectPrefix.getOrNull())
+
+            /**
+             * Sets [Builder.subjectPrefix] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.subjectPrefix] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun subjectPrefix(subjectPrefix: JsonField<String>) = apply {
+                this.subjectPrefix = subjectPrefix
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [NotificationChannel].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .recipients()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): NotificationChannel =
+                NotificationChannel(
+                    checkRequired("recipients", recipients).map { it.toImmutable() },
+                    type,
+                    subjectPrefix,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): NotificationChannel = apply {
+            if (validated) {
+                return@apply
+            }
+
+            recipients()
+            _type().let {
+                if (it != JsonValue.from("email")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            subjectPrefix()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (recipients.asKnown().getOrNull()?.size ?: 0) +
+                type.let { if (it == JsonValue.from("email")) 1 else 0 } +
+                (if (subjectPrefix.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is NotificationChannel &&
+                recipients == other.recipients &&
+                type == other.type &&
+                subjectPrefix == other.subjectPrefix &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(recipients, type, subjectPrefix, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "NotificationChannel{recipients=$recipients, type=$type, subjectPrefix=$subjectPrefix, additionalProperties=$additionalProperties}"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -977,6 +1324,7 @@ private constructor(
             interval == other.interval &&
             object_ == other.object_ &&
             thresholdAmount == other.thresholdAmount &&
+            notificationChannel == other.notificationChannel &&
             additionalProperties == other.additionalProperties
     }
 
@@ -987,6 +1335,7 @@ private constructor(
             interval,
             object_,
             thresholdAmount,
+            notificationChannel,
             additionalProperties,
         )
     }
@@ -994,5 +1343,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "OrganizationSpendLimit{currency=$currency, enforcement=$enforcement, interval=$interval, object_=$object_, thresholdAmount=$thresholdAmount, additionalProperties=$additionalProperties}"
+        "OrganizationSpendLimit{currency=$currency, enforcement=$enforcement, interval=$interval, object_=$object_, thresholdAmount=$thresholdAmount, notificationChannel=$notificationChannel, additionalProperties=$additionalProperties}"
 }

@@ -89,7 +89,7 @@ internal class ClientSecretCreateResponseTest {
                         )
                         .instructions("instructions")
                         .maxOutputTokensInf()
-                        .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
+                        .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME_2_1)
                         .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                         .prompt(
                             ResponsePrompt.builder()
@@ -191,7 +191,7 @@ internal class ClientSecretCreateResponseTest {
                         )
                         .instructions("instructions")
                         .maxOutputTokensInf()
-                        .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
+                        .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME_2_1)
                         .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                         .prompt(
                             ResponsePrompt.builder()

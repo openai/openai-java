@@ -43,6 +43,12 @@ internal class SpendLimitServiceAsyncTest {
                     .currency(SpendLimitUpdateParams.Currency.USD)
                     .interval(SpendLimitUpdateParams.Interval.MONTH)
                     .thresholdAmount(1L)
+                    .notificationChannel(
+                        SpendLimitUpdateParams.NotificationChannel.builder()
+                            .addRecipient("string")
+                            .subjectPrefix("subject_prefix")
+                            .build()
+                    )
                     .build()
             )
 

@@ -20,7 +20,7 @@ internal class ModelServiceAsyncTest {
                 .build()
         val modelServiceAsync = client.models()
 
-        val modelFuture = modelServiceAsync.retrieve("gpt-6-astra")
+        val modelFuture = modelServiceAsync.retrieve("gpt-6.2-astra")
 
         val model = modelFuture.get()
         model.validate()
@@ -52,7 +52,8 @@ internal class ModelServiceAsyncTest {
                 .build()
         val modelServiceAsync = client.models()
 
-        val modelDeletedFuture = modelServiceAsync.delete("ft:gpt-4o-mini:acemeco:suffix:abc123")
+        val modelDeletedFuture =
+            modelServiceAsync.delete("ft:gpt-4.1-mini-2025-04-14:acemeco:suffix:abc123")
 
         val modelDeleted = modelDeletedFuture.get()
         modelDeleted.validate()

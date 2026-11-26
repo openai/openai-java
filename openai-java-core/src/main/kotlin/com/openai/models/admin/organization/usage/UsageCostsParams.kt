@@ -61,7 +61,7 @@ private constructor(
 
     /**
      * Return only costs for these exact line item names. Each value must match the complete
-     * `line_item` value, for example `gpt-6-astra, input_tokens`.
+     * `line_item` value, for example `gpt-6.2-astra, input_tokens`.
      */
     fun lineItems(): Optional<List<String>> = Optional.ofNullable(lineItems)
 
@@ -206,7 +206,7 @@ private constructor(
 
         /**
          * Return only costs for these exact line item names. Each value must match the complete
-         * `line_item` value, for example `gpt-6-astra, input_tokens`.
+         * `line_item` value, for example `gpt-6.2-astra, input_tokens`.
          */
         fun lineItems(lineItems: List<String>?) = apply {
             this.lineItems = lineItems?.toMutableList()

@@ -190,7 +190,7 @@ private constructor(
     fun seed(): Optional<Long> = body.seed()
 
     /**
-     * Not supported with latest reasoning models `o3` and `o4-mini`.
+     * Not supported with reasoning models `o3` and `o4-mini`.
      *
      * Up to 4 sequences where the API will stop generating further tokens. The returned text will
      * not contain the stop sequence.
@@ -747,7 +747,7 @@ private constructor(
         fun seed(seed: JsonField<Long>) = apply { body.seed(seed) }
 
         /**
-         * Not supported with latest reasoning models `o3` and `o4-mini`.
+         * Not supported with reasoning models `o3` and `o4-mini`.
          *
          * Up to 4 sequences where the API will stop generating further tokens. The returned text
          * will not contain the stop sequence.
@@ -1243,7 +1243,7 @@ private constructor(
         fun seed(): Optional<Long> = seed.getOptional("seed")
 
         /**
-         * Not supported with latest reasoning models `o3` and `o4-mini`.
+         * Not supported with reasoning models `o3` and `o4-mini`.
          *
          * Up to 4 sequences where the API will stop generating further tokens. The returned text
          * will not contain the stop sequence.
@@ -1881,7 +1881,7 @@ private constructor(
             fun seed(seed: JsonField<Long>) = apply { this.seed = seed }
 
             /**
-             * Not supported with latest reasoning models `o3` and `o4-mini`.
+             * Not supported with reasoning models `o3` and `o4-mini`.
              *
              * Up to 4 sequences where the API will stop generating further tokens. The returned
              * text will not contain the stop sequence.
@@ -2766,7 +2766,7 @@ private constructor(
     }
 
     /**
-     * Not supported with latest reasoning models `o3` and `o4-mini`.
+     * Not supported with reasoning models `o3` and `o4-mini`.
      *
      * Up to 4 sequences where the API will stop generating further tokens. The returned text will
      * not contain the stop sequence.

@@ -5,7 +5,6 @@ package com.openai.services.blocking
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.ChatModel
 import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
@@ -62,7 +61,7 @@ internal class ResponseServiceStreamingServerContractTest {
                             .build()
                     )
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
-                    .input("string")
+                    .input("Write a one-sentence bedtime story about a unicorn.")
                     .instructions("instructions")
                     .maxOutputTokens(16L)
                     .maxToolCalls(0L)
@@ -71,7 +70,7 @@ internal class ResponseServiceStreamingServerContractTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_6_ASTRA)
+                    .model("gpt-6.2-astra")
                     .moderation(
                         ResponseCreateParams.Moderation.builder()
                             .model("model")

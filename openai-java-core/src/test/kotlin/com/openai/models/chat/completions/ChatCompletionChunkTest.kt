@@ -92,7 +92,7 @@ internal class ChatCompletionChunkTest {
                         .build()
                 )
                 .created(1694268190L)
-                .model("gpt-6-astra")
+                .model("gpt-6.2-astra")
                 .moderation(
                     ChatCompletionChunk.Moderation.builder()
                         .input(
@@ -280,7 +280,7 @@ internal class ChatCompletionChunkTest {
                     .build()
             )
         assertThat(chatCompletionChunk.created()).isEqualTo(1694268190L)
-        assertThat(chatCompletionChunk.model()).isEqualTo("gpt-6-astra")
+        assertThat(chatCompletionChunk.model()).isEqualTo("gpt-6.2-astra")
         assertThat(chatCompletionChunk.moderation())
             .contains(
                 ChatCompletionChunk.Moderation.builder()

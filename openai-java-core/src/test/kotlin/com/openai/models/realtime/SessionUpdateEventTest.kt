@@ -76,7 +76,7 @@ internal class SessionUpdateEventTest {
                         )
                         .instructions("instructions")
                         .maxOutputTokensInf()
-                        .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
+                        .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME_2_1)
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                         .parallelToolCalls(true)
                         .prompt(
@@ -173,7 +173,7 @@ internal class SessionUpdateEventTest {
                         )
                         .instructions("instructions")
                         .maxOutputTokensInf()
-                        .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
+                        .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME_2_1)
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                         .parallelToolCalls(true)
                         .prompt(

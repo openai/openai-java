@@ -61,7 +61,7 @@ internal class ResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_6_ASTRA)
+                .model(ChatModel.GPT_6_2_ASTRA)
                 .addOutput(
                     ResponseOutputMessage.builder()
                         .id("id")
@@ -343,7 +343,7 @@ internal class ResponseTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(response.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_6_ASTRA))
+        assertThat(response.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_6_2_ASTRA))
         assertThat(response.output())
             .containsExactly(
                 ResponseOutputItem.ofMessage(

@@ -83,6 +83,8 @@ internal class BetaCompactedResponseTest {
                         .contextCompression(BetaCompactedResponse.Image.ContextCompression.ENABLED)
                         .build()
                 )
+                .safetyIdentifier("safety_identifier")
+                .serviceTier("service_tier")
                 .build()
 
         assertThat(betaCompactedResponse.id()).isEqualTo("id")
@@ -158,6 +160,8 @@ internal class BetaCompactedResponseTest {
                     .contextCompression(BetaCompactedResponse.Image.ContextCompression.ENABLED)
                     .build()
             )
+        assertThat(betaCompactedResponse.safetyIdentifier()).contains("safety_identifier")
+        assertThat(betaCompactedResponse.serviceTier()).contains("service_tier")
 
         val jsonMapper = jsonMapper()
 

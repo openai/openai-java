@@ -21,6 +21,12 @@ internal class OrganizationSpendLimitTest {
                 )
                 .interval(OrganizationSpendLimit.Interval.MONTH)
                 .thresholdAmount(0L)
+                .notificationChannel(
+                    OrganizationSpendLimit.NotificationChannel.builder()
+                        .addRecipient("string")
+                        .subjectPrefix("subject_prefix")
+                        .build()
+                )
                 .build()
 
         assertThat(organizationSpendLimit.currency()).isEqualTo(OrganizationSpendLimit.Currency.USD)
@@ -33,6 +39,13 @@ internal class OrganizationSpendLimitTest {
         assertThat(organizationSpendLimit.interval())
             .isEqualTo(OrganizationSpendLimit.Interval.MONTH)
         assertThat(organizationSpendLimit.thresholdAmount()).isEqualTo(0L)
+        assertThat(organizationSpendLimit.notificationChannel())
+            .contains(
+                OrganizationSpendLimit.NotificationChannel.builder()
+                    .addRecipient("string")
+                    .subjectPrefix("subject_prefix")
+                    .build()
+            )
 
         val jsonMapper = jsonMapper()
 

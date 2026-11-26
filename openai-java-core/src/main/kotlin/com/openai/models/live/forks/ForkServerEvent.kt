@@ -105,8 +105,9 @@ private constructor(
     fun sessionUpdated(): Optional<SessionUpdatedEvent> = Optional.ofNullable(sessionUpdated)
 
     /**
-     * Sent when speech resumes paused inference and it is ready for audio in a Live WebRTC session.
-     * Delivered to the sideband and, when permitted by its event settings, the data channel.
+     * Sent when speech wakes inference and it is ready for audio in a Live WebRTC session. This
+     * occurs on the first wake and after each later wake. Delivered to the sideband and, when
+     * permitted by its event settings, the data channel.
      */
     fun sessionResumed(): Optional<SessionResumed> = Optional.ofNullable(sessionResumed)
 
@@ -360,8 +361,9 @@ private constructor(
     fun asSessionUpdated(): SessionUpdatedEvent = sessionUpdated.getOrThrow("sessionUpdated")
 
     /**
-     * Sent when speech resumes paused inference and it is ready for audio in a Live WebRTC session.
-     * Delivered to the sideband and, when permitted by its event settings, the data channel.
+     * Sent when speech wakes inference and it is ready for audio in a Live WebRTC session. This
+     * occurs on the first wake and after each later wake. Delivered to the sideband and, when
+     * permitted by its event settings, the data channel.
      */
     fun asSessionResumed(): SessionResumed = sessionResumed.getOrThrow("sessionResumed")
 
@@ -1127,9 +1129,9 @@ private constructor(
             ForkServerEvent(sessionUpdated = sessionUpdated)
 
         /**
-         * Sent when speech resumes paused inference and it is ready for audio in a Live WebRTC
-         * session. Delivered to the sideband and, when permitted by its event settings, the data
-         * channel.
+         * Sent when speech wakes inference and it is ready for audio in a Live WebRTC session. This
+         * occurs on the first wake and after each later wake. Delivered to the sideband and, when
+         * permitted by its event settings, the data channel.
          */
         @JvmStatic
         fun ofSessionResumed(sessionResumed: SessionResumed) =
@@ -1376,9 +1378,9 @@ private constructor(
             unknown(JsonValue.from(sessionUpdated))
 
         /**
-         * Sent when speech resumes paused inference and it is ready for audio in a Live WebRTC
-         * session. Delivered to the sideband and, when permitted by its event settings, the data
-         * channel.
+         * Sent when speech wakes inference and it is ready for audio in a Live WebRTC session. This
+         * occurs on the first wake and after each later wake. Delivered to the sideband and, when
+         * permitted by its event settings, the data channel.
          */
         fun visitSessionResumed(sessionResumed: SessionResumed): T =
             unknown(JsonValue.from(sessionResumed))
@@ -1822,8 +1824,9 @@ private constructor(
     }
 
     /**
-     * Sent when speech resumes paused inference and it is ready for audio in a Live WebRTC session.
-     * Delivered to the sideband and, when permitted by its event settings, the data channel.
+     * Sent when speech wakes inference and it is ready for audio in a Live WebRTC session. This
+     * occurs on the first wake and after each later wake. Delivered to the sideband and, when
+     * permitted by its event settings, the data channel.
      */
     class SessionResumed
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)

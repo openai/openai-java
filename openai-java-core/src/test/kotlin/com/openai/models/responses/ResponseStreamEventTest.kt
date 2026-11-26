@@ -978,7 +978,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_6_ASTRA)
+                        .model(ChatModel.GPT_6_2_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -1342,7 +1342,7 @@ internal class ResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_6_ASTRA)
+                            .model(ChatModel.GPT_6_2_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -1961,7 +1961,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_6_ASTRA)
+                        .model(ChatModel.GPT_6_2_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -2325,7 +2325,7 @@ internal class ResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_6_ASTRA)
+                            .model(ChatModel.GPT_6_2_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -3731,7 +3731,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_6_ASTRA)
+                        .model(ChatModel.GPT_6_2_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -4095,7 +4095,7 @@ internal class ResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_6_ASTRA)
+                            .model(ChatModel.GPT_6_2_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -4420,7 +4420,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_6_ASTRA)
+                        .model(ChatModel.GPT_6_2_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -4784,7 +4784,7 @@ internal class ResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_6_ASTRA)
+                            .model(ChatModel.GPT_6_2_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -5109,7 +5109,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_6_ASTRA)
+                        .model(ChatModel.GPT_6_2_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -5473,7 +5473,7 @@ internal class ResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_6_ASTRA)
+                            .model(ChatModel.GPT_6_2_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -8678,7 +8678,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_6_ASTRA)
+                        .model(ChatModel.GPT_6_2_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -9042,7 +9042,7 @@ internal class ResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_6_ASTRA)
+                            .model(ChatModel.GPT_6_2_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")

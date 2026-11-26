@@ -20,7 +20,7 @@ internal class ModelServiceTest {
                 .build()
         val modelService = client.models()
 
-        val model = modelService.retrieve("gpt-6-astra")
+        val model = modelService.retrieve("gpt-6.2-astra")
 
         model.validate()
     }
@@ -50,7 +50,7 @@ internal class ModelServiceTest {
                 .build()
         val modelService = client.models()
 
-        val modelDeleted = modelService.delete("ft:gpt-4o-mini:acemeco:suffix:abc123")
+        val modelDeleted = modelService.delete("ft:gpt-4.1-mini-2025-04-14:acemeco:suffix:abc123")
 
         modelDeleted.validate()
     }

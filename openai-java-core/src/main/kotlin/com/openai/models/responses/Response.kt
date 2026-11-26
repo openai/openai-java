@@ -285,7 +285,7 @@ private constructor(
     fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
-     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6.2-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
      * available models.
@@ -1280,10 +1280,10 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /**
-         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
-         * models with different capabilities, performance characteristics, and price points. Refer
-         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
-         * available models.
+         * Model ID used to generate the response, like `gpt-6.2-astra`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://developers.openai.com/api/docs/models) to browse and
+         * compare available models.
          */
         fun model(model: ResponsesModel) = model(JsonField.of(model))
 
