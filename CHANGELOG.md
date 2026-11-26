@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.114.0](https://github.com/openai/openai-java/compare/v4.113.0...v4.114.0) (2026-11-26)
+
+
+### Features
+
+* **api:** add spend alerts and response compaction fields ([#1445](https://github.com/openai/openai-java/issues/1445)) ([32b4728](https://github.com/openai/openai-java/commit/32b4728a206c13ade8613ffa3c33e5f610404ac9))
+* **api:** support updating session vaults ([#1444](https://github.com/openai/openai-java/issues/1444)) ([5759911](https://github.com/openai/openai-java/commit/57599118f57c6f1308e522e8d4cde619ec5a5fbe))
+
+
+### Chores
+
+* **api:** clarify message retries and Batch endpoints ([#1443](https://github.com/openai/openai-java/issues/1443)) ([f935e9d](https://github.com/openai/openai-java/commit/f935e9d4c8569987f8a0838ba2c4bd6dec452aa9))
+* **api:** clarify Realtime audio noise reduction ([#1442](https://github.com/openai/openai-java/issues/1442)) ([eb808ee](https://github.com/openai/openai-java/commit/eb808ee4c3514cc233503cb8b36616689c3deb7b))
+* **api:** correct metadata documentation ([#1439](https://github.com/openai/openai-java/issues/1439)) ([8bd89da](https://github.com/openai/openai-java/commit/8bd89da17bbf442313b21006a9005cb484b2401d))
+* **api:** document inline skill upload limits ([#1426](https://github.com/openai/openai-java/issues/1426)) ([a2d1384](https://github.com/openai/openai-java/commit/a2d1384de5f5baabe4c257028506ea7364d2cc4e))
+
 ## [4.113.0](https://github.com/openai/openai-java/compare/v4.112.0...v4.113.0) (2026-11-24)
 
 
