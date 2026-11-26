@@ -5,7 +5,6 @@ package com.openai.services.async
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
-import com.openai.models.ChatModel
 import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
@@ -63,7 +62,7 @@ internal class ResponseServiceAsyncTest {
                             .build()
                     )
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
-                    .input("string")
+                    .input("Write a one-sentence bedtime story about a unicorn.")
                     .instructions("instructions")
                     .maxOutputTokens(16L)
                     .maxToolCalls(0L)
@@ -72,7 +71,7 @@ internal class ResponseServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_6_ASTRA)
+                    .model("gpt-6.2-astra")
                     .moderation(
                         ResponseCreateParams.Moderation.builder()
                             .model("model")
@@ -262,6 +261,7 @@ internal class ResponseServiceAsyncTest {
                             .build()
                     )
                     .promptCacheRetention(ResponseCompactParams.PromptCacheRetention.IN_MEMORY)
+                    .safetyIdentifier("safety_identifier")
                     .serviceTier(ResponseCompactParams.ServiceTier.AUTO)
                     .build()
             )

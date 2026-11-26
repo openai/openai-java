@@ -28,7 +28,7 @@ internal class TranscriptionServiceAsyncTest {
             transcriptionServiceAsync.create(
                 TranscriptionCreateParams.builder()
                     .file("Example data".byteInputStream())
-                    .model(AudioModel.GPT_4O_TRANSCRIBE)
+                    .model(AudioModel.GPT_TRANSCRIBE)
                     .chunkingStrategyAuto()
                     .addInclude(TranscriptionInclude.LOGPROBS)
                     .addKeyword("string")

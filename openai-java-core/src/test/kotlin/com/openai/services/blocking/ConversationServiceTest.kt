@@ -40,6 +40,7 @@ internal class ConversationServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
+                    .safetyIdentifier("safety_identifier")
                     .build()
             )
 

@@ -21,6 +21,12 @@ internal class ProjectSpendLimitTest {
                 )
                 .interval(ProjectSpendLimit.Interval.MONTH)
                 .thresholdAmount(0L)
+                .notificationChannel(
+                    ProjectSpendLimit.NotificationChannel.builder()
+                        .addRecipient("string")
+                        .subjectPrefix("subject_prefix")
+                        .build()
+                )
                 .build()
 
         assertThat(projectSpendLimit.currency()).isEqualTo(ProjectSpendLimit.Currency.USD)
@@ -32,6 +38,13 @@ internal class ProjectSpendLimitTest {
             )
         assertThat(projectSpendLimit.interval()).isEqualTo(ProjectSpendLimit.Interval.MONTH)
         assertThat(projectSpendLimit.thresholdAmount()).isEqualTo(0L)
+        assertThat(projectSpendLimit.notificationChannel())
+            .contains(
+                ProjectSpendLimit.NotificationChannel.builder()
+                    .addRecipient("string")
+                    .subjectPrefix("subject_prefix")
+                    .build()
+            )
 
         val jsonMapper = jsonMapper()
 

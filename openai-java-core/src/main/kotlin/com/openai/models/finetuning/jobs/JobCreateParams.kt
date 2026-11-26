@@ -138,7 +138,7 @@ private constructor(
      * A string of up to 64 characters that will be added to your fine-tuned model name.
      *
      * For example, a `suffix` of "custom-model-name" would produce a model name like
-     * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
+     * `ft:gpt-4.1-mini-2025-04-14:openai:custom-model-name:7p4lURel`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -444,7 +444,7 @@ private constructor(
          * A string of up to 64 characters that will be added to your fine-tuned model name.
          *
          * For example, a `suffix` of "custom-model-name" would produce a model name like
-         * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
+         * `ft:gpt-4.1-mini-2025-04-14:openai:custom-model-name:7p4lURel`.
          */
         fun suffix(suffix: String?) = apply { body.suffix(suffix) }
 
@@ -767,7 +767,7 @@ private constructor(
          * A string of up to 64 characters that will be added to your fine-tuned model name.
          *
          * For example, a `suffix` of "custom-model-name" would produce a model name like
-         * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
+         * `ft:gpt-4.1-mini-2025-04-14:openai:custom-model-name:7p4lURel`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1123,7 +1123,7 @@ private constructor(
              * A string of up to 64 characters that will be added to your fine-tuned model name.
              *
              * For example, a `suffix` of "custom-model-name" would produce a model name like
-             * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
+             * `ft:gpt-4.1-mini-2025-04-14:openai:custom-model-name:7p4lURel`.
              */
             fun suffix(suffix: String?) = suffix(JsonField.ofNullable(suffix))
 

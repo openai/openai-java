@@ -1408,7 +1408,7 @@ private constructor(
 
         /**
          * Tools available to the agent. Omit to inherit, or pass null to clear them. The resolved
-         * tool list must fit within 3 MiB (3,145,728 bytes) of compact UTF-8 JSON.
+         * tool list must fit within 8 MiB (8,388,608 bytes) of compact UTF-8 JSON.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1714,7 +1714,7 @@ private constructor(
 
             /**
              * Tools available to the agent. Omit to inherit, or pass null to clear them. The
-             * resolved tool list must fit within 3 MiB (3,145,728 bytes) of compact UTF-8 JSON.
+             * resolved tool list must fit within 8 MiB (8,388,608 bytes) of compact UTF-8 JSON.
              */
             fun tools(tools: List<AgentToolParam>?) = tools(JsonField.ofNullable(tools))
 

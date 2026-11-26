@@ -93,7 +93,7 @@ private constructor(
     fun inputMessages(): Optional<InputMessages> = inputMessages.getOptional("input_messages")
 
     /**
-     * The name of the model to use for generating completions (e.g. "o3-mini").
+     * The model to use to sample outputs with the Chat Completions API.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -324,7 +324,7 @@ private constructor(
                 InputMessages.ItemReference.builder().itemReference(itemReference).build()
             )
 
-        /** The name of the model to use for generating completions (e.g. "o3-mini"). */
+        /** The model to use to sample outputs with the Chat Completions API. */
         fun model(model: String) = model(JsonField.of(model))
 
         /**
@@ -1755,7 +1755,7 @@ private constructor(
             fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
             /**
-             * An optional model to filter by (e.g., 'gpt-6-astra').
+             * An optional model to filter by (e.g., 'gpt-4.1-mini-2025-04-14').
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -1985,7 +1985,7 @@ private constructor(
                  */
                 fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
-                /** An optional model to filter by (e.g., 'gpt-6-astra'). */
+                /** An optional model to filter by (e.g., 'gpt-4.1-mini-2025-04-14'). */
                 fun model(model: String?) = model(JsonField.ofNullable(model))
 
                 /** Alias for calling [Builder.model] with `model.orElse(null)`. */

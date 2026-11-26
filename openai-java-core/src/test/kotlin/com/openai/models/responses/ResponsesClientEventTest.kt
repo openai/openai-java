@@ -62,7 +62,7 @@ internal class ResponsesClientEventTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_6_ASTRA)
+                .model(ChatModel.GPT_6_2_ASTRA)
                 .moderation(
                     ResponsesClientEvent.ResponseCreate.Moderation.builder()
                         .model("model")
@@ -227,7 +227,7 @@ internal class ResponsesClientEventTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_6_ASTRA)
+                    .model(ChatModel.GPT_6_2_ASTRA)
                     .moderation(
                         ResponsesClientEvent.ResponseCreate.Moderation.builder()
                             .model("model")

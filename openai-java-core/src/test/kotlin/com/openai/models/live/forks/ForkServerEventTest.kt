@@ -245,7 +245,7 @@ internal class ForkServerEventTest {
                             SessionResource.Delegation.Responses.builder()
                                 .responses(
                                     ResponsesDelegationConfig.builder()
-                                        .model("gpt-6-astra")
+                                        .model("gpt-6.2-astra")
                                         .instructions(
                                             "Check restaurant availability. Ask before confirming a booking."
                                         )
@@ -376,7 +376,7 @@ internal class ForkServerEventTest {
                                 SessionResource.Delegation.Responses.builder()
                                     .responses(
                                         ResponsesDelegationConfig.builder()
-                                            .model("gpt-6-astra")
+                                            .model("gpt-6.2-astra")
                                             .instructions(
                                                 "Check restaurant availability. Ask before confirming a booking."
                                             )

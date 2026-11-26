@@ -59,7 +59,7 @@ internal class ResponseServiceAsyncStreamingServerContractTest {
                             .build()
                     )
                     .addInclude(BetaResponseIncludable.FILE_SEARCH_CALL_RESULTS)
-                    .input("string")
+                    .input("Write a one-sentence bedtime story about a unicorn.")
                     .instructions("instructions")
                     .maxOutputTokens(16L)
                     .maxToolCalls(0L)
@@ -68,7 +68,7 @@ internal class ResponseServiceAsyncStreamingServerContractTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ResponseCreateParams.Model.GPT_6_ASTRA)
+                    .model(ResponseCreateParams.Model.GPT_6_2_ASTRA)
                     .moderation(
                         ResponseCreateParams.Moderation.builder()
                             .model("model")

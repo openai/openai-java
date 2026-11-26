@@ -22,10 +22,10 @@ import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import com.openai.models.chat.completions.ChatCompletionAudioParam
 import com.openai.models.chat.completions.ChatCompletionCreateParams
-import com.openai.models.chat.completions.ChatCompletionDeveloperMessageParam
 import com.openai.models.chat.completions.ChatCompletionPredictionContent
 import com.openai.models.chat.completions.ChatCompletionStreamOptions
 import com.openai.models.chat.completions.ChatCompletionToolChoiceOption
+import com.openai.models.chat.completions.ChatCompletionUserMessageParam
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceLock
@@ -54,12 +54,12 @@ internal class ServiceParamsTest {
         chatCompletionService.create(
             ChatCompletionCreateParams.builder()
                 .addMessage(
-                    ChatCompletionDeveloperMessageParam.builder()
-                        .content("string")
+                    ChatCompletionUserMessageParam.builder()
+                        .content("Say hello in one sentence.")
                         .name("name")
                         .build()
                 )
-                .model(ChatModel.GPT_6_ASTRA)
+                .model(ChatModel.GPT_6_2_ASTRA)
                 .audio(
                     ChatCompletionAudioParam.builder()
                         .format(ChatCompletionAudioParam.Format.WAV)

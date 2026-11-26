@@ -9,15 +9,20 @@ internal class ModelDeleteParamsTest {
 
     @Test
     fun create() {
-        ModelDeleteParams.builder().model("ft:gpt-4o-mini:acemeco:suffix:abc123").build()
+        ModelDeleteParams.builder()
+            .model("ft:gpt-4.1-mini-2025-04-14:acemeco:suffix:abc123")
+            .build()
     }
 
     @Test
     fun pathParams() {
         val params =
-            ModelDeleteParams.builder().model("ft:gpt-4o-mini:acemeco:suffix:abc123").build()
+            ModelDeleteParams.builder()
+                .model("ft:gpt-4.1-mini-2025-04-14:acemeco:suffix:abc123")
+                .build()
 
-        assertThat(params._pathParam(0)).isEqualTo("ft:gpt-4o-mini:acemeco:suffix:abc123")
+        assertThat(params._pathParam(0))
+            .isEqualTo("ft:gpt-4.1-mini-2025-04-14:acemeco:suffix:abc123")
         // out-of-bound path param
         assertThat(params._pathParam(1)).isEqualTo("")
     }

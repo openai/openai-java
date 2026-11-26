@@ -30,6 +30,8 @@ private constructor(
     private val output: JsonField<List<ResponseOutputItem>>,
     private val usage: JsonField<ResponseUsage>,
     private val image: JsonField<Image>,
+    private val safetyIdentifier: JsonField<String>,
+    private val serviceTier: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -43,7 +45,23 @@ private constructor(
         output: JsonField<List<ResponseOutputItem>> = JsonMissing.of(),
         @JsonProperty("usage") @ExcludeMissing usage: JsonField<ResponseUsage> = JsonMissing.of(),
         @JsonProperty("image") @ExcludeMissing image: JsonField<Image> = JsonMissing.of(),
-    ) : this(id, createdAt, object_, output, usage, image, mutableMapOf())
+        @JsonProperty("safety_identifier")
+        @ExcludeMissing
+        safetyIdentifier: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("service_tier")
+        @ExcludeMissing
+        serviceTier: JsonField<String> = JsonMissing.of(),
+    ) : this(
+        id,
+        createdAt,
+        object_,
+        output,
+        usage,
+        image,
+        safetyIdentifier,
+        serviceTier,
+        mutableMapOf(),
+    )
 
     /**
      * The unique identifier for the compacted response.
@@ -98,6 +116,22 @@ private constructor(
     fun image(): Optional<Image> = image.getOptional("image")
 
     /**
+     * A stable identifier that was used for safety monitoring and abuse detection.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun safetyIdentifier(): Optional<String> = safetyIdentifier.getOptional("safety_identifier")
+
+    /**
+     * The service tier used for compaction, when reported.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun serviceTier(): Optional<String> = serviceTier.getOptional("service_tier")
+
+    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -134,6 +168,25 @@ private constructor(
      */
     @JsonProperty("image") @ExcludeMissing fun _image(): JsonField<Image> = image
 
+    /**
+     * Returns the raw JSON value of [safetyIdentifier].
+     *
+     * Unlike [safetyIdentifier], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("safety_identifier")
+    @ExcludeMissing
+    fun _safetyIdentifier(): JsonField<String> = safetyIdentifier
+
+    /**
+     * Returns the raw JSON value of [serviceTier].
+     *
+     * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("service_tier")
+    @ExcludeMissing
+    fun _serviceTier(): JsonField<String> = serviceTier
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -156,6 +209,8 @@ private constructor(
             "output" to this.output,
             "usage" to this.usage,
             "image" to this.image,
+            "safety_identifier" to this.safetyIdentifier,
+            "service_tier" to this.serviceTier,
         )
 
     /**
@@ -197,6 +252,8 @@ private constructor(
         private var output: JsonField<MutableList<ResponseOutputItem>>? = null
         private var usage: JsonField<ResponseUsage>? = null
         private var image: JsonField<Image> = JsonMissing.of()
+        private var safetyIdentifier: JsonField<String> = JsonMissing.of()
+        private var serviceTier: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -207,6 +264,8 @@ private constructor(
             output = compactedResponse.output.map { it.toMutableList() }
             usage = compactedResponse.usage
             image = compactedResponse.image
+            safetyIdentifier = compactedResponse.safetyIdentifier
+            serviceTier = compactedResponse.serviceTier
             additionalProperties = compactedResponse.additionalProperties.toMutableMap()
         }
 
@@ -461,6 +520,37 @@ private constructor(
          */
         fun image(image: JsonField<Image>) = apply { this.image = image }
 
+        /** A stable identifier that was used for safety monitoring and abuse detection. */
+        fun safetyIdentifier(safetyIdentifier: String?) =
+            safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
+
+        /**
+         * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+            this.safetyIdentifier = safetyIdentifier
+        }
+
+        /** The service tier used for compaction, when reported. */
+        fun serviceTier(serviceTier: String) = serviceTier(JsonField.of(serviceTier))
+
+        /**
+         * Sets [Builder.serviceTier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.serviceTier] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun serviceTier(serviceTier: JsonField<String>) = apply { this.serviceTier = serviceTier }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -503,6 +593,8 @@ private constructor(
                 checkRequired("output", output).map { it.toImmutable() },
                 checkRequired("usage", usage),
                 image,
+                safetyIdentifier,
+                serviceTier,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -532,6 +624,8 @@ private constructor(
         output().forEach { it.validate() }
         usage().validate()
         image().ifPresent { it.validate() }
+        safetyIdentifier()
+        serviceTier()
         validated = true
     }
 
@@ -555,7 +649,9 @@ private constructor(
             object_.let { if (it == JsonValue.from("response.compaction")) 1 else 0 } +
             (output.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0) +
-            (image.asKnown().getOrNull()?.validity() ?: 0)
+            (image.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (safetyIdentifier.asKnown().isPresent) 1 else 0) +
+            (if (serviceTier.asKnown().isPresent) 1 else 0)
 
     class Image
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -913,15 +1009,27 @@ private constructor(
             output == other.output &&
             usage == other.usage &&
             image == other.image &&
+            safetyIdentifier == other.safetyIdentifier &&
+            serviceTier == other.serviceTier &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, createdAt, object_, output, usage, image, additionalProperties)
+        Objects.hash(
+            id,
+            createdAt,
+            object_,
+            output,
+            usage,
+            image,
+            safetyIdentifier,
+            serviceTier,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "CompactedResponse{id=$id, createdAt=$createdAt, object_=$object_, output=$output, usage=$usage, image=$image, additionalProperties=$additionalProperties}"
+        "CompactedResponse{id=$id, createdAt=$createdAt, object_=$object_, output=$output, usage=$usage, image=$image, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, additionalProperties=$additionalProperties}"
 }

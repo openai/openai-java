@@ -26,7 +26,7 @@ internal class PermissionServiceAsyncTest {
         val pageFuture =
             permissionServiceAsync.create(
                 PermissionCreateParams.builder()
-                    .fineTunedModelCheckpoint("ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd")
+                    .fineTunedModelCheckpoint("ft:gpt-4.1-mini-2025-04-14:org:weather:B7R9VjQd")
                     .addProjectId("string")
                     .build()
             )
@@ -89,7 +89,7 @@ internal class PermissionServiceAsyncTest {
         val permissionFuture =
             permissionServiceAsync.delete(
                 PermissionDeleteParams.builder()
-                    .fineTunedModelCheckpoint("ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd")
+                    .fineTunedModelCheckpoint("ft:gpt-4.1-mini-2025-04-14:org:weather:B7R9VjQd")
                     .permissionId("cp_zc4Q7MP6XxulcVzj4MZdwsAB")
                     .build()
             )

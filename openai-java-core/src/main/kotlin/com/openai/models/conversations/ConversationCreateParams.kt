@@ -67,6 +67,14 @@ private constructor(
     fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
+     * A stable identifier used for safety monitoring and abuse detection.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun safetyIdentifier(): Optional<String> = body.safetyIdentifier()
+
+    /**
      * Returns the raw JSON value of [items].
      *
      * Unlike [items], this method doesn't throw if the JSON field has an unexpected type.
@@ -79,6 +87,14 @@ private constructor(
      * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _metadata(): JsonField<Metadata> = body._metadata()
+
+    /**
+     * Returns the raw JSON value of [safetyIdentifier].
+     *
+     * Unlike [safetyIdentifier], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _safetyIdentifier(): JsonField<String> = body._safetyIdentifier()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -119,6 +135,7 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [items]
          * - [metadata]
+         * - [safetyIdentifier]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -453,6 +470,26 @@ private constructor(
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
+        /** A stable identifier used for safety monitoring and abuse detection. */
+        fun safetyIdentifier(safetyIdentifier: String?) = apply {
+            body.safetyIdentifier(safetyIdentifier)
+        }
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
+
+        /**
+         * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+            body.safetyIdentifier(safetyIdentifier)
+        }
+
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
         }
@@ -594,6 +631,7 @@ private constructor(
     private constructor(
         private val items: JsonField<List<ResponseInputItem>>,
         private val metadata: JsonField<Metadata>,
+        private val safetyIdentifier: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -605,7 +643,10 @@ private constructor(
             @JsonProperty("metadata")
             @ExcludeMissing
             metadata: JsonField<Metadata> = JsonMissing.of(),
-        ) : this(items, metadata, mutableMapOf())
+            @JsonProperty("safety_identifier")
+            @ExcludeMissing
+            safetyIdentifier: JsonField<String> = JsonMissing.of(),
+        ) : this(items, metadata, safetyIdentifier, mutableMapOf())
 
         /**
          * Initial items to include in the conversation context. You may add up to 20 items at a
@@ -629,6 +670,14 @@ private constructor(
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
+         * A stable identifier used for safety monitoring and abuse detection.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun safetyIdentifier(): Optional<String> = safetyIdentifier.getOptional("safety_identifier")
+
+        /**
          * Returns the raw JSON value of [items].
          *
          * Unlike [items], this method doesn't throw if the JSON field has an unexpected type.
@@ -643,6 +692,16 @@ private constructor(
          * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
+        /**
+         * Returns the raw JSON value of [safetyIdentifier].
+         *
+         * Unlike [safetyIdentifier], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("safety_identifier")
+        @ExcludeMissing
+        fun _safetyIdentifier(): JsonField<String> = safetyIdentifier
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -662,6 +721,7 @@ private constructor(
                 additionalProperties,
                 "items" to this.items,
                 "metadata" to this.metadata,
+                "safety_identifier" to this.safetyIdentifier,
             )
 
         /**
@@ -689,12 +749,14 @@ private constructor(
 
             private var items: JsonField<MutableList<ResponseInputItem>>? = null
             private var metadata: JsonField<Metadata> = JsonMissing.of()
+            private var safetyIdentifier: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 items = body.items.map { it.toMutableList() }
                 metadata = body.metadata
+                safetyIdentifier = body.safetyIdentifier
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -1049,6 +1111,27 @@ private constructor(
              */
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
+            /** A stable identifier used for safety monitoring and abuse detection. */
+            fun safetyIdentifier(safetyIdentifier: String?) =
+                safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
+
+            /**
+             * Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`.
+             */
+            fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+                safetyIdentifier(safetyIdentifier.getOrNull())
+
+            /**
+             * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+                this.safetyIdentifier = safetyIdentifier
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -1077,6 +1160,7 @@ private constructor(
                 Body(
                     (items ?: JsonMissing.of()).map { it.toImmutable() },
                     metadata,
+                    safetyIdentifier,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -1099,6 +1183,7 @@ private constructor(
 
             items().ifPresent { it.forEach { it.validate() } }
             metadata().ifPresent { it.validate() }
+            safetyIdentifier()
             validated = true
         }
 
@@ -1119,7 +1204,8 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (items.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-                (metadata.asKnown().getOrNull()?.validity() ?: 0)
+                (metadata.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (safetyIdentifier.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1129,15 +1215,18 @@ private constructor(
             return other is Body &&
                 items == other.items &&
                 metadata == other.metadata &&
+                safetyIdentifier == other.safetyIdentifier &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(items, metadata, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(items, metadata, safetyIdentifier, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{items=$items, metadata=$metadata, additionalProperties=$additionalProperties}"
+            "Body{items=$items, metadata=$metadata, safetyIdentifier=$safetyIdentifier, additionalProperties=$additionalProperties}"
     }
 
     /**

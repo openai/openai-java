@@ -50,7 +50,7 @@ private constructor(
 ) : Params {
 
     /**
-     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6.2-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
      * available models.
@@ -129,6 +129,14 @@ private constructor(
      */
     @Deprecated("deprecated")
     fun promptCacheRetention(): Optional<PromptCacheRetention> = body.promptCacheRetention()
+
+    /**
+     * A stable identifier used for safety monitoring and abuse detection.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun safetyIdentifier(): Optional<String> = body.safetyIdentifier()
 
     /**
      * Specifies the processing type used for serving the request. - If set to 'auto', then the
@@ -212,6 +220,14 @@ private constructor(
     fun _promptCacheRetention(): JsonField<PromptCacheRetention> = body._promptCacheRetention()
 
     /**
+     * Returns the raw JSON value of [safetyIdentifier].
+     *
+     * Unlike [safetyIdentifier], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _safetyIdentifier(): JsonField<String> = body._safetyIdentifier()
+
+    /**
      * Returns the raw JSON value of [serviceTier].
      *
      * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
@@ -270,10 +286,10 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
-         * models with different capabilities, performance characteristics, and price points. Refer
-         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
-         * available models.
+         * Model ID used to generate the response, like `gpt-6.2-astra`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://developers.openai.com/api/docs/models) to browse and
+         * compare available models.
          */
         fun model(model: Model?) = apply { body.model(model) }
 
@@ -455,6 +471,26 @@ private constructor(
         @Deprecated("deprecated")
         fun promptCacheRetention(promptCacheRetention: JsonField<PromptCacheRetention>) = apply {
             body.promptCacheRetention(promptCacheRetention)
+        }
+
+        /** A stable identifier used for safety monitoring and abuse detection. */
+        fun safetyIdentifier(safetyIdentifier: String?) = apply {
+            body.safetyIdentifier(safetyIdentifier)
+        }
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
+
+        /**
+         * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+            body.safetyIdentifier(safetyIdentifier)
         }
 
         /**
@@ -644,6 +680,7 @@ private constructor(
         private val promptCacheKey: JsonField<String>,
         private val promptCacheOptions: JsonField<PromptCacheOptions>,
         private val promptCacheRetention: JsonField<PromptCacheRetention>,
+        private val safetyIdentifier: JsonField<String>,
         private val serviceTier: JsonField<ServiceTier>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -668,6 +705,9 @@ private constructor(
             @JsonProperty("prompt_cache_retention")
             @ExcludeMissing
             promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of(),
+            @JsonProperty("safety_identifier")
+            @ExcludeMissing
+            safetyIdentifier: JsonField<String> = JsonMissing.of(),
             @JsonProperty("service_tier")
             @ExcludeMissing
             serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
@@ -680,15 +720,16 @@ private constructor(
             promptCacheKey,
             promptCacheOptions,
             promptCacheRetention,
+            safetyIdentifier,
             serviceTier,
             mutableMapOf(),
         )
 
         /**
-         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
-         * models with different capabilities, performance characteristics, and price points. Refer
-         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
-         * available models.
+         * Model ID used to generate the response, like `gpt-6.2-astra`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://developers.openai.com/api/docs/models) to browse and
+         * compare available models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -769,6 +810,14 @@ private constructor(
         @Deprecated("deprecated")
         fun promptCacheRetention(): Optional<PromptCacheRetention> =
             promptCacheRetention.getOptional("prompt_cache_retention")
+
+        /**
+         * A stable identifier used for safety monitoring and abuse detection.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun safetyIdentifier(): Optional<String> = safetyIdentifier.getOptional("safety_identifier")
 
         /**
          * Specifies the processing type used for serving the request. - If set to 'auto', then the
@@ -866,6 +915,16 @@ private constructor(
         fun _promptCacheRetention(): JsonField<PromptCacheRetention> = promptCacheRetention
 
         /**
+         * Returns the raw JSON value of [safetyIdentifier].
+         *
+         * Unlike [safetyIdentifier], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("safety_identifier")
+        @ExcludeMissing
+        fun _safetyIdentifier(): JsonField<String> = safetyIdentifier
+
+        /**
          * Returns the raw JSON value of [serviceTier].
          *
          * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
@@ -898,6 +957,7 @@ private constructor(
                 "prompt_cache_key" to this.promptCacheKey,
                 "prompt_cache_options" to this.promptCacheOptions,
                 "prompt_cache_retention" to this.promptCacheRetention,
+                "safety_identifier" to this.safetyIdentifier,
                 "service_tier" to this.serviceTier,
             )
 
@@ -939,6 +999,7 @@ private constructor(
             private var promptCacheKey: JsonField<String> = JsonMissing.of()
             private var promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of()
             private var promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of()
+            private var safetyIdentifier: JsonField<String> = JsonMissing.of()
             private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -952,12 +1013,13 @@ private constructor(
                 promptCacheKey = body.promptCacheKey
                 promptCacheOptions = body.promptCacheOptions
                 promptCacheRetention = body.promptCacheRetention
+                safetyIdentifier = body.safetyIdentifier
                 serviceTier = body.serviceTier
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
-             * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide
+             * Model ID used to generate the response, like `gpt-6.2-astra`. OpenAI offers a wide
              * range of models with different capabilities, performance characteristics, and price
              * points. Refer to the [model guide](https://developers.openai.com/api/docs/models) to
              * browse and compare available models.
@@ -1150,6 +1212,27 @@ private constructor(
                     this.promptCacheRetention = promptCacheRetention
                 }
 
+            /** A stable identifier used for safety monitoring and abuse detection. */
+            fun safetyIdentifier(safetyIdentifier: String?) =
+                safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
+
+            /**
+             * Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`.
+             */
+            fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+                safetyIdentifier(safetyIdentifier.getOrNull())
+
+            /**
+             * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+                this.safetyIdentifier = safetyIdentifier
+            }
+
             /**
              * Specifies the processing type used for serving the request. - If set to 'auto', then
              * the request will be processed with the service tier configured in the Project
@@ -1226,6 +1309,7 @@ private constructor(
                     promptCacheKey,
                     promptCacheOptions,
                     promptCacheRetention,
+                    safetyIdentifier,
                     serviceTier,
                     additionalProperties.toMutableMap(),
                 )
@@ -1255,6 +1339,7 @@ private constructor(
             promptCacheKey()
             promptCacheOptions().ifPresent { it.validate() }
             promptCacheRetention().ifPresent { it.validate() }
+            safetyIdentifier()
             serviceTier().ifPresent { it.validate() }
             validated = true
         }
@@ -1283,6 +1368,7 @@ private constructor(
                 (if (promptCacheKey.asKnown().isPresent) 1 else 0) +
                 (promptCacheOptions.asKnown().getOrNull()?.validity() ?: 0) +
                 (promptCacheRetention.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (safetyIdentifier.asKnown().isPresent) 1 else 0) +
                 (serviceTier.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
@@ -1299,6 +1385,7 @@ private constructor(
                 promptCacheKey == other.promptCacheKey &&
                 promptCacheOptions == other.promptCacheOptions &&
                 promptCacheRetention == other.promptCacheRetention &&
+                safetyIdentifier == other.safetyIdentifier &&
                 serviceTier == other.serviceTier &&
                 additionalProperties == other.additionalProperties
         }
@@ -1313,6 +1400,7 @@ private constructor(
                 promptCacheKey,
                 promptCacheOptions,
                 promptCacheRetention,
+                safetyIdentifier,
                 serviceTier,
                 additionalProperties,
             )
@@ -1321,11 +1409,11 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{model=$model, image=$image, input=$input, instructions=$instructions, previousResponseId=$previousResponseId, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, serviceTier=$serviceTier, additionalProperties=$additionalProperties}"
+            "Body{model=$model, image=$image, input=$input, instructions=$instructions, previousResponseId=$previousResponseId, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, additionalProperties=$additionalProperties}"
     }
 
     /**
-     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6.2-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
      * available models.

@@ -117,7 +117,11 @@ internal class CredentialServiceAsyncTest {
                             )
                             .build()
                     )
-                    .metadata(CredentialUpdateParams.Metadata.builder().build())
+                    .metadata(
+                        CredentialUpdateParams.Metadata.builder()
+                            .putAdditionalProperty("environment", JsonValue.from("staging"))
+                            .build()
+                    )
                     .build()
             )
 

@@ -29,6 +29,7 @@ internal class ResponseCompactParamsTest {
                     .build()
             )
             .promptCacheRetention(ResponseCompactParams.PromptCacheRetention.IN_MEMORY)
+            .safetyIdentifier("safety_identifier")
             .serviceTier(ResponseCompactParams.ServiceTier.AUTO)
             .build()
     }
@@ -55,6 +56,7 @@ internal class ResponseCompactParamsTest {
                         .build()
                 )
                 .promptCacheRetention(ResponseCompactParams.PromptCacheRetention.IN_MEMORY)
+                .safetyIdentifier("safety_identifier")
                 .serviceTier(ResponseCompactParams.ServiceTier.AUTO)
                 .build()
 
@@ -96,6 +98,7 @@ internal class ResponseCompactParamsTest {
                         .build()
                 )
                 .promptCacheRetention(ResponseCompactParams.PromptCacheRetention.IN_MEMORY)
+                .safetyIdentifier("safety_identifier")
                 .serviceTier(ResponseCompactParams.ServiceTier.AUTO)
                 .build()
 
@@ -121,6 +124,7 @@ internal class ResponseCompactParamsTest {
             )
         assertThat(body.promptCacheRetention())
             .contains(ResponseCompactParams.PromptCacheRetention.IN_MEMORY)
+        assertThat(body.safetyIdentifier()).contains("safety_identifier")
         assertThat(body.serviceTier()).contains(ResponseCompactParams.ServiceTier.AUTO)
     }
 

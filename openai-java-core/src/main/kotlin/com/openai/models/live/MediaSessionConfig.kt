@@ -133,9 +133,9 @@ private constructor(
     fun delegation(): Optional<Delegation> = delegation.getOptional("delegation")
 
     /**
-     * Whole seconds of inactivity after which a Live WebRTC session with a speech wake policy
-     * pauses inference. The connection and conversation history are retained. Omit to keep
-     * inference active until the session ends.
+     * Whole seconds of inactivity after which a Live WebRTC or SIP session with a speech wake
+     * policy pauses inference. The connection and conversation history are retained. Omit to keep
+     * inference active after the first wake until the session ends.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -194,8 +194,7 @@ private constructor(
     fun triggers(): Optional<List<DecisionTrigger>> = triggers.getOptional("triggers")
 
     /**
-     * Inference starts when the Live WebRTC session connects. After an idle pause, microphone
-     * speech resumes inference.
+     * Starts inference when microphone speech is detected.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -483,9 +482,9 @@ private constructor(
             delegation(Delegation.Decisions.builder().decisions(decisions).build())
 
         /**
-         * Whole seconds of inactivity after which a Live WebRTC session with a speech wake policy
-         * pauses inference. The connection and conversation history are retained. Omit to keep
-         * inference active until the session ends.
+         * Whole seconds of inactivity after which a Live WebRTC or SIP session with a speech wake
+         * policy pauses inference. The connection and conversation history are retained. Omit to
+         * keep inference active after the first wake until the session ends.
          */
         fun idleTimeoutS(idleTimeoutS: Long) = idleTimeoutS(JsonField.of(idleTimeoutS))
 
@@ -662,10 +661,7 @@ private constructor(
                 }
         }
 
-        /**
-         * Inference starts when the Live WebRTC session connects. After an idle pause, microphone
-         * speech resumes inference.
-         */
+        /** Starts inference when microphone speech is detected. */
         fun wakePolicy(wakePolicy: WakePolicy) = wakePolicy(JsonField.of(wakePolicy))
 
         /**
@@ -2406,10 +2402,7 @@ private constructor(
         }
     }
 
-    /**
-     * Inference starts when the Live WebRTC session connects. After an idle pause, microphone
-     * speech resumes inference.
-     */
+    /** Starts inference when microphone speech is detected. */
     class WakePolicy
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -2440,9 +2433,9 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
-         * The speech detection threshold for resuming paused inference, from 0 to 1 inclusive.
-         * Defaults to 0.5. Higher values require stronger evidence of speech. This setting is
-         * independent of active turn detection.
+         * The speech detection threshold for the first wake and each later wake, from 0 to 1
+         * inclusive. Defaults to 0.5. Higher values require stronger evidence of speech. This
+         * setting is independent of active turn detection.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2528,9 +2521,9 @@ private constructor(
             fun type(type: JsonValue) = apply { this.type = type }
 
             /**
-             * The speech detection threshold for resuming paused inference, from 0 to 1 inclusive.
-             * Defaults to 0.5. Higher values require stronger evidence of speech. This setting is
-             * independent of active turn detection.
+             * The speech detection threshold for the first wake and each later wake, from 0 to 1
+             * inclusive. Defaults to 0.5. Higher values require stronger evidence of speech. This
+             * setting is independent of active turn detection.
              */
             fun vadThreshold(vadThreshold: Double) = vadThreshold(JsonField.of(vadThreshold))
 

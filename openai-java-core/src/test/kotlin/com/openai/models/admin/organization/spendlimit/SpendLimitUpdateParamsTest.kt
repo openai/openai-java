@@ -13,11 +13,46 @@ internal class SpendLimitUpdateParamsTest {
             .currency(SpendLimitUpdateParams.Currency.USD)
             .interval(SpendLimitUpdateParams.Interval.MONTH)
             .thresholdAmount(1L)
+            .notificationChannel(
+                SpendLimitUpdateParams.NotificationChannel.builder()
+                    .addRecipient("string")
+                    .subjectPrefix("subject_prefix")
+                    .build()
+            )
             .build()
     }
 
     @Test
     fun body() {
+        val params =
+            SpendLimitUpdateParams.builder()
+                .currency(SpendLimitUpdateParams.Currency.USD)
+                .interval(SpendLimitUpdateParams.Interval.MONTH)
+                .thresholdAmount(1L)
+                .notificationChannel(
+                    SpendLimitUpdateParams.NotificationChannel.builder()
+                        .addRecipient("string")
+                        .subjectPrefix("subject_prefix")
+                        .build()
+                )
+                .build()
+
+        val body = params._body()
+
+        assertThat(body.currency()).isEqualTo(SpendLimitUpdateParams.Currency.USD)
+        assertThat(body.interval()).isEqualTo(SpendLimitUpdateParams.Interval.MONTH)
+        assertThat(body.thresholdAmount()).isEqualTo(1L)
+        assertThat(body.notificationChannel())
+            .contains(
+                SpendLimitUpdateParams.NotificationChannel.builder()
+                    .addRecipient("string")
+                    .subjectPrefix("subject_prefix")
+                    .build()
+            )
+    }
+
+    @Test
+    fun bodyWithoutOptionalFields() {
         val params =
             SpendLimitUpdateParams.builder()
                 .currency(SpendLimitUpdateParams.Currency.USD)

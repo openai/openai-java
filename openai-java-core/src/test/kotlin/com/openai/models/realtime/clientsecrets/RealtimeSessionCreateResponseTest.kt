@@ -86,7 +86,7 @@ internal class RealtimeSessionCreateResponseTest {
                 )
                 .instructions("instructions")
                 .maxOutputTokensInf()
-                .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
+                .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME_2_1)
                 .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
                 .prompt(
                     ResponsePrompt.builder()
@@ -179,7 +179,7 @@ internal class RealtimeSessionCreateResponseTest {
         assertThat(realtimeSessionCreateResponse.maxOutputTokens())
             .contains(RealtimeSessionCreateResponse.MaxOutputTokens.ofInf())
         assertThat(realtimeSessionCreateResponse.model())
-            .contains(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
+            .contains(RealtimeSessionCreateResponse.Model.GPT_REALTIME_2_1)
         assertThat(realtimeSessionCreateResponse.outputModalities().getOrNull())
             .containsExactly(RealtimeSessionCreateResponse.OutputModality.TEXT)
         assertThat(realtimeSessionCreateResponse.prompt())
