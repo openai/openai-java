@@ -4,6 +4,7 @@ package com.openai.models.beta.agents.sessions
 
 import com.openai.core.JsonValue
 import com.openai.models.beta.agents.AgentToolParam
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -49,6 +50,7 @@ internal class SessionUpdateParamsTest {
             )
             .review(SessionUpdateParams.Review.NONE)
             .spendControl(SessionUpdateParams.SpendControl.builder().limit(1L).build())
+            .addVaultId("string")
             .build()
     }
 
@@ -102,6 +104,7 @@ internal class SessionUpdateParamsTest {
                 )
                 .review(SessionUpdateParams.Review.NONE)
                 .spendControl(SessionUpdateParams.SpendControl.builder().limit(1L).build())
+                .addVaultId("string")
                 .build()
 
         val body = params._body()
@@ -146,6 +149,7 @@ internal class SessionUpdateParamsTest {
         assertThat(body.review()).contains(SessionUpdateParams.Review.NONE)
         assertThat(body.spendControl())
             .contains(SessionUpdateParams.SpendControl.builder().limit(1L).build())
+        assertThat(body.vaultIds().getOrNull()).containsExactly("string")
     }
 
     @Test

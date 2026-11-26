@@ -177,6 +177,7 @@ internal class SessionServiceAsyncTest {
                     )
                     .review(SessionUpdateParams.Review.NONE)
                     .spendControl(SessionUpdateParams.SpendControl.builder().limit(1L).build())
+                    .addVaultId("string")
                     .build()
             )
 
