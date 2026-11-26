@@ -22,7 +22,6 @@ object CoreCompilationDependencies {
             "com.fasterxml.jackson.core:jackson-core:$jacksonPublishedVersion",
             "com.fasterxml.jackson.core:jackson-databind:$jacksonPublishedVersion",
             "com.google.errorprone:error_prone_annotations:2.33.0",
-            "io.swagger.core.v3:swagger-annotations:2.2.31",
         )
 
     fun publishedImplementationDependencies(jacksonPublishedVersion: String) =
@@ -37,7 +36,11 @@ object CoreCompilationDependencies {
             "com.github.victools:jsonschema-module-swagger-2:4.38.0",
         )
 
+    /** Not published as API: javax swagger-annotations clashes with the jakarta artifact. */
+    fun compileOnlyDependencies() = listOf("io.swagger.core.v3:swagger-annotations:2.2.31")
+
     fun compilerClasspathDependencies(jacksonPublishedVersion: String) =
         publishedApiDependencies(jacksonPublishedVersion) +
+            compileOnlyDependencies() +
             publishedImplementationDependencies(jacksonPublishedVersion)
 }
