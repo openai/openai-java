@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.responses.ResponseTextConfig
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Schema
 import java.util.Optional
@@ -254,6 +255,17 @@ internal class StructuredOutputsTest {
         validator.validate(schema)
 
         assertThat(validator.isValid()).isTrue
+    }
+
+    @Test
+    fun schemaTest_optionalEnumIsAcceptedByLocalValidation() {
+        @Suppress("unused") class X(val value: Optional<MinimalEnum2>)
+
+        schema = extractSchema(X::class.java)
+
+        assertThatNoException().isThrownBy {
+            ResponseTextConfig.builder().format(X::class.java).build()
+        }
     }
 
     @Test
@@ -752,6 +764,14 @@ internal class StructuredOutputsTest {
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
             .startsWith("#: 'properties' field is missing, empty or not an object.")
+    }
+
+    @Test
+    fun schemaTest_nullTypeInRootSchema() {
+        schema = parseJson("""{"$SCHEMA":"$SCHEMA_VER","type":"null"}""")
+        validator.validate(schema)
+
+        assertThat(validator.errors()).containsExactly("#/type: Unsupported 'type' value: 'null'.")
     }
 
     @Test
