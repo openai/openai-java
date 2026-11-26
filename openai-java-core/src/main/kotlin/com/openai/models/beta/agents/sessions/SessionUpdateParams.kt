@@ -26,8 +26,9 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Updates session tools, metadata, model, reasoning effort, service tier, or the default prompt
- * cache lifetime. Model settings apply to subsequent turns. Omitted fields are unchanged. See
+ * Updates session tools, vaults, metadata, model, reasoning effort, service tier, or the default
+ * prompt cache lifetime. Model settings apply to subsequent turns. Omitted fields are unchanged.
+ * See
  * [managing sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
  */
 class SessionUpdateParams
@@ -83,6 +84,14 @@ private constructor(
     fun spendControl(): Optional<SpendControl> = body.spendControl()
 
     /**
+     * Replaces the session's referenced vaults. Omit to retain them; null or [] clears them.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun vaultIds(): Optional<List<String>> = body.vaultIds()
+
+    /**
      * Returns the raw JSON value of [agent].
      *
      * Unlike [agent], this method doesn't throw if the JSON field has an unexpected type.
@@ -117,6 +126,13 @@ private constructor(
      * Unlike [spendControl], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _spendControl(): JsonField<SpendControl> = body._spendControl()
+
+    /**
+     * Returns the raw JSON value of [vaultIds].
+     *
+     * Unlike [vaultIds], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _vaultIds(): JsonField<List<String>> = body._vaultIds()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -255,6 +271,30 @@ private constructor(
         fun spendControl(spendControl: JsonField<SpendControl>) = apply {
             body.spendControl(spendControl)
         }
+
+        /**
+         * Replaces the session's referenced vaults. Omit to retain them; null or [] clears them.
+         */
+        fun vaultIds(vaultIds: List<String>?) = apply { body.vaultIds(vaultIds) }
+
+        /** Alias for calling [Builder.vaultIds] with `vaultIds.orElse(null)`. */
+        fun vaultIds(vaultIds: Optional<List<String>>) = vaultIds(vaultIds.getOrNull())
+
+        /**
+         * Sets [Builder.vaultIds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vaultIds] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun vaultIds(vaultIds: JsonField<List<String>>) = apply { body.vaultIds(vaultIds) }
+
+        /**
+         * Adds a single [String] to [vaultIds].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addVaultId(vaultId: String) = apply { body.addVaultId(vaultId) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -408,6 +448,7 @@ private constructor(
         private val promptCacheOptions: JsonField<PromptCacheOptions>,
         private val review: JsonField<Review>,
         private val spendControl: JsonField<SpendControl>,
+        private val vaultIds: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -424,7 +465,18 @@ private constructor(
             @JsonProperty("spend_control")
             @ExcludeMissing
             spendControl: JsonField<SpendControl> = JsonMissing.of(),
-        ) : this(agent, metadata, promptCacheOptions, review, spendControl, mutableMapOf())
+            @JsonProperty("vault_ids")
+            @ExcludeMissing
+            vaultIds: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(
+            agent,
+            metadata,
+            promptCacheOptions,
+            review,
+            spendControl,
+            vaultIds,
+            mutableMapOf(),
+        )
 
         /**
          * Agent settings to update on this session. Omitted fields stay unchanged.
@@ -470,6 +522,14 @@ private constructor(
         fun spendControl(): Optional<SpendControl> = spendControl.getOptional("spend_control")
 
         /**
+         * Replaces the session's referenced vaults. Omit to retain them; null or [] clears them.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun vaultIds(): Optional<List<String>> = vaultIds.getOptional("vault_ids")
+
+        /**
          * Returns the raw JSON value of [agent].
          *
          * Unlike [agent], this method doesn't throw if the JSON field has an unexpected type.
@@ -510,6 +570,15 @@ private constructor(
         @ExcludeMissing
         fun _spendControl(): JsonField<SpendControl> = spendControl
 
+        /**
+         * Returns the raw JSON value of [vaultIds].
+         *
+         * Unlike [vaultIds], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("vault_ids")
+        @ExcludeMissing
+        fun _vaultIds(): JsonField<List<String>> = vaultIds
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -531,6 +600,7 @@ private constructor(
                 "prompt_cache_options" to this.promptCacheOptions,
                 "review" to this.review,
                 "spend_control" to this.spendControl,
+                "vault_ids" to this.vaultIds,
             )
 
         /**
@@ -561,6 +631,7 @@ private constructor(
             private var promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of()
             private var review: JsonField<Review> = JsonMissing.of()
             private var spendControl: JsonField<SpendControl> = JsonMissing.of()
+            private var vaultIds: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -570,6 +641,7 @@ private constructor(
                 promptCacheOptions = body.promptCacheOptions
                 review = body.review
                 spendControl = body.spendControl
+                vaultIds = body.vaultIds.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -664,6 +736,37 @@ private constructor(
                 this.spendControl = spendControl
             }
 
+            /**
+             * Replaces the session's referenced vaults. Omit to retain them; null or [] clears
+             * them.
+             */
+            fun vaultIds(vaultIds: List<String>?) = vaultIds(JsonField.ofNullable(vaultIds))
+
+            /** Alias for calling [Builder.vaultIds] with `vaultIds.orElse(null)`. */
+            fun vaultIds(vaultIds: Optional<List<String>>) = vaultIds(vaultIds.getOrNull())
+
+            /**
+             * Sets [Builder.vaultIds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.vaultIds] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun vaultIds(vaultIds: JsonField<List<String>>) = apply {
+                this.vaultIds = vaultIds.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [vaultIds].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addVaultId(vaultId: String) = apply {
+                vaultIds =
+                    (vaultIds?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("vaultIds", it).add(vaultId) }
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -695,6 +798,7 @@ private constructor(
                     promptCacheOptions,
                     review,
                     spendControl,
+                    (vaultIds ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -720,6 +824,7 @@ private constructor(
             promptCacheOptions().ifPresent { it.validate() }
             review().ifPresent { it.validate() }
             spendControl().ifPresent { it.validate() }
+            vaultIds()
             validated = true
         }
 
@@ -743,7 +848,8 @@ private constructor(
                 (metadata.asKnown().getOrNull()?.validity() ?: 0) +
                 (promptCacheOptions.asKnown().getOrNull()?.validity() ?: 0) +
                 (review.asKnown().getOrNull()?.validity() ?: 0) +
-                (spendControl.asKnown().getOrNull()?.validity() ?: 0)
+                (spendControl.asKnown().getOrNull()?.validity() ?: 0) +
+                (vaultIds.asKnown().getOrNull()?.size ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -756,6 +862,7 @@ private constructor(
                 promptCacheOptions == other.promptCacheOptions &&
                 review == other.review &&
                 spendControl == other.spendControl &&
+                vaultIds == other.vaultIds &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -766,6 +873,7 @@ private constructor(
                 promptCacheOptions,
                 review,
                 spendControl,
+                vaultIds,
                 additionalProperties,
             )
         }
@@ -773,7 +881,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{agent=$agent, metadata=$metadata, promptCacheOptions=$promptCacheOptions, review=$review, spendControl=$spendControl, additionalProperties=$additionalProperties}"
+            "Body{agent=$agent, metadata=$metadata, promptCacheOptions=$promptCacheOptions, review=$review, spendControl=$spendControl, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
     }
 
     /** Agent settings to update on this session. Omitted fields stay unchanged. */

@@ -157,8 +157,9 @@ interface SessionServiceAsync {
         retrieve(sessionId, SessionRetrieveParams.none(), requestOptions)
 
     /**
-     * Updates session tools, metadata, model, reasoning effort, service tier, or the default prompt
-     * cache lifetime. Model settings apply to subsequent turns. Omitted fields are unchanged. See
+     * Updates session tools, vaults, metadata, model, reasoning effort, service tier, or the
+     * default prompt cache lifetime. Model settings apply to subsequent turns. Omitted fields are
+     * unchanged. See
      * [managing sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
      */
     fun update(sessionId: String): CompletableFuture<AgentSession> =
