@@ -15,7 +15,7 @@ val compatibilityTestDependencies by configurations.creating {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.20")
     implementation("com.vanniktech:gradle-maven-publish-plugin:0.37.0")
 
     // Resolve the compiler fixture's standard library before its offline TestKit invocation.
