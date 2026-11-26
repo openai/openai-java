@@ -13,7 +13,7 @@ dependencies {
     api("software.amazon.awssdk:regions")
 
     implementation("software.amazon.awssdk:http-client-spi")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp:5.5.0")
 
     // Optional provider-chain branches loaded by the AWS SDK at runtime for web identity,
     // assume-role, console login, and IAM Identity Center profiles.
